@@ -132,25 +132,23 @@ def test_bundled_inventory_validates() -> None:
 
     assert [resource.id for resource in inventory.resources] == [
         "res-rem",
-        "corpus-synthetic-demo",
         "res-mwb",
         "res-rnntagger",
     ]
     assert [type(resource) for resource in inventory.resources] == [
         Corpus,
-        Corpus,
         Dictionary,
         Tool,
     ]
-    assert len(inventory.resources) == 4
-    assert len(inventory.corpora) == 2
+    assert len(inventory.resources) == 3
+    assert len(inventory.corpora) == 1
     assert (
         sum(
             len(version.texts)
             for corpus in inventory.corpora
             for version in corpus.versions
         )
-        == 408
+        == 406
     )
     rem_texts = inventory.corpora[0].versions[0].texts
     assert len(rem_texts) == 406

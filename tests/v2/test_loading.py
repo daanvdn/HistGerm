@@ -16,36 +16,36 @@ from histgerm.loading import (
 )
 
 
-def test_synthetic_corpus_is_discoverable_and_loads_as_mapping() -> None:
+def test_exactly_three_authored_yaml_records_are_discoverable() -> None:
     resources = discover_bundled_yaml()
 
     assert resources == (
         "corpora/rem.yaml",
-        "corpora/synthetic-corpus.yaml",
         "dictionaries/mwb.yaml",
         "tools/rnntagger.yaml",
     )
-    payload = load_bundled_yaml(resources[1])
-    assert payload["id"] == "corpus-synthetic-demo"
-    assert payload["versions"][0]["texts"][1]["title"] == (
-        "Synthetic Later Sermon Witness"
-    )
+    assert [load_bundled_yaml(path)["id"] for path in resources] == [
+        "res-rem",
+        "res-mwb",
+        "res-rnntagger",
+    ]
 
 
 @pytest.mark.parametrize(
-    "data",
+    ("data", "message"),
     [
-        b"---\nid: first\n---\nid: second\n",
-        b"id: [unterminated\n",
-        b"id: first\nid: second\n",
-        b"defaults: &defaults\n  value: one\ncopy: *defaults\n",
-        b"tagged: !custom value\n",
+        (b"---\nid: first\n---\nid: second\n", "another document"),
+        (b"id: [unterminated\n", "expected"),
+        (b"id: first\nid: second\n", "duplicate mapping key"),
+        (b"defaults: &defaults\n  value: one\n", "anchors"),
+        (b"copy: *defaults\n", "aliases"),
+        (b"tagged: !custom value\n", "explicit tags"),
+        (b"item:\n  <<: {value: one}\n", "merge keys"),
+        (b"? [list]\n: value\n", "mapping keys must be strings"),
     ],
 )
-def test_restricted_yaml_rejects_malformed_or_unsafe_documents(
-    data: bytes,
-) -> None:
-    with pytest.raises(UnsafeYamlError):
+def test_restricted_yaml_rejects_unsafe_structure(data: bytes, message: str) -> None:
+    with pytest.raises(UnsafeYamlError, match=message):
         load_yaml_mapping_bytes(data, source_path="fixture.yaml")
 
 
@@ -128,6 +128,13 @@ def test_bundled_resource_paths_stay_within_data_boundary(resource: str) -> None
         load_bundled_yaml(resource)
 
 
-def test_source_checkout_resource_is_a_real_file() -> None:
+def test_source_checkout_contains_only_three_authored_yaml_files() -> None:
     data_home = Path(__file__).parents[2] / "src" / "histgerm" / "data"
-    assert (data_home / "corpora" / "synthetic-corpus.yaml").is_file()
+    paths = sorted(
+        path.relative_to(data_home).as_posix() for path in data_home.rglob("*")
+    )
+    assert [path for path in paths if path.endswith((".yaml", ".yml"))] == [
+        "corpora/rem.yaml",
+        "dictionaries/mwb.yaml",
+        "tools/rnntagger.yaml",
+    ]

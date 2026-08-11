@@ -203,6 +203,7 @@ def test_exact_public_model_and_enum_boundaries() -> None:
     assert set(histgerm.__all__) == {
         *(model.__name__ for model in PUBLIC_MODELS),
         *(enum.__name__ for enum in PUBLIC_ENUMS),
+        "load_catalog",
     }
 
 

@@ -1,5 +1,6 @@
 """HistGerm public API."""
 
+from .catalog import load_catalog
 from .models import (
     Access,
     AnnotationLayer,
@@ -44,4 +45,5 @@ __all__ = [
     "Source",
     "Task",
     "Tool",
+    "load_catalog",
 ]

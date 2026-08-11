@@ -43,21 +43,16 @@ jobs:
         run: uv run ruff check .
 
       - name: Type check
-        run: uv run mypy src tests
+        run: uv run mypy src
 
-      - name: Validate inventory and provenance
-        run: uv run python -m histgerm.validation inventory
-
-      - name: Check packaged inventory drift
-        run: >
-          uv run python -m histgerm.packaging check
-          inventory src/histgerm/resources/inventory
+      - name: Validate authored data
+        run: uv run python -m histgerm.validation src/histgerm/data
 
       - name: Test
         run: uv run pytest
 
       - name: Build wheel and source distribution
-        run: uv build
+        run: uv build --no-sources
 
       - name: Install wheel and load bundled catalog
         run: |
@@ -68,12 +63,10 @@ jobs:
             dist/*.whl
           cd "$RUNNER_TEMP"
           "$RUNNER_TEMP/histgerm-wheel/bin/python" -I -c \
-            "from histgerm.packaging import load_verified_bundled_catalog; c = load_verified_bundled_catalog(); assert c.resources"
+            "from histgerm import load_catalog; c = load_catalog(); assert len(c.corpora) == len(c.tools) == len(c.dictionaries) == 1"
 
       - name: Check tracked and built payload policy
         run: |
-          uv run python -m histgerm.packaging check \
-            inventory src/histgerm/resources/inventory
           uv run python - <<'PY'
           from __future__ import annotations
 

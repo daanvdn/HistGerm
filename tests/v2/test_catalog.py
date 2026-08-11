@@ -1,19 +1,17 @@
-"""Focused tests for the minimal HistGerm V2 catalog facade."""
+"""Behavior tests for the minimal HistGerm V2 catalog facade."""
 
 from __future__ import annotations
 
-from copy import deepcopy
 from typing import Any
 
 import pytest
 
 from histgerm.catalog import Catalog, load_catalog
-from histgerm.loading import load_bundled_yaml
 from histgerm.models import Corpus, Dictionary, LanguageStage, Task, Tool
 
 
 def _source() -> dict[str, Any]:
-    """Build a compact synthetic provenance source."""
+    """Build compact direct evidence for synthetic records."""
 
     return {
         "id": "project",
@@ -31,7 +29,7 @@ def _source() -> dict[str, Any]:
 
 
 def _access(permission: str = "unclear") -> dict[str, Any]:
-    """Build an access record with four explicit permission assessments."""
+    """Build all four explicit legal permission assessments."""
 
     return {
         "availability": ["described"],
@@ -42,6 +40,85 @@ def _access(permission: str = "unclear") -> dict[str, Any]:
         "source_ids": ["project"],
         "note": "Review required.",
     }
+
+
+def _corpus() -> Corpus:
+    """Build an independent two-text corpus for filter and warning behavior."""
+
+    return Corpus.model_validate(
+        {
+            "id": "corpus-test",
+            "name": "Test Corpus",
+            "sources": [_source()],
+            "reviewed_on": "2026-08-11",
+            "access": _access(),
+            "versions": [
+                {
+                    "id": "v1",
+                    "availability": ["downloadable"],
+                    "source_ids": ["project"],
+                    "annotations": [
+                        {
+                            "id": "pos",
+                            "type": "pos",
+                            "tagset_name": "STTS-like test tagset",
+                            "source_ids": ["project"],
+                        },
+                        {
+                            "id": "lemma",
+                            "type": "lemma",
+                            "tagset_name": "Test lemma conventions",
+                            "source_ids": ["project"],
+                        },
+                    ],
+                    "texts": [
+                        {
+                            "id": "sermon-a",
+                            "title": "Early Sermon",
+                            "stages": ["ohg"],
+                            "dialect": "East Franconian",
+                            "date": "approximately late 9th century",
+                            "annotation_ids": ["pos"],
+                            "source_ids": ["project"],
+                            "overlaps": [
+                                {
+                                    "relationship": "same_work",
+                                    "with": "corpus-test:sermon-b",
+                                    "note": "Two witnesses of one work.",
+                                    "source_ids": ["project"],
+                                }
+                            ],
+                        },
+                        {
+                            "id": "sermon-b",
+                            "title": "Later Sermon",
+                            "stages": ["mhg"],
+                            "dialect": "Alemannic with mixed regional features",
+                            "date": "circa 1200–1250",
+                            "annotation_ids": ["pos", "lemma"],
+                            "source_ids": ["project"],
+                            "overlaps": [
+                                {
+                                    "relationship": "same_work",
+                                    "with": "corpus-test:sermon-a",
+                                    "note": "Related, not duplicate.",
+                                    "source_ids": ["project"],
+                                }
+                            ],
+                        },
+                    ],
+                }
+            ],
+            "overlaps": [
+                {
+                    "relationship": "overlaps",
+                    "with": "external:corpus-other",
+                    "note": "External corpus relationship.",
+                    "source_ids": ["project"],
+                }
+            ],
+        }
+    )
 
 
 def _tool(
@@ -86,28 +163,36 @@ def _dictionary(
     )
 
 
-def test_real_loader_preserves_no_filter_order_and_model_types() -> None:
-    """Load bundled resources without mocks and preserve authored text order."""
+def test_real_loader_preserves_order_and_distinct_resource_types() -> None:
+    """Load exactly the three authored resources as distinct model types."""
 
     catalog = load_catalog()
 
-    corpora = catalog.find_corpora()
-    texts = catalog.find_texts()
-    tools = catalog.find_tools()
-    dictionaries = catalog.find_dictionaries()
+    assert [corpus.id for corpus in catalog.find_corpora()] == ["res-rem"]
+    assert [tool.id for tool in catalog.find_tools()] == ["res-rnntagger"]
+    assert [item.id for item in catalog.find_dictionaries()] == ["res-mwb"]
+    assert len(catalog.find_texts()) == 406
+    assert [text.id for text in catalog.find_texts()[:2]] == ["m001", "m002"]
+    assert catalog.find_texts()[-1].id == "m552"
+    assert isinstance(catalog.find_corpora()[0], Corpus)
+    assert isinstance(catalog.find_tools()[0], Tool)
+    assert isinstance(catalog.find_dictionaries()[0], Dictionary)
 
-    assert [corpus.id for corpus in corpora] == [
-        "res-rem",
-        "corpus-synthetic-demo",
-    ]
-    assert len(texts) == 408
-    assert [text.id for text in texts[:2]] == ["m001", "m002"]
-    assert [text.id for text in texts[-3:]] == ["m552", "sermon-a", "sermon-b"]
-    assert [tool.id for tool in tools] == ["res-rnntagger"]
-    assert [dictionary.id for dictionary in dictionaries] == ["res-mwb"]
-    assert all(isinstance(corpus, Corpus) for corpus in corpora)
-    assert all(isinstance(tool, Tool) for tool in tools)
-    assert all(isinstance(dictionary, Dictionary) for dictionary in dictionaries)
+
+def test_exactly_four_public_find_methods_exist() -> None:
+    """Keep the approved query surface to four named find methods."""
+
+    methods = {
+        name
+        for name in dir(Catalog)
+        if name.startswith("find_") and callable(getattr(Catalog, name))
+    }
+    assert methods == {
+        "find_corpora",
+        "find_texts",
+        "find_tools",
+        "find_dictionaries",
+    }
 
 
 @pytest.mark.parametrize(
@@ -116,11 +201,12 @@ def test_real_loader_preserves_no_filter_order_and_model_types() -> None:
         (
             "sermon-a",
             {
-                "corpus_id": "corpus-synthetic-demo",
+                "corpus_id": "corpus-test",
+                "text_id": "sermon-a",
                 "stage": "ohg",
-                "dialect": "  EAST   FRANCONIAN (SYNTHETIC LABEL) ",
+                "dialect": "  EAST   FRANCONIAN ",
                 "annotation_type": "pos",
-                "tagset": " stts-LIKE  synthetic TAGSET ",
+                "tagset": " stts-LIKE  test TAGSET ",
                 "date_contains": "LATE 9TH CENTURY",
                 "has_overlap": True,
             },
@@ -128,107 +214,80 @@ def test_real_loader_preserves_no_filter_order_and_model_types() -> None:
         (
             "sermon-b",
             {
-                "corpus_id": "corpus-synthetic-demo",
+                "corpus_id": "corpus-test",
+                "text_id": "sermon-b",
                 "stage": "mhg",
-                "dialect": ("ALEMANNIC WITH MIXED REGIONAL FEATURES (SYNTHETIC LABEL)"),
+                "dialect": "Alemannic with mixed regional features",
                 "annotation_type": "lemma",
-                "tagset": "SYNTHETIC LEMMA CONVENTIONS",
+                "tagset": "TEST LEMMA CONVENTIONS",
                 "date_contains": "1200–1250",
                 "has_overlap": True,
             },
         ),
     ],
 )
-def test_each_text_matches_every_required_filter_independently(
+def test_every_required_text_filter_combines_with_and_semantics(
     text_id: str, filters: dict[str, object]
 ) -> None:
-    """Apply all approved text filters with AND semantics to each fixture text."""
+    """Apply every text filter together to each independent fixture text."""
 
-    catalog = load_catalog()
-
+    catalog = Catalog(corpora=[_corpus()])
     assert [text.id for text in catalog.find_texts(**filters)] == [text_id]  # type: ignore[arg-type]
 
 
-def test_each_distinguishing_text_filter_works_on_its_own() -> None:
-    """Exercise stage, dialect, layer, tagset, and date filters separately."""
+def test_every_required_text_filter_works_independently() -> None:
+    """Exercise ID, stage, dialect, layer, tagset, date, and overlap filters."""
 
-    catalog = load_catalog()
+    corpus = _corpus()
+    corpus.versions[0].texts[0].overlaps = None
+    catalog = Catalog(corpora=[corpus])
     cases = [
-        ({"stage": "ohg"}, ["sermon-a"]),
-        ({"dialect": "East Franconian (synthetic label)"}, ["sermon-a"]),
-        (
-            {"dialect": "Alemannic with mixed regional features (synthetic label)"},
-            ["sermon-b"],
-        ),
-        ({"tagset": "Synthetic lemma conventions"}, ["sermon-b"]),
-        ({"date_contains": "late 9th"}, ["sermon-a"]),
-        ({"date_contains": "1200–1250"}, ["sermon-b"]),
+        ({"corpus_id": "corpus-test"}, ["sermon-a", "sermon-b"]),
+        ({"corpus_id": "corpus-test", "text_id": "sermon-a"}, ["sermon-a"]),
+        ({"stage": LanguageStage.OHG}, ["sermon-a"]),
+        ({"dialect": " east   franconian "}, ["sermon-a"]),
+        ({"annotation_type": "lemma"}, ["sermon-b"]),
+        ({"tagset": " test lemma conventions "}, ["sermon-b"]),
+        ({"date_contains": "LATE 9TH"}, ["sermon-a"]),
+        ({"has_overlap": False}, ["sermon-a"]),
+        ({"has_overlap": True}, ["sermon-b"]),
     ]
-
     for filters, expected in cases:
         assert [text.id for text in catalog.find_texts(**filters)] == expected  # type: ignore[arg-type]
 
-    mhg_texts = catalog.find_texts(stage="mhg")
-    assert len(mhg_texts) == 407
-    assert [text.id for text in mhg_texts[:2]] == ["m001", "m002"]
-    assert [text.id for text in mhg_texts[-2:]] == ["m552", "sermon-b"]
-    lemma_texts = catalog.find_texts(annotation_type="lemma")
-    assert len(lemma_texts) == 407
-    assert [text.id for text in lemma_texts[:2]] == ["m001", "m002"]
-    assert [text.id for text in lemma_texts[-2:]] == ["m552", "sermon-b"]
 
+def test_text_ids_are_strictly_scoped_and_exact() -> None:
+    """Require corpus qualification while keeping IDs non-normalized."""
 
-def test_corpus_id_isolates_each_bundled_corpus() -> None:
-    """Keep corpus-local text identity and authored order deterministic."""
+    catalog = Catalog(corpora=[_corpus()])
 
-    catalog = load_catalog()
-
-    synthetic = catalog.find_texts(corpus_id="corpus-synthetic-demo")
-    rem = catalog.find_texts(corpus_id="res-rem")
-
-    assert [text.id for text in synthetic] == ["sermon-a", "sermon-b"]
-    assert len(rem) == 406
-    assert [text.id for text in rem[:2]] == ["m001", "m002"]
-    assert [text.id for text in rem[-2:]] == ["m551", "m552"]
-
-
-def test_text_filters_are_anded_and_ids_are_strictly_qualified() -> None:
-    """Reject global text IDs and avoid fuzzy or qualified ID matching."""
-
-    catalog = load_catalog()
-
+    assert catalog.find_texts(corpus_id=" CORPUS-TEST ") == []
+    assert catalog.find_texts(corpus_id="corpus-test", text_id="SERMON-A") == []
     assert (
         catalog.find_texts(
-            corpus_id="corpus-synthetic-demo", stage="ohg", annotation_type="lemma"
+            corpus_id="corpus-test", stage="ohg", annotation_type="lemma"
         )
         == []
     )
-    assert catalog.find_texts(corpus_id=" CORPUS-SYNTHETIC-DEMO ") == []
     with pytest.raises(ValueError, match="requires corpus_id"):
         catalog.find_texts(text_id="sermon-a")
     with pytest.raises(ValueError, match="bare corpus-local"):
-        catalog.find_texts(
-            corpus_id="corpus-synthetic-demo",
-            text_id="corpus-synthetic-demo:sermon-a",
-        )
+        catalog.find_texts(corpus_id="corpus-test", text_id="corpus-test:sermon-a")
 
 
-def test_corpus_filter_and_false_overlap_filter() -> None:
-    """Find corpora by text stage and distinguish an empty overlap list."""
+def test_find_corpora_filters_by_any_owned_text_stage() -> None:
+    """Return corpora containing a text in the requested stage."""
 
-    payload = deepcopy(load_bundled_yaml("corpora/synthetic-corpus.yaml"))
-    payload["versions"][0]["texts"][0].pop("overlaps")
-    corpus = Corpus.model_validate(payload)
+    corpus = _corpus()
     catalog = Catalog(corpora=[corpus])
 
-    assert catalog.find_corpora(stage=LanguageStage.OHG) == [corpus]
+    assert catalog.find_corpora() == [corpus]
+    assert catalog.find_corpora(stage="ohg") == [corpus]
     assert catalog.find_corpora(stage="enhg") == []
-    assert [text.id for text in catalog.find_texts(has_overlap=False)] == ["sermon-a"]
-    assert [text.id for text in catalog.find_texts(has_overlap=True)] == ["sermon-b"]
 
 
-def test_tool_filters_use_task_enum_and_normalized_membership() -> None:
-    """Filter synthetic tools by enum task, stage, format, and AND semantics."""
+def test_tool_filters_use_task_enum_and_normalized_exact_membership() -> None:
+    """Filter tools by enum task, stage, format, and AND semantics."""
 
     tagger = _tool("tool-tagger", Task.POS_TAGGER, "CoNLL-U")
     lemmatizer = _tool("tool-lemma", Task.LEMMATIZER, "TSV")
@@ -239,12 +298,13 @@ def test_tool_filters_use_task_enum_and_normalized_membership() -> None:
         task=Task.POS_TAGGER, stage="mhg", output_format="  conll-u "
     ) == [tagger]
     assert catalog.find_tools(task="lemmatizer", output_format="conll-u") == []
+    assert catalog.find_tools(output_format="conll") == []
     with pytest.raises(ValueError):
         catalog.find_tools(task="POS_TAGGER")
 
 
-def test_dictionary_filters_are_exact_normalized_and_boolean() -> None:
-    """Filter dictionaries by stage, normalized feature, and exact Boolean."""
+def test_dictionary_filters_are_normalized_exact_and_boolean() -> None:
+    """Filter dictionaries by stage, exact feature, and Boolean state."""
 
     readable = _dictionary(
         "dictionary-readable", feature="Spelling Variants", machine_readable=True
@@ -258,30 +318,24 @@ def test_dictionary_filters_are_exact_normalized_and_boolean() -> None:
         lexical_feature=" spelling   variants ",
         machine_readable=True,
     ) == [readable]
-    assert (
-        catalog.find_dictionaries(lexical_feature="spelling", machine_readable=True)
-        == []
-    )
+    assert catalog.find_dictionaries(lexical_feature="spelling") == []
+    assert catalog.find_dictionaries(machine_readable=False) == [closed]
 
 
-def test_legal_warnings_resolve_four_rows_per_owner_context() -> None:
-    """Resolve corpus access for texts and keep legal rows free of overlaps."""
+def test_legal_warnings_are_separate_and_resolve_text_ownership() -> None:
+    """Return four legal rows per unclear owner without overlap fields."""
 
-    catalog = load_catalog()
-    corpus = next(
-        corpus
-        for corpus in catalog.find_corpora()
-        if corpus.id == "corpus-synthetic-demo"
-    )
-    first, second = catalog.find_texts(corpus_id="corpus-synthetic-demo")
+    corpus = _corpus()
+    catalog = Catalog(corpora=[corpus])
+    first, second = catalog.find_texts(corpus_id="corpus-test")
 
     rows = catalog.legal_warnings([corpus, first, second])
 
     assert len(rows) == 12
     assert [row["text_id"] for row in rows] == [
         *([None] * 4),
-        *(["corpus-synthetic-demo:sermon-a"] * 4),
-        *(["corpus-synthetic-demo:sermon-b"] * 4),
+        *(["corpus-test:sermon-a"] * 4),
+        *(["corpus-test:sermon-b"] * 4),
     ]
     assert {row["value"] for row in rows} == {"unclear"}
     assert {row["field"] for row in rows} == {
@@ -294,116 +348,98 @@ def test_legal_warnings_resolve_four_rows_per_owner_context() -> None:
 
 
 def test_legal_warnings_include_prohibited_and_omit_permitted() -> None:
-    """Emit prohibited fields while suppressing evidence-backed permissions."""
+    """Warn on prohibited fields while suppressing permitted fields."""
 
     prohibited = _tool(
-        "tool-prohibited",
-        Task.POS_TAGGER,
-        "TSV",
-        permission="prohibited",
+        "tool-prohibited", Task.POS_TAGGER, "TSV", permission="prohibited"
     )
-    permitted = _tool(
-        "tool-permitted",
-        Task.LEMMATIZER,
-        "TSV",
-        permission="permitted",
-    )
-    catalog = Catalog(tools=[prohibited, permitted])
+    permitted = _tool("tool-permitted", Task.LEMMATIZER, "TSV", permission="permitted")
 
-    rows = catalog.legal_warnings([prohibited, permitted])
+    rows = Catalog(tools=[prohibited, permitted]).legal_warnings(
+        [prohibited, permitted]
+    )
 
     assert len(rows) == 4
     assert {row["resource_id"] for row in rows} == {"tool-prohibited"}
     assert {row["value"] for row in rows} == {"prohibited"}
 
 
-def test_overlap_warnings_keep_corpus_and_text_authorship_separate() -> None:
-    """Preserve authored overlap order without reciprocal inference or totals."""
+def test_overlap_warnings_preserve_authored_corpus_and_text_rows() -> None:
+    """Keep overlap rows separate from legal warnings and uninferred."""
 
-    catalog = load_catalog()
-    corpus = next(
-        corpus
-        for corpus in catalog.find_corpora()
-        if corpus.id == "corpus-synthetic-demo"
-    )
-    first, second = catalog.find_texts(corpus_id="corpus-synthetic-demo")
+    corpus = _corpus()
+    catalog = Catalog(corpora=[corpus])
+    first, second = catalog.find_texts(corpus_id="corpus-test")
 
-    corpus_rows = catalog.overlap_warnings([corpus])
-    text_rows = catalog.overlap_warnings([first, second])
-
-    assert corpus_rows == [
+    assert catalog.overlap_warnings([corpus]) == [
         {
-            "owner_id": "corpus-synthetic-demo",
+            "owner_id": "corpus-test",
             "relationship": "overlaps",
-            "with": "external:corpus-other-synthetic",
-            "note": (
-                "Synthetic external corpus relationship; no real resource is asserted."
-            ),
+            "with": "external:corpus-other",
+            "note": "External corpus relationship.",
             "source_ids": ["project"],
         }
     ]
-    assert [row["owner_id"] for row in text_rows] == [
-        "corpus-synthetic-demo:sermon-a",
-        "corpus-synthetic-demo:sermon-b",
+    rows = catalog.overlap_warnings([first, second])
+    assert [row["owner_id"] for row in rows] == [
+        "corpus-test:sermon-a",
+        "corpus-test:sermon-b",
     ]
-    assert [row["with"] for row in text_rows] == [
-        "corpus-synthetic-demo:sermon-b",
-        "corpus-synthetic-demo:sermon-a",
+    assert [row["with"] for row in rows] == [
+        "corpus-test:sermon-b",
+        "corpus-test:sermon-a",
     ]
-    assert all("text_count" not in row for row in text_rows)
+    assert all("field" not in row and "text_count" not in row for row in rows)
 
 
-def test_coverage_groups_use_qualified_unique_sorted_text_ids() -> None:
-    """Build stable annotation groups and deduplicate repeated input texts."""
+def test_coverage_rows_are_simple_unique_and_stable() -> None:
+    """Build plain grouped rows with qualified, deduplicated text IDs."""
 
-    catalog = load_catalog()
-    first, second = catalog.find_texts(corpus_id="corpus-synthetic-demo")
+    catalog = Catalog(corpora=[_corpus()])
+    first, second = catalog.find_texts(corpus_id="corpus-test")
 
     assert catalog.coverage_summary([second, first, second], by=["stage"]) == [
         {
             "stage": "mhg",
             "text_count": 1,
-            "text_ids": ["corpus-synthetic-demo:sermon-b"],
+            "text_ids": ["corpus-test:sermon-b"],
         },
         {
             "stage": "ohg",
             "text_count": 1,
-            "text_ids": ["corpus-synthetic-demo:sermon-a"],
+            "text_ids": ["corpus-test:sermon-a"],
         },
     ]
     assert catalog.coverage_summary([first, second], by=["annotation_type"]) == [
         {
             "annotation_type": "pos",
             "text_count": 2,
-            "text_ids": [
-                "corpus-synthetic-demo:sermon-a",
-                "corpus-synthetic-demo:sermon-b",
-            ],
+            "text_ids": ["corpus-test:sermon-a", "corpus-test:sermon-b"],
         },
         {
             "annotation_type": "lemma",
             "text_count": 1,
-            "text_ids": ["corpus-synthetic-demo:sermon-b"],
+            "text_ids": ["corpus-test:sermon-b"],
         },
     ]
     assert catalog.coverage_summary([first, second], by=["stage", "tagset"]) == [
         {
             "stage": "ohg",
-            "tagset": "STTS-like synthetic tagset",
+            "tagset": "STTS-like test tagset",
             "text_count": 1,
-            "text_ids": ["corpus-synthetic-demo:sermon-a"],
+            "text_ids": ["corpus-test:sermon-a"],
         },
         {
             "stage": "mhg",
-            "tagset": "STTS-like synthetic tagset",
+            "tagset": "STTS-like test tagset",
             "text_count": 1,
-            "text_ids": ["corpus-synthetic-demo:sermon-b"],
+            "text_ids": ["corpus-test:sermon-b"],
         },
         {
             "stage": "mhg",
-            "tagset": "Synthetic lemma conventions",
+            "tagset": "Test lemma conventions",
             "text_count": 1,
-            "text_ids": ["corpus-synthetic-demo:sermon-b"],
+            "text_ids": ["corpus-test:sermon-b"],
         },
     ]
 
@@ -412,7 +448,6 @@ def test_coverage_groups_use_qualified_unique_sorted_text_ids() -> None:
 def test_coverage_dimensions_are_validated(by: list[str]) -> None:
     """Reject empty, duplicate, or unsupported coverage dimensions."""
 
-    catalog = load_catalog()
-
+    catalog = Catalog(corpora=[_corpus()])
     with pytest.raises(ValueError):
         catalog.coverage_summary(catalog.find_texts(), by=by)  # type: ignore[arg-type]

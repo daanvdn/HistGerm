@@ -46,10 +46,8 @@ build-backend = "uv_build"
 
 [tool.uv.build-backend]
 source-include = [
-    "docs/**",
-    "inventory/**",
-    "src/histgerm/data/**",
-    "tests/**",
+    "src/histgerm/data/**/*.yaml",
+    "src/histgerm/py.typed",
 ]
 
 [tool.ruff]

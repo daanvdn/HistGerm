@@ -1,6 +1,0 @@
-schema_version: 1.0.0
-registry:
-  id: text_types
-  label: Text types
-  description: Open registry for normalized text-type identifiers used by HistGerm records.
-terms: []

@@ -1,6 +1,0 @@
-schema_version: 1.0.0
-registry:
-  id: dialects
-  label: Dialects
-  description: Open registry for normalized dialect identifiers used by HistGerm records.
-terms: []

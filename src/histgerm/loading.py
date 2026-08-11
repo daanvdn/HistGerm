@@ -1,4 +1,4 @@
-"""Safe, deterministic loading for HistGerm authoring data and snapshots."""
+"""Restricted YAML loading for authored and bundled HistGerm V2 data."""
 
 from __future__ import annotations
 
@@ -8,19 +8,15 @@ from dataclasses import dataclass
 from importlib import resources
 from importlib.resources.abc import Traversable
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 import yaml  # type: ignore[import-untyped]
-from pydantic import ValidationError
 from yaml.nodes import MappingNode, ScalarNode  # type: ignore[import-untyped]
 from yaml.tokens import (  # type: ignore[import-untyped]
     AliasToken,
     AnchorToken,
     TagToken,
 )
-
-if TYPE_CHECKING:
-    from histgerm.models.catalog import Catalog
 
 _UTF8_BOM = b"\xef\xbb\xbf"
 
@@ -39,6 +35,8 @@ class HistGermLoadingError(OSError):
     """Base class for expected inventory loading failures."""
 
     def __init__(self, diagnostic: LoadingDiagnostic) -> None:
+        """Store the structured diagnostic and initialize the error message."""
+
         self.diagnostic = diagnostic
         super().__init__(
             f"{diagnostic.path}:{diagnostic.location}: {diagnostic.message}"
@@ -74,6 +72,8 @@ class InventoryModelError(HistGermLoadingError):
 
 
 def _location(mark: yaml.error.Mark | None) -> str:
+    """Return a stable one-based line and column for a YAML mark."""
+
     if mark is None:
         return ""
     return f"{mark.line + 1}:{mark.column + 1}"
@@ -85,6 +85,8 @@ def _diagnostic(
     message: str,
     mark: yaml.error.Mark | None = None,
 ) -> LoadingDiagnostic:
+    """Build a loading diagnostic from a YAML parser failure."""
+
     return LoadingDiagnostic(
         code=code,
         path=path,
@@ -94,11 +96,15 @@ def _diagnostic(
 
 
 class _RestrictedLoader(yaml.SafeLoader):  # type: ignore[misc]
+    """PyYAML safe loader that rejects unsafe mapping constructs."""
+
     source_path: str
 
     def construct_mapping(
         self, node: MappingNode, deep: bool = False
     ) -> dict[str, Any]:
+        """Construct a mapping while enforcing unique, plain string keys."""
+
         mapping: dict[str, Any] = {}
         for key_node, value_node in node.value:
             if key_node.tag == "tag:yaml.org,2002:merge":
@@ -150,6 +156,8 @@ class _RestrictedLoader(yaml.SafeLoader):  # type: ignore[misc]
 
 
 def _decode_utf8(data: bytes, path: str) -> str:
+    """Decode BOM-free UTF-8 bytes or raise a structured loading error."""
+
     if data.startswith(_UTF8_BOM):
         raise InventoryEncodingError(
             _diagnostic("utf8_bom", path, "UTF-8 BOM is not permitted")
@@ -167,8 +175,10 @@ def _decode_utf8(data: bytes, path: str) -> str:
         ) from error
 
 
-def load_yaml_bytes(data: bytes, *, source_path: str = "<memory>") -> Any:
-    """Load one restricted YAML document from UTF-8 bytes."""
+def load_yaml_mapping_bytes(
+    data: bytes, *, source_path: str = "<memory>"
+) -> dict[str, Any]:
+    """Load one restricted UTF-8 YAML document whose root is a mapping."""
 
     text = _decode_utf8(data, source_path)
     try:
@@ -210,7 +220,15 @@ def load_yaml_bytes(data: bytes, *, source_path: str = "<memory>") -> Any:
                     "empty_document", source_path, "inventory document is empty"
                 )
             )
-        return document
+        if not isinstance(document, Mapping):
+            raise InventoryCompositionError(
+                _diagnostic(
+                    "non_mapping_document",
+                    source_path,
+                    "YAML document root must be a mapping",
+                )
+            )
+        return dict(document)
     except HistGermLoadingError:
         raise
     except yaml.MarkedYAMLError as error:
@@ -224,30 +242,9 @@ def load_yaml_bytes(data: bytes, *, source_path: str = "<memory>") -> Any:
         loader.dispose()
 
 
-def load_yaml_file(path: Path) -> Any:
-    """Load one restricted YAML file."""
-
-    return load_yaml_bytes(path.read_bytes(), source_path=path.as_posix())
-
-
-def load_yaml_mapping_bytes(
-    data: bytes, *, source_path: str = "<memory>"
-) -> dict[str, Any]:
-    """Load one restricted UTF-8 YAML document whose root is a mapping."""
-
-    document = load_yaml_bytes(data, source_path=source_path)
-    if not isinstance(document, Mapping):
-        raise InventoryCompositionError(
-            _diagnostic(
-                "non_mapping_document",
-                source_path,
-                "YAML document root must be a mapping",
-            )
-        )
-    return dict(document)
-
-
 def _resource_parts(path: str, *, label: str) -> tuple[str, ...]:
+    """Split and validate a relative package-resource path."""
+
     parts = tuple(path.split("/"))
     if not parts or any(part in {"", ".", ".."} for part in parts):
         raise InventoryDiscoveryError(
@@ -263,6 +260,8 @@ def _resource_parts(path: str, *, label: str) -> tuple[str, ...]:
 def _discover_yaml_resources(
     root: Traversable, *, prefix: tuple[str, ...] = ()
 ) -> list[str]:
+    """Recursively discover YAML resources in deterministic path order."""
+
     discovered: list[str] = []
     for entry in sorted(root.iterdir(), key=lambda item: item.name):
         relative = (*prefix, entry.name)
@@ -328,7 +327,7 @@ def load_bundled_yaml(
 
 
 def discover_inventory_files(root: Path) -> tuple[Path, ...]:
-    """Return authoring YAML files in normalized relative-path order."""
+    """Return authored YAML files in normalized relative-path order."""
 
     if root.is_symlink():
         raise InventoryDiscoveryError(
@@ -351,7 +350,7 @@ def discover_inventory_files(root: Path) -> tuple[Path, ...]:
                 _diagnostic(
                     "unsupported_file",
                     root.as_posix(),
-                    "authoring file must use .yaml or .yml",
+                    "data file must use .yaml or .yml",
                 )
             )
         return (root,)
@@ -371,270 +370,6 @@ def discover_inventory_files(root: Path) -> tuple[Path, ...]:
     return tuple(sorted(discovered, key=lambda path: path.relative_to(root).as_posix()))
 
 
-def _model_error(path: str, error: ValidationError) -> InventoryModelError:
-    first = error.errors(include_url=False)[0]
-    location = "/".join(str(part) for part in first["loc"])
-    return InventoryModelError(
-        LoadingDiagnostic(
-            code="model_validation",
-            path=path,
-            location=location,
-            message=str(first["msg"]),
-        )
-    )
-
-
-def _compose_authoring(root: Path) -> tuple[Catalog, dict[str, str]]:
-    from pydantic import TypeAdapter
-
-    from histgerm.models.catalog import (
-        Catalog,
-        InventoryRecord,
-        OpenRegistryDefinition,
-    )
-
-    inventory_adapter: TypeAdapter[InventoryRecord] = TypeAdapter(InventoryRecord)
-    files = discover_inventory_files(root)
-    boundary = root.resolve() if root.is_dir() else root.parent.resolve()
-    catalog_data: dict[str, Any] | None = None
-    catalog_path = ""
-    vocabularies: dict[str, dict[str, Any]] = {}
-    registries: dict[str, dict[str, Any]] = {}
-    collections: dict[str, list[Any]] = {
-        "resources": [],
-        "works": [],
-        "witnesses": [],
-        "publications": [],
-        "relationships": [],
-    }
-    sources: dict[str, str] = {}
-    collection_for_type = {
-        "resource": "resources",
-        "work": "works",
-        "witness": "witnesses",
-        "publication": "publications",
-        "relationship": "relationships",
-    }
-
-    for path in files:
-        relative = path.relative_to(boundary).as_posix()
-        document = load_yaml_bytes(path.read_bytes(), source_path=relative)
-        if not isinstance(document, Mapping):
-            raise InventoryCompositionError(
-                _diagnostic(
-                    "invalid_document",
-                    relative,
-                    "inventory document must be a mapping",
-                )
-            )
-        if document.get("record_type") == "catalog":
-            if catalog_data is not None:
-                raise InventoryCompositionError(
-                    _diagnostic(
-                        "duplicate_catalog",
-                        relative,
-                        f"catalog already declared by {catalog_path}",
-                    )
-                )
-            catalog_data = dict(document)
-            catalog_path = relative
-            continue
-        if "vocabulary" in document:
-            header = document["vocabulary"]
-            terms = document.get("terms")
-            if not isinstance(header, Mapping) or not isinstance(terms, list):
-                raise InventoryCompositionError(
-                    _diagnostic(
-                        "invalid_vocabulary",
-                        relative,
-                        "vocabulary and terms must be a mapping and list",
-                    )
-                )
-            identifier = header.get("id")
-            term_ids = [
-                term.get("id") if isinstance(term, Mapping) else None for term in terms
-            ]
-            if not isinstance(identifier, str) or not all(
-                isinstance(term_id, str) for term_id in term_ids
-            ):
-                raise InventoryCompositionError(
-                    _diagnostic(
-                        "invalid_vocabulary",
-                        relative,
-                        "vocabulary and term IDs must be strings",
-                    )
-                )
-            if identifier in vocabularies:
-                raise InventoryCompositionError(
-                    _diagnostic(
-                        "duplicate_vocabulary",
-                        relative,
-                        f"duplicate vocabulary {identifier!r}",
-                    )
-                )
-            vocabularies[identifier] = {
-                "schema_version": document.get("schema_version"),
-                "ids": term_ids,
-            }
-            continue
-        if "registry" in document:
-            header = document["registry"]
-            if not isinstance(header, Mapping) or not isinstance(header.get("id"), str):
-                raise InventoryCompositionError(
-                    _diagnostic(
-                        "invalid_registry",
-                        relative,
-                        "registry must declare a string id",
-                    )
-                )
-            identifier = str(header["id"])
-            if identifier in registries:
-                raise InventoryCompositionError(
-                    _diagnostic(
-                        "duplicate_registry",
-                        relative,
-                        f"duplicate registry {identifier!r}",
-                    )
-                )
-            definition = {
-                "schema_version": document.get("schema_version"),
-                "terms": document.get("terms", []),
-            }
-            try:
-                registries[identifier] = OpenRegistryDefinition.model_validate(
-                    definition
-                ).model_dump(mode="python")
-            except ValidationError as error:
-                raise _model_error(relative, error) from error
-            continue
-
-        record_type_value = document.get("record_type")
-        record_type = record_type_value if isinstance(record_type_value, str) else ""
-        collection = collection_for_type.get(record_type)
-        if collection is None:
-            raise InventoryCompositionError(
-                _diagnostic(
-                    "unknown_document",
-                    relative,
-                    "document is not a catalog, vocabulary, registry, or record",
-                )
-            )
-        try:
-            record = inventory_adapter.validate_python(document)
-        except ValidationError as error:
-            raise _model_error(relative, error) from error
-        collections[collection].append(record)
-        sources[str(record.id)] = relative
-
-    if catalog_data is None:
-        raise InventoryCompositionError(
-            _diagnostic(
-                "missing_catalog",
-                boundary.as_posix(),
-                "inventory must contain exactly one catalog document",
-            )
-        )
-
-    base_vocabularies = catalog_data.get("vocabularies", {})
-    base_registries = catalog_data.get("registries", {})
-    if not isinstance(base_vocabularies, Mapping) or not isinstance(
-        base_registries, Mapping
-    ):
-        raise InventoryCompositionError(
-            _diagnostic(
-                "invalid_catalog",
-                catalog_path,
-                "catalog vocabularies and registries must be mappings",
-            )
-        )
-    merged_vocabularies = dict(base_vocabularies)
-    merged_registries = dict(base_registries)
-    for name, definition in vocabularies.items():
-        if name in merged_vocabularies:
-            raise InventoryCompositionError(
-                _diagnostic(
-                    "duplicate_vocabulary",
-                    catalog_path,
-                    f"duplicate vocabulary {name!r}",
-                )
-            )
-        merged_vocabularies[name] = definition
-    for name, definition in registries.items():
-        if name in merged_registries:
-            raise InventoryCompositionError(
-                _diagnostic(
-                    "duplicate_registry",
-                    catalog_path,
-                    f"duplicate registry {name!r}",
-                )
-            )
-        merged_registries[name] = definition
-
-    composed = dict(catalog_data)
-    composed["vocabularies"] = merged_vocabularies
-    composed["registries"] = merged_registries
-    for field, records in collections.items():
-        existing = composed.get(field, [])
-        if not isinstance(existing, list):
-            raise InventoryCompositionError(
-                _diagnostic(
-                    "invalid_catalog",
-                    catalog_path,
-                    f"catalog field {field!r} must be a list",
-                )
-            )
-        combined = [*existing, *records]
-        composed[field] = sorted(
-            combined,
-            key=lambda item: str(
-                item.get("id") if isinstance(item, Mapping) else item.id
-            ),
-        )
-    try:
-        return Catalog.model_validate(composed), sources
-    except ValidationError as error:
-        raise _model_error(catalog_path, error) from error
-
-
-def _load_json_bytes(data: bytes, path: str) -> Catalog:
-    from histgerm.models.catalog import Catalog
-
-    text = _decode_utf8(data, path)
-    try:
-        catalog: Catalog = Catalog.model_validate_json(text)
-        return catalog
-    except ValidationError as error:
-        raise _model_error(path, error) from error
-
-
-def load_catalog(path: Path) -> tuple[Catalog, dict[str, str]]:
-    """Load an explicit authoring inventory directory or canonical JSON snapshot."""
-
-    if path.is_file() and path.suffix.casefold() == ".json":
-        return _load_json_bytes(path.read_bytes(), path.as_posix()), {}
-    return _compose_authoring(path)
-
-
-def load_bundled_catalog(
-    *,
-    package: str = "histgerm.resources",
-    resource: str = "inventory/snapshot.json",
-) -> Catalog:
-    """Load the package snapshot strictly within the declared resource boundary."""
-
-    parts = resource.split("/")
-    if not parts or any(part in {"", ".", ".."} for part in parts):
-        raise InventoryDiscoveryError(
-            _diagnostic(
-                "invalid_resource_path",
-                f"{package}:{resource}",
-                "package resource path must remain within its declared boundary",
-            )
-        )
-    target = resources.files(package).joinpath(*parts)
-    return _load_json_bytes(target.read_bytes(), f"{package}:{resource}")
-
-
 __all__ = [
     "DuplicateKeyError",
     "HistGermLoadingError",
@@ -648,9 +383,5 @@ __all__ = [
     "discover_bundled_yaml",
     "discover_inventory_files",
     "load_bundled_yaml",
-    "load_bundled_catalog",
-    "load_catalog",
-    "load_yaml_bytes",
-    "load_yaml_file",
     "load_yaml_mapping_bytes",
 ]

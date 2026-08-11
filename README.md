@@ -1,90 +1,80 @@
 # HistGerm
 
-HistGerm is a curated, versioned inventory and typed Python library for
-discovering metadata about Historical German corpora, dictionaries, NLP tools,
-annotations, access conditions, provenance, and relationships.
+HistGerm is a curated Python catalog of metadata about Historical German
+corpora, NLP tools, and dictionaries. It records scholarly descriptions,
+coverage, access conditions, evidence, and known overlap; it does not distribute
+third-party data, software, or model weights.
 
-The project stores metadata and external links only. It does **not** distribute
-third-party corpora, dictionary contents, software bundles, model weights, or
-other resource payloads. Access and permission metadata is not legal advice;
-inspect the cited terms for the exact resource version and distribution.
+The bundled catalog is deliberately small: ReM (`res-rem`), RNNTagger
+(`res-rnntagger`), and the Mittelhochdeutsches Wörterbuch (`res-mwb`). It is a
+verified demonstration inventory, not a comprehensive census.
 
-## Requirements and installation
+## Install
 
-HistGerm requires Python 3.13 or newer and uses
-[uv](https://docs.astral.sh/uv/).
+HistGerm requires Python 3.13 or newer.
 
 ```powershell
 git clone https://github.com/daanvdn/HistGerm.git
 Set-Location HistGerm
-uv sync --locked --all-groups
+uv sync --locked
 ```
 
-For a runtime-only environment, use `uv sync --locked --no-dev`.
-
-## Quick start
-
-The installed package contains a canonical, verified inventory snapshot:
+## Load and query
 
 ```python
-from histgerm.packaging import load_verified_bundled_catalog
-from histgerm.query import CatalogQuery
+from histgerm import load_catalog
 
-catalog = load_verified_bundled_catalog()
-query = CatalogQuery(catalog=catalog)
+catalog = load_catalog()
 
-match = query.find("Reference Corpus of Middle High German")[0]
-assert match.resource_id == "res-rem"
+corpora = catalog.find_corpora(stage="mhg")
+assert [item.id for item in corpora] == ["res-rem"]
 
-for resource in query.by_language_stage(frozenset({"mhg"})):
-    print(resource.resource_id, resource.canonical_name)
+tools = catalog.find_tools(
+    task="pos_tagger",
+    stage="mhg",
+    output_format="plain_text",
+)
+assert [item.id for item in tools] == ["res-rnntagger"]
+
+dictionaries = catalog.find_dictionaries(
+    stage="mhg",
+    lexical_feature="lemmas",
+    machine_readable=True,
+)
+assert [item.id for item in dictionaries] == ["res-mwb"]
 ```
 
-See [Querying HistGerm](docs/querying.md) for filters, annotations, coverage,
-overlap-aware size summaries, relationships, suitability analysis, and
-external-reference-only training manifests.
+All find methods return ordinary lists of Pydantic objects. HistGerm does not
+guess missing facts or permissions. Check warnings and explicit coverage before
+using results:
 
-## Representative MVP inventory
+```python
+texts = catalog.find_texts(
+    corpus_id="res-rem",
+    text_id="m005",
+    dialect="hess-thür",
+    date_contains="um 1200",
+    annotation_type="lemma",
+)
 
-The checked-in snapshot currently demonstrates three resource shapes:
+legal = catalog.legal_warnings(texts)
+overlap = catalog.overlap_warnings(texts)
+coverage = catalog.coverage_summary(texts, by=["stage", "dialect"])
+```
 
-- `res-rem`: Reference Corpus of Middle High German (corpus);
-- `res-mwb`: Mittelhochdeutsches Wörterbuch (dictionary);
-- `res-rnntagger`: RNNTagger (POS tagging and lemmatization tool).
+`unclear` is a real legal value, not permission. Warning rows are factual
+metadata, not legal advice or suitability decisions. Coverage reports only
+authored metadata and does not imply completeness.
 
-These are representative records, not a comprehensive census of Historical
-German resources. Unknown and unclear values are intentional: HistGerm does not
-infer missing facts or permissions.
-
-## Authoring and validation
-
-`inventory/**/*.yaml` is the reviewed authoring source. The package snapshot in
-`src/histgerm/resources/inventory/` is generated and must not be hand-edited.
-Authoring YAML is UTF-8 without a BOM and rejects aliases, anchors, merge keys,
-explicit tags, duplicate keys, non-string keys, and multiple documents.
+## Validate authored data
 
 ```powershell
-uv run python -m histgerm.validation inventory
-uv run python -m histgerm.packaging check inventory src\histgerm\resources\inventory
-uv run pytest
-uv run ruff check .
-uv run ruff format --check .
-uv run mypy src tests
-uv build --no-sources
+uv run python -m histgerm.validation src\histgerm\data
 ```
 
-Validation, tests, snapshot checks, and examples are deterministic and
-network-free after dependencies are installed. Research and legal review remain
-human responsibilities. See
-[Contributing inventory metadata](docs/contributing-inventory.md).
+## Guides
 
-## Current limitations
-
-- The inventory is deliberately small and may contain unresolved metadata.
-- Query APIs operate locally over an immutable in-memory catalog; there is no
-  database, web service, downloader, fuzzy search, or automatic legal decision.
-- Name lookup is normalized exact matching, not substring or relevance search.
-- Coverage and size results use explicit metadata only; unknowns and unresolved
-  overlaps remain visible.
-- Manifests contain safe external references, metadata, evidence IDs, and
-  warnings only. They do not download data or authorize its use.
+- [Data model and evidence rules](docs/model.md)
+- [Queries, warnings, and coverage](docs/querying.md)
+- [Contributing a corpus, tool, or dictionary](docs/contributing.md)
+- [V2 breaking changes and intentional limitations](docs/migration.md)

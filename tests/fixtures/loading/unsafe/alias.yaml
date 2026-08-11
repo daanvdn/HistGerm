@@ -1,3 +1,0 @@
-first: &shared
-  value: one
-second: *shared
