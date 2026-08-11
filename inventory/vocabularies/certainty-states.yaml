@@ -1,0 +1,42 @@
+schema_version: 1.0.0
+vocabulary:
+  id: certainty
+  label: Certainty
+  description: Source-supported epistemic status for a factual claim.
+terms:
+  - id: certain
+    label: Certain
+    description: The cited source presents the claim without qualification.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: disputed
+    label: Disputed
+    description: Suitable sources materially disagree.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: not_applicable
+    label: Not applicable
+    description: Certainty does not apply to the field.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: possible
+    label: Possible
+    description: The claim is explicitly presented as one plausible option.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: probable
+    label: Probable
+    description: Evidence favors the claim but does not establish it conclusively.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: unknown
+    label: Unknown
+    description: No supported certainty assessment is available.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0

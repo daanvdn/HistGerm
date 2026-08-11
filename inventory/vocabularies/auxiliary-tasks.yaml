@@ -1,0 +1,48 @@
+schema_version: 1.0.0
+vocabulary:
+  id: auxiliary_task
+  label: Auxiliary task
+  description: Approved controlled values for auxiliary task in HistGerm.
+terms:
+  - id: date_prediction
+    label: Date prediction
+    description: Represents the approved auxiliary task value date prediction.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+    minimum_evidence_basis: Scoped dating labels/ranges with certainty.
+  - id: dependency_parsing
+    label: Dependency parsing
+    description: Represents the approved auxiliary task value dependency parsing.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+    minimum_evidence_basis: Dependency annotation and a documented scheme.
+  - id: dictionary_variant_learning
+    label: Dictionary-variant learning
+    description: Represents the approved auxiliary task value dictionary-variant learning.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+    minimum_evidence_basis: Linked lemma/headword and historical spelling variants.
+  - id: lemmatization
+    label: Lemmatization
+    description: Represents the approved auxiliary task value lemmatization.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+    minimum_evidence_basis: Lemma annotation, or machine-readable lemma/variant links.
+  - id: morphological_tagging
+    label: Morphological tagging
+    description: Represents the approved auxiliary task value morphological tagging.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+    minimum_evidence_basis: Morphology annotation and a documented feature scheme.
+  - id: pos_tagging
+    label: POS tagging
+    description: Represents the approved auxiliary task value pos tagging.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+    minimum_evidence_basis: POS annotation and a documented tagset.

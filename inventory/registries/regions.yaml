@@ -1,0 +1,6 @@
+schema_version: 1.0.0
+registry:
+  id: regions
+  label: Regions
+  description: Open registry for normalized region identifiers used by HistGerm records.
+terms: []

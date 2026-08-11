@@ -1,0 +1,2 @@
+value: !!python/object/apply:builtins.str
+  - unsafe

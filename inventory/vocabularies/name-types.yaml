@@ -1,0 +1,48 @@
+schema_version: 1.0.0
+vocabulary:
+  id: name_type
+  label: Name type
+  description: Role of an evidenced name associated with an entity.
+terms:
+  - id: abbreviation
+    label: Abbreviation
+    description: Initialism or other documented abbreviation.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: canonical
+    label: Canonical name
+    description: HistGerm's preferred name for display and exact lookup.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: former
+    label: Former name
+    description: A previously used name.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: official
+    label: Official name
+    description: A name used by the responsible project or publisher.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: short_name
+    label: Short name
+    description: A documented shortened form.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: translated
+    label: Translated name
+    description: A documented translation into another language.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: variant
+    label: Variant name
+    description: Another evidenced spelling or naming form.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0

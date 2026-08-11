@@ -1,0 +1,30 @@
+schema_version: 1.0.0
+vocabulary:
+  id: overlap_extent
+  label: Overlap extent
+  description: Approved controlled values for overlap extent in HistGerm.
+terms:
+  - id: contains
+    label: Contains
+    description: One selected scope fully contains the other; direction is carried by the relationship.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: exact
+    label: Exact
+    description: The selected scopes are coextensive under the documented counting method.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: partial
+    label: Partial
+    description: The scopes intersect but neither is asserted to contain the other.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: unknown
+    label: Unknown
+    description: A relationship is known, but its extent is not established.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0

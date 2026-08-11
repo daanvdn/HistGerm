@@ -1,0 +1,24 @@
+schema_version: 1.0.0
+vocabulary:
+  id: lifecycle_status
+  label: Lifecycle status
+  description: Lifecycle state of a controlled vocabulary term.
+terms:
+  - id: active
+    label: Active
+    description: Current and supported for new records.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: deprecated
+    label: Deprecated
+    description: Still readable, but new records use a stated replacement.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: retired
+    label: Retired
+    description: Retained only for historical interpretation and migration.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0

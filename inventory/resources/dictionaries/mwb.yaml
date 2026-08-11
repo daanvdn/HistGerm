@@ -1,0 +1,654 @@
+record_type: resource
+id: res-mwb
+canonical_name: Mittelhochdeutsches Wörterbuch
+alternative_names:
+  - text: MWB
+    language:
+      status: unknown
+    name_type: abbreviation
+categories: [dictionary]
+description:
+  status: known
+  value: "An epoch dictionary documenting the vocabulary and usage of German-language texts from 1050 to 1350."
+responsible_parties:
+  status: known
+  value:
+    - name: Akademie der Wissenschaften und der Literatur Mainz
+      party_type: organization
+      role: host_institution
+      identifier:
+        status: unknown
+    - name: Niedersächsische Akademie der Wissenschaften zu Göttingen
+      party_type: organization
+      role: host_institution
+      identifier:
+        status: unknown
+homepage_url:
+  status: known
+  value: https://mwb.adwmainz.net/exist/apps/mwb/pages/index.html
+repository_url:
+  status: unknown
+language_stage_ids:
+  status: known
+  value: [mhg]
+chronology:
+  status: known
+  value:
+    earliest_year:
+      status: known
+      value: 1050
+    latest_year:
+      status: known
+      value: 1350
+    label:
+      status: known
+      value: "1050–1350"
+    dating_method:
+      status: unknown
+    certainty:
+      status: unknown
+geography:
+  status: unknown
+maintenance_status:
+  status: unknown
+publication_ids: [pub-mwb-band-1]
+versions:
+  - id: ver-mwb-online-a-merhensun
+    version_label:
+      status: known
+      value: "Online publication state: a–merhensun"
+    release_date:
+      status: unknown
+    superseded:
+      status: unknown
+    changelog_url:
+      status: unknown
+    language_stage_ids:
+      status: known
+      value: [mhg]
+    chronology:
+      status: known
+      value:
+        earliest_year:
+          status: known
+          value: 1050
+        latest_year:
+          status: known
+          value: 1350
+        label:
+          status: known
+          value: "1050–1350"
+        dating_method:
+          status: unknown
+        certainty:
+          status: unknown
+    components: []
+    documents: []
+    distributions:
+      - id: dist-mwb-online
+        kind: query_interface
+        title:
+          status: known
+          value: MWB Online
+        scope:
+          resource_ids: [res-mwb]
+          version_ids: [ver-mwb-online-a-merhensun]
+          component_ids: []
+          document_ids: []
+          annotation_ids: []
+          filter:
+            status: not_applicable
+        access_urls:
+          status: known
+          value:
+            - kind: browse
+              url: https://mwb.adwmainz.net/exist/apps/mwb/pages/entries/index.html
+            - kind: documentation
+              url: https://mhdwb-online.de/hinweise-neu.html
+        formats:
+          status: known
+          value:
+            - format_id: html
+              format_version:
+                status: unknown
+              schema_name:
+                status: unknown
+              schema_version:
+                status: unknown
+              schema_url:
+                status: unknown
+              media_type:
+                status: known
+                value: text/html
+              encoding:
+                status: unknown
+              profile_or_dialect:
+                status: unknown
+              inner_format_ids:
+                status: not_applicable
+        license:
+          status: unknown
+          license_id:
+            status: unknown
+          name:
+            status: unknown
+          url:
+            status: unknown
+          scopes:
+            status: unknown
+          note:
+            status: unknown
+        availability: available
+        access:
+          public_description: available
+          online_browsing: available
+          download: unknown
+          api_access: unknown
+          request_only: unknown
+          authentication_or_agreement: none
+          automated_access: unclear
+          model_training: unclear
+          original_redistribution: unclear
+          processed_redistribution: unclear
+          trained_weights_publication: unclear
+        attribution_requirement:
+          status: unknown
+        citation_requirement:
+          status: unknown
+        package:
+          status: not_applicable
+        cli:
+          status: not_applicable
+        api:
+          status: not_applicable
+        hugging_face:
+          status: not_applicable
+        artifact:
+          status: not_applicable
+        extensions: {}
+      - id: dist-mwb-woerterbuchnetz-api
+        kind: api
+        title:
+          status: known
+          value: Wörterbuchnetz Open API access to MWB lemmata
+        scope:
+          resource_ids: [res-mwb]
+          version_ids: [ver-mwb-online-a-merhensun]
+          component_ids: []
+          document_ids: []
+          annotation_ids: []
+          filter:
+            status: not_applicable
+        access_urls:
+          status: known
+          value:
+            - kind: api
+              url: https://api.woerterbuchnetz.de/open-api/dictionaries/MWB
+            - kind: documentation
+              url: https://www.uni-trier.de/forschung/mittelhochdeutsches-woerterbuch/mwb-online
+        formats:
+          status: known
+          value:
+            - format_id: json
+              format_version:
+                status: unknown
+              schema_name:
+                status: unknown
+              schema_version:
+                status: unknown
+              schema_url:
+                status: unknown
+              media_type:
+                status: known
+                value: application/json
+              encoding:
+                status: known
+                value: UTF-8
+              profile_or_dialect:
+                status: unknown
+              inner_format_ids:
+                status: not_applicable
+        license:
+          status: unknown
+          license_id:
+            status: unknown
+          name:
+            status: unknown
+          url:
+            status: unknown
+          scopes:
+            status: unknown
+          note:
+            status: unknown
+        availability: available
+        access:
+          public_description: available
+          online_browsing: unknown
+          download: unknown
+          api_access: available
+          request_only: unknown
+          authentication_or_agreement: none
+          automated_access: unclear
+          model_training: unclear
+          original_redistribution: unclear
+          processed_redistribution: unclear
+          trained_weights_publication: unclear
+        attribution_requirement:
+          status: unknown
+        citation_requirement:
+          status: unknown
+        package:
+          status: not_applicable
+        cli:
+          status: not_applicable
+        api:
+          status: known
+          value:
+            base_url: https://api.woerterbuchnetz.de/open-api/dictionaries/MWB
+            documentation_url:
+              status: known
+              value: https://api.woerterbuchnetz.de/open-api/dictionaries/MWB
+            capabilities:
+              status: known
+              value:
+                - "Lemma-pattern lookup returning lemma, grammatical label, identifier, and entry link"
+        hugging_face:
+          status: not_applicable
+        artifact:
+          status: not_applicable
+        extensions: {}
+    annotations: []
+    size_measurements: []
+    extensions: {}
+corpus:
+  status: not_applicable
+tool:
+  status: not_applicable
+dictionary:
+  status: known
+  value:
+    lexical_coverage:
+      status: known
+      value: "Vocabulary and usage across the full spectrum of surviving German-language texts dated 1050–1350; the reviewed online publication state covers a–merhensun."
+    source_language_stage_ids:
+      status: known
+      value: [mhg]
+    target_language_ids:
+      status: known
+      value: [de]
+    search_interface:
+      status: known
+      value:
+        kind: browse
+        url: https://mwb.adwmainz.net/exist/apps/mwb/pages/entries/index.html
+    api:
+      status: known
+      value:
+        base_url: https://api.woerterbuchnetz.de/open-api/dictionaries/MWB
+        documentation_url:
+          status: known
+          value: https://api.woerterbuchnetz.de/open-api/dictionaries/MWB
+        capabilities:
+          status: known
+          value:
+            - "Lemma-pattern lookup returning lemma, grammatical label, identifier, and entry link"
+    download_formats:
+      status: unknown
+    machine_readable_availability: available
+    machine_readable_download_url:
+      status: unknown
+    query_capabilities:
+      status: known
+      value:
+        - "Search the lemma list, word-form list, bibliography, and published article headwords including lemma variants"
+        - "Character-sequence search with optional truncation"
+        - "Retrieve concordances and vary left and right context length"
+        - "Resolve source sigla to bibliography records and cited locations to fuller electronic text context"
+        - "Query MWB lemmata by pattern through the Wörterbuchnetz Open API"
+    lexical_features:
+      headwords:
+        status: known
+        value: true
+      lemmas:
+        status: known
+        value: true
+      spelling_variants:
+        status: known
+        value: true
+      part_of_speech:
+        status: known
+        value: true
+      morphology:
+        status: unknown
+      senses:
+        status: known
+        value: true
+      etymology:
+        status: unknown
+    citation_structure:
+      status: known
+      value:
+        works:
+          status: known
+          value: true
+        editions:
+          status: known
+          value: true
+        pages:
+          status: unknown
+        lines:
+          status: unknown
+        passages:
+          status: known
+          value: true
+        note:
+          status: known
+          value: "Articles cite source sigla and source locations; source sigla link to bibliography records and locations can link to fuller electronic text context."
+    corpus_occurrence_links:
+      status: known
+      value:
+        available:
+          status: known
+          value: true
+        resource_ids: []
+        link_unit:
+          status: unknown
+    transcription_convention:
+      status: unknown
+    normalization_convention:
+      status: known
+      value: "The electronic evidence archive assigns text word forms to normalized base forms (lemmata) with documented error tolerance, especially for hidden homographs and some high-frequency vocabulary."
+    supervision_suitability:
+      status: known
+      value:
+        - task: lemmatization
+          status: review_required
+          scope:
+            resource_ids: [res-mwb]
+            version_ids: [ver-mwb-online-a-merhensun]
+            component_ids: []
+            document_ids: []
+            annotation_ids: []
+            filter:
+              status: not_applicable
+          reasons:
+            status: known
+            value:
+              - "The documented evidence archive links text word forms to normalized lemmata, and the API exposes lemma records."
+          limitations:
+            status: known
+            value:
+              - "The project documents lemmatization errors, no bulk machine-readable download was established, and model-training permission is unclear."
+          quality:
+            status: unknown
+          model_training_permission: unclear
+          evidence_ids:
+            - evidence-mwb-usage
+            - evidence-mwb-api
+            - evidence-mwb-api-query
+        - task: dictionary_variant_learning
+          status: review_required
+          scope:
+            resource_ids: [res-mwb]
+            version_ids: [ver-mwb-online-a-merhensun]
+            component_ids: []
+            document_ids: []
+            annotation_ids: []
+            filter:
+              status: not_applicable
+          reasons:
+            status: known
+            value:
+              - "The search documentation explicitly includes lemma variants and links lemma-list records to evidence concordances."
+          limitations:
+            status: known
+            value:
+              - "No bulk machine-readable download was established, transcription conventions were not publicly documented in the inspected sources, and model-training permission is unclear."
+          quality:
+            status: unknown
+          model_training_permission: unclear
+          evidence_ids:
+            - evidence-mwb-usage
+            - evidence-mwb-api
+    source_publication_ids: [pub-mwb-band-1]
+    source_edition:
+      status: known
+      value: "Mittelhochdeutsches Wörterbuch, Band 1: a–êvrouwe (Stuttgart, 2013), with later printed installments and online publication after a six-month protection period."
+    access_restrictions:
+      status: known
+      value: "Printed installments become freely accessible through the online dictionary after a six-month protection period; the documented API services are freely accessible, but their parameters, output, and continuous availability may change."
+    reuse_restrictions:
+      status: unknown
+record_reviewed_on: 2026-08-11
+evidence:
+  - id: evidence-mwb-project
+    source_url: https://mwb.adwmainz.net/exist/apps/mwb/pages/about.html
+    accessed_on: 2026-08-11
+    source_kind: project_homepage
+    quotation:
+      status: known
+      value: "Das Mittelhochdeutsche Wörterbuch (MWB) ist ein Epochenwörterbuch zum hochmittelalterlichen (Hoch-)Deutsch (1050 bis 1350)."
+    note:
+      status: known
+      value: "Canonical project description for identity, abbreviation, stage, chronology, scope, institutions, online access, corpus links, and publication model."
+    publication_id:
+      status: not_applicable
+    archived_url:
+      status: not_applicable
+  - id: evidence-mwb-publication-status
+    source_url: https://mhdwb-online.de/
+    accessed_on: 2026-08-11
+    source_kind: project_documentation
+    quotation:
+      status: known
+      value: "Online a – merhensun (rund 27.400 Artikel)"
+    note:
+      status: known
+      value: "Canonical publication-status page; supports the reviewed online extent and Band 1 source-edition metadata."
+    publication_id:
+      status: known
+      value: pub-mwb-band-1
+    archived_url:
+      status: not_applicable
+  - id: evidence-mwb-usage
+    source_url: https://mhdwb-online.de/hinweise-neu.html
+    accessed_on: 2026-08-11
+    source_kind: project_documentation
+    quotation:
+      status: known
+      value: "Die Suchfunktion bietet zur Zeit bereits die Möglichkeit, in der Lemmaliste, der Wortformenliste, dem Quellenverzeichnis und in den Artikelstichwörtern (einschließlich Lemmavarianten) des bereits ausgearbeiteten Teils des MWB nach einer Zeichenfolge (ggf. mit Trunkierung) zu suchen."
+    note:
+      status: known
+      value: "Canonical usage documentation for search, concordance, corpus-context linking, normalization, and documented lemmatization limitations."
+    publication_id:
+      status: not_applicable
+    archived_url:
+      status: not_applicable
+  - id: evidence-mwb-entry
+    source_url: https://mwb.adwmainz.net/exist/apps/mwb/pages/entries/entry.html?lid=84000
+    accessed_on: 2026-08-11
+    source_kind: project_documentation
+    quotation:
+      status: known
+      value: "Ralf Plate, abe biten stV., in Mittelhochdeutsches Wörterbuch, Band 1, a-êvrouwe. (Anfang des Artikels: MWB 1 6,41)"
+    note:
+      status: known
+      value: "Canonical article used only to establish directly visible headword, POS, German sense gloss, source citations, passage links, and article-level citation granularity."
+    publication_id:
+      status: known
+      value: pub-mwb-band-1
+    archived_url:
+      status: not_applicable
+  - id: evidence-mwb-api
+    source_url: https://www.uni-trier.de/forschung/mittelhochdeutsches-woerterbuch/mwb-online
+    accessed_on: 2026-08-11
+    source_kind: api_documentation
+    quotation:
+      status: known
+      value: "Über das Online-Wörterbuch hinaus stellt das MWB einige Services für die automatisierte Abfrage des Wörterbuchmaterials zur Verfügung (API). Die Services sind frei zugänglich."
+    note:
+      status: known
+      value: "Responsible institution's API overview. It also warns that parameters, output, and continuous availability may change; it does not state reuse or model-training permission."
+    publication_id:
+      status: not_applicable
+    archived_url:
+      status: not_applicable
+  - id: evidence-mwb-api-query
+    source_url: https://api.woerterbuchnetz.de/open-api/dictionaries/MWB/lemmata/abe
+    accessed_on: 2026-08-11
+    source_kind: api_documentation
+    quotation:
+      status: known
+      value: "{\"sigle\":\"MWB\",\"lemma\":\"abe\",\"gram\":\"Adv.\",\"wbnetzid\":\"247419600\",\"bookref\":\"247419600\"}"
+    note:
+      status: known
+      value: "Live canonical TCDH API response inspected as structured JSON; no dictionary payload was downloaded or committed."
+    publication_id:
+      status: not_applicable
+    archived_url:
+      status: not_applicable
+  - id: evidence-mwb-network
+    source_url: https://tcdh.uni-trier.de/de/projekt/woerterbuchnetz
+    accessed_on: 2026-08-11
+    source_kind: institutional_page
+    quotation:
+      status: known
+      value: "Zusätzlich zu dieser interaktiven Einzelvernetzung werden aber auch die vollständigen Stichwortlisten sowie Trefferlisten zu durchgeführten Suchen mit den zugehörigen Adressen zur Verfügung gestellt."
+    note:
+      status: known
+      value: "Canonical TCDH project page for persistent article addresses and external linking through headword and result lists."
+    publication_id:
+      status: not_applicable
+    archived_url:
+      status: not_applicable
+  - id: evidence-mwb-publisher
+    source_url: https://www.hirzel.de/mittelhochdeutsches-woerterbuch.-erster-band/9783777623276
+    accessed_on: 2026-08-11
+    source_kind: catalog_record
+    quotation:
+      status: known
+      value: "Die Belege werden in der Regel nach den für die moderne Forschung relevanten Ausgaben geboten."
+    note:
+      status: known
+      value: "Publisher record for Band 1, lexical coverage, edition basis, and links from the publication to online supplementary materials."
+    publication_id:
+      status: known
+      value: pub-mwb-band-1
+    archived_url:
+      status: not_applicable
+claims:
+  /canonical_name: [evidence-mwb-project, evidence-mwb-publication-status]
+  /alternative_names/0/text: [evidence-mwb-project]
+  /alternative_names/0/name_type: [evidence-mwb-project]
+  /categories/0: [evidence-mwb-project]
+  /description/value: [evidence-mwb-project]
+  /responsible_parties/value/0/name: [evidence-mwb-project]
+  /responsible_parties/value/0/party_type: [evidence-mwb-project]
+  /responsible_parties/value/0/role: [evidence-mwb-project]
+  /responsible_parties/value/1/name: [evidence-mwb-project]
+  /responsible_parties/value/1/party_type: [evidence-mwb-project]
+  /responsible_parties/value/1/role: [evidence-mwb-project]
+  /homepage_url/value: [evidence-mwb-project]
+  /language_stage_ids/value/0: [evidence-mwb-project]
+  /chronology/value/earliest_year/value: [evidence-mwb-project]
+  /chronology/value/latest_year/value: [evidence-mwb-project]
+  /chronology/value/label/value: [evidence-mwb-project]
+  /versions/0/version_label/value: [evidence-mwb-publication-status]
+  /versions/0/language_stage_ids/value/0: [evidence-mwb-project]
+  /versions/0/chronology/value/earliest_year/value: [evidence-mwb-project]
+  /versions/0/chronology/value/latest_year/value: [evidence-mwb-project]
+  /versions/0/chronology/value/label/value: [evidence-mwb-project]
+  /versions/0/distributions/0/kind: [evidence-mwb-project, evidence-mwb-usage]
+  /versions/0/distributions/0/title/value: [evidence-mwb-project]
+  /versions/0/distributions/0/access_urls/value/0/kind: [evidence-mwb-project]
+  /versions/0/distributions/0/access_urls/value/0/url: [evidence-mwb-project]
+  /versions/0/distributions/0/access_urls/value/1/kind: [evidence-mwb-usage]
+  /versions/0/distributions/0/access_urls/value/1/url: [evidence-mwb-usage]
+  /versions/0/distributions/0/formats/value/0/format_id: [evidence-mwb-project]
+  /versions/0/distributions/0/formats/value/0/media_type/value: [evidence-mwb-project]
+  /versions/0/distributions/0/scope/resource_ids/0: [evidence-mwb-project]
+  /versions/0/distributions/0/scope/version_ids/0: [evidence-mwb-publication-status]
+  /versions/0/distributions/0/license/status: [evidence-mwb-project, evidence-mwb-usage]
+  /versions/0/distributions/0/availability: [evidence-mwb-project, evidence-mwb-entry]
+  /versions/0/distributions/0/access/public_description: [evidence-mwb-project]
+  /versions/0/distributions/0/access/online_browsing: [evidence-mwb-project, evidence-mwb-entry]
+  /versions/0/distributions/0/access/download: [evidence-mwb-project, evidence-mwb-usage]
+  /versions/0/distributions/0/access/api_access: [evidence-mwb-project, evidence-mwb-api]
+  /versions/0/distributions/0/access/request_only: [evidence-mwb-project, evidence-mwb-usage]
+  /versions/0/distributions/0/access/authentication_or_agreement: [evidence-mwb-project]
+  /versions/0/distributions/0/access/automated_access: [evidence-mwb-project, evidence-mwb-api]
+  /versions/0/distributions/0/access/model_training: [evidence-mwb-project, evidence-mwb-api]
+  /versions/0/distributions/0/access/original_redistribution: [evidence-mwb-project, evidence-mwb-api]
+  /versions/0/distributions/0/access/processed_redistribution: [evidence-mwb-project, evidence-mwb-api]
+  /versions/0/distributions/0/access/trained_weights_publication: [evidence-mwb-project, evidence-mwb-api]
+  /versions/0/distributions/1/kind: [evidence-mwb-api, evidence-mwb-api-query]
+  /versions/0/distributions/1/title/value: [evidence-mwb-api-query]
+  /versions/0/distributions/1/access_urls/value/0/kind: [evidence-mwb-api-query]
+  /versions/0/distributions/1/access_urls/value/0/url: [evidence-mwb-api-query]
+  /versions/0/distributions/1/access_urls/value/1/kind: [evidence-mwb-api]
+  /versions/0/distributions/1/access_urls/value/1/url: [evidence-mwb-api]
+  /versions/0/distributions/1/formats/value/0/format_id: [evidence-mwb-api-query]
+  /versions/0/distributions/1/formats/value/0/media_type/value: [evidence-mwb-api-query]
+  /versions/0/distributions/1/formats/value/0/encoding/value: [evidence-mwb-api-query]
+  /versions/0/distributions/1/scope/resource_ids/0: [evidence-mwb-api, evidence-mwb-api-query]
+  /versions/0/distributions/1/scope/version_ids/0: [evidence-mwb-publication-status]
+  /versions/0/distributions/1/license/status: [evidence-mwb-api]
+  /versions/0/distributions/1/availability: [evidence-mwb-api, evidence-mwb-api-query]
+  /versions/0/distributions/1/access/public_description: [evidence-mwb-api]
+  /versions/0/distributions/1/access/online_browsing: [evidence-mwb-api, evidence-mwb-api-query]
+  /versions/0/distributions/1/access/download: [evidence-mwb-api]
+  /versions/0/distributions/1/access/api_access: [evidence-mwb-api, evidence-mwb-api-query]
+  /versions/0/distributions/1/access/request_only: [evidence-mwb-api]
+  /versions/0/distributions/1/access/authentication_or_agreement: [evidence-mwb-api]
+  /versions/0/distributions/1/access/automated_access: [evidence-mwb-api]
+  /versions/0/distributions/1/access/model_training: [evidence-mwb-api]
+  /versions/0/distributions/1/access/original_redistribution: [evidence-mwb-api]
+  /versions/0/distributions/1/access/processed_redistribution: [evidence-mwb-api]
+  /versions/0/distributions/1/access/trained_weights_publication: [evidence-mwb-api]
+  /versions/0/distributions/1/api/value/base_url: [evidence-mwb-api-query]
+  /versions/0/distributions/1/api/value/documentation_url/value: [evidence-mwb-api-query]
+  /versions/0/distributions/1/api/value/capabilities/value/0: [evidence-mwb-api-query]
+  /dictionary/value/lexical_coverage/value: [evidence-mwb-project, evidence-mwb-publication-status]
+  /dictionary/value/source_language_stage_ids/value/0: [evidence-mwb-project]
+  /publication_ids/0: [evidence-mwb-publication-status, evidence-mwb-publisher]
+  /dictionary/value/source_publication_ids/0: [evidence-mwb-publication-status, evidence-mwb-publisher]
+  /dictionary/value/target_language_ids/value/0: [evidence-mwb-entry]
+  /dictionary/value/search_interface/value/kind: [evidence-mwb-project, evidence-mwb-usage]
+  /dictionary/value/search_interface/value/url: [evidence-mwb-project, evidence-mwb-usage]
+  /dictionary/value/api/value/base_url: [evidence-mwb-api-query]
+  /dictionary/value/api/value/documentation_url/value: [evidence-mwb-api-query]
+  /dictionary/value/api/value/capabilities/value/0: [evidence-mwb-api-query]
+  /dictionary/value/machine_readable_availability: [evidence-mwb-api, evidence-mwb-api-query]
+  /dictionary/value/query_capabilities/value/0: [evidence-mwb-usage]
+  /dictionary/value/query_capabilities/value/1: [evidence-mwb-usage]
+  /dictionary/value/query_capabilities/value/2: [evidence-mwb-usage]
+  /dictionary/value/query_capabilities/value/3: [evidence-mwb-usage]
+  /dictionary/value/query_capabilities/value/4: [evidence-mwb-api-query]
+  /dictionary/value/lexical_features/headwords/value: [evidence-mwb-entry, evidence-mwb-api-query]
+  /dictionary/value/lexical_features/lemmas/value: [evidence-mwb-usage, evidence-mwb-api-query]
+  /dictionary/value/lexical_features/spelling_variants/value: [evidence-mwb-usage]
+  /dictionary/value/lexical_features/part_of_speech/value: [evidence-mwb-entry, evidence-mwb-api-query]
+  /dictionary/value/lexical_features/senses/value: [evidence-mwb-entry]
+  /dictionary/value/citation_structure/value/works/value: [evidence-mwb-usage, evidence-mwb-entry]
+  /dictionary/value/citation_structure/value/editions/value: [evidence-mwb-publisher]
+  /dictionary/value/citation_structure/value/passages/value: [evidence-mwb-usage, evidence-mwb-entry]
+  /dictionary/value/citation_structure/value/note/value: [evidence-mwb-usage, evidence-mwb-entry]
+  /dictionary/value/corpus_occurrence_links/value/available/value: [evidence-mwb-project, evidence-mwb-usage, evidence-mwb-entry]
+  /dictionary/value/normalization_convention/value: [evidence-mwb-usage]
+  /dictionary/value/supervision_suitability/value/0/task: [evidence-mwb-usage, evidence-mwb-api-query]
+  /dictionary/value/supervision_suitability/value/0/scope/resource_ids/0: [evidence-mwb-usage, evidence-mwb-api-query]
+  /dictionary/value/supervision_suitability/value/0/scope/version_ids/0: [evidence-mwb-publication-status]
+  /dictionary/value/supervision_suitability/value/0/status: [evidence-mwb-usage, evidence-mwb-api]
+  /dictionary/value/supervision_suitability/value/0/reasons/value/0: [evidence-mwb-usage, evidence-mwb-api-query]
+  /dictionary/value/supervision_suitability/value/0/limitations/value/0: [evidence-mwb-usage, evidence-mwb-api]
+  /dictionary/value/supervision_suitability/value/0/model_training_permission: [evidence-mwb-api]
+  /dictionary/value/supervision_suitability/value/1/task: [evidence-mwb-usage]
+  /dictionary/value/supervision_suitability/value/1/scope/resource_ids/0: [evidence-mwb-usage]
+  /dictionary/value/supervision_suitability/value/1/scope/version_ids/0: [evidence-mwb-publication-status]
+  /dictionary/value/supervision_suitability/value/1/status: [evidence-mwb-usage, evidence-mwb-api]
+  /dictionary/value/supervision_suitability/value/1/reasons/value/0: [evidence-mwb-usage]
+  /dictionary/value/supervision_suitability/value/1/limitations/value/0: [evidence-mwb-usage, evidence-mwb-api]
+  /dictionary/value/supervision_suitability/value/1/model_training_permission: [evidence-mwb-api]
+  /dictionary/value/source_edition/value: [evidence-mwb-publication-status, evidence-mwb-publisher]
+  /dictionary/value/access_restrictions/value: [evidence-mwb-project, evidence-mwb-api]
+extensions: {}

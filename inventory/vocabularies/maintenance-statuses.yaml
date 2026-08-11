@@ -1,0 +1,48 @@
+schema_version: 1.0.0
+vocabulary:
+  id: maintenance_status
+  label: Maintenance status
+  description: Approved controlled values for maintenance status in HistGerm.
+terms:
+  - id: actively_maintained
+    label: Actively maintained
+    description: Canonical evidence documents current maintenance or recent supported releases.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: discontinued
+    label: Discontinued
+    description: The maintainer explicitly ended the project or service.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: inactive
+    label: Inactive
+    description: No current maintenance is documented.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: maintenance_only
+    label: Maintenance only
+    description: Supported for fixes or access, without asserted feature development.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: stable_unmaintained
+    label: Stable, unmaintained
+    description: Presented as stable but without ongoing maintenance.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: superseded
+    label: Superseded
+    description: A named successor has replaced it.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: unknown
+    label: Unknown
+    description: Maintenance status is not established.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0

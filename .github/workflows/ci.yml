@@ -1,0 +1,180 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      UV_PYTHON_DOWNLOADS: never
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.9.2"
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+
+      - name: Install locked dependencies
+        run: uv sync --frozen --all-groups
+
+      - name: Disable network access for checks
+        run: echo "UV_OFFLINE=1" >> "$GITHUB_ENV"
+
+      - name: Check formatting
+        run: uv run ruff format --check .
+
+      - name: Lint
+        run: uv run ruff check .
+
+      - name: Type check
+        run: uv run mypy src tests
+
+      - name: Validate inventory and provenance
+        run: uv run python -m histgerm.validation inventory
+
+      - name: Check packaged inventory drift
+        run: >
+          uv run python -m histgerm.packaging check
+          inventory src/histgerm/resources/inventory
+
+      - name: Test
+        run: uv run pytest
+
+      - name: Build wheel and source distribution
+        run: uv build
+
+      - name: Install wheel and load bundled catalog
+        run: |
+          python -m venv "$RUNNER_TEMP/histgerm-wheel"
+          uv pip install \
+            --python "$RUNNER_TEMP/histgerm-wheel/bin/python" \
+            --offline \
+            dist/*.whl
+          cd "$RUNNER_TEMP"
+          "$RUNNER_TEMP/histgerm-wheel/bin/python" -I -c \
+            "from histgerm.packaging import load_verified_bundled_catalog; c = load_verified_bundled_catalog(); assert c.resources"
+
+      - name: Check tracked and built payload policy
+        run: |
+          uv run python -m histgerm.packaging check \
+            inventory src/histgerm/resources/inventory
+          uv run python - <<'PY'
+          from __future__ import annotations
+
+          import subprocess
+          import tarfile
+          import zipfile
+          from pathlib import Path, PurePosixPath
+
+          forbidden_suffixes = {
+              ".7z", ".avi", ".bin", ".bz2", ".corpus", ".db", ".dll", ".dylib",
+              ".exe", ".gz", ".mdb", ".model", ".mov", ".mp3", ".mp4", ".onnx",
+              ".parquet", ".pdf", ".pt", ".pth", ".rar", ".safetensors", ".so",
+              ".sqlite", ".sqlite3", ".tar", ".tgz", ".wav", ".weights", ".xz",
+              ".zip",
+          }
+          forbidden_magic = (
+              b"PK\x03\x04",
+              b"\x1f\x8b",
+              b"BZh",
+              b"\xfd7zXZ\x00",
+              b"7z\xbc\xaf\x27\x1c",
+              b"Rar!",
+              b"MZ",
+              b"\x7fELF",
+              b"SQLite format 3\x00",
+          )
+          failures: list[str] = []
+
+          def check_file(name: str, size: int, data: bytes) -> None:
+              path = PurePosixPath(name)
+              suffixes = "".join(path.suffixes).lower()
+              if path.suffix.lower() in forbidden_suffixes or suffixes.endswith(
+                  (".tar.gz", ".tar.bz2", ".tar.xz")
+              ):
+                  failures.append(f"{name}: forbidden payload file type")
+              if data.startswith(forbidden_magic):
+                  failures.append(f"{name}: forbidden archive, database, or executable signature")
+              if size >= 1024 * 1024:
+                  failures.append(f"{name}: file is at least 1 MiB")
+              if size >= 512 * 1024 and (
+                  path.suffix.lower() in {".json", ".yaml", ".yml"}
+                  or "fixtures" in path.parts
+              ):
+                  failures.append(f"{name}: metadata or fixture is at least 512 KiB")
+
+          staged = subprocess.check_output(["git", "ls-files", "--stage", "-z"])
+          for entry in staged.split(b"\0"):
+              if entry and entry.split(maxsplit=1)[0] == b"160000":
+                  failures.append("tracked submodules are not permitted")
+
+          tracked = subprocess.check_output(["git", "ls-files", "-z"]).split(b"\0")
+          for encoded in tracked:
+              if not encoded:
+                  continue
+              path = Path(encoded.decode())
+              if path.is_symlink():
+                  failures.append(f"{path.as_posix()}: tracked symlink is not permitted")
+                  continue
+              data = path.read_bytes()
+              check_file(path.as_posix(), len(data), data[:16])
+
+          wheels = sorted(Path("dist").glob("*.whl"))
+          sdists = sorted(Path("dist").glob("*.tar.gz"))
+          if len(wheels) != 1 or len(sdists) != 1:
+              failures.append("dist must contain exactly one wheel and one source distribution")
+
+          for wheel in wheels:
+              with zipfile.ZipFile(wheel) as archive:
+                  for member in archive.infolist():
+                      if member.is_dir():
+                          continue
+                      parts = PurePosixPath(member.filename).parts
+                      if not (
+                          parts
+                          and (
+                              parts[0] == "histgerm"
+                              or parts[0].endswith(".dist-info")
+                          )
+                      ):
+                          failures.append(f"{wheel.name}:{member.filename}: unexpected wheel root")
+                      check_file(
+                          f"{wheel.name}:{member.filename}",
+                          member.file_size,
+                          archive.read(member)[:16],
+                      )
+
+          for sdist in sdists:
+              with tarfile.open(sdist, mode="r:gz") as archive:
+                  for member in archive.getmembers():
+                      if member.issym() or member.islnk():
+                          failures.append(f"{sdist.name}:{member.name}: link is not permitted")
+                      if not member.isfile():
+                          continue
+                      extracted = archive.extractfile(member)
+                      assert extracted is not None
+                      check_file(
+                          f"{sdist.name}:{member.name}",
+                          member.size,
+                          extracted.read(16),
+                      )
+
+          if failures:
+              raise SystemExit("\n".join(sorted(set(failures))))
+          PY

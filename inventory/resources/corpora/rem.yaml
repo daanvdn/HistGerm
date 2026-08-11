@@ -1,0 +1,788 @@
+record_type: resource
+id: res-rem
+canonical_name: Reference Corpus of Middle High German
+alternative_names:
+  - text: ReM
+    language:
+      status: unknown
+    name_type: short_name
+categories: [corpus]
+description:
+  status: known
+  value: Diplomatically transcribed and annotated Middle High German corpus covering 1050–1350.
+responsible_parties:
+  status: known
+  value:
+    - name: Adam Roussel
+      party_type: person
+      role: creator
+      identifier:
+        status: unknown
+    - name: Thomas Klein
+      party_type: person
+      role: creator
+      identifier:
+        status: unknown
+    - name: Stefanie Dipper
+      party_type: person
+      role: creator
+      identifier:
+        status: unknown
+    - name: Klaus-Peter Wegera
+      party_type: person
+      role: creator
+      identifier:
+        status: unknown
+    - name: Claudia Wich-Reif
+      party_type: person
+      role: creator
+      identifier:
+        status: unknown
+homepage_url:
+  status: known
+  value: https://linguistics.rub.de/rem/index.html
+repository_url:
+  status: unknown
+language_stage_ids:
+  status: known
+  value: [mhg]
+chronology:
+  status: known
+  value:
+    earliest_year:
+      status: known
+      value: 1050
+    latest_year:
+      status: known
+      value: 1350
+    label:
+      status: known
+      value: 1050–1350
+    dating_method:
+      status: unknown
+    certainty:
+      status: unknown
+geography:
+  status: unknown
+maintenance_status:
+  status: unknown
+publication_ids: []
+versions:
+  - id: ver-rem-2-1
+    version_label:
+      status: known
+      value: "2.1"
+    release_date:
+      status: known
+      value: 2024-10-28
+    superseded:
+      status: known
+      value: false
+    changelog_url:
+      status: known
+      value: https://linguistics.rub.de/rem/access/NEWS
+    language_stage_ids:
+      status: known
+      value: [mhg]
+    chronology:
+      status: known
+      value:
+        earliest_year:
+          status: known
+          value: 1050
+        latest_year:
+          status: known
+          value: 1350
+        label:
+          status: known
+          value: 1050–1350
+        dating_method:
+          status: unknown
+        certainty:
+          status: unknown
+    components:
+      - id: comp-rem-migrako
+        name: MiGraKo core corpus
+        description:
+          status: known
+          value: Structurally sampled core inherited from the Corpus of Middle High German Grammar.
+        parent_component_id:
+          status: not_applicable
+        language_stage_ids:
+          status: known
+          value: [mhg]
+        chronology:
+          status: unknown
+        geography:
+          status: unknown
+        genres:
+          status: unknown
+        text_types:
+          status: unknown
+        document_ids: []
+        size_measurements: []
+        extensions: {}
+      - id: comp-rem-extension
+        name: ReM extension corpus
+        description:
+          status: known
+          value: Project-created extension containing additional texts and passages.
+        parent_component_id:
+          status: not_applicable
+        language_stage_ids:
+          status: known
+          value: [mhg]
+        chronology:
+          status: unknown
+        geography:
+          status: unknown
+        genres:
+          status: unknown
+        text_types:
+          status: unknown
+        document_ids: []
+        size_measurements: []
+        extensions: {}
+    documents: []
+    distributions:
+      - id: dist-rem-2-1-zenodo
+        kind: dataset_repository
+        title:
+          status: known
+          value: ReM version 2.1 Zenodo distribution
+        scope:
+          resource_ids: [res-rem]
+          version_ids: [ver-rem-2-1]
+          component_ids: []
+          document_ids: []
+          annotation_ids: []
+          filter:
+            status: not_applicable
+        access_urls:
+          status: known
+          value:
+            - kind: dataset
+              url: https://zenodo.org/records/13982324
+            - kind: browse
+              url: https://newannis.linguistics.rub.de/rem
+            - kind: download
+              url: https://zenodo.org/record/13982324/files/ReM-v2.1_coraxml.zip?download=1
+            - kind: download
+              url: https://zenodo.org/record/13982324/files/ReM-v2.1_tei.zip?download=1
+            - kind: download
+              url: https://zenodo.org/record/13982324/files/ReM-v2.1_json.zip?download=1
+            - kind: download
+              url: https://zenodo.org/record/13982324/files/ReM-v2.1_graphml.zip?download=1
+        formats:
+          status: known
+          value:
+            - format_id: zip
+              format_version:
+                status: unknown
+              schema_name:
+                status: known
+                value: TEI-compatible XML
+              schema_version:
+                status: unknown
+              schema_url:
+                status: known
+                value: https://tei-c.org/release/doc/tei-p5-doc/en/html/index.html
+              media_type:
+                status: unknown
+              encoding:
+                status: unknown
+              profile_or_dialect:
+                status: unknown
+              inner_format_ids:
+                status: known
+                value: [tei_xml]
+            - format_id: zip
+              format_version:
+                status: unknown
+              schema_name:
+                status: known
+                value: Tabular JSON
+              schema_version:
+                status: unknown
+              schema_url:
+                status: known
+                value: https://linguistics.rub.de/~roussel/tabular-json/specification.html
+              media_type:
+                status: unknown
+              encoding:
+                status: unknown
+              profile_or_dialect:
+                status: unknown
+              inner_format_ids:
+                status: known
+                value: [json]
+            - format_id: zip
+              format_version:
+                status: unknown
+              schema_name:
+                status: known
+                value: CorA-XML
+              schema_version:
+                status: unknown
+              schema_url:
+                status: known
+                value: https://cora.readthedocs.io/en/latest/coraxml/
+              media_type:
+                status: unknown
+              encoding:
+                status: unknown
+              profile_or_dialect:
+                status: unknown
+              inner_format_ids:
+                status: known
+                value: [xml]
+            - format_id: zip
+              format_version:
+                status: unknown
+              schema_name:
+                status: known
+                value: GraphML
+              schema_version:
+                status: unknown
+              schema_url:
+                status: known
+                value: http://graphml.graphdrawing.org/
+              media_type:
+                status: unknown
+              encoding:
+                status: unknown
+              profile_or_dialect:
+                status: unknown
+              inner_format_ids:
+                status: known
+                value: [xml]
+        license:
+          status: declared_standard
+          license_id:
+            status: known
+            value: cc_by_sa_4_0
+          name:
+            status: known
+            value: Creative Commons Attribution-ShareAlike 4.0 International
+          url:
+            status: known
+            value: https://creativecommons.org/licenses/by-sa/4.0/
+          scopes:
+            status: unknown
+          note:
+            status: unknown
+        availability: available
+        access:
+          public_description: available
+          online_browsing: available
+          download: available
+          api_access: unknown
+          request_only: unknown
+          authentication_or_agreement: unknown
+          automated_access: unclear
+          model_training: unclear
+          original_redistribution: permitted
+          processed_redistribution: unclear
+          trained_weights_publication: unclear
+        attribution_requirement:
+          status: known
+          value: When sharing, retain supplied creator and license information, link to the material and license where practicable, and indicate modifications.
+        citation_requirement:
+          status: known
+          value: Cite Roussel, Klein, Dipper, Wegera, and Wich-Reif (2024), Referenzkorpus Mittelhochdeutsch (1050–1350), Version 2.1, and ISLRN 937-948-254-174-0.
+        package:
+          status: not_applicable
+        cli:
+          status: not_applicable
+        api:
+          status: not_applicable
+        hugging_face:
+          status: not_applicable
+        artifact:
+          status: unknown
+        extensions: {}
+    annotations:
+      - id: ann-rem-lemma
+        task: lemma
+        scheme:
+          status: unknown
+        scope:
+          resource_ids: [res-rem]
+          version_ids: [ver-rem-2-1]
+          component_ids: []
+          document_ids: []
+          annotation_ids: []
+          filter:
+            status: not_applicable
+        coverage_measurements: []
+        alignment_unit:
+          status: known
+          value: token
+        production_method:
+          status: unknown
+        quality: unknown
+        annotators:
+          status: unknown
+        guidelines_url:
+          status: known
+          value: https://linguistics.rub.de/rem/documentation/lemma.html
+        inter_annotator_agreement:
+          status: unknown
+        evaluation_results:
+          status: unknown
+        missing_value_convention:
+          status: known
+          value: Missing or empty ANNIS annotation entries are generally represented by --.
+        scheme_mappings:
+          status: unknown
+        extensions: {}
+      - id: ann-rem-pos
+        task: pos
+        scheme:
+          status: unknown
+        scope:
+          resource_ids: [res-rem]
+          version_ids: [ver-rem-2-1]
+          component_ids: []
+          document_ids: []
+          annotation_ids: []
+          filter:
+            status: not_applicable
+        coverage_measurements: []
+        alignment_unit:
+          status: known
+          value: token
+        production_method:
+          status: unknown
+        quality: unknown
+        annotators:
+          status: unknown
+        guidelines_url:
+          status: known
+          value: https://linguistics.rub.de/rem/documentation/pos.html
+        inter_annotator_agreement:
+          status: unknown
+        evaluation_results:
+          status: unknown
+        missing_value_convention:
+          status: known
+          value: Missing or empty ANNIS annotation entries are generally represented by --.
+        scheme_mappings:
+          status: unknown
+        extensions: {}
+      - id: ann-rem-morphology
+        task: morphology
+        scheme:
+          status: unknown
+        scope:
+          resource_ids: [res-rem]
+          version_ids: [ver-rem-2-1]
+          component_ids: []
+          document_ids: []
+          annotation_ids: []
+          filter:
+            status: not_applicable
+        coverage_measurements: []
+        alignment_unit:
+          status: known
+          value: token
+        production_method:
+          status: unknown
+        quality: unknown
+        annotators:
+          status: unknown
+        guidelines_url:
+          status: known
+          value: https://linguistics.rub.de/rem/documentation/morph.html
+        inter_annotator_agreement:
+          status: unknown
+        evaluation_results:
+          status: unknown
+        missing_value_convention:
+          status: known
+          value: Missing or empty ANNIS annotation entries are generally represented by --.
+        scheme_mappings:
+          status: unknown
+        extensions: {}
+      - id: ann-rem-char-align
+        task: normalization
+        scheme:
+          status: unknown
+        scope:
+          resource_ids: [res-rem]
+          version_ids: [ver-rem-2-1]
+          component_ids: [comp-rem-migrako]
+          document_ids: []
+          annotation_ids: []
+          filter:
+            status: not_applicable
+        coverage_measurements: []
+        alignment_unit:
+          status: known
+          value: token
+        production_method:
+          status: unknown
+        quality: unknown
+        annotators:
+          status: unknown
+        guidelines_url:
+          status: known
+          value: https://linguistics.rub.de/rem/corpus/layers.html
+        inter_annotator_agreement:
+          status: unknown
+        evaluation_results:
+          status: unknown
+        missing_value_convention:
+          status: known
+          value: Missing or empty ANNIS annotation entries are generally represented by --.
+        scheme_mappings:
+          status: unknown
+        extensions: {}
+      - id: ann-rem-tokenization
+        task: tokenization
+        scheme:
+          status: unknown
+        scope:
+          resource_ids: [res-rem]
+          version_ids: [ver-rem-2-1]
+          component_ids: []
+          document_ids: []
+          annotation_ids: []
+          filter:
+            status: not_applicable
+        coverage_measurements: []
+        alignment_unit:
+          status: known
+          value: token
+        production_method:
+          status: unknown
+        quality: unknown
+        annotators:
+          status: unknown
+        guidelines_url:
+          status: known
+          value: https://linguistics.rub.de/rem/corpus/index.html
+        inter_annotator_agreement:
+          status: unknown
+        evaluation_results:
+          status: unknown
+        missing_value_convention:
+          status: known
+          value: Missing or empty ANNIS annotation entries are generally represented by --.
+        scheme_mappings:
+          status: unknown
+        extensions: {}
+    size_measurements:
+      - unit: orthographic_word
+        value: 2000000
+        version_id: ver-rem-2-1
+        scope:
+          resource_ids: [res-rem]
+          version_ids: [ver-rem-2-1]
+          component_ids: []
+          document_ids: []
+          annotation_ids: []
+          filter:
+            status: not_applicable
+        counting_method: Approximate count of word forms reported by the project.
+        origin: reported
+        computed_on:
+          status: not_applicable
+        evidence_ids: [evidence-rem-homepage, evidence-rem-zenodo]
+        uncertainty_note:
+          status: known
+          value: The sources report around two million word forms rather than an exact count or a detailed counting procedure.
+    extensions: {}
+corpus:
+  status: known
+  value:
+    transcription_methods:
+      status: known
+      value: [diplomatic]
+    editorial_interventions:
+      status: unknown
+    unicode_normalization:
+      status: unknown
+    character_repertoire:
+      status: unknown
+    tokenization_convention:
+      status: known
+      value: tok_dipl preserves historical tokenization, while tok_anno applies modernized tokenization and simplified spelling.
+    sentence_segmentation_convention:
+      status: known
+      value: The punc layer marks sentence or segment boundaries with functional boundary tags.
+    text_layers:
+      status: known
+      value:
+        - id: tok-dipl
+          layer_type: diplomatic_text
+          description:
+            status: known
+            value: Historical tokenization with a letter representation intended to remain close to the historical forms.
+          scope:
+            resource_ids: [res-rem]
+            version_ids: [ver-rem-2-1]
+            component_ids: []
+            document_ids: []
+            annotation_ids: []
+            filter:
+              status: not_applicable
+        - id: tok-anno
+          layer_type: normalized_text
+          description:
+            status: known
+            value: Modernized tokenization combined with simplified spelling.
+          scope:
+            resource_ids: [res-rem]
+            version_ids: [ver-rem-2-1]
+            component_ids: []
+            document_ids: []
+            annotation_ids: []
+            filter:
+              status: not_applicable
+    stable_document_identifiers:
+      status: unknown
+    stable_token_identifiers:
+      status: unknown
+    corpus_schema:
+      status: unknown
+    access_restrictions:
+      status: unknown
+tool:
+  status: not_applicable
+dictionary:
+  status: not_applicable
+record_reviewed_on: 2026-08-11
+evidence:
+  - id: evidence-rem-homepage
+    source_url: https://linguistics.rub.de/rem/index.html
+    accessed_on: 2026-08-11
+    source_kind: project_homepage
+    quotation:
+      status: known
+      value: The “Reference Corpus of Middle High German” (short ReM) is a corpus of diplomatically transcribed and annotated texts from Middle High German (1050–1350) with a size of around 2 million word forms.
+    note:
+      status: known
+      value: Canonical bilingual project description used for identity, short name, stage, chronology, transcription, and approximate size.
+    publication_id:
+      status: not_applicable
+    archived_url:
+      status: not_applicable
+  - id: evidence-rem-access
+    source_url: https://linguistics.rub.de/rem/access/index.en.html
+    accessed_on: 2026-08-11
+    source_kind: project_documentation
+    quotation:
+      status: known
+      value: The Reference Corpus of Middle High German is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License.
+    note:
+      status: known
+      value: Canonical access page also supplies the requested citation and declares CC BY-SA 4.0 for ReM.
+    publication_id:
+      status: not_applicable
+    archived_url:
+      status: not_applicable
+  - id: evidence-rem-zenodo
+    source_url: https://zenodo.org/api/records/13982324
+    accessed_on: 2026-08-11
+    source_kind: release_record
+    quotation:
+      status: known
+      value: Texts have been digitized and richly annotated, e.g. with parts of speech, morphology and lemmas.
+    note:
+      status: known
+      value: Canonical distribution metadata for the exact version; file content was not downloaded.
+    publication_id:
+      status: not_applicable
+    archived_url:
+      status: not_applicable
+  - id: evidence-rem-structure
+    source_url: https://linguistics.rub.de/rem/corpus/index.html
+    accessed_on: 2026-08-11
+    source_kind: project_documentation
+    quotation:
+      status: known
+      value: Im Referenzkorpus Mittelhochdeutsch (ReM) sind mehrere Korpora zusammengeflossen.
+    note:
+      status: known
+      value: Supports component identity, provenance relationship, transcription basis, and tokenization conventions.
+    publication_id:
+      status: not_applicable
+    archived_url:
+      status: not_applicable
+  - id: evidence-rem-layers
+    source_url: https://linguistics.rub.de/rem/corpus/layers.html
+    accessed_on: 2026-08-11
+    source_kind: project_documentation
+    quotation:
+      status: known
+      value: char_align ist für das Kernkorpus, d.h. für alle MiGraKo-Texte, annotiert, aber nur für einen kleinen Teil der Texte im Erweiterungskorpus.
+    note:
+      status: known
+      value: Supports separate annotation records, their scopes, missing-value convention, text layers, and sentence segmentation.
+    publication_id:
+      status: not_applicable
+    archived_url:
+      status: not_applicable
+  - id: evidence-rem-license
+    source_url: https://creativecommons.org/licenses/by-sa/4.0/legalcode.en
+    accessed_on: 2026-08-11
+    source_kind: license_or_terms
+    quotation:
+      status: known
+      value: Subject to the terms and conditions of this Public License, the Licensor hereby grants You a worldwide, royalty-free, non-sublicensable, non-exclusive, irrevocable license to exercise the Licensed Rights in the Licensed Material to reproduce and Share the Licensed Material, in whole or in part.
+    note:
+      status: known
+      value: Supports original-data redistribution and attribution only; model training, processed-data treatment, and trained-weight publication remain unclear.
+    publication_id:
+      status: not_applicable
+    archived_url:
+      status: not_applicable
+claims:
+  /canonical_name: [evidence-rem-homepage, evidence-rem-zenodo]
+  /alternative_names/0/text: [evidence-rem-homepage]
+  /alternative_names/0/name_type: [evidence-rem-homepage]
+  /categories/0: [evidence-rem-homepage]
+  /description/value: [evidence-rem-homepage]
+  /responsible_parties/value/0/name: [evidence-rem-zenodo]
+  /responsible_parties/value/0/party_type: [evidence-rem-zenodo]
+  /responsible_parties/value/0/role: [evidence-rem-zenodo]
+  /responsible_parties/value/1/name: [evidence-rem-zenodo]
+  /responsible_parties/value/1/party_type: [evidence-rem-zenodo]
+  /responsible_parties/value/1/role: [evidence-rem-zenodo]
+  /responsible_parties/value/2/name: [evidence-rem-zenodo]
+  /responsible_parties/value/2/party_type: [evidence-rem-zenodo]
+  /responsible_parties/value/2/role: [evidence-rem-zenodo]
+  /responsible_parties/value/3/name: [evidence-rem-zenodo]
+  /responsible_parties/value/3/party_type: [evidence-rem-zenodo]
+  /responsible_parties/value/3/role: [evidence-rem-zenodo]
+  /responsible_parties/value/4/name: [evidence-rem-zenodo]
+  /responsible_parties/value/4/party_type: [evidence-rem-zenodo]
+  /responsible_parties/value/4/role: [evidence-rem-zenodo]
+  /homepage_url/value: [evidence-rem-homepage]
+  /language_stage_ids/value/0: [evidence-rem-homepage, evidence-rem-zenodo]
+  /chronology/value/earliest_year/value: [evidence-rem-homepage, evidence-rem-zenodo]
+  /chronology/value/latest_year/value: [evidence-rem-homepage, evidence-rem-zenodo]
+  /chronology/value/label/value: [evidence-rem-homepage, evidence-rem-zenodo]
+  /versions/0/version_label/value: [evidence-rem-access, evidence-rem-zenodo]
+  /versions/0/release_date/value: [evidence-rem-zenodo]
+  /versions/0/superseded/value: [evidence-rem-zenodo]
+  /versions/0/changelog_url/value: [evidence-rem-access]
+  /versions/0/language_stage_ids/value/0: [evidence-rem-homepage, evidence-rem-zenodo]
+  /versions/0/chronology/value/earliest_year/value: [evidence-rem-homepage, evidence-rem-zenodo]
+  /versions/0/chronology/value/latest_year/value: [evidence-rem-homepage, evidence-rem-zenodo]
+  /versions/0/chronology/value/label/value: [evidence-rem-homepage, evidence-rem-zenodo]
+  /versions/0/components/0/name: [evidence-rem-structure]
+  /versions/0/components/0/description/value: [evidence-rem-structure]
+  /versions/0/components/0/language_stage_ids/value/0: [evidence-rem-homepage]
+  /versions/0/components/1/name: [evidence-rem-structure]
+  /versions/0/components/1/description/value: [evidence-rem-structure]
+  /versions/0/components/1/language_stage_ids/value/0: [evidence-rem-homepage]
+  /versions/0/distributions/0/kind: [evidence-rem-zenodo]
+  /versions/0/distributions/0/title/value: [evidence-rem-zenodo]
+  /versions/0/distributions/0/access_urls/value/0/kind: [evidence-rem-zenodo]
+  /versions/0/distributions/0/access_urls/value/0/url: [evidence-rem-zenodo]
+  /versions/0/distributions/0/access_urls/value/1/kind: [evidence-rem-access]
+  /versions/0/distributions/0/access_urls/value/1/url: [evidence-rem-access]
+  /versions/0/distributions/0/access_urls/value/2/kind: [evidence-rem-access, evidence-rem-zenodo]
+  /versions/0/distributions/0/access_urls/value/2/url: [evidence-rem-access, evidence-rem-zenodo]
+  /versions/0/distributions/0/access_urls/value/3/kind: [evidence-rem-access, evidence-rem-zenodo]
+  /versions/0/distributions/0/access_urls/value/3/url: [evidence-rem-access, evidence-rem-zenodo]
+  /versions/0/distributions/0/access_urls/value/4/kind: [evidence-rem-access, evidence-rem-zenodo]
+  /versions/0/distributions/0/access_urls/value/4/url: [evidence-rem-access, evidence-rem-zenodo]
+  /versions/0/distributions/0/access_urls/value/5/kind: [evidence-rem-access, evidence-rem-zenodo]
+  /versions/0/distributions/0/access_urls/value/5/url: [evidence-rem-access, evidence-rem-zenodo]
+  /versions/0/distributions/0/formats/value/0/format_id: [evidence-rem-access]
+  /versions/0/distributions/0/formats/value/0/schema_name/value: [evidence-rem-access]
+  /versions/0/distributions/0/formats/value/0/schema_url/value: [evidence-rem-access]
+  /versions/0/distributions/0/formats/value/0/inner_format_ids/value/0: [evidence-rem-access, evidence-rem-zenodo]
+  /versions/0/distributions/0/formats/value/1/format_id: [evidence-rem-access]
+  /versions/0/distributions/0/formats/value/1/schema_name/value: [evidence-rem-access]
+  /versions/0/distributions/0/formats/value/1/schema_url/value: [evidence-rem-access]
+  /versions/0/distributions/0/formats/value/1/inner_format_ids/value/0: [evidence-rem-access, evidence-rem-zenodo]
+  /versions/0/distributions/0/formats/value/2/format_id: [evidence-rem-access]
+  /versions/0/distributions/0/formats/value/2/schema_name/value: [evidence-rem-access]
+  /versions/0/distributions/0/formats/value/2/schema_url/value: [evidence-rem-access]
+  /versions/0/distributions/0/formats/value/2/inner_format_ids/value/0: [evidence-rem-access, evidence-rem-zenodo]
+  /versions/0/distributions/0/formats/value/3/format_id: [evidence-rem-access]
+  /versions/0/distributions/0/formats/value/3/schema_name/value: [evidence-rem-access]
+  /versions/0/distributions/0/formats/value/3/schema_url/value: [evidence-rem-access]
+  /versions/0/distributions/0/formats/value/3/inner_format_ids/value/0: [evidence-rem-access, evidence-rem-zenodo]
+  /versions/0/distributions/0/scope/resource_ids/0: [evidence-rem-zenodo]
+  /versions/0/distributions/0/scope/version_ids/0: [evidence-rem-zenodo]
+  /versions/0/distributions/0/license/status: [evidence-rem-access, evidence-rem-zenodo]
+  /versions/0/distributions/0/license/license_id/value: [evidence-rem-access]
+  /versions/0/distributions/0/license/name/value: [evidence-rem-access, evidence-rem-zenodo]
+  /versions/0/distributions/0/license/url/value: [evidence-rem-access, evidence-rem-zenodo]
+  /versions/0/distributions/0/availability: [evidence-rem-access, evidence-rem-zenodo]
+  /versions/0/distributions/0/access/public_description: [evidence-rem-homepage, evidence-rem-access]
+  /versions/0/distributions/0/access/online_browsing: [evidence-rem-access]
+  /versions/0/distributions/0/access/download: [evidence-rem-access, evidence-rem-zenodo]
+  /versions/0/distributions/0/access/api_access: [evidence-rem-access, evidence-rem-zenodo]
+  /versions/0/distributions/0/access/request_only: [evidence-rem-access, evidence-rem-zenodo]
+  /versions/0/distributions/0/access/authentication_or_agreement: [evidence-rem-access, evidence-rem-zenodo]
+  /versions/0/distributions/0/access/automated_access: [evidence-rem-access, evidence-rem-zenodo]
+  /versions/0/distributions/0/access/model_training: [evidence-rem-access, evidence-rem-license]
+  /versions/0/distributions/0/access/original_redistribution: [evidence-rem-access, evidence-rem-license]
+  /versions/0/distributions/0/access/processed_redistribution: [evidence-rem-access, evidence-rem-license]
+  /versions/0/distributions/0/access/trained_weights_publication: [evidence-rem-access, evidence-rem-license]
+  /versions/0/distributions/0/attribution_requirement/value: [evidence-rem-license]
+  /versions/0/distributions/0/citation_requirement/value: [evidence-rem-access]
+  /versions/0/annotations/0/task: [evidence-rem-layers, evidence-rem-zenodo]
+  /versions/0/annotations/0/scope/resource_ids/0: [evidence-rem-layers]
+  /versions/0/annotations/0/scope/version_ids/0: [evidence-rem-layers]
+  /versions/0/annotations/0/alignment_unit/value: [evidence-rem-layers]
+  /versions/0/annotations/0/quality: [evidence-rem-layers]
+  /versions/0/annotations/0/guidelines_url/value: [evidence-rem-layers]
+  /versions/0/annotations/0/missing_value_convention/value: [evidence-rem-layers]
+  /versions/0/annotations/1/task: [evidence-rem-layers, evidence-rem-zenodo]
+  /versions/0/annotations/1/scope/resource_ids/0: [evidence-rem-layers]
+  /versions/0/annotations/1/scope/version_ids/0: [evidence-rem-layers]
+  /versions/0/annotations/1/alignment_unit/value: [evidence-rem-layers]
+  /versions/0/annotations/1/quality: [evidence-rem-layers]
+  /versions/0/annotations/1/guidelines_url/value: [evidence-rem-layers]
+  /versions/0/annotations/1/missing_value_convention/value: [evidence-rem-layers]
+  /versions/0/annotations/2/task: [evidence-rem-layers, evidence-rem-zenodo]
+  /versions/0/annotations/2/scope/resource_ids/0: [evidence-rem-layers]
+  /versions/0/annotations/2/scope/version_ids/0: [evidence-rem-layers]
+  /versions/0/annotations/2/alignment_unit/value: [evidence-rem-layers]
+  /versions/0/annotations/2/quality: [evidence-rem-layers]
+  /versions/0/annotations/2/guidelines_url/value: [evidence-rem-layers]
+  /versions/0/annotations/2/missing_value_convention/value: [evidence-rem-layers]
+  /versions/0/annotations/3/task: [evidence-rem-layers]
+  /versions/0/annotations/3/scope/resource_ids/0: [evidence-rem-layers]
+  /versions/0/annotations/3/scope/version_ids/0: [evidence-rem-layers]
+  /versions/0/annotations/3/scope/component_ids/0: [evidence-rem-layers]
+  /versions/0/annotations/3/alignment_unit/value: [evidence-rem-layers]
+  /versions/0/annotations/3/quality: [evidence-rem-layers]
+  /versions/0/annotations/3/guidelines_url/value: [evidence-rem-layers]
+  /versions/0/annotations/3/missing_value_convention/value: [evidence-rem-layers]
+  /versions/0/annotations/4/task: [evidence-rem-layers, evidence-rem-structure]
+  /versions/0/annotations/4/scope/resource_ids/0: [evidence-rem-layers, evidence-rem-structure]
+  /versions/0/annotations/4/scope/version_ids/0: [evidence-rem-layers, evidence-rem-structure]
+  /versions/0/annotations/4/alignment_unit/value: [evidence-rem-layers, evidence-rem-structure]
+  /versions/0/annotations/4/quality: [evidence-rem-layers]
+  /versions/0/annotations/4/guidelines_url/value: [evidence-rem-structure]
+  /versions/0/annotations/4/missing_value_convention/value: [evidence-rem-layers]
+  /versions/0/size_measurements/0/unit: [evidence-rem-homepage, evidence-rem-zenodo]
+  /versions/0/size_measurements/0/value: [evidence-rem-homepage, evidence-rem-zenodo]
+  /versions/0/size_measurements/0/version_id: [evidence-rem-zenodo]
+  /versions/0/size_measurements/0/scope/resource_ids/0: [evidence-rem-homepage, evidence-rem-zenodo]
+  /versions/0/size_measurements/0/scope/version_ids/0: [evidence-rem-zenodo]
+  /versions/0/size_measurements/0/counting_method: [evidence-rem-homepage, evidence-rem-zenodo]
+  /versions/0/size_measurements/0/origin: [evidence-rem-homepage, evidence-rem-zenodo]
+  /versions/0/size_measurements/0/uncertainty_note/value: [evidence-rem-homepage, evidence-rem-zenodo]
+  /corpus/value/transcription_methods/value/0: [evidence-rem-homepage, evidence-rem-structure]
+  /corpus/value/tokenization_convention/value: [evidence-rem-structure, evidence-rem-layers]
+  /corpus/value/sentence_segmentation_convention/value: [evidence-rem-layers]
+  /corpus/value/text_layers/value/0/id: [evidence-rem-layers]
+  /corpus/value/text_layers/value/0/layer_type: [evidence-rem-layers]
+  /corpus/value/text_layers/value/0/description/value: [evidence-rem-layers]
+  /corpus/value/text_layers/value/0/scope/resource_ids/0: [evidence-rem-layers]
+  /corpus/value/text_layers/value/0/scope/version_ids/0: [evidence-rem-layers]
+  /corpus/value/text_layers/value/1/id: [evidence-rem-layers]
+  /corpus/value/text_layers/value/1/layer_type: [evidence-rem-layers]
+  /corpus/value/text_layers/value/1/description/value: [evidence-rem-layers]
+  /corpus/value/text_layers/value/1/scope/resource_ids/0: [evidence-rem-layers]
+  /corpus/value/text_layers/value/1/scope/version_ids/0: [evidence-rem-layers]
+extensions: {}

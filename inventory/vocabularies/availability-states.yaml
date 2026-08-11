@@ -1,0 +1,60 @@
+schema_version: 1.0.0
+vocabulary:
+  id: availability
+  label: Availability
+  description: Approved controlled values for availability in HistGerm.
+terms:
+  - id: authentication_required
+    label: Authentication required
+    description: Access exists but requires authentication or account access.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: available
+    label: Available
+    description: The described distribution is currently accessible through its stated channel.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: discontinued
+    label: Discontinued
+    description: The distribution/service has explicitly ended.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: inaccessible
+    label: Inaccessible
+    description: The recorded access path cannot currently be used and no stronger cause is established.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: not_publicly_available
+    label: Not publicly available
+    description: No public access is offered.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: partially_available
+    label: Partially available
+    description: Only a documented subset or some components are accessible.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: request_only
+    label: Available on request
+    description: Access requires a request rather than direct retrieval.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: temporarily_unavailable
+    label: Temporarily unavailable
+    description: Canonical evidence presents an interruption as temporary.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: unknown
+    label: Unknown
+    description: Current availability has not been established.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0

@@ -1,0 +1,4 @@
+base: &base
+  value: one
+merged:
+  <<: *base

@@ -1,0 +1,18 @@
+schema_version: 1.0.0
+vocabulary:
+  id: party_type
+  label: Party type
+  description: Whether a responsible party is a person or an organization.
+terms:
+  - id: organization
+    label: Organization
+    description: The responsible party is an organization.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: person
+    label: Person
+    description: The responsible party is an individual person.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0

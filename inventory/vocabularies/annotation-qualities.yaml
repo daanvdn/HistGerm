@@ -1,0 +1,36 @@
+schema_version: 1.0.0
+vocabulary:
+  id: annotation_quality
+  label: Annotation quality
+  description: Approved controlled values for annotation quality in HistGerm.
+terms:
+  - id: automatically_predicted
+    label: Automatically predicted
+    description: Produced automatically without a documented complete manual correction pass.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: expert_gold
+    label: Expert gold
+    description: Created or adjudicated by qualified experts under a documented scheme.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: manually_corrected
+    label: Manually corrected
+    description: Automatically or otherwise derived annotation subsequently reviewed/corrected by people; not asserted to be expert gold.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: silver
+    label: Silver
+    description: Derived annotation presented as higher-confidence supervision but not gold.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: unknown
+    label: Unknown
+    description: Production quality is not established by evidence.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0

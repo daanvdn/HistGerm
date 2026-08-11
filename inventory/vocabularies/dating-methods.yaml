@@ -1,0 +1,66 @@
+schema_version: 1.0.0
+vocabulary:
+  id: dating_method
+  label: Dating method
+  description: Approved controlled values for dating method in HistGerm.
+terms:
+  - id: catalog_or_edition_date
+    label: Catalog or edition dating
+    description: Records catalog or edition dating as the source-reported dating method.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: explicit_source_date
+    label: Explicit date in the source/witness
+    description: Records explicit date in the source/witness as the source-reported dating method.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: historical_context
+    label: Historical-context dating
+    description: Records historical-context dating as the source-reported dating method.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: inferred_from_related_object
+    label: Inferred from a related object
+    description: Records inferred from a related object as the source-reported dating method.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: linguistic
+    label: Linguistic dating
+    description: Records linguistic dating as the source-reported dating method.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: multiple_methods
+    label: Multiple methods
+    description: Records multiple methods as the source-reported dating method.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: not_applicable
+    label: Not applicable
+    description: Records not applicable as the source-reported dating method.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: palaeographic
+    label: Palaeographic dating
+    description: Records palaeographic dating as the source-reported dating method.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: radiometric
+    label: Radiometric dating
+    description: Records radiometric dating as the source-reported dating method.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: unknown
+    label: Unknown
+    description: Records unknown as the source-reported dating method.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0

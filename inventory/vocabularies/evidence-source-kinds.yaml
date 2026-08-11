@@ -1,0 +1,84 @@
+schema_version: 1.0.0
+vocabulary:
+  id: evidence_source_kind
+  label: Evidence source kind
+  description: Approved controlled values for evidence source kind in HistGerm.
+terms:
+  - id: api_documentation
+    label: API documentation
+    description: Classifies provenance evidence as api documentation.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: archived_page
+    label: Archived copy of a source
+    description: Classifies provenance evidence as archived copy of a source.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: catalog_record
+    label: Library, archive, or research-infrastructure catalog record
+    description: Classifies provenance evidence as library, archive, or research-infrastructure catalog record.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: institutional_page
+    label: Responsible institution page
+    description: Classifies provenance evidence as responsible institution page.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: license_or_terms
+    label: License or terms text
+    description: Classifies provenance evidence as license or terms text.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: project_documentation
+    label: Canonical project documentation
+    description: Classifies provenance evidence as canonical project documentation.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: project_homepage
+    label: Canonical project homepage
+    description: Classifies provenance evidence as canonical project homepage.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: release_record
+    label: Release or package record
+    description: Classifies provenance evidence as release or package record.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: scholarly_publication
+    label: Scholarly publication
+    description: Classifies provenance evidence as scholarly publication.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: secondary_discovery_source
+    label: Secondary source usable for discovery, not sole verification
+    description: Classifies provenance evidence as secondary source usable for discovery, not sole verification.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: source_repository
+    label: Canonical source repository
+    description: Classifies provenance evidence as canonical source repository.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: synthetic_fixture
+    label: Repository-authored synthetic fixture evidence; never evidence for a real resource
+    description: Classifies provenance evidence as repository-authored synthetic fixture evidence; never evidence for a real resource.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: thesis
+    label: Thesis or dissertation
+    description: Classifies provenance evidence as thesis or dissertation.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0

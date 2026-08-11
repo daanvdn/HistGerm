@@ -1,0 +1,8 @@
+record_type: catalog
+schema_version: 1.0.0
+inventory_release: 2026.08.11.1
+generated_on: 2026-08-11
+vocabularies: {}
+registries: {}
+notes:
+  status: unknown

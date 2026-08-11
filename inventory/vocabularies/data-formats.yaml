@@ -1,0 +1,210 @@
+schema_version: 1.0.0
+vocabulary:
+  id: data_format
+  label: Data format
+  description: Approved controlled values for data format in HistGerm.
+terms:
+  - id: arrow_ipc
+    label: Arrow IPC
+    description: Records an artifact serialized or packaged as arrow ipc.
+    aliases:
+      - feather
+    status: active
+    introduced_in: 1.0.0
+    typical_media_type_or_note: Arrow stream/file format
+  - id: binary
+    label: Undocumented binary
+    description: Records an artifact serialized or packaged as undocumented binary.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+    typical_media_type_or_note: Use only when evidence establishes binary data but not a more specific registered format.
+  - id: brat_standoff
+    label: brat standoff
+    description: Records an artifact serialized or packaged as brat standoff.
+    aliases:
+      - brat
+    status: active
+    introduced_in: 1.0.0
+    typical_media_type_or_note: Text plus standoff annotation files
+  - id: conll_x
+    label: CoNLL-X
+    description: Records an artifact serialized or packaged as conll-x.
+    aliases:
+      - conllx
+    status: active
+    introduced_in: 1.0.0
+    typical_media_type_or_note: CoNLL-X tabular syntax
+  - id: conllu
+    label: CoNLL-U
+    description: Records an artifact serialized or packaged as conll-u.
+    aliases:
+      - conll_u
+    status: active
+    introduced_in: 1.0.0
+    typical_media_type_or_note: CoNLL-U tabular syntax
+  - id: csv
+    label: CSV
+    description: Records an artifact serialized or packaged as csv.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+    typical_media_type_or_note: text/csv
+  - id: gzip
+    label: Gzip stream
+    description: Records an artifact serialized or packaged as gzip stream.
+    aliases:
+      - gz
+    status: active
+    introduced_in: 1.0.0
+    typical_media_type_or_note: Compression only; inner format required when known
+  - id: html
+    label: HTML
+    description: Records an artifact serialized or packaged as html.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+    typical_media_type_or_note: text/html
+  - id: json
+    label: JSON
+    description: Records an artifact serialized or packaged as json.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+    typical_media_type_or_note: application/json
+  - id: json_ld
+    label: JSON-LD
+    description: Records an artifact serialized or packaged as json-ld.
+    aliases:
+      - jsonld
+    status: active
+    introduced_in: 1.0.0
+    typical_media_type_or_note: application/ld+json
+  - id: jsonl
+    label: JSON Lines
+    description: Records an artifact serialized or packaged as json lines.
+    aliases:
+      - ndjson
+    status: active
+    introduced_in: 1.0.0
+    typical_media_type_or_note: application/x-ndjson (commonly used)
+  - id: parquet
+    label: Apache Parquet
+    description: Records an artifact serialized or packaged as apache parquet.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+    typical_media_type_or_note: Columnar data file
+  - id: pdf
+    label: PDF
+    description: Records an artifact serialized or packaged as pdf.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+    typical_media_type_or_note: application/pdf
+  - id: penn_treebank
+    label: Penn Treebank format
+    description: Records an artifact serialized or packaged as penn treebank format.
+    aliases:
+      - ptb
+    status: active
+    introduced_in: 1.0.0
+    typical_media_type_or_note: Bracketed tree notation; variant must be documented
+  - id: plain_text
+    label: Plain text
+    description: Records an artifact serialized or packaged as plain text.
+    aliases:
+      - txt
+    status: active
+    introduced_in: 1.0.0
+    typical_media_type_or_note: text/plain
+  - id: rdf_xml
+    label: RDF/XML
+    description: Records an artifact serialized or packaged as rdf/xml.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+    typical_media_type_or_note: application/rdf+xml
+  - id: sqlite
+    label: SQLite database
+    description: Records an artifact serialized or packaged as sqlite database.
+    aliases:
+      - sqlite3
+    status: active
+    introduced_in: 1.0.0
+    typical_media_type_or_note: SQLite database file
+  - id: tar
+    label: TAR archive
+    description: Records an artifact serialized or packaged as tar archive.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+    typical_media_type_or_note: Container only; member formats required when known
+  - id: tei_xml
+    label: TEI XML
+    description: Records an artifact serialized or packaged as tei xml.
+    aliases:
+      - tei
+    status: active
+    introduced_in: 1.0.0
+    typical_media_type_or_note: XML conforming to a stated TEI customization/version
+  - id: tiger_xml
+    label: TIGER-XML
+    description: Records an artifact serialized or packaged as tiger-xml.
+    aliases:
+      - tigerxml
+    status: active
+    introduced_in: 1.0.0
+    typical_media_type_or_note: XML for syntactic annotation
+  - id: tsv
+    label: TSV
+    description: Records an artifact serialized or packaged as tsv.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+    typical_media_type_or_note: text/tab-separated-values
+  - id: turtle
+    label: RDF Turtle
+    description: Records an artifact serialized or packaged as rdf turtle.
+    aliases:
+      - ttl
+    status: active
+    introduced_in: 1.0.0
+    typical_media_type_or_note: text/turtle
+  - id: vertical
+    label: Vertical corpus format
+    description: Records an artifact serialized or packaged as vertical corpus format.
+    aliases:
+      - vrt
+    status: active
+    introduced_in: 1.0.0
+    typical_media_type_or_note: One unit/token per line; columns must be documented
+  - id: webanno_tsv
+    label: WebAnno TSV
+    description: Records an artifact serialized or packaged as webanno tsv.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+    typical_media_type_or_note: Version must be documented
+  - id: xml
+    label: XML
+    description: Records an artifact serialized or packaged as xml.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+    typical_media_type_or_note: application/xml
+  - id: yaml
+    label: YAML
+    description: Records an artifact serialized or packaged as yaml.
+    aliases:
+      - yml
+    status: active
+    introduced_in: 1.0.0
+    typical_media_type_or_note: application/yaml
+  - id: zip
+    label: ZIP archive
+    description: Records an artifact serialized or packaged as zip archive.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+    typical_media_type_or_note: Container only; member formats required when known

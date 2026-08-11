@@ -1,0 +1,48 @@
+schema_version: 1.0.0
+vocabulary:
+  id: text_layer_kind
+  label: Text layer kind
+  description: Approved controlled values for text layer kind in HistGerm.
+terms:
+  - id: annotation_layer
+    label: Annotation layer
+    description: Linguistic or editorial annotation representation.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: diplomatic_text
+    label: Diplomatic text
+    description: Diplomatic transcription layer.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: metadata
+    label: Metadata
+    description: Structured descriptive metadata layer.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: normalized_text
+    label: Normalized text
+    description: Normalized transcription layer.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: source_image
+    label: Source image
+    description: Facsimile or image layer.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: token_layer
+    label: Token layer
+    description: Tokenized text representation.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: translation
+    label: Translation
+    description: Translation aligned or linked to source text.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0

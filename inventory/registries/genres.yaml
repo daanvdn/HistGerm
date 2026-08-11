@@ -1,0 +1,6 @@
+schema_version: 1.0.0
+registry:
+  id: genres
+  label: Genres
+  description: Open registry for normalized genre identifiers used by HistGerm records.
+terms: []

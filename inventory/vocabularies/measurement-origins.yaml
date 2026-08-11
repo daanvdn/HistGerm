@@ -1,0 +1,18 @@
+schema_version: 1.0.0
+vocabulary:
+  id: measurement_origin
+  label: Measurement origin
+  description: Approved controlled values for measurement origin in HistGerm.
+terms:
+  - id: locally_computed
+    label: Locally computed
+    description: Computed by HistGerm tooling from an explicitly identified external artifact.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: reported
+    label: Reported
+    description: Copied from a cited source.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0

@@ -1,0 +1,30 @@
+schema_version: 1.0.0
+vocabulary:
+  id: permission_state
+  label: Permission state
+  description: Approved controlled values for permission state in HistGerm.
+terms:
+  - id: not_applicable
+    label: Not applicable
+    description: The activity does not apply to the distribution.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: permitted
+    label: Permitted
+    description: Direct license/terms evidence permits the activity within the recorded scope.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: prohibited
+    label: Prohibited
+    description: Direct license/terms evidence prohibits the activity within the recorded scope.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: unclear
+    label: Unclear
+    description: Evidence is absent, ambiguous, conflicting, scope-incomplete, or requires legal interpretation.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0

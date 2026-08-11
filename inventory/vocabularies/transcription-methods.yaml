@@ -1,0 +1,54 @@
+schema_version: 1.0.0
+vocabulary:
+  id: transcription_method
+  label: Transcription method
+  description: Approved controlled values for transcription method in HistGerm.
+terms:
+  - id: corrected_htr
+    label: Corrected HTR
+    description: HTR output with a documented correction pass.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: corrected_ocr
+    label: Corrected OCR
+    description: OCR output with a documented correction pass.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: diplomatic
+    label: Diplomatic transcription
+    description: Intends to preserve source spellings/forms under documented conventions.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: htr
+    label: HTR output
+    description: Produced by handwritten text recognition.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: manual
+    label: Manual transcription
+    description: Entered by people.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: normalized
+    label: Normalized transcription
+    description: Applies a documented normalization to source forms.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: ocr
+    label: OCR output
+    description: Produced by optical character recognition.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0
+  - id: unknown
+    label: Unknown
+    description: Method is not established.
+    aliases: []
+    status: active
+    introduced_in: 1.0.0

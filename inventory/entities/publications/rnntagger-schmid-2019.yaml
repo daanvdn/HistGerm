@@ -1,0 +1,71 @@
+record_type: publication
+id: pub-rnntagger-schmid-2019
+title: Deep Learning-Based Morphological Taggers and Lemmatizers for Annotating Historical Texts
+authors:
+  status: known
+  value:
+    - name: Helmut Schmid
+      party_type: person
+      role: author
+      identifier:
+        status: unknown
+publication_date:
+  status: known
+  value: 2019-05-08
+publication_type: proceedings_article
+identifiers:
+  - scheme: DOI
+    value: 10.1145/3322905.3322915
+    resolver_url:
+      status: known
+      value: https://doi.org/10.1145/3322905.3322915
+url:
+  status: known
+  value: https://doi.org/10.1145/3322905.3322915
+citation:
+  status: known
+  value: "Schmid, Helmut. 2019. Deep Learning-Based Morphological Taggers and Lemmatizers for Annotating Historical Texts. DATeCH, 133–137. https://doi.org/10.1145/3322905.3322915"
+evidence:
+  - id: evidence-rnntagger-publication-crossref
+    source_url: https://api.crossref.org/works/10.1145/3322905.3322915
+    accessed_on: 2026-08-11
+    source_kind: catalog_record
+    quotation:
+      status: known
+      value: "Deep Learning-Based Morphological Taggers and Lemmatizers for Annotating Historical Texts"
+    note:
+      status: known
+      value: Crossref identifies the ACM proceedings article, author Helmut Schmid, publication date 2019-05-08, pages 133–137, and DOI 10.1145/3322905.3322915.
+    publication_id:
+      status: known
+      value: pub-rnntagger-schmid-2019
+    archived_url:
+      status: not_applicable
+  - id: evidence-rnntagger-publication-project
+    source_url: https://www.cis.uni-muenchen.de/~schmid/tools/RNNTagger/
+    accessed_on: 2026-08-11
+    source_kind: project_homepage
+    quotation:
+      status: known
+      value: "Helmut Schmid (2019). Deep Learning-Based Morphological Taggers and Lemmatizers for Annotating Historical Texts, DATeCH, May 2019, Brussels, Belgium."
+    note:
+      status: known
+      value: The canonical tool page identifies this paper as the RNNTagger citation.
+    publication_id:
+      status: known
+      value: pub-rnntagger-schmid-2019
+    archived_url:
+      status: not_applicable
+claims:
+  /title: [evidence-rnntagger-publication-crossref, evidence-rnntagger-publication-project]
+  /authors/value/0/name: [evidence-rnntagger-publication-crossref, evidence-rnntagger-publication-project]
+  /authors/value/0/party_type: [evidence-rnntagger-publication-crossref]
+  /authors/value/0/role: [evidence-rnntagger-publication-crossref]
+  /publication_date/value: [evidence-rnntagger-publication-crossref]
+  /publication_type: [evidence-rnntagger-publication-crossref]
+  /identifiers/0/scheme: [evidence-rnntagger-publication-crossref]
+  /identifiers/0/value: [evidence-rnntagger-publication-crossref]
+  /identifiers/0/resolver_url/value: [evidence-rnntagger-publication-crossref]
+  /url/value: [evidence-rnntagger-publication-crossref]
+  /citation/value: [evidence-rnntagger-publication-crossref, evidence-rnntagger-publication-project]
+extensions: {}
