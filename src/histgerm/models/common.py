@@ -1,396 +1,355 @@
-"""Strict shared value models for HistGerm metadata."""
+"""Shared enums, fields, and models for the HistGerm V2 schema."""
 
 from __future__ import annotations
 
-import math
 import re
-from collections.abc import Collection, Mapping
-from typing import Annotated, Any, Literal
-
-from pydantic import (
-    AfterValidator,
-    AnyHttpUrl,
-    BaseModel,
-    BeforeValidator,
-    ConfigDict,
-    Field,
-    PlainValidator,
-    StringConstraints,
-    TypeAdapter,
-    field_serializer,
-    field_validator,
-    model_validator,
-)
-
-_STABLE_ID_PATTERN = re.compile(
-    r"^(res|ver|dist|comp|work|wit|doc|ann|rel|pub|evidence)-"
-    r"[a-z0-9]+(?:-[a-z0-9]+)*$"
-)
-_VOCABULARY_ID_PATTERN = re.compile(r"^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$")
-_EXTENSION_NAMESPACE_PATTERN = re.compile(
-    r"^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?"
-    r"(?:\.[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)+$"
-)
-_JSON_POINTER_PATTERN = re.compile(r"^(?:|/(?:[^~]|~[01])*)$")
-_FORBIDDEN_EXTENSION_KEYS = frozenset(
-    {"path", "local_path", "payload", "data", "content"}
-)
-_URL_ADAPTER = TypeAdapter(AnyHttpUrl)
-
-
-class HistGermModel(BaseModel):
-    """Base for immutable, strict models with a closed core schema."""
-
-    model_config = ConfigDict(
-        frozen=True,
-        extra="forbid",
-        strict=True,
-        str_strip_whitespace=True,
-        validate_default=True,
-    )
-
-
-def _reject_surrounding_whitespace(value: Any) -> Any:
-    if isinstance(value, str) and value != value.strip():
-        raise ValueError("must not contain leading or trailing whitespace")
-    return value
-
-
-StableId = Annotated[
-    str,
-    BeforeValidator(_reject_surrounding_whitespace),
-    StringConstraints(strict=True, pattern=_STABLE_ID_PATTERN.pattern),
-]
-NonEmptyStr = Annotated[
-    str,
-    StringConstraints(strict=True, strip_whitespace=True, min_length=1),
-]
-VocabularyId = Annotated[
-    str,
-    BeforeValidator(_reject_surrounding_whitespace),
-    StringConstraints(strict=True, pattern=_VOCABULARY_ID_PATTERN.pattern),
-]
-RegistryId = VocabularyId
-ExtensionNamespace = Annotated[
-    str,
-    BeforeValidator(_reject_surrounding_whitespace),
-    StringConstraints(strict=True, pattern=_EXTENSION_NAMESPACE_PATTERN.pattern),
-]
-
-
-def _validate_http_url(value: str) -> str:
-    if any(character.isspace() for character in value):
-        raise ValueError("URL must not contain whitespace")
-    try:
-        parsed = _URL_ADAPTER.validate_python(value, strict=True)
-    except ValueError as error:
-        raise ValueError(
-            "must be an absolute http or https URL with a valid host"
-        ) from error
-    if parsed.scheme not in {"http", "https"}:
-        raise ValueError("URL scheme must be http or https")
-    return value
-
-
-HttpUrlValue = Annotated[
-    str,
-    BeforeValidator(_reject_surrounding_whitespace),
-    StringConstraints(strict=True, min_length=1),
-    AfterValidator(_validate_http_url),
-]
-
-
-def _validate_json_pointer(value: str) -> str:
-    if not _JSON_POINTER_PATTERN.fullmatch(value):
-        raise ValueError(
-            "must be an RFC 6901 absolute JSON Pointer; start with '/' and "
-            "escape '~' as '~0' or '~1' (the empty root pointer is also valid)"
-        )
-    return value
-
-
-JsonPointer = Annotated[
-    str,
-    StringConstraints(strict=True),
-    AfterValidator(_validate_json_pointer),
-]
-
-
-def _validate_json_string(value: Any) -> str:
-    if not isinstance(value, str):
-        raise ValueError("JSON strings and object keys must be strings")
-    return value
-
-
-JsonString = Annotated[str, PlainValidator(_validate_json_string)]
-
-type JsonValue = (
-    None
-    | bool
-    | int
-    | Annotated[float, Field(allow_inf_nan=False)]
-    | JsonString
-    | list[JsonValue]
-    | dict[JsonString, JsonValue]
-)
-
-
-def _validate_extension_payload(
-    value: Mapping[str, JsonValue], *, location: str
-) -> None:
-    for key, child in value.items():
-        if key in _FORBIDDEN_EXTENSION_KEYS:
-            raise ValueError(
-                f"extension key {key!r} is forbidden at {location}; "
-                "extensions may contain metadata only, not paths or payloads"
-            )
-        if isinstance(child, Mapping):
-            _validate_extension_payload(child, location=f"{location}.{key}")
-        elif isinstance(child, list):
-            _validate_extension_list(child, location=f"{location}.{key}")
-        elif isinstance(child, float) and not math.isfinite(child):
-            raise ValueError(
-                f"extension number at {location}.{key} must be finite JSON"
-            )
-
-
-def _validate_extension_list(value: list[JsonValue], *, location: str) -> None:
-    for index, child in enumerate(value):
-        child_location = f"{location}[{index}]"
-        if isinstance(child, Mapping):
-            _validate_extension_payload(child, location=child_location)
-        elif isinstance(child, list):
-            _validate_extension_list(child, location=child_location)
-        elif isinstance(child, float) and not math.isfinite(child):
-            raise ValueError(
-                f"extension number at {child_location} must be finite JSON"
-            )
-
-
-def _validate_extension_data(
-    value: dict[ExtensionNamespace, dict[JsonString, JsonValue]],
-) -> dict[ExtensionNamespace, dict[JsonString, JsonValue]]:
-    for namespace, payload in value.items():
-        _validate_extension_payload(payload, location=namespace)
-    return value
-
-
-ExtensionData = Annotated[
-    dict[ExtensionNamespace, dict[JsonString, JsonValue]],
-    AfterValidator(_validate_extension_data),
-]
-
-
-class KnownValue[T](HistGermModel):
-    status: Literal["known"]
-    value: T
-
-    @field_validator("value")
-    @classmethod
-    def value_must_not_be_empty(cls, value: T) -> T:
-        if (
-            isinstance(value, Collection)
-            and not isinstance(value, (str, bytes, bytearray))
-            and len(value) == 0
-        ):
-            raise ValueError("known collection value must not be empty")
-        return value
-
-    @field_serializer("value", when_used="json")
-    def serialize_value(self, value: T) -> Any:
-        if isinstance(value, (set, frozenset)):
-            return sorted(value)
-        return value
-
-
-class UnknownValue(HistGermModel):
-    status: Literal["unknown"]
-
-
-class NotApplicableValue(HistGermModel):
-    status: Literal["not_applicable"]
-
-
-class NotPubliclyAvailableValue(HistGermModel):
-    status: Literal["not_publicly_available"]
-
-
-type KnowledgeValue[T] = Annotated[
-    KnownValue[T] | UnknownValue | NotApplicableValue | NotPubliclyAvailableValue,
-    Field(discriminator="status"),
-]
-
-
-class LocalizedName(HistGermModel):
-    text: NonEmptyStr
-    language: KnowledgeValue[RegistryId]
-    name_type: VocabularyId
-
-
-class ExternalIdentifier(HistGermModel):
-    scheme: NonEmptyStr
-    value: NonEmptyStr
-    resolver_url: KnowledgeValue[HttpUrlValue]
-
-
-class ResponsibleParty(HistGermModel):
-    name: NonEmptyStr
-    party_type: VocabularyId
-    role: VocabularyId
-    identifier: KnowledgeValue[ExternalIdentifier]
-
-
-class DateRange(HistGermModel):
-    earliest_year: KnowledgeValue[int]
-    latest_year: KnowledgeValue[int]
-    label: KnowledgeValue[NonEmptyStr]
-    dating_method: KnowledgeValue[VocabularyId]
-    certainty: KnowledgeValue[VocabularyId]
-
-    @model_validator(mode="after")
-    def validate_known_range(self) -> DateRange:
-        if (
-            isinstance(self.earliest_year, KnownValue)
-            and isinstance(self.latest_year, KnownValue)
-            and self.earliest_year.value > self.latest_year.value
-        ):
-            raise ValueError(
-                "earliest_year must be less than or equal to latest_year "
-                "when both endpoints are known"
-            )
-        return self
-
-
-def _sequence_to_frozenset(value: Any) -> Any:
-    if isinstance(value, list):
-        return frozenset(value)
-    return value
-
-
-class GeographicCoverage(HistGermModel):
-    region_ids: KnowledgeValue[frozenset[RegistryId]]
-    dialect_ids: KnowledgeValue[frozenset[RegistryId]]
-    certainty: KnowledgeValue[VocabularyId]
-    note: KnowledgeValue[NonEmptyStr]
-
-    @field_validator("region_ids", "dialect_ids", mode="before")
-    @classmethod
-    def accept_yaml_sequences(cls, value: Any) -> Any:
-        if isinstance(value, Mapping) and value.get("status") == "known":
-            return {**value, "value": _sequence_to_frozenset(value.get("value"))}
-        return value
-
-
-_ENTITY_PREFIXES = {
-    "resource": "res-",
-    "version": "ver-",
-    "distribution": "dist-",
-    "component": "comp-",
-    "work": "work-",
-    "witness": "wit-",
-    "document": "doc-",
-    "annotation": "ann-",
-    "publication": "pub-",
-}
-
-
-class EntityReference(HistGermModel):
-    entity_type: Literal[
-        "resource",
-        "version",
-        "distribution",
-        "component",
-        "work",
-        "witness",
-        "document",
-        "annotation",
-        "publication",
-    ]
-    id: StableId
-
-    @model_validator(mode="after")
-    def validate_prefix(self) -> EntityReference:
-        expected = _ENTITY_PREFIXES[self.entity_type]
-        if not self.id.startswith(expected):
-            raise ValueError(
-                f"id for entity_type {self.entity_type!r} must use the "
-                f"{expected!r} prefix"
-            )
-        return self
-
-
-_SELECTION_PREFIXES = {
-    "resource_ids": "res-",
-    "version_ids": "ver-",
-    "component_ids": "comp-",
-    "document_ids": "doc-",
-    "annotation_ids": "ann-",
-}
-
-
-class SelectionScope(HistGermModel):
-    resource_ids: frozenset[StableId] = Field(default_factory=frozenset)
-    version_ids: frozenset[StableId] = Field(default_factory=frozenset)
-    component_ids: frozenset[StableId] = Field(default_factory=frozenset)
-    document_ids: frozenset[StableId] = Field(default_factory=frozenset)
-    annotation_ids: frozenset[StableId] = Field(default_factory=frozenset)
-    filter: KnowledgeValue[dict[str, JsonValue]]
-
-    @field_validator(*_SELECTION_PREFIXES, mode="before")
-    @classmethod
-    def accept_yaml_sequences(cls, value: Any) -> Any:
-        return _sequence_to_frozenset(value)
-
-    @field_validator(*_SELECTION_PREFIXES)
-    @classmethod
-    def validate_selected_prefixes(
-        cls, value: frozenset[StableId], info: Any
-    ) -> frozenset[StableId]:
-        expected = _SELECTION_PREFIXES[info.field_name]
-        invalid = sorted(item for item in value if not item.startswith(expected))
-        if invalid:
-            raise ValueError(
-                f"{info.field_name} entries must use the {expected!r} prefix; "
-                f"invalid: {', '.join(invalid)}"
-            )
-        return value
-
-    @model_validator(mode="after")
-    def validate_non_empty_selection(self) -> SelectionScope:
-        has_ids = any(getattr(self, field) for field in _SELECTION_PREFIXES)
-        if not has_ids and not isinstance(self.filter, KnownValue):
-            raise ValueError(
-                "selection scope requires at least one selected ID or a known "
-                "non-empty filter"
-            )
-        return self
-
-    @field_serializer(*_SELECTION_PREFIXES, when_used="json")
-    def serialize_ids(self, value: frozenset[StableId]) -> list[StableId]:
-        return sorted(value)
-
+from datetime import date
+from enum import StrEnum
+from typing import Any, ClassVar, Literal
+
+from pydantic import BaseModel, ConfigDict, Field, HttpUrl, field_validator
 
 __all__ = [
-    "DateRange",
-    "EntityReference",
-    "ExtensionData",
-    "ExtensionNamespace",
-    "ExternalIdentifier",
-    "GeographicCoverage",
-    "HistGermModel",
-    "HttpUrlValue",
-    "JsonPointer",
-    "JsonValue",
-    "KnowledgeValue",
-    "KnownValue",
-    "LocalizedName",
-    "NonEmptyStr",
-    "NotApplicableValue",
-    "NotPubliclyAvailableValue",
-    "RegistryId",
-    "ResponsibleParty",
-    "SelectionScope",
-    "StableId",
-    "UnknownValue",
-    "VocabularyId",
+    "Access",
+    "AnnotationQuality",
+    "AnnotationType",
+    "Availability",
+    "BaseResource",
+    "LanguageStage",
+    "LegalPermission",
+    "Overlap",
+    "OverlapRelationship",
+    "ProductionMethod",
+    "Size",
+    "SizeUnit",
+    "Source",
+    "Task",
 ]
+
+STABLE_ID_PATTERN = r"^[a-z0-9]+(?:-[a-z0-9]+)*$"
+STABLE_ID_RE = re.compile(STABLE_ID_PATTERN)
+QUALIFIED_TEXT_RE = re.compile(
+    rf"^(?P<corpus>{STABLE_ID_PATTERN[1:-1]}):(?P<text>{STABLE_ID_PATTERN[1:-1]})$"
+)
+EXTERNAL_CORPUS_RE = re.compile(rf"^external:(?P<corpus>{STABLE_ID_PATTERN[1:-1]})$")
+EXTERNAL_TEXT_RE = re.compile(
+    rf"^external:(?P<corpus>{STABLE_ID_PATTERN[1:-1]}):"
+    rf"(?P<text>{STABLE_ID_PATTERN[1:-1]})$"
+)
+SUPPORT_RE = re.compile(
+    r"^(?:access|aliases|annotations|citation_detail|corpus_links|"
+    r"covered_languages|covered_stages|description|download_links|"
+    r"evaluation_data|hugging_face_links|id|input_formats|lexical_features|"
+    r"links|machine_readable|name|note|notes|output_formats|overlaps|"
+    r"reported_metrics|reviewed_on|search_links|sources|supported_stages|"
+    r"tasks|texts|training_data|versions)"
+    r"(?:\.[a-z0-9]+(?:[-_][a-z0-9]+)*)*$"
+)
+LINK_PURPOSE_RE = re.compile(r"^[a-z][a-z0-9_]*$")
+
+
+class LanguageStage(StrEnum):
+    """Historical German language stages represented by HistGerm."""
+
+    OHG = "ohg"
+    MHG = "mhg"
+    ENHG = "enhg"
+
+
+class LegalPermission(StrEnum):
+    """Evidence-backed legal permission states."""
+
+    PERMITTED = "permitted"
+    PROHIBITED = "prohibited"
+    UNCLEAR = "unclear"
+
+
+class Availability(StrEnum):
+    """Ways in which a resource or corpus version is available."""
+
+    DESCRIBED = "described"
+    BROWSABLE = "browsable"
+    DOWNLOADABLE = "downloadable"
+    API = "api"
+    REQUEST_ONLY = "request_only"
+    AUTHENTICATION_REQUIRED = "authentication_required"
+    UNAVAILABLE = "unavailable"
+    DISCONTINUED = "discontinued"
+
+
+class AnnotationType(StrEnum):
+    """Supported categories of corpus annotation."""
+
+    LEMMA = "lemma"
+    POS = "pos"
+    MORPHOLOGY = "morphology"
+    DEPENDENCIES = "dependencies"
+    NAMED_ENTITIES = "named_entities"
+    NORMALIZATION = "normalization"
+    DATING = "dating"
+    OTHER = "other"
+
+
+class AnnotationQuality(StrEnum):
+    """Documented quality levels for annotation layers."""
+
+    EXPERT_GOLD = "expert_gold"
+    MANUALLY_CORRECTED = "manually_corrected"
+    SILVER = "silver"
+    AUTOMATIC = "automatic"
+
+
+class ProductionMethod(StrEnum):
+    """Methods used to produce an annotation layer."""
+
+    MANUAL = "manual"
+    MANUAL_CORRECTED = "manual_corrected"
+    AUTOMATIC = "automatic"
+    MIXED = "mixed"
+
+
+class Task(StrEnum):
+    """Natural-language processing tasks performed by tools."""
+
+    POS_TAGGER = "pos_tagger"
+    MORPHOLOGICAL_TAGGER = "morphological_tagger"
+    LEMMATIZER = "lemmatizer"
+    SYNTACTIC_PARSER = "syntactic_parser"
+    LANGUAGE_MODEL = "language_model"
+
+
+class SizeUnit(StrEnum):
+    """Units accepted for reported resource sizes."""
+
+    TEXT = "text"
+    SENTENCE = "sentence"
+    ORTHOGRAPHIC_WORD = "orthographic_word"
+    TOKEN = "token"
+    CHARACTER = "character"
+    BYTE = "byte"
+
+
+class OverlapRelationship(StrEnum):
+    """Factual relationships between resources or corpus texts."""
+
+    DUPLICATE = "duplicate"
+    DERIVED_FROM = "derived_from"
+    OVERLAPS = "overlaps"
+    SAME_WORK = "same_work"
+
+
+def _reject_empty_strings(value: Any) -> Any:
+    """Reject empty strings recursively within model input values."""
+
+    if isinstance(value, str) and not value.strip():
+        raise ValueError("empty strings are not allowed")
+    if isinstance(value, list):
+        for item in value:
+            _reject_empty_strings(item)
+    elif isinstance(value, dict):
+        for key, item in value.items():
+            _reject_empty_strings(key)
+            _reject_empty_strings(item)
+    return value
+
+
+def _require_unique(values: list[str], label: str) -> None:
+    """Require all strings in a scoped identifier collection to be unique."""
+
+    if len(values) != len(set(values)):
+        raise ValueError(f"{label} must be unique")
+
+
+class _StrictModel(BaseModel):
+    """Apply strict, assignment-validating behavior to all V2 models."""
+
+    model_config = ConfigDict(
+        extra="forbid",
+        str_strip_whitespace=True,
+        validate_assignment=True,
+        populate_by_name=False,
+    )
+
+    @field_validator("*", mode="before")
+    @classmethod
+    def reject_empty_strings(cls, value: Any) -> Any:
+        """Reject empty strings before validating any model field."""
+
+        return _reject_empty_strings(value)
+
+
+class Source(_StrictModel):
+    """A reviewed provenance source supporting documented resource fields."""
+
+    id: str = Field(pattern=STABLE_ID_PATTERN)
+    url: HttpUrl
+    accessed_on: date
+    supports: list[str] = Field(min_length=1)
+    title: str | None = None
+    citation: str | None = None
+    quote: str | None = None
+    note: str | None = None
+
+    @field_validator("supports")
+    @classmethod
+    def validate_supports(cls, values: list[str]) -> list[str]:
+        """Validate unique dotted support names and reject JSON Pointers."""
+
+        _require_unique(values, "Source.supports entries")
+        for value in values:
+            if value.startswith("/") or "/" in value or not SUPPORT_RE.fullmatch(value):
+                raise ValueError(
+                    "supports entries must be documented dotted field/section names, "
+                    "not JSON Pointers"
+                )
+        return values
+
+
+class Access(_StrictModel):
+    """Resource availability and explicit legal permission assessments."""
+
+    availability: list[Availability] = Field(min_length=1)
+    model_training: LegalPermission
+    original_data_redistribution: LegalPermission
+    processed_data_redistribution: LegalPermission
+    trained_weight_publication: LegalPermission
+    license: str | None = None
+    license_url: HttpUrl | None = None
+    requirements: list[str] | None = None
+    note: str | None = None
+    source_ids: list[str] | None = None
+
+    def validate_evidence(self, sources: dict[str, Source]) -> None:
+        """Require local direct evidence for every non-unclear permission."""
+
+        _check_source_ids(self.source_ids, sources, "Access.source_ids")
+        for field_name in (
+            "model_training",
+            "original_data_redistribution",
+            "processed_data_redistribution",
+            "trained_weight_publication",
+        ):
+            if getattr(self, field_name) is LegalPermission.UNCLEAR:
+                continue
+            support = f"access.{field_name}"
+            direct = [
+                sources[source_id]
+                for source_id in self.source_ids or []
+                if support in sources[source_id].supports
+                and sources[source_id].quote is not None
+            ]
+            if not direct:
+                raise ValueError(
+                    f"{field_name} requires an Access.source_ids source with "
+                    f"supports={support!r} and a direct quote"
+                )
+
+
+class Size(_StrictModel):
+    """A positive reported size with its unit and source description."""
+
+    value: int = Field(gt=0)
+    unit: SizeUnit
+    source: str
+    note: str | None = None
+
+
+class Overlap(_StrictModel):
+    """A factual overlap relationship with a qualified target."""
+
+    relationship: OverlapRelationship
+    with_: str = Field(alias="with")
+    note: str
+    source_ids: list[str] | None = None
+
+    @field_validator("with_")
+    @classmethod
+    def validate_target_syntax(cls, value: str) -> str:
+        """Validate corpus, text, and explicitly external target syntax."""
+
+        if not any(
+            pattern.fullmatch(value)
+            for pattern in (
+                STABLE_ID_RE,
+                QUALIFIED_TEXT_RE,
+                EXTERNAL_CORPUS_RE,
+                EXTERNAL_TEXT_RE,
+            )
+        ):
+            raise ValueError(
+                "with must be a corpus ID, corpus-id:text-id, "
+                "external:corpus-id, or external:corpus-id:text-id"
+            )
+        return value
+
+    def validate_scope(self, scope: Literal["corpus", "text"]) -> None:
+        """Ensure the target syntax matches its corpus or text owner."""
+
+        if scope == "corpus" and not (
+            STABLE_ID_RE.fullmatch(self.with_)
+            or EXTERNAL_CORPUS_RE.fullmatch(self.with_)
+        ):
+            raise ValueError("corpus overlap targets must be corpus IDs")
+        if scope == "text" and not (
+            QUALIFIED_TEXT_RE.fullmatch(self.with_)
+            or EXTERNAL_TEXT_RE.fullmatch(self.with_)
+        ):
+            raise ValueError("text overlap targets must be qualified text IDs")
+
+
+class BaseResource(_StrictModel):
+    """Shared identity and provenance fields for top-level resources."""
+
+    id: str = Field(pattern=STABLE_ID_PATTERN)
+    name: str
+    aliases: list[str] | None = None
+    description: str | None = None
+    links: dict[str, HttpUrl] | None = None
+    sources: list[Source] = Field(min_length=1)
+    reviewed_on: date
+
+    _access_field: ClassVar[str] = "access"
+
+    @field_validator("links")
+    @classmethod
+    def validate_link_purposes(
+        cls, value: dict[str, HttpUrl] | None
+    ) -> dict[str, HttpUrl] | None:
+        """Require descriptive lower-snake-case keys for resource links."""
+
+        if value is not None:
+            for purpose in value:
+                if not LINK_PURPOSE_RE.fullmatch(purpose):
+                    raise ValueError("link purposes must use lower_snake_case")
+        return value
+
+    @field_validator("sources")
+    @classmethod
+    def validate_resource_sources(cls, sources: list[Source]) -> list[Source]:
+        """Require unique source identifiers within the resource."""
+
+        _require_unique([source.id for source in sources], "resource source IDs")
+        return sources
+
+    def _validate_access_and_references(self, access: Access) -> dict[str, Source]:
+        """Validate access evidence and return indexed local sources."""
+
+        sources = _source_map(self.sources)
+        access.validate_evidence(sources)
+        return sources
+
+
+def _source_map(sources: list[Source]) -> dict[str, Source]:
+    """Index resource-local sources by their stable identifiers."""
+
+    return {source.id: source for source in sources}
+
+
+def _check_source_ids(
+    source_ids: list[str] | None, sources: dict[str, Source], location: str
+) -> None:
+    """Ensure source references resolve within their owning resource."""
+
+    for source_id in source_ids or []:
+        if source_id not in sources:
+            raise ValueError(f"{location} references unknown source ID {source_id!r}")

@@ -6,11 +6,12 @@ import os
 from collections.abc import Mapping
 from dataclasses import dataclass
 from importlib import resources
+from importlib.resources.abc import Traversable
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import yaml  # type: ignore[import-untyped]
-from pydantic import TypeAdapter, ValidationError
+from pydantic import ValidationError
 from yaml.nodes import MappingNode, ScalarNode  # type: ignore[import-untyped]
 from yaml.tokens import (  # type: ignore[import-untyped]
     AliasToken,
@@ -18,13 +19,9 @@ from yaml.tokens import (  # type: ignore[import-untyped]
     TagToken,
 )
 
-from histgerm.models.catalog import (
-    Catalog,
-    InventoryRecord,
-    OpenRegistryDefinition,
-)
+if TYPE_CHECKING:
+    from histgerm.models.catalog import Catalog
 
-_INVENTORY_ADAPTER: TypeAdapter[InventoryRecord] = TypeAdapter(InventoryRecord)
 _UTF8_BOM = b"\xef\xbb\xbf"
 
 
@@ -233,6 +230,103 @@ def load_yaml_file(path: Path) -> Any:
     return load_yaml_bytes(path.read_bytes(), source_path=path.as_posix())
 
 
+def load_yaml_mapping_bytes(
+    data: bytes, *, source_path: str = "<memory>"
+) -> dict[str, Any]:
+    """Load one restricted UTF-8 YAML document whose root is a mapping."""
+
+    document = load_yaml_bytes(data, source_path=source_path)
+    if not isinstance(document, Mapping):
+        raise InventoryCompositionError(
+            _diagnostic(
+                "non_mapping_document",
+                source_path,
+                "YAML document root must be a mapping",
+            )
+        )
+    return dict(document)
+
+
+def _resource_parts(path: str, *, label: str) -> tuple[str, ...]:
+    parts = tuple(path.split("/"))
+    if not parts or any(part in {"", ".", ".."} for part in parts):
+        raise InventoryDiscoveryError(
+            _diagnostic(
+                "invalid_resource_path",
+                label,
+                "package resource path must remain within its declared boundary",
+            )
+        )
+    return parts
+
+
+def _discover_yaml_resources(
+    root: Traversable, *, prefix: tuple[str, ...] = ()
+) -> list[str]:
+    discovered: list[str] = []
+    for entry in sorted(root.iterdir(), key=lambda item: item.name):
+        relative = (*prefix, entry.name)
+        if entry.is_dir():
+            discovered.extend(_discover_yaml_resources(entry, prefix=relative))
+        elif entry.is_file() and Path(entry.name).suffix.casefold() in {
+            ".yaml",
+            ".yml",
+        }:
+            discovered.append("/".join(relative))
+    return discovered
+
+
+def discover_bundled_yaml(
+    *, package: str = "histgerm", directory: str = "data"
+) -> tuple[str, ...]:
+    """Discover authored YAML paths beneath a package data directory."""
+
+    label = f"{package}:{directory}"
+    root = resources.files(package).joinpath(*_resource_parts(directory, label=label))
+    if not root.is_dir():
+        raise InventoryDiscoveryError(
+            _diagnostic(
+                "missing_bundled_data",
+                label,
+                "bundled data directory does not exist",
+            )
+        )
+    return tuple(_discover_yaml_resources(root))
+
+
+def load_bundled_yaml(
+    resource: str,
+    *,
+    package: str = "histgerm",
+    directory: str = "data",
+) -> dict[str, Any]:
+    """Load one authored YAML mapping from the package data boundary."""
+
+    label = f"{package}:{directory}/{resource}"
+    resource_parts = _resource_parts(resource, label=label)
+    if Path(resource_parts[-1]).suffix.casefold() not in {".yaml", ".yml"}:
+        raise InventoryDiscoveryError(
+            _diagnostic(
+                "unsupported_resource",
+                label,
+                "bundled resource must use .yaml or .yml",
+            )
+        )
+    root = resources.files(package).joinpath(
+        *_resource_parts(directory, label=f"{package}:{directory}")
+    )
+    target = root.joinpath(*resource_parts)
+    if not target.is_file():
+        raise InventoryDiscoveryError(
+            _diagnostic(
+                "missing_bundled_resource",
+                label,
+                "bundled YAML resource does not exist",
+            )
+        )
+    return load_yaml_mapping_bytes(target.read_bytes(), source_path=label)
+
+
 def discover_inventory_files(root: Path) -> tuple[Path, ...]:
     """Return authoring YAML files in normalized relative-path order."""
 
@@ -291,6 +385,15 @@ def _model_error(path: str, error: ValidationError) -> InventoryModelError:
 
 
 def _compose_authoring(root: Path) -> tuple[Catalog, dict[str, str]]:
+    from pydantic import TypeAdapter
+
+    from histgerm.models.catalog import (
+        Catalog,
+        InventoryRecord,
+        OpenRegistryDefinition,
+    )
+
+    inventory_adapter: TypeAdapter[InventoryRecord] = TypeAdapter(InventoryRecord)
     files = discover_inventory_files(root)
     boundary = root.resolve() if root.is_dir() else root.parent.resolve()
     catalog_data: dict[str, Any] | None = None
@@ -417,7 +520,7 @@ def _compose_authoring(root: Path) -> tuple[Catalog, dict[str, str]]:
                 )
             )
         try:
-            record = _INVENTORY_ADAPTER.validate_python(document)
+            record = inventory_adapter.validate_python(document)
         except ValidationError as error:
             raise _model_error(relative, error) from error
         collections[collection].append(record)
@@ -494,9 +597,12 @@ def _compose_authoring(root: Path) -> tuple[Catalog, dict[str, str]]:
 
 
 def _load_json_bytes(data: bytes, path: str) -> Catalog:
+    from histgerm.models.catalog import Catalog
+
     text = _decode_utf8(data, path)
     try:
-        return Catalog.model_validate_json(text)
+        catalog: Catalog = Catalog.model_validate_json(text)
+        return catalog
     except ValidationError as error:
         raise _model_error(path, error) from error
 
@@ -539,9 +645,12 @@ __all__ = [
     "InventoryModelError",
     "LoadingDiagnostic",
     "UnsafeYamlError",
+    "discover_bundled_yaml",
     "discover_inventory_files",
+    "load_bundled_yaml",
     "load_bundled_catalog",
     "load_catalog",
     "load_yaml_bytes",
     "load_yaml_file",
+    "load_yaml_mapping_bytes",
 ]

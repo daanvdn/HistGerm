@@ -48,6 +48,7 @@ build-backend = "uv_build"
 source-include = [
     "docs/**",
     "inventory/**",
+    "src/histgerm/data/**",
     "tests/**",
 ]
 

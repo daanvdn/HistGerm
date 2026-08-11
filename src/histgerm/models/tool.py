@@ -1,102 +1,61 @@
-"""Tool/model category profile."""
+"""Tool model for the HistGerm V2 schema."""
 
 from __future__ import annotations
 
-from collections.abc import Mapping
 from typing import Any
 
-from pydantic import field_validator, model_validator
+from pydantic import Field, HttpUrl, field_validator, model_validator
 
-from histgerm.models.access import (
-    ApiInterface,
-    CliInterface,
-    HuggingFaceReference,
-    LicenseDescription,
-)
-from histgerm.models.common import (
-    HistGermModel,
-    HttpUrlValue,
-    KnowledgeValue,
-    KnownValue,
-    NonEmptyStr,
-    SelectionScope,
-    StableId,
-    VocabularyId,
-)
+from .common import Access, BaseResource, LanguageStage, Task
+
+__all__ = ["Tool"]
+
+type MetricValue = int | float | str
+type ReportedMetric = dict[str, MetricValue]
 
 
-def _known_set(value: Any) -> Any:
-    if isinstance(value, Mapping) and value.get("status") == "known":
-        inner = value.get("value")
-        if isinstance(inner, list):
-            return {**value, "value": frozenset(inner)}
-    return value
+class Tool(BaseResource):
+    """An NLP tool with controlled tasks, formats, and access metadata."""
 
+    tasks: list[Task] = Field(min_length=1)
+    supported_stages: list[LanguageStage] | None = None
+    input_formats: list[str] | None = None
+    output_formats: list[str] | None = None
+    access: Access
+    training_data: list[str] | None = None
+    evaluation_data: list[str] | None = None
+    reported_metrics: list[ReportedMetric] | None = None
+    hugging_face_links: list[HttpUrl] | None = None
+    note: str | None = None
 
-class DatasetUse(HistGermModel):
-    resource_id: KnowledgeValue[StableId]
-    external_name: KnowledgeValue[NonEmptyStr]
-    scope: KnowledgeValue[SelectionScope]
-    note: KnowledgeValue[NonEmptyStr]
+    @field_validator("reported_metrics", mode="before")
+    @classmethod
+    def validate_reported_metrics(cls, metrics: Any) -> Any:
+        """Validate compact metric mappings without adding a public model."""
+
+        allowed = {"name", "value", "task", "dataset", "note"}
+        required = {"name", "value"}
+        for metric in metrics or []:
+            if not isinstance(metric, dict):
+                raise ValueError("each reported metric must be a mapping")
+            keys = set(metric)
+            if not required <= keys or not keys <= allowed:
+                raise ValueError(
+                    "each metric requires name/value and permits only task/dataset/note"
+                )
+            for key in ("name", "task", "dataset", "note"):
+                if key in metric and not isinstance(metric[key], str):
+                    raise ValueError(f"reported metric {key} must be a string")
+            value = metric["value"]
+            if isinstance(value, bool) or not isinstance(value, (int, float, str)):
+                raise ValueError(
+                    "reported metric value must be int, float, or string (not bool)"
+                )
+        return metrics
 
     @model_validator(mode="after")
-    def validate_identity(self) -> DatasetUse:
-        resource_known = isinstance(self.resource_id, KnownValue)
-        external_known = isinstance(self.external_name, KnownValue)
-        if resource_known == external_known:
-            raise ValueError(
-                "dataset use requires exactly one known resource_id or external_name"
-            )
-        if isinstance(self.resource_id, KnownValue) and not (
-            self.resource_id.value.startswith("res-")
-        ):
-            raise ValueError("dataset resource_id must use the 'res-' prefix")
+    def validate_tool_sources(self) -> Tool:
+        """Validate the tool's access evidence against local sources."""
+
+        self._validate_access_and_references(self.access)
         return self
-
-
-class EvaluationMetric(HistGermModel):
-    name: NonEmptyStr
-    value: KnowledgeValue[float]
-    scale: KnowledgeValue[NonEmptyStr]
-    task: KnowledgeValue[VocabularyId]
-    dataset: KnowledgeValue[DatasetUse]
-    scope: KnowledgeValue[SelectionScope]
-    note: KnowledgeValue[NonEmptyStr]
-
-
-class ToolProfile(HistGermModel):
-    supported_tasks: KnowledgeValue[frozenset[VocabularyId]]
-    input_formats: KnowledgeValue[frozenset[VocabularyId]]
-    output_formats: KnowledgeValue[frozenset[VocabularyId]]
-    language_stage_ids: KnowledgeValue[frozenset[VocabularyId]]
-    implementation_languages: KnowledgeValue[frozenset[NonEmptyStr]]
-    frameworks: KnowledgeValue[frozenset[NonEmptyStr]]
-    model_architecture: KnowledgeValue[NonEmptyStr]
-    training_data: KnowledgeValue[list[DatasetUse]]
-    evaluation_data: KnowledgeValue[list[DatasetUse]]
-    reported_metrics: KnowledgeValue[list[EvaluationMetric]]
-    installation_url: KnowledgeValue[HttpUrlValue]
-    usage_url: KnowledgeValue[HttpUrlValue]
-    package_name: KnowledgeValue[NonEmptyStr]
-    cli: KnowledgeValue[CliInterface]
-    api: KnowledgeValue[ApiInterface]
-    hugging_face: KnowledgeValue[HuggingFaceReference]
-    software_license: LicenseDescription
-    model_license: LicenseDescription
-    maintenance_status: KnowledgeValue[VocabularyId]
-
-    @field_validator(
-        "supported_tasks",
-        "input_formats",
-        "output_formats",
-        "language_stage_ids",
-        "implementation_languages",
-        "frameworks",
-        mode="before",
-    )
-    @classmethod
-    def accept_yaml_sets(cls, value: Any) -> Any:
-        return _known_set(value)
-
-
-__all__ = ["DatasetUse", "EvaluationMetric", "ToolProfile"]
