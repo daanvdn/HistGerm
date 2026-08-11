@@ -1,0 +1,7342 @@
+id: res-rem
+name: Reference Corpus of Middle High German
+aliases:
+- ReM
+description: Diplomatically transcribed and annotated Middle High German corpus covering 1050–1350.
+reviewed_on: '2026-08-11'
+links:
+  homepage: https://linguistics.rub.de/rem/index.html
+  citation: https://doi.org/10.5281/zenodo.13982324
+access:
+  availability:
+  - described
+  - browsable
+  - downloadable
+  model_training: unclear
+  original_data_redistribution: permitted
+  processed_data_redistribution: unclear
+  trained_weight_publication: unclear
+  license: Creative Commons Attribution-ShareAlike 4.0 International
+  license_url: https://creativecommons.org/licenses/by-sa/4.0/
+  requirements:
+  - When sharing, retain supplied creator and license information, link to the material and license where practicable, and
+    indicate modifications.
+  - Cite Roussel, Klein, Dipper, Wegera, and Wich-Reif (2024), Referenzkorpus Mittelhochdeutsch (1050–1350), Version 2.1,
+    and ISLRN 937-948-254-174-0.
+  note: Automated-access permission was unclear in the source inventory and is intentionally absent from V2. CC BY-SA 4.0
+    directly supports original-data redistribution; model training, processed-data redistribution, and trained-weight publication
+    remain unclear.
+  source_ids:
+  - evidence-rem-access
+  - evidence-rem-license
+notes:
+- 'Creators (persons, role creator): Adam Roussel, Thomas Klein, Stefanie Dipper, Klaus-Peter Wegera, and Claudia Wich-Reif.'
+- ReM is diplomatically transcribed. tok_dipl preserves historical tokenization and letter representation close to historical
+  forms; tok_anno uses modernized tokenization and simplified spelling. The punc layer marks sentence or segment boundaries
+  with functional boundary tags.
+- Several corpora flowed into ReM. This does not support a whole-corpus derived_from relationship, so no structured overlap
+  is asserted.
+sources:
+- id: evidence-rem-homepage
+  url: https://linguistics.rub.de/rem/index.html
+  accessed_on: '2026-08-11'
+  supports:
+  - id
+  - name
+  - aliases
+  - description
+  - reviewed_on
+  - links.homepage
+  - versions
+  - texts
+  title: ReM project homepage
+  quote: The “Reference Corpus of Middle High German” (short ReM) is a corpus of diplomatically transcribed and annotated
+    texts from Middle High German (1050–1350) with a size of around 2 million word forms.
+  note: Canonical bilingual project description for identity, short name, stage, chronology, transcription, and approximate
+    size.
+- id: evidence-rem-access
+  url: https://linguistics.rub.de/rem/access/index.en.html
+  accessed_on: '2026-08-11'
+  supports:
+  - access
+  - links.citation
+  - versions.links
+  - versions.availability
+  title: ReM access and download page
+  citation: Roussel, Adam; Klein, Thomas; Dipper, Stefanie; Wegera, Klaus-Peter; Wich-Reif, Claudia (2024). Referenzkorpus
+    Mittelhochdeutsch (1050–1350), Version 2.1. ISLRN 937-948-254-174-0. https://doi.org/10.5281/zenodo.13982324
+  quote: The Reference Corpus of Middle High German is licensed under a Creative Commons Attribution-ShareAlike 4.0 International
+    License.
+  note: Canonical access page for the requested citation, ANNIS browser, downloads, schemas, and CC BY-SA 4.0 declaration.
+- id: evidence-rem-zenodo
+  url: https://zenodo.org/api/records/13982324
+  accessed_on: '2026-08-11'
+  supports:
+  - versions
+  - versions.links
+  - versions.annotations
+  - versions.sizes
+  - note
+  - sources
+  title: ReM version 2.1 Zenodo release metadata
+  citation: Roussel, Adam; Klein, Thomas; Dipper, Stefanie; Wegera, Klaus-Peter; Wich-Reif, Claudia (2024). Referenzkorpus
+    Mittelhochdeutsch (1050–1350), Version 2.1. ISLRN 937-948-254-174-0. https://doi.org/10.5281/zenodo.13982324
+  quote: Texts have been digitized and richly annotated, e.g. with parts of speech, morphology and lemmas.
+  note: Canonical metadata for version 2.1, release date, creators, DOI, ISLRN, downloads, formats, annotation presence, and
+    size. Files were not downloaded.
+- id: evidence-rem-structure
+  url: https://linguistics.rub.de/rem/corpus/index.html
+  accessed_on: '2026-08-11'
+  supports:
+  - notes
+  - versions.note
+  - texts.note
+  - annotations.tokenization
+  title: ReM corpus structure documentation
+  quote: Im Referenzkorpus Mittelhochdeutsch (ReM) sind mehrere Korpora zusammengeflossen.
+  note: Supports component identity and provenance, -G MiGraKo and -X extension membership, diplomatic transcription, tok_dipl,
+    and tok_anno. It does not establish a safe whole-corpus derivation edge.
+- id: evidence-rem-layers
+  url: https://linguistics.rub.de/rem/corpus/layers.html
+  accessed_on: '2026-08-11'
+  supports:
+  - annotations
+  - versions.note
+  - texts.annotation_ids
+  - notes
+  title: ReM annotation layers documentation
+  quote: char_align ist für das Kernkorpus, d.h. für alle MiGraKo-Texte, annotiert, aber nur für einen kleinen Teil der Texte
+    im Erweiterungskorpus.
+  note: Supports layer identities, token alignment, missing-value convention, norm and char_align formats, tokenization tags,
+    unequal component coverage, and sentence segmentation.
+- id: evidence-rem-license
+  url: https://creativecommons.org/licenses/by-sa/4.0/legalcode.en
+  accessed_on: '2026-08-11'
+  supports:
+  - access.original_data_redistribution
+  - access.requirements
+  title: CC BY-SA 4.0 legal code
+  quote: Subject to the terms and conditions of this Public License, the Licensor hereby grants You a worldwide, royalty-free,
+    non-sublicensable, non-exclusive, irrevocable license to exercise the Licensed Rights in the Licensed Material to reproduce
+    and Share the Licensed Material, in whole or in part.
+  note: Direct evidence for original-data redistribution and attribution only; it does not settle model training, processed-data
+    treatment, or trained-weight publication.
+- id: evidence-rem-texts
+  url: https://linguistics.rub.de/rem/corpus/texts.html
+  accessed_on: '2026-08-11'
+  supports:
+  - texts
+  - texts.title
+  - texts.dialect
+  - texts.date
+  - texts.note
+  title: ReM canonical text overview
+  note: Static canonical enumeration of 407 IDs, component-bearing ANNIS groups, text types, titles, and dialect/date labels.
+    Production version 2.1 uses 406 entries after the separately resolved M057 removal.
+- id: evidence-rem-details
+  url: https://linguistics.rub.de/rem/corpus/details.html#M330
+  accessed_on: '2026-08-11'
+  supports:
+  - texts.dialect
+  - texts.date
+  - texts.note
+  title: ReM M330 canonical details
+  note: 'M330: text date “um 1200 / 13,1V”; manuscript date “13,M”; text composition “vermutl. wmd. (rhfrk.-hess.?)”; manuscript/script
+    dialect “hessisch-thüringisch?”; ANNIS group “13_1-thurhess-PV-G”.'
+- id: evidence-rem-metadata
+  url: https://linguistics.rub.de/rem/documentation/metadata.html
+  accessed_on: '2026-08-11'
+  supports:
+  - texts
+  - texts.note
+  title: ReM metadata field documentation
+  quote: 'language: Sprachstufe (in ReM steht ''mhd'')'
+  note: Defines text and manuscript metadata fields and verifies Middle High German for every ReM text.
+- id: evidence-rem-lemma
+  url: https://linguistics.rub.de/rem/documentation/lemma.html
+  accessed_on: '2026-08-11'
+  supports:
+  - annotations.lemma
+  title: ReM lemma documentation
+  quote: Die Gestaltung der Lemmaansätze und die Bestimmung der grammatischen Kategorien richtet sich dabei meist nach dem
+    jeweils entsprechenden Ansatz in Lexers Handwörterbuch.
+  note: Supports Lexer-based lemma conventions and the lemma, lemmaLemma, and lemmaId ANNIS layers.
+- id: evidence-rem-pos
+  url: https://linguistics.rub.de/rem/documentation/pos.html
+  accessed_on: '2026-08-11'
+  supports:
+  - annotations.pos
+  title: ReM part-of-speech documentation
+  quote: Wortarten sind mit HiTS („Historisches Tagset") annotiert, das im Kontext der Projekte „Referenzkorpus Altdeutsch"
+    und „Referenzkorpus Mittelhochdeutsch" entstanden ist.
+  note: Supports the HiTS name and token-specific pos and lemma-specific posLemma layers.
+- id: evidence-rem-morphology
+  url: https://linguistics.rub.de/rem/documentation/morph.html
+  accessed_on: '2026-08-11'
+  supports:
+  - annotations.morphology
+  title: ReM morphology documentation
+  quote: Morphologische Informationen sind als einzelnes Merkmal annotiert, dessen Werte jeweils mit einem Punkt voneinander
+    abgetrennt sind (Bsp. Masc.Nom.Sg für 'Maskulinum Nominativ Singular').
+  note: Supports the ReM-internal inflection feature grammar and its dot-separated values.
+- id: evidence-rem-hits
+  url: https://linguistics.rub.de/comphist/resources/hits/
+  accessed_on: '2026-08-11'
+  supports:
+  - annotations.pos
+  - annotations.tokenization
+  title: HiTS tagset project page
+  citation: 'Dipper, Stefanie; Donhauser, Karin; Klein, Thomas; Linde, Sonja; Müller, Stefan; Wegera, Klaus-Peter (2013).
+    HiTS: ein Tagset für historische Sprachstufen des Deutschen. JLCL 28(1), 85–137.'
+  note: Canonical HiTS project page. ReM documentation assigns no explicit HiTS version number.
+- id: evidence-rem-hits-publication
+  url: https://doi.org/10.21248/jlcl.28.2013.170
+  accessed_on: '2026-08-11'
+  supports:
+  - annotations.pos
+  - annotations.tokenization
+  - sources
+  title: HiTS peer-reviewed publication
+  citation: 'Dipper, Stefanie; Donhauser, Karin; Klein, Thomas; Linde, Sonja; Müller, Stefan; Wegera, Klaus-Peter (2013).
+    HiTS: ein Tagset für historische Sprachstufen des Deutschen. Journal for Language Technology and Computational Linguistics
+    28(1), 85–137. https://doi.org/10.21248/jlcl.28.2013.170'
+  note: Published HiTS tagset description and rationale.
+- id: evidence-rem-news
+  url: https://linguistics.rub.de/rem/access/NEWS
+  accessed_on: '2026-08-11'
+  supports:
+  - versions
+  - versions.note
+  - texts
+  title: ReM changelog
+  quote: 'Removed: M057.'
+  note: Version 2.0 removed M057; version 2.1 made punctuation-parser and metadata-header corrections and made no text additions
+    or removals.
+- id: evidence-rem-zenodo-manifest
+  url: https://zenodo.org/api/records/13982324/files/ReM-v2.1_coraxml.zip/container
+  accessed_on: '2026-08-11'
+  supports:
+  - versions
+  - versions.note
+  - texts
+  title: ReM v2.1 CorA-XML container manifest
+  note: The complete version 2.1 container manifest contains M056.xml and M058.xml but no M057.xml. This resolves the stale
+    texts.html row in favor of excluding M057; no corpus payload was downloaded.
+versions:
+- id: ver-rem-2-1
+  label: '2.1'
+  released_on: '2024-10-28'
+  links:
+    changelog: https://linguistics.rub.de/rem/access/NEWS
+    dataset: https://zenodo.org/records/13982324
+    doi: https://doi.org/10.5281/zenodo.13982324
+    annis_browser: https://newannis.linguistics.rub.de/rem
+    download_coraxml: https://zenodo.org/record/13982324/files/ReM-v2.1_coraxml.zip?download=1
+    download_tei: https://zenodo.org/record/13982324/files/ReM-v2.1_tei.zip?download=1
+    download_json: https://zenodo.org/record/13982324/files/ReM-v2.1_json.zip?download=1
+    download_graphml: https://zenodo.org/record/13982324/files/ReM-v2.1_graphml.zip?download=1
+    schema_tei: https://tei-c.org/release/doc/tei-p5-doc/en/html/index.html
+    schema_tabular_json: https://linguistics.rub.de/~roussel/tabular-json/specification.html
+    schema_coraxml: https://cora.readthedocs.io/en/latest/coraxml/
+    schema_graphml: http://graphml.graphdrawing.org/
+    conversion_software: https://gitlab.rub.de/comphist/rem_convert
+  license: Creative Commons Attribution-ShareAlike 4.0 International
+  availability:
+  - described
+  - browsable
+  - downloadable
+  sizes:
+  - value: 2000000
+    unit: orthographic_word
+    source: evidence-rem-homepage and evidence-rem-zenodo
+    note: 'Reported approximate count: around two million word forms; no exact count or detailed counting procedure was supplied.'
+  annotations:
+  - id: lemma
+    type: lemma
+    tagset_name: Lexers Mittelhochdeutsches Handwörterbuch (Lexer)
+    tagset_link: http://woerterbuchnetz.de/Lexer/
+    source_ids:
+    - evidence-rem-layers
+    - evidence-rem-lemma
+    note: 'Token-specific lemma (ANNIS: lemma) and lemma-specific lemma (ANNIS: lemmaLemma). Lemma conventions follow Lexer.
+      lemmaId cross-references the Mittelhochdeutsches Wörterbuch. Missing or empty entries are represented by --. Applies
+      corpus-wide; no text-level exception is documented.'
+  - id: pos
+    type: pos
+    tagset_name: HiTS (Historisches Tagset)
+    tagset_link: https://linguistics.rub.de/comphist/resources/hits/
+    source_ids:
+    - evidence-rem-pos
+    - evidence-rem-hits
+    - evidence-rem-hits-publication
+    note: 'Token-specific POS (ANNIS: pos) and lemma-specific POS (ANNIS: posLemma). HiTS adapts STTS for historical German.
+      No HiTS version is assigned in ReM documentation. Missing or empty entries are represented by --. Applies corpus-wide;
+      no text-level exception is documented.'
+  - id: morphology
+    type: morphology
+    source_ids:
+    - evidence-rem-layers
+    - evidence-rem-morphology
+    note: 'ReM-internal feature grammar: ANNIS inflection uses dot-separated combinations such as Masc.Nom.Sg; inflectionClass
+      and inflectionClassLemma hold token- and lemma-specific classes. Underspecified features use *. No external named tagset.
+      Missing or empty entries are represented by --. Applies corpus-wide.'
+  - id: normalization
+    type: normalization
+    source_ids:
+    - evidence-rem-layers
+    note: 'MHG normal form of each token (ANNIS: norm), following standard MHG dictionary conventions. Missing or empty entries
+      are represented by --. Applies corpus-wide; no text-level exception is documented.'
+  - id: char-align
+    type: normalization
+    source_ids:
+    - evidence-rem-layers
+    note: 'Graphophonemic character-by-character alignment (ANNIS: char_align) from attested form to norm; pipe-separated
+      mappings use x=u notation. It is assigned here to every MiGraKo (-G) text. A verified small but unidentified subset
+      of extension (-X) texts also has char_align; those extension assignments are omitted until text-level evidence exists.'
+  - id: tokenization
+    type: other
+    source_ids:
+    - evidence-rem-layers
+    - evidence-rem-hits
+    - evidence-rem-hits-publication
+    note: 'Tokenization change annotation (ANNIS: tokenization) records differences between tok_anno and tok_dipl. HiTS tags
+      MS, ML, US, and UL and numbered variants describe changes; unchanged tokens carry --. Applies corpus-wide as a presence
+      layer.'
+  texts:
+  - id: m001
+    title: Ad equum errehet
+    stages:
+    - mhg
+    dialect: rhfrk
+    date: '12'
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M001. Component: ReM extension corpus (-X).'
+  - id: m002
+    title: Ad fluxum sanguinis narium
+    stages:
+    - mhg
+    dialect: rhfrk
+    date: '12'
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M002. Component: ReM extension corpus (-X).'
+  - id: m003
+    title: Ad restringendum sanguinem [= Erfurter Blutsegen]
+    stages:
+    - mhg
+    dialect: omd
+    date: '12'
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M003. Component: ReM extension corpus (-X).'
+  - id: m004
+    title: 'Priester Adelbrecht: Johannes Baptista'
+    stages:
+    - mhg
+    dialect: bair
+    date: 12,E-13,A
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M004. Component: ReM extension corpus (-X).'
+  - id: m005
+    title: Aegidius, Trierer
+    stages:
+    - mhg
+    dialect: hess-thür
+    date: um 1200
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M005. Component: MiGraKo core corpus (-G).'
+  - id: m006
+    title: Höxterer Aegidius
+    stages:
+    - mhg
+    dialect: hess-thür
+    date: 12,2
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M006. Component: ReM extension corpus (-X).'
+  - id: m007
+    title: Albanus
+    stages:
+    - mhg
+    dialect: moselfrk
+    date: 13,2V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M007. Component: ReM extension corpus (-X).'
+  - id: m008
+    title: Straßburger Alexander
+    stages:
+    - mhg
+    dialect: hess-thür
+    date: 12,A
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M008. Component: MiGraKo core corpus (-G).'
+  - id: m009
+    title: 'Pfaffe Lambrecht: ''Alexanderlied'' (Vorau)'
+    stages:
+    - mhg
+    dialect: mfrk, bair
+    date: 12,3V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M009. Component: ReM extension corpus (-X).'
+  - id: m010
+    title: Alkuins Traktat
+    stages:
+    - mhg
+    dialect: alem
+    date: 12,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M010. Component: ReM extension corpus (-X).'
+  - id: m011
+    title: Andreas
+    stages:
+    - mhg
+    dialect: md
+    date: 12,2
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M011. Component: ReM extension corpus (-X).'
+  - id: m012
+    title: Das Anegenge
+    stages:
+    - mhg
+    dialect: südbair
+    date: um 1300
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M012. Component: ReM extension corpus (-X).'
+  - id: m013-b
+    title: Annolied (B)
+    stages:
+    - mhg
+    dialect: mfrk, rhfrk
+    date: 12,2-13,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M013B. Component: ReM extension corpus (-X).'
+  - id: m013-o
+    title: Annolied (O)
+    stages:
+    - mhg
+    dialect: mfrk, rhfrk
+    date: 12,2-13,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M013O. Component: ReM extension corpus (-X).'
+  - id: m014
+    title: 'Arnold: Loblied auf den heiligen Geist'
+    stages:
+    - mhg
+    dialect: bair
+    date: 12,4V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M014. Component: ReM extension corpus (-X).'
+  - id: m015
+    title: Bamberger Arzneibuch
+    stages:
+    - mhg
+    dialect: rhfrk
+    date: 12,M
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M015. Component: ReM extension corpus (-X).'
+  - id: m016
+    title: Innsbrucker Arzneibuch
+    stages:
+    - mhg
+    dialect: bair
+    date: 12,3V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M016. Component: ReM extension corpus (-X).'
+  - id: m017
+    title: Züricher Arzneibuch
+    stages:
+    - mhg
+    dialect: alem
+    date: 12,E
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M017. Component: ReM extension corpus (-X).'
+  - id: m018
+    title: Cambridger Augensegen, A75
+    stages:
+    - mhg
+    dialect: bair
+    date: 13,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M018. Component: ReM extension corpus (-X).'
+  - id: m019
+    title: Münchner (Regensburger) Augensegen
+    stages:
+    - mhg
+    dialect: bair
+    date: '11'
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M019. Component: ReM extension corpus (-X).'
+  - id: m020
+    title: Münchener Ausfahrtsegen
+    stages:
+    - mhg
+    dialect: obd
+    date: 12,2
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M020. Component: ReM extension corpus (-X).'
+  - id: m021
+    title: Auslegung des Vaterunser
+    stages:
+    - mhg
+    dialect: bair
+    date: 12,3V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M021. Component: ReM extension corpus (-X).'
+  - id: m022
+    title: 'Ava: Antichrist'
+    stages:
+    - mhg
+    dialect: bair
+    date: 12,4V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M022. Component: ReM extension corpus (-X).'
+  - id: m023
+    title: 'Ava: Jüngstes Gericht'
+    stages:
+    - mhg
+    dialect: bair
+    date: 12,4V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M023. Component: ReM extension corpus (-X).'
+  - id: m024
+    title: 'Ava: Leben Jesu'
+    stages:
+    - mhg
+    dialect: bair
+    date: 12,4V; 14
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M024. Component: ReM extension corpus (-X).'
+  - id: m026
+    title: Ave Maria
+    stages:
+    - mhg
+    dialect: bair
+    date: 13,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M026. Component: ReM extension corpus (-X).'
+  - id: m027
+    title: Von der Babylonischen Gefangenschaft
+    stages:
+    - mhg
+    dialect: bair
+    date: 12,2
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M027. Component: ReM extension corpus (-X).'
+  - id: m028
+    title: Vorauer Balaam (Bücher Mosis 5)
+    stages:
+    - mhg
+    dialect: bair
+    date: 12,4V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M028. Component: ReM extension corpus (-X).'
+  - id: m029
+    title: Von der Bedeutung der Buchstaben
+    stages:
+    - mhg
+    dialect: obd
+    date: 12,2
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M029. Component: ReM extension corpus (-X).'
+  - id: m030
+    title: Benediktbeuer Gebet zum Messopfer
+    stages:
+    - mhg
+    dialect: bair
+    date: 13,1V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M030. Component: ReM extension corpus (-X).'
+  - id: m031
+    title: Blutsegen (Millstätter)
+    stages:
+    - mhg
+    dialect: bair-alem
+    date: 13,2V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M031. Component: ReM extension corpus (-X).'
+  - id: m032
+    title: Abdinghofer Blutsegen
+    stages:
+    - mhg
+    dialect: rhfrk
+    date: 12,M
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M032. Component: ReM extension corpus (-X).'
+  - id: m033
+    title: Bamberger Blutsegen
+    stages:
+    - mhg
+    dialect: ofrk
+    date: 12,3V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M033. Component: ReM extension corpus (-X).'
+  - id: m034
+    title: Blutsegen Contra fluxum sanguinis
+    stages:
+    - mhg
+    dialect: alem (?)
+    date: '12'
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M034. Component: ReM extension corpus (-X).'
+  - id: m035
+    title: Millstätter (St. Blasianer) Blutsegen
+    stages:
+    - mhg
+    dialect: westniederalem
+    date: 12,A
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M035. Component: ReM extension corpus (-X).'
+  - id: m036
+    title: Schlettstädter Blutsegen
+    stages:
+    - mhg
+    dialect: rhfrk (?)
+    date: '11'
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M036. Component: ReM extension corpus (-X).'
+  - id: m037
+    title: Straßburger Blutsegen
+    stages:
+    - mhg
+    dialect: alem (?)
+    date: '11'
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M037. Component: ReM extension corpus (-X).'
+  - id: m038
+    title: Der heimliche Bote
+    stages:
+    - mhg
+    dialect: alem
+    date: 13,1V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M038. Component: ReM extension corpus (-X).'
+  - id: m040
+    title: Brieger Psalmenfragmente
+    stages:
+    - mhg
+    dialect: bair (?)
+    date: um 1100
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M040. Component: ReM extension corpus (-X).'
+  - id: m041
+    title: deutsche Buchunterschrift
+    stages:
+    - mhg
+    dialect: alem
+    date: 11,A; 11,3V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M041. Component: ReM extension corpus (-X).'
+  - id: m044
+    title: Christ ist erstanden
+    stages:
+    - mhg
+    dialect: bair
+    date: 12,2
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M044. Component: ReM extension corpus (-X).'
+  - id: m045
+    title: Christi Geburt, Von
+    stages:
+    - mhg
+    dialect: mfrk
+    date: 13,1D
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M045. Component: ReM extension corpus (-X).'
+  - id: m046
+    title: Christus und Pilatus
+    stages:
+    - mhg
+    dialect: omd, nd
+    date: 14,A
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M046. Component: ReM extension corpus (-X).'
+  - id: m047
+    title: Codex Falkensteinensis
+    stages:
+    - mhg
+    dialect: südbair
+    date: 1168-1195
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M047. Component: ReM extension corpus (-X).'
+  - id: m048-m
+    title: Contra caducum morbum M
+    stages:
+    - mhg
+    dialect: bair
+    date: '11'
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M048M. Component: ReM extension corpus (-X).'
+  - id: m048-p
+    title: Contra caducum morbum P = Pariser Wurmsegen
+    stages:
+    - mhg
+    dialect: (süd)rhfrk (?)
+    date: '12'
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M048P. Component: ReM extension corpus (-X).'
+  - id: m049
+    title: Contra malum malannum
+    stages:
+    - mhg
+    dialect: obd, wmd
+    date: 11,2
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M049. Component: ReM extension corpus (-X).'
+  - id: m050
+    title: Contra paralysin theutonice
+    stages:
+    - mhg
+    dialect: alem, rhfrk (?)
+    date: um 1100
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M050. Component: ReM extension corpus (-X).'
+  - id: m051
+    title: Contra rehin
+    stages:
+    - mhg
+    dialect: alem
+    date: 12,E; um 1200
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M051. Component: ReM extension corpus (-X).'
+  - id: m052
+    title: Contra uberbein
+    stages:
+    - mhg
+    dialect: (süd)rhfrk (?)
+    date: '12'
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M052. Component: ReM extension corpus (-X).'
+  - id: m053
+    title: Contra vermem edentem
+    stages:
+    - mhg
+    dialect: (süd)rhfrk (?)
+    date: '12'
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M053. Component: ReM extension corpus (-X).'
+  - id: m054
+    title: Contra vermes pecus edentes
+    stages:
+    - mhg
+    dialect: (süd)rhfrk (?)
+    date: '12'
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M054. Component: ReM extension corpus (-X).'
+  - id: m055
+    title: Crescentia
+    stages:
+    - mhg
+    dialect: alem
+    date: 12,4V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M055. Component: ReM extension corpus (-X).'
+  - id: m056
+    title: De definitione (Bruchstück einer Logik)
+    stages:
+    - mhg
+    dialect: alem
+    date: '11'
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M056. Component: ReM extension corpus (-X).'
+  - id: m058
+    title: Sangspruchstrophe MF 'Namenlos IV'
+    stages:
+    - mhg
+    dialect: bair
+    date: 13,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M058. Component: ReM extension corpus (-X).'
+  - id: m059
+    title: Denkspruch
+    stages:
+    - mhg
+    dialect: obd
+    date: um 1200
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M059. Component: ReM extension corpus (-X).'
+  - id: m060
+    title: MF Namenlos I-III
+    stages:
+    - mhg
+    dialect: alem
+    date: 12,E; um 1200
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M060. Component: ReM extension corpus (-X).'
+  - id: m061-b
+    title: Deutung der Meßgebräuche (B)
+    stages:
+    - mhg
+    dialect: bair-ostalem
+    date: um 1200
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M061B. Component: MiGraKo core corpus (-G).'
+  - id: m061-w
+    title: Deutung der Messgebräuche/Wolfenbüttel (W)
+    stages:
+    - mhg
+    dialect: bair (bair.-md. Grenzraum mit md. Anklängen)
+    date: 13,M
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M061W. Component: ReM extension corpus (-X).'
+  - id: m062
+    title: Drei Jünglinge im Feuerofen; Ältere Judith
+    stages:
+    - mhg
+    dialect: bair
+    date: 12,4V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M062. Component: ReM extension corpus (-X).'
+  - id: m063
+    title: Du bist mîn, ich bin dîn
+    stages:
+    - mhg
+    dialect: obd
+    date: 1178-1186
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M063. Component: ReM extension corpus (-X).'
+  - id: m064-m
+    title: 'Eilhart: Tristrant, Fragment M'
+    stages:
+    - mhg
+    dialect: md, nd
+    date: 13,1D
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M064M. Component: ReM extension corpus (-X).'
+  - id: m064-r
+    title: 'Eilhart von Oberg: ''Tristrant'' (R)'
+    stages:
+    - mhg
+    dialect: bair-ostalem
+    date: 13,A
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M064R. Component: ReM extension corpus (-X).'
+  - id: m064-s
+    title: 'Eilhart von Oberg: ''Tristrant'' (St)'
+    stages:
+    - mhg
+    dialect: md, nd
+    date: 13,A
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M064S. Component: ReM extension corpus (-X).'
+  - id: m065
+    title: Linzer Entechrist
+    stages:
+    - mhg
+    dialect: alem
+    date: um 1200
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M065. Component: MiGraKo core corpus (-G).'
+  - id: m066
+    title: Esau und Jakob; Zehn Gebote
+    stages:
+    - mhg
+    dialect: südrhfrk
+    date: 13,4V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M066. Component: ReM extension corpus (-X).'
+  - id: m067
+    title: Wien-Münchner Evangelienübersetzung
+    stages:
+    - mhg
+    dialect: ostalem-bair
+    date: um 1200
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M067. Component: MiGraKo core corpus (-G).'
+  - id: m068
+    title: Exodus
+    stages:
+    - mhg
+    dialect: bair (mit schwäb. Einsprengseln)
+    date: 12,4V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M068. Component: ReM extension corpus (-X).'
+  - id: m069
+    title: 'Ezzo: Hymnus (''Ezzolied'') (S)'
+    stages:
+    - mhg
+    dialect: alem
+    date: 12,2V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M069. Component: MiGraKo core corpus (-G).'
+  - id: m070
+    title: Gothaer Fiebersegen
+    stages:
+    - mhg
+    dialect: moselfrk
+    date: um 1200
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M070. Component: ReM extension corpus (-X).'
+  - id: m071-u
+    title: Uppsalaer Frauengebete (U)
+    stages:
+    - mhg
+    dialect: bair (donauländischer Raum)
+    date: 13,1V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M071U. Component: ReM extension corpus (-X).'
+  - id: m071-w
+    title: Uppsalaer Frauengebete (W)
+    stages:
+    - mhg
+    dialect: bair (donauländischer Raum)
+    date: 13,1V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M071W. Component: ReM extension corpus (-X).'
+  - id: m072
+    title: Frauengeheimnisse
+    stages:
+    - mhg
+    dialect: bair
+    date: 12,3V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M072. Component: ReM extension corpus (-X).'
+  - id: m073
+    title: Friedberger Christ
+    stages:
+    - mhg
+    dialect: rhfrk, hess
+    date: 13,A
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M073. Component: ReM extension corpus (-X).'
+  - id: m074
+    title: Gebet einer Frau
+    stages:
+    - mhg
+    dialect: bair
+    date: 12,4V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M074. Component: ReM extension corpus (-X).'
+  - id: m075
+    title: Klosterneuburger Gebet
+    stages:
+    - mhg
+    dialect: bair
+    date: '11'
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M075. Component: ReM extension corpus (-X).'
+  - id: m076-a
+    title: Gebetbuch Hildegard von Bingen (Bildbeischriften)
+    stages:
+    - mhg
+    dialect: rhfrk
+    date: 13,2
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M076A. Component: ReM extension corpus (-X).'
+  - id: m076-b
+    title: Gebetbuch Hildegard von Bingen (Mariengebete)
+    stages:
+    - mhg
+    dialect: rhfrk
+    date: 13,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M076B. Component: ReM extension corpus (-X).'
+  - id: m077
+    title: Gebete u. Benediktionen von Muri
+    stages:
+    - mhg
+    dialect: alem
+    date: um 1200
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M077. Component: MiGraKo core corpus (-G).'
+  - id: m078
+    title: Engelberger Gebete
+    stages:
+    - mhg
+    dialect: alem
+    date: 12,E
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M078. Component: ReM extension corpus (-X).'
+  - id: m079
+    title: Klagenfurter Gebete
+    stages:
+    - mhg
+    dialect: bairisch
+    date: 12,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M079. Component: ReM extension corpus (-X).'
+  - id: m080
+    title: Rheinauer Gebete
+    stages:
+    - mhg
+    dialect: alem
+    date: 1150-1170
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M080. Component: ReM extension corpus (-X).'
+  - id: m081-a
+    title: Seckauer (St. Lambrechter) Gebete A
+    stages:
+    - mhg
+    dialect: bair
+    date: 13,A; um 1200
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M081A. Component: ReM extension corpus (-X).'
+  - id: m081-b
+    title: Seckauer (St. Lambrechter) Gebete B
+    stages:
+    - mhg
+    dialect: bair
+    date: 13,2V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M081B. Component: ReM extension corpus (-X).'
+  - id: m082
+    title: Vatikanische Gebete
+    stages:
+    - mhg
+    dialect: rhfrk
+    date: 13,2V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M082. Component: MiGraKo core corpus (-G).'
+  - id: m083
+    title: Züricher Gebet
+    stages:
+    - mhg
+    dialect: alem
+    date: um 1200
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M083. Component: ReM extension corpus (-X).'
+  - id: m084-a
+    title: Gebetsanweisungen zum Psalter Augsburg
+    stages:
+    - mhg
+    dialect: obd
+    date: 13,1V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M084A. Component: ReM extension corpus (-X).'
+  - id: m084-b
+    title: Gebetsanweisungen zum Psalter Beuron
+    stages:
+    - mhg
+    dialect: obd
+    date: 12,2
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M084B. Component: ReM extension corpus (-X).'
+  - id: m084-e
+    title: Gebetsanweisungen zum Psalter Erlangen
+    stages:
+    - mhg
+    dialect: obd
+    date: 13,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M084E. Component: ReM extension corpus (-X).'
+  - id: m084-l
+    title: Gebetsanweisungen zum Psalter London
+    stages:
+    - mhg
+    dialect: obd
+    date: 13,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M084L. Component: ReM extension corpus (-X).'
+  - id: m084-m
+    title: Gebetsanweisungen zum Psalter München
+    stages:
+    - mhg
+    dialect: obd
+    date: um 1200
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M084M. Component: ReM extension corpus (-X).'
+  - id: m085
+    title: Gebetsanweisungen zum Psalter u. Nonnengelöbnis
+    stages:
+    - mhg
+    dialect: bair
+    date: 1138-1165
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M085. Component: ReM extension corpus (-X).'
+  - id: m086
+    title: Züricher Gebetsanweisung
+    stages:
+    - mhg
+    dialect: alem
+    date: '11 (Mohlberg, S. 74); 12,E (Wilhelm, B: S. 196)'
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M086. Component: ReM extension corpus (-X).'
+  - id: m087
+    title: Vorauer Genesis (Bücher Mosis 1)
+    stages:
+    - mhg
+    dialect: bair
+    date: 12,4V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M087. Component: ReM extension corpus (-X).'
+  - id: m088
+    title: Wiener Genesis
+    stages:
+    - mhg
+    dialect: bair
+    date: 12,4V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M088. Component: ReM extension corpus (-X).'
+  - id: m089
+    title: Bamberger Glaube u. Beichte
+    stages:
+    - mhg
+    dialect: ofrk-alem
+    date: 12,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M089. Component: MiGraKo core corpus (-G).'
+  - id: m090
+    title: Benediktbeurer Glaube u. Beichte I
+    stages:
+    - mhg
+    dialect: bair, alem
+    date: 12,2
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M090. Component: ReM extension corpus (-X).'
+  - id: m091
+    title: Benediktbeurer Glaube u. Beichte II
+    stages:
+    - mhg
+    dialect: bair, alem
+    date: um 1100
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M091. Component: ReM extension corpus (-X).'
+  - id: m092
+    title: Benediktbeurer Glaube u. Beichte III
+    stages:
+    - mhg
+    dialect: bair, alem
+    date: um/nach 1200
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M092. Component: ReM extension corpus (-X).'
+  - id: m093
+    title: St. Galler Glaube u. Beichte I
+    stages:
+    - mhg
+    dialect: alem
+    date: um 1100
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M093. Component: ReM extension corpus (-X).'
+  - id: m094
+    title: St. Galler Glaube u. Beichte II
+    stages:
+    - mhg
+    dialect: alem
+    date: 12,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M094. Component: ReM extension corpus (-X).'
+  - id: m095
+    title: St. Galler Glaube u. Beichte III
+    stages:
+    - mhg
+    dialect: alem
+    date: um 1100
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M095. Component: ReM extension corpus (-X).'
+  - id: m096
+    title: Süddt. (Münchner) Glaube u. Beichte
+    stages:
+    - mhg
+    dialect: bair
+    date: 12,E; um 1200
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M096. Component: ReM extension corpus (-X).'
+  - id: m097
+    title: Wessobrunner Glaube u. Beichte I
+    stages:
+    - mhg
+    dialect: bair
+    date: um 1100
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M097. Component: ReM extension corpus (-X).'
+  - id: m098
+    title: Wessobrunner Glaube u. Beichte II
+    stages:
+    - mhg
+    dialect: bair
+    date: 12,2
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M098. Component: ReM extension corpus (-X).'
+  - id: m099
+    title: Kremsmünsterer Glaube und Beichte
+    stages:
+    - mhg
+    dialect: bair
+    date: 12,2
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M099. Component: ReM extension corpus (-X).'
+  - id: m100
+    title: Graf Rudolf
+    stages:
+    - mhg
+    dialect: hess-thür
+    date: 13,1V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M100. Component: MiGraKo core corpus (-G).'
+  - id: m101
+    title: Grazer Hagelsegen
+    stages:
+    - mhg
+    dialect: bair
+    date: 12,2
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M101. Component: ReM extension corpus (-X).'
+  - id: m102
+    title: Münchener Halsentzündungssegen
+    stages:
+    - mhg
+    dialect: obd
+    date: 13,A
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M102. Component: ReM extension corpus (-X).'
+  - id: m103
+    title: 'Hartmann: Rede vom Glauben'
+    stages:
+    - mhg
+    dialect: md
+    date: 13,A
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M103. Component: ReM extension corpus (-X).'
+  - id: m104
+    title: Züricher Hausbesegnung
+    stages:
+    - mhg
+    dialect: alem
+    date: '11'
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M104. Component: ReM extension corpus (-X).'
+  - id: m105
+    title: 'Heinrich von Rugge: Leich'
+    stages:
+    - mhg
+    dialect: alem
+    date: 12,E
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M105. Component: ReM extension corpus (-X).'
+  - id: m106
+    title: 'Heinrich: Reinhart Fuchs'
+    stages:
+    - mhg
+    dialect: oberrhein. (elsäss. mit bair. Einschlag)
+    date: 13,A
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M106. Component: ReM extension corpus (-X).'
+  - id: m107-g
+    title: 'Heinrich: ''Litanei'' (G)'
+    stages:
+    - mhg
+    dialect: bair
+    date: 12,2
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M107G. Component: MiGraKo core corpus (-G).'
+  - id: m107-s
+    title: 'Heinrich: Litanei S (Straßb.-Molsh. Hs.)'
+    stages:
+    - mhg
+    dialect: hess-thür
+    date: 13,A
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M107S. Component: ReM extension corpus (-X).'
+  - id: m108-m
+    title: Herzog Ernst A (M)
+    stages:
+    - mhg
+    dialect: rhfrk
+    date: 13,1V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M108M. Component: ReM extension corpus (-X).'
+  - id: m108-p
+    title: Herzog Ernst A (P)
+    stages:
+    - mhg
+    dialect: md, moselfrk
+    date: 13,2V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M108P. Component: ReM extension corpus (-X).'
+  - id: m108-s
+    title: Herzog Ernst A (S)
+    stages:
+    - mhg
+    dialect: ofrk, omd
+    date: 13,4V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M108S. Component: ReM extension corpus (-X).'
+  - id: m109
+    title: Himmel u. Hölle
+    stages:
+    - mhg
+    dialect: ofrk-alem
+    date: 12,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M109. Component: MiGraKo core corpus (-G).'
+  - id: m110
+    title: Daz himelrîche
+    stages:
+    - mhg
+    dialect: bair
+    date: 12,2
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M110. Component: ReM extension corpus (-X).'
+  - id: m111
+    title: Himmlisches Jerusalem (V)
+    stages:
+    - mhg
+    dialect: bair
+    date: 12,4V; um 1200 - 13,A
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M111. Component: ReM extension corpus (-X).'
+  - id: m112
+    title: Die Hochzeit
+    stages:
+    - mhg
+    dialect: bair
+    date: 13,A
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M112. Component: MiGraKo core corpus (-G).'
+  - id: m113
+    title: St. Trudperter Hohes Lied (A)
+    stages:
+    - mhg
+    dialect: alem
+    date: 13,1V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M113. Component: MiGraKo core corpus (-G).'
+  - id: m113-y
+    title: St. Trudperter Hohelied
+    stages:
+    - mhg
+    dialect: alem
+    date: 13,1V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M113Y. Component: ReM extension corpus (-X).'
+  - id: m114
+    title: Idsteiner Sprüche der Väter
+    stages:
+    - mhg
+    dialect: rhfrk
+    date: 13,M
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M114. Component: ReM extension corpus (-X).'
+  - id: m115
+    title: Baumgartenberger Johannes Baptista
+    stages:
+    - mhg
+    dialect: bair
+    date: 12,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M115. Component: ReM extension corpus (-X).'
+  - id: m116
+    title: Vorauer Joseph (Bücher Moses 2)
+    stages:
+    - mhg
+    dialect: bair
+    date: 12,2-13,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M116. Component: ReM extension corpus (-X).'
+  - id: m117
+    title: Erfurter Judeneid
+    stages:
+    - mhg
+    dialect: md
+    date: um 1200/13,A
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M117. Component: ReM extension corpus (-X).'
+  - id: m118
+    title: Pfälzer Judeneid
+    stages:
+    - mhg
+    dialect: (süd)rhfrk
+    date: 13,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M118. Component: ReM extension corpus (-X).'
+  - id: m119
+    title: Die Jüngere Judith
+    stages:
+    - mhg
+    dialect: bair (?)
+    date: 12,4V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M119. Component: ReM extension corpus (-X).'
+  - id: m120
+    title: Jüngstes Gericht, Hamburger
+    stages:
+    - mhg
+    dialect: südrhfrk.
+    date: 13,M
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M120. Component: ReM extension corpus (-X).'
+  - id: m121-f
+    title: Kaiserchronik A - F (Fragmente Fr, Mz)
+    stages:
+    - mhg
+    dialect: bair-ostalem
+    date: 12,2
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M121F. Component: ReM extension corpus (-X).'
+  - id: m121-g
+    title: 'Kaiserchronik A (G: Fragmente Gr, I)'
+    stages:
+    - mhg
+    dialect: bair-ostalem
+    date: 13,1V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M121G. Component: ReM extension corpus (-X).'
+  - id: m121-k
+    title: Kaiserchronik A (Fragment K)
+    stages:
+    - mhg
+    dialect: bair
+    date: '12'
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M121K. Component: ReM extension corpus (-X).'
+  - id: m121-n
+    title: Kaiserchronik A (Fragment N)
+    stages:
+    - mhg
+    dialect: alem
+    date: 13,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M121N. Component: ReM extension corpus (-X).'
+  - id: m121-s
+    title: Kaiserchronik A (Fragment S)
+    stages:
+    - mhg
+    dialect: bair
+    date: 13,1D
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M121S. Component: ReM extension corpus (-X).'
+  - id: m121-v
+    title: Kaiserchronik A (V) [Ausschnitt]
+    stages:
+    - mhg
+    dialect: bair
+    date: 12,4V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M121V. Component: MiGraKo core corpus (-G).'
+  - id: m121-w
+    title: Kaiserchronik A (Fragment W)
+    stages:
+    - mhg
+    dialect: bair
+    date: 13,A
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M121W. Component: ReM extension corpus (-X).'
+  - id: m121-y
+    title: Kaiserchronik A - V
+    stages:
+    - mhg
+    dialect: bair
+    date: 12,4V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M121Y. Component: ReM extension corpus (-X).'
+  - id: m122
+    title: Kalender mit Urbareinträgen
+    stages:
+    - mhg
+    dialect: bair
+    date: 12,E [Kalender]; 13,A [Urbareinträge]
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M122. Component: ReM extension corpus (-X).'
+  - id: m123
+    title: Windberger Kalendernoten
+    stages:
+    - mhg
+    dialect: mittelbair (nordöstlich)
+    date: 12,4V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M123. Component: ReM extension corpus (-X).'
+  - id: m124
+    title: Komputistische Notiz
+    stages:
+    - mhg
+    dialect: alem.
+    date: 12,2
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M124. Component: ReM extension corpus (-X).'
+  - id: m125
+    title: Innsbrucker Kräuterbuch
+    stages:
+    - mhg
+    dialect: bair
+    date: 12,3V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M125. Component: ReM extension corpus (-X).'
+  - id: m126
+    title: Prüler Kräuterbuch
+    stages:
+    - mhg
+    dialect: bair
+    date: 1143-1147
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M126. Component: ReM extension corpus (-X).'
+  - id: m127
+    title: Leis
+    stages:
+    - mhg
+    dialect: obd
+    date: 12,2
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M127. Component: ReM extension corpus (-X).'
+  - id: m128
+    title: Leis Troyes 1
+    stages:
+    - mhg
+    dialect: rhfrk
+    date: '11'
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M128. Component: ReM extension corpus (-X).'
+  - id: m129
+    title: Leis Troyes 2
+    stages:
+    - mhg
+    dialect: rhfrk
+    date: '12'
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M129. Component: ReM extension corpus (-X).'
+  - id: m130
+    title: Leis Troyes 3
+    stages:
+    - mhg
+    dialect: rhfrk
+    date: um 1200
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M130. Component: ReM extension corpus (-X).'
+  - id: m131
+    title: Lob Salomons
+    stages:
+    - mhg
+    dialect: bair
+    date: 12,E
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M131. Component: ReM extension corpus (-X).'
+  - id: m132-g
+    title: Lucidarius (Gö1)
+    stages:
+    - mhg
+    dialect: alem
+    date: 12,2V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M132G. Component: MiGraKo core corpus (-G).'
+  - id: m132-w
+    title: Lucidarius W (Wolfenbüttel)
+    stages:
+    - mhg
+    dialect: bair
+    date: 12,M
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M132W. Component: ReM extension corpus (-X).'
+  - id: m133
+    title: Halberstädter Makkabäer
+    stages:
+    - mhg
+    dialect: md
+    date: 12,A
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M133. Component: ReM extension corpus (-X).'
+  - id: m134
+    title: Mariengebet
+    stages:
+    - mhg
+    dialect: obd
+    date: um 1200/13,A
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M134. Component: ReM extension corpus (-X).'
+  - id: m135
+    title: Ältere niederrhein. Marienklage
+    stages:
+    - mhg
+    dialect: mfrk
+    date: 13,3V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M135. Component: ReM extension corpus (-X).'
+  - id: m136
+    title: Arnsteiner Marienlied
+    stages:
+    - mhg
+    dialect: rhfrk-moselfrk
+    date: 12,3D
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M136. Component: MiGraKo core corpus (-G).'
+  - id: m137
+    title: Melker Marienlied
+    stages:
+    - mhg
+    dialect: bair
+    date: 1123-1142
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M137. Component: ReM extension corpus (-X).'
+  - id: m138
+    title: Vorauer Marienlob (Bücher Mosis 4)
+    stages:
+    - mhg
+    dialect: bair
+    date: 12,4V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M138. Component: ReM extension corpus (-X).'
+  - id: m139
+    title: Marienmirakel
+    stages:
+    - mhg
+    dialect: bair (mit md. Einschlag)
+    date: 13,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M139. Component: ReM extension corpus (-X).'
+  - id: m140
+    title: Mariensequenz aus Muri
+    stages:
+    - mhg
+    dialect: alem
+    date: 12,E; um 1200
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M140. Component: ReM extension corpus (-X).'
+  - id: m140-b
+    title: Mariensequenz aus Muri B (Engelberger Hs.)
+    stages:
+    - mhg
+    dialect: alem
+    date: 12,E-13,A
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M140B. Component: ReM extension corpus (-X).'
+  - id: m140-c
+    title: Mariensequenz aus Muri (C)
+    stages:
+    - mhg
+    dialect: alem
+    date: 13,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M140C. Component: ReM extension corpus (-X).'
+  - id: m140-d
+    title: Mariensequenz aus Muri (D)
+    stages:
+    - mhg
+    dialect: ostobd, alem
+    date: 13,1V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M140D. Component: ReM extension corpus (-X).'
+  - id: m141
+    title: Mariensequenz aus Seckau (St. Lambrecht)
+    stages:
+    - mhg
+    dialect: bair
+    date: 13,1V nicht vor 1200
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M141. Component: ReM extension corpus (-X).'
+  - id: m142
+    title: Memento Mori
+    stages:
+    - mhg
+    dialect: alem
+    date: 12,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M142. Component: MiGraKo core corpus (-G).'
+  - id: m143
+    title: Merigarto
+    stages:
+    - mhg
+    dialect: bair
+    date: 12,1V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M143. Component: MiGraKo core corpus (-G).'
+  - id: m144
+    title: Messgebet 'Got vater allir cristinheit'
+    stages:
+    - mhg
+    dialect: alem
+    date: 13,1V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M144. Component: ReM extension corpus (-X).'
+  - id: m145
+    title: gereimtes Messgebet 'Vater herre, vater got'
+    stages:
+    - mhg
+    dialect: bair
+    date: 'Psalter: um 1200; dt. Nachträge: 13,1'
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M145. Component: ReM extension corpus (-X).'
+  - id: m146
+    title: Monatsregeln für die Wahl eines Freundes
+    stages:
+    - mhg
+    dialect: bair
+    date: 12,E
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M146. Component: ReM extension corpus (-X).'
+  - id: m147
+    title: Grazer Monatsregeln
+    stages:
+    - mhg
+    dialect: bair
+    date: 13,1V, nicht vor 1200
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M147. Component: ReM extension corpus (-X).'
+  - id: m148
+    title: Morgensegen, Kölner
+    stages:
+    - mhg
+    dialect: mfrk
+    date: 13,3V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M148. Component: ReM extension corpus (-X).'
+  - id: m149
+    title: Vorauer Moses (Bücher Mosis 3)
+    stages:
+    - mhg
+    dialect: bair
+    date: 12,4V; 13,A
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M149. Component: ReM extension corpus (-X).'
+  - id: m150
+    title: Otlohs Gebet
+    stages:
+    - mhg
+    dialect: bair
+    date: nach 1067
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M150. Component: ReM extension corpus (-X).'
+  - id: m151
+    title: Patricius
+    stages:
+    - mhg
+    dialect: ostschwäb
+    date: 13,2V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M151. Component: ReM extension corpus (-X).'
+  - id: m152
+    title: Rheinauer Paulus
+    stages:
+    - mhg
+    dialect: alem
+    date: 12,1D
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M152. Component: MiGraKo core corpus (-G).'
+  - id: m153
+    title: Vatikanische Pferdesegen
+    stages:
+    - mhg
+    dialect: rhfrk
+    date: um 1100
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M153. Component: ReM extension corpus (-X).'
+  - id: m154
+    title: Physiologus S (Schäftlarner Fragment)
+    stages:
+    - mhg
+    dialect: bair
+    date: um 1200; 12,E
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M154. Component: ReM extension corpus (-X).'
+  - id: m155
+    title: Älterer Physiologus
+    stages:
+    - mhg
+    dialect: alem
+    date: 11,2
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M155. Component: ReM extension corpus (-X).'
+  - id: m156
+    title: Millstätter Physiologus
+    stages:
+    - mhg
+    dialect: südbair
+    date: um 1200/13,A
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M156. Component: ReM extension corpus (-X).'
+  - id: m157
+    title: Wiener Physiologus (Jüngerer Physiologus)
+    stages:
+    - mhg
+    dialect: bair
+    date: 12,4V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M157. Component: MiGraKo core corpus (-G).'
+  - id: m158
+    title: Pilatus
+    stages:
+    - mhg
+    dialect: hess-thür
+    date: 13,A
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M158. Component: ReM extension corpus (-X).'
+  - id: m159
+    title: Londoner Predigt(fragment)
+    stages:
+    - mhg
+    dialect: bair-alem
+    date: 12,M
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M159. Component: ReM extension corpus (-X).'
+  - id: m160-h
+    title: 'Priester Konrad: Predigtbuch (Ha)'
+    stages:
+    - mhg
+    dialect: bair
+    date: 13,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M160H. Component: ReM extension corpus (-X).'
+  - id: m160-m
+    title: Predigten, Priester Konrad (M1)
+    stages:
+    - mhg
+    dialect: bair
+    date: 12,E; um 1200
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M160M. Component: ReM extension corpus (-X).'
+  - id: m160-p
+    title: 'Rothsche Predigtsammlung (P) / Priester Konrad: Predigtbuch (P)'
+    stages:
+    - mhg
+    dialect: südbair
+    date: 13,2V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M160P. Component: ReM extension corpus (-X).'
+  - id: m160-r
+    title: Rothsche Predigtsammlung
+    stages:
+    - mhg
+    dialect: bair
+    date: 13,1V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M160R. Component: ReM extension corpus (-X).'
+  - id: m161
+    title: Millstätter [Kuppitsch'sche] Predigtsammlung
+    stages:
+    - mhg
+    dialect: bair
+    date: 13,M
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M161. Component: ReM extension corpus (-X).'
+  - id: m163-b
+    title: Predigtfragmente M/G T 36, Basler Fragmente
+    stages:
+    - mhg
+    dialect: alem
+    date: 12,E-13,A
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M163B. Component: ReM extension corpus (-X).'
+  - id: m163-k
+    title: Predigten, M/G T 36, Krakauer Fragmente
+    stages:
+    - mhg
+    dialect: bair
+    date: 12,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M163K. Component: ReM extension corpus (-X).'
+  - id: m165
+    title: Hoffmannsche Predigtsammlung
+    stages:
+    - mhg
+    dialect: bair-ostalem
+    date: 13,1D
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M165. Component: MiGraKo core corpus (-G).'
+  - id: m167
+    title: Leipziger Predigten (Fragment I)
+    stages:
+    - mhg
+    dialect: md
+    date: 13,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M167. Component: ReM extension corpus (-X).'
+  - id: m168
+    title: Leysersche Predigten (M/G T 15)
+    stages:
+    - mhg
+    dialect: südbair
+    date: 13,A
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M168. Component: ReM extension corpus (-X).'
+  - id: m171
+    title: Predigten, Züricher
+    stages:
+    - mhg
+    dialect: alem
+    date: 12,E / um 1200
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M171. Component: MiGraKo core corpus (-G).'
+  - id: m172
+    title: Prager Predigtentwürfe (M/G T 31)
+    stages:
+    - mhg
+    dialect: ofrk, nordbair, böhmisch
+    date: 13,2V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M172. Component: ReM extension corpus (-X).'
+  - id: m173
+    title: Predigtfragment (M/G T 8)
+    stages:
+    - mhg
+    dialect: bair-ostalem
+    date: um 1200
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M173. Component: ReM extension corpus (-X).'
+  - id: m174
+    title: Predigtfragmente
+    stages:
+    - mhg
+    dialect: bair
+    date: 12,3V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M174. Component: ReM extension corpus (-X).'
+  - id: m177
+    title: Predigtfragmente (M/G T 37c)
+    stages:
+    - mhg
+    dialect: hess.-thür.
+    date: um 1200
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M177. Component: MiGraKo core corpus (-G).'
+  - id: m178
+    title: Predigtfragmente (M/G T 43)
+    stages:
+    - mhg
+    dialect: bair
+    date: 12,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M178. Component: ReM extension corpus (-X).'
+  - id: m182-a
+    title: Wessobrunner (Ahd.) Predigtsammlung A
+    stages:
+    - mhg
+    dialect: bair
+    date: um 1100
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M182A. Component: ReM extension corpus (-X).'
+  - id: m182-b
+    title: Wessobrunner (Ahd.) Predigtsammlung B
+    stages:
+    - mhg
+    dialect: bair
+    date: um 1100
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M182B. Component: ReM extension corpus (-X).'
+  - id: m182-c
+    title: Wessobrunner (Ahd.) Predigtsammlung C
+    stages:
+    - mhg
+    dialect: bair
+    date: um 1100
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M182C. Component: ReM extension corpus (-X).'
+  - id: m185
+    title: Psalm 88, Interlinearversion
+    stages:
+    - mhg
+    dialect: bair
+    date: 13,1V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M185. Component: ReM extension corpus (-X).'
+  - id: m186
+    title: Rheinfränkische Interlinearversion der Psalmen
+    stages:
+    - mhg
+    dialect: rhfrk
+    date: 12,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M186. Component: ReM extension corpus (-X).'
+  - id: m187
+    title: Schleizer Psalmen
+    stages:
+    - mhg
+    dialect: md, nd
+    date: '12'
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M187. Component: ReM extension corpus (-X).'
+  - id: m188
+    title: Trierer Interlinearversion zum Psalter
+    stages:
+    - mhg
+    dialect: rhfrk
+    date: um 1200
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M188. Component: MiGraKo core corpus (-G).'
+  - id: m188-y
+    title: Trierer Psalmen
+    stages:
+    - mhg
+    dialect: rhfrk
+    date: um 1200
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M188Y. Component: ReM extension corpus (-X).'
+  - id: m189
+    title: Wiggertsche Psalmen
+    stages:
+    - mhg
+    dialect: md, nd
+    date: 12,M
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M189. Component: ReM extension corpus (-X).'
+  - id: m191
+    title: Schlierbacher Psalmenfragmente
+    stages:
+    - mhg
+    dialect: ofrk, bair
+    date: um 1200
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M191. Component: ReM extension corpus (-X).'
+  - id: m192
+    title: Gereimte Psalter-Paraphrase (Ps. 58-61)
+    stages:
+    - mhg
+    dialect: obd
+    date: 13,1V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M192. Component: ReM extension corpus (-X).'
+  - id: m193
+    title: Millstätter Interlinearversion zum Psalter
+    stages:
+    - mhg
+    dialect: bair
+    date: nicht vor 1200
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M193. Component: ReM extension corpus (-X).'
+  - id: m194
+    title: Sonnenburger Psalter
+    stages:
+    - mhg
+    dialect: (süd)bair
+    date: 13,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M194. Component: ReM extension corpus (-X).'
+  - id: m195
+    title: Windberger Psalter
+    stages:
+    - mhg
+    dialect: bair
+    date: 12,4V, wahrsch. 1174
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M195. Component: MiGraKo core corpus (-G).'
+  - id: m195-y
+    title: Windberger Psalter
+    stages:
+    - mhg
+    dialect: bair
+    date: 12,4V, wahrsch. 1174
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M195Y. Component: ReM extension corpus (-X).'
+  - id: m196
+    title: Benediktbeurer Ratschläge u. Gebete
+    stages:
+    - mhg
+    dialect: bair
+    date: 13,1V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M196. Component: ReM extension corpus (-X).'
+  - id: m197
+    title: Geistliche Ratschläge
+    stages:
+    - mhg
+    dialect: bair
+    date: um 1100
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M197. Component: ReM extension corpus (-X).'
+  - id: m198
+    title: Vom Rechte
+    stages:
+    - mhg
+    dialect: bair (mit Alemannismen)
+    date: um 1200 oder 13,A
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M198. Component: ReM extension corpus (-X).'
+  - id: m199-a
+    title: Mittelfränkische Reimbibel (A)
+    stages:
+    - mhg
+    dialect: mfrk-nfrk-westf
+    date: 12,3D
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M199A. Component: MiGraKo core corpus (-G).'
+  - id: m199-b
+    title: Mittelfränkische Reimbibel B
+    stages:
+    - mhg
+    dialect: mfrk, bair
+    date: 12,M
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M199B. Component: ReM extension corpus (-X).'
+  - id: m199-c
+    title: Mittelfränkische Reimbibel C
+    stages:
+    - mhg
+    dialect: mfrk, ostfälisch (?)
+    date: 12,3D oder um 1200
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M199C. Component: ReM extension corpus (-X).'
+  - id: m200
+    title: Londoner Reisesegen; Bruchstücke eines Gebets
+    stages:
+    - mhg
+    dialect: ofrk, südthür
+    date: 12,E
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M200. Component: ReM extension corpus (-X).'
+  - id: m201
+    title: Weingartner Reisesegen
+    stages:
+    - mhg
+    dialect: rhfrk
+    date: 13,2
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M201. Component: ReM extension corpus (-X).'
+  - id: m202
+    title: Rezept gegen den Stein
+    stages:
+    - mhg
+    dialect: südbair
+    date: 1168-1195
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M202. Component: ReM extension corpus (-X).'
+  - id: m203
+    title: Rezept gegen Lähmung/Contra paralisin
+    stages:
+    - mhg
+    dialect: obd
+    date: '11'
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M203. Component: ReM extension corpus (-X).'
+  - id: m204
+    title: Rittersitte
+    stages:
+    - mhg
+    dialect: rhfrk
+    date: 12,4V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M204. Component: ReM extension corpus (-X).'
+  - id: m205-a
+    title: 'Pfaffe Konrad: ''Rolandslied'' (A)'
+    stages:
+    - mhg
+    dialect: bair, nd
+    date: 12,3D (?)
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M205A. Component: ReM extension corpus (-X).'
+  - id: m205-e
+    title: 'Pfaffe Konrad: ''Rolandslied'' (E)'
+    stages:
+    - mhg
+    dialect: mfrk
+    date: nicht vor 1220
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M205E. Component: ReM extension corpus (-X).'
+  - id: m205-m
+    title: 'Pfaffe Konrad: ''Rolandslied'' (M)'
+    stages:
+    - mhg
+    dialect: md, nd
+    date: 12,2V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M205M. Component: ReM extension corpus (-X).'
+  - id: m205-p
+    title: 'Pfaffe Konrad: ''Rolandslied'' (P)'
+    stages:
+    - mhg
+    dialect: bair, md
+    date: um 1200
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M205P. Component: ReM extension corpus (-X).'
+  - id: m205-s
+    title: 'Pfaffe Konrad: ''Rolandslied'' (S)'
+    stages:
+    - mhg
+    dialect: md, nd
+    date: 13,1D
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M205S. Component: ReM extension corpus (-X).'
+  - id: m205-t
+    title: 'Pfaffe Konrad: ''Rolandslied'' (T)'
+    stages:
+    - mhg
+    dialect: rhfrk-hess
+    date: 13,A
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M205T. Component: ReM extension corpus (-X).'
+  - id: m205-w
+    title: 'Pfaffe Konrad: ''Rolandslied'' (W)'
+    stages:
+    - mhg
+    dialect: hess-thür
+    date: 13,1V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M205W. Component: ReM extension corpus (-X).'
+  - id: m206
+    title: König Rother
+    stages:
+    - mhg
+    dialect: mfrk, nd
+    date: 13,1V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M206. Component: ReM extension corpus (-X).'
+  - id: m207
+    title: Deutsche Rubriken zu Texten eines Nonnenbreviers
+    stages:
+    - mhg
+    dialect: bair
+    date: 12,2
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M207. Component: ReM extension corpus (-X).'
+  - id: m208
+    title: deutsche Rubriken zu lateinischen Gebeten
+    stages:
+    - mhg
+    dialect: bair
+    date: 12,2
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M208. Component: ReM extension corpus (-X).'
+  - id: m209
+    title: Scoph von dem lone
+    stages:
+    - mhg
+    dialect: alem
+    date: 12,4V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M209. Component: MiGraKo core corpus (-G).'
+  - id: m210
+    title: Oberdeutscher Servatius
+    stages:
+    - mhg
+    dialect: bair
+    date: 13,1V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M210. Component: ReM extension corpus (-X).'
+  - id: m212
+    title: Gedicht von der Siebenzahl
+    stages:
+    - mhg
+    dialect: bair
+    date: 12,3V (?)
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M212. Component: ReM extension corpus (-X).'
+  - id: m213
+    title: Trierer Silvester
+    stages:
+    - mhg
+    dialect: hess
+    date: um 1200 - 13,A
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M213. Component: ReM extension corpus (-X).'
+  - id: m214
+    title: Speculum ecclesiae
+    stages:
+    - mhg
+    dialect: mittelbair
+    date: um/nach 1200
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M214. Component: MiGraKo core corpus (-G).'
+  - id: m214-w
+    title: Speculum ecclesiae W (Fragment M/G T9)
+    stages:
+    - mhg
+    dialect: oberfränkisch
+    date: 13,1D
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M214W. Component: ReM extension corpus (-X).'
+  - id: m214-y
+    title: Speculum ecclesiae
+    stages:
+    - mhg
+    dialect: mittelbair
+    date: um/nach 1200
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M214Y. Component: ReM extension corpus (-X).'
+  - id: m217
+    title: Füssener Sprachproben
+    stages:
+    - mhg
+    dialect: alem
+    date: 12,2
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M217. Component: ReM extension corpus (-X).'
+  - id: m218-a
+    title: St. Galler Schularbeit (A)
+    stages:
+    - mhg
+    dialect: alem
+    date: '11'
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M218A. Component: ReM extension corpus (-X).'
+  - id: m218-b
+    title: St. Galler Schularbeit (Exzerpt)
+    stages:
+    - mhg
+    dialect: alem
+    date: um 1100
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M218B. Component: ReM extension corpus (-X).'
+  - id: m219
+    title: St. Veit
+    stages:
+    - mhg
+    dialect: bair
+    date: 13,A; evtl. 12,4V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M219. Component: ReM extension corpus (-X).'
+  - id: m220-m
+    title: Prüler Steinbuch (M)
+    stages:
+    - mhg
+    dialect: bair
+    date: 12,A
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M220M. Component: ReM extension corpus (-X).'
+  - id: m220-p
+    title: Prüler Steinbuch (M1/P)
+    stages:
+    - mhg
+    dialect: bair
+    date: 12,M
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M220P. Component: ReM extension corpus (-X).'
+  - id: m221
+    title: Millstätter Sündenklage
+    stages:
+    - mhg
+    dialect: südbair
+    date: um 1200 oder 13,A
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M221. Component: ReM extension corpus (-X).'
+  - id: m222
+    title: Uppsalaer Sündenklage
+    stages:
+    - mhg
+    dialect: rhfrk (mit vereinzelten mfrken Merkmalen)
+    date: 13,2V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M222. Component: ReM extension corpus (-X).'
+  - id: m223
+    title: Vorauer Sündenklage
+    stages:
+    - mhg
+    dialect: bair
+    date: 12,4V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M223. Component: ReM extension corpus (-X).'
+  - id: m224
+    title: Summa Theologiae
+    stages:
+    - mhg
+    dialect: rhfrk, bair
+    date: 12,4V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M224. Component: ReM extension corpus (-X).'
+  - id: m225
+    title: Tegernseer Prognostica
+    stages:
+    - mhg
+    dialect: bair
+    date: um 1200
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M225. Component: ReM extension corpus (-X).'
+  - id: m226
+    title: 'Pfaffe Lambrecht: Tobias'
+    stages:
+    - mhg
+    dialect: mfrk, nd
+    date: 13,A
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M226. Component: ReM extension corpus (-X).'
+  - id: m227
+    title: Tobiassegen G
+    stages:
+    - mhg
+    dialect: alem
+    date: 13,4V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M227. Component: ReM extension corpus (-X).'
+  - id: m228
+    title: Tobiassegen U
+    stages:
+    - mhg
+    dialect: obd
+    date: 13,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M228. Component: ReM extension corpus (-X).'
+  - id: m229
+    title: Traditio Kuonradi
+    stages:
+    - mhg
+    dialect: alem-schwäb
+    date: um 1200
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M229. Component: ReM extension corpus (-X).'
+  - id: m230
+    title: Schwäbische Trauformel
+    stages:
+    - mhg
+    dialect: alem
+    date: 12,2V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M230. Component: ReM extension corpus (-X).'
+  - id: m232
+    title: Niederrheinischer Tundalus
+    stages:
+    - mhg
+    dialect: mfrk-hess
+    date: 13,1V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M232. Component: MiGraKo core corpus (-G).'
+  - id: m233
+    title: Sangspruchstrophe MF 'Namenlos V'
+    stages:
+    - mhg
+    dialect: bair
+    date: um 1200; 13,A
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M233. Component: ReM extension corpus (-X).'
+  - id: m234
+    title: Vaterunser
+    stages:
+    - mhg
+    dialect: westbair
+    date: um/nach 1200
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M234. Component: ReM extension corpus (-X).'
+  - id: m235
+    title: Windberger Vaterunser-Erklärung
+    stages:
+    - mhg
+    dialect: bair
+    date: 12,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M235. Component: ReM extension corpus (-X).'
+  - id: m236
+    title: Verfahren beim Gottesurteil
+    stages:
+    - mhg
+    dialect: bair
+    date: 13,1V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M236. Component: ReM extension corpus (-X).'
+  - id: m238
+    title: Die Wahrheit
+    stages:
+    - mhg
+    dialect: bair
+    date: 12,4V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M238. Component: ReM extension corpus (-X).'
+  - id: m239
+    title: 'Wernher v. Niederrhein: Die vier schiven'
+    stages:
+    - mhg
+    dialect: mfrk
+    date: 13,3V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M239. Component: ReM extension corpus (-X).'
+  - id: m240-b
+    title: Wernher von Elmendorf, Fragm. B
+    stages:
+    - mhg
+    dialect: md
+    date: 12,E; um 1200
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M240B. Component: ReM extension corpus (-X).'
+  - id: m241
+    title: 'Priester Wernher: Driu liet von der maget (D)'
+    stages:
+    - mhg
+    dialect: bair
+    date: 13,1V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M241. Component: MiGraKo core corpus (-G).'
+  - id: m241-e
+    title: 'Priester Wernher: Driu liet von der maget (E)'
+    stages:
+    - mhg
+    dialect: alem
+    date: 13,A
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M241E. Component: ReM extension corpus (-X).'
+  - id: m241-i
+    title: 'Priester Wernher: Driu liet von der maget (D: Spruchbänder)'
+    stages:
+    - mhg
+    dialect: bair
+    date: 13,1V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M241I. Component: ReM extension corpus (-X).'
+  - id: m241-y
+    title: 'Priester Wernher: Driu liet von der maget (D)'
+    stages:
+    - mhg
+    dialect: bair
+    date: 13,1V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M241Y. Component: ReM extension corpus (-X).'
+  - id: m242
+    title: Wiener Notker
+    stages:
+    - mhg
+    dialect: bair
+    date: 11,E-12,A
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M242. Component: MiGraKo core corpus (-G).'
+  - id: m242-y
+    title: Wiener Notker
+    stages:
+    - mhg
+    dialect: bair
+    date: 11,E-12,A
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M242Y. Component: ReM extension corpus (-X).'
+  - id: m243
+    title: 'Der Wilde Mann: Dichtungen'
+    stages:
+    - mhg
+    dialect: mfrk
+    date: 13,3V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M243. Component: ReM extension corpus (-X).'
+  - id: m244
+    title: 'Williram von Ebersberg: ''Hoheliedkommentar'' (Br/B)'
+    stages:
+    - mhg
+    dialect: ofrk
+    date: 11,E
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M244. Component: MiGraKo core corpus (-G).'
+  - id: m246
+    title: Münchener Wundsegen
+    stages:
+    - mhg
+    dialect: bair
+    date: 12,2
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M246. Component: ReM extension corpus (-X).'
+  - id: m247
+    title: Prüler Wurmsegen
+    stages:
+    - mhg
+    dialect: bair
+    date: 1143-1147
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M247. Component: ReM extension corpus (-X).'
+  - id: m248
+    title: Grazer Wurmsegen (B)
+    stages:
+    - mhg
+    dialect: bair
+    date: um 1200; 13,A
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M248. Component: ReM extension corpus (-X).'
+  - id: m249
+    title: Zehn Gebote
+    stages:
+    - mhg
+    dialect: bair
+    date: 13,1V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M249. Component: ReM extension corpus (-X).'
+  - id: m250
+    title: Nonnengelöbnis
+    stages:
+    - mhg
+    dialect: bair
+    date: 1138-1165
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M250. Component: ReM extension corpus (-X).'
+  - id: m251
+    title: Schreinskarten der Kölner Laurenzpfarre
+    stages:
+    - mhg
+    dialect: mfrk
+    date: 1159-1170
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - charter
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M251. Component: ReM extension corpus (-X).'
+  - id: m252
+    title: Predigt von Christi Geburt (M/G T 38)
+    stages:
+    - mhg
+    dialect: bair.-alem.
+    date: 12,M
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M252. Component: ReM extension corpus (-X).'
+  - id: m253
+    title: Pariser Frauengebete
+    stages:
+    - mhg
+    dialect: bairisch
+    date: 13,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M253. Component: ReM extension corpus (-X).'
+  - id: m254
+    title: Pierpont Morgan-Gebet
+    stages:
+    - mhg
+    dialect: bairisch
+    date: 13,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M254. Component: ReM extension corpus (-X).'
+  - id: m255
+    title: Pierpont Morgan-Gebet
+    stages:
+    - mhg
+    dialect: bairisch
+    date: 13,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M255. Component: ReM extension corpus (-X).'
+  - id: m301
+    title: Athis und Prophilias
+    stages:
+    - mhg
+    dialect: hess.-thür.
+    date: 13,2
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M301. Component: MiGraKo core corpus (-G).'
+  - id: m302
+    title: Bartholomäus (M1)
+    stages:
+    - mhg
+    dialect: bair.
+    date: 13,2
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M302. Component: MiGraKo core corpus (-G).'
+  - id: m303
+    title: Amtleutebuch von St. Brigida
+    stages:
+    - mhg
+    dialect: ripuar.
+    date: 13,2
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M303. Component: MiGraKo core corpus (-G).'
+  - id: m304
+    title: Dietrichs Flucht (R)
+    stages:
+    - mhg
+    dialect: bair.
+    date: 13,2-14,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M304. Component: MiGraKo core corpus (-G).'
+  - id: m305
+    title: Leben der heiligen Elisabeth (A)
+    stages:
+    - mhg
+    dialect: zentralhess.
+    date: 14,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M305. Component: MiGraKo core corpus (-G).'
+  - id: m306
+    title: Die Erlösung (B1)
+    stages:
+    - mhg
+    dialect: rhfrk.-hess.
+    date: 14,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M306. Component: MiGraKo core corpus (-G).'
+  - id: m307
+    title: Frauenfelder Flore (Bruchstücke)
+    stages:
+    - mhg
+    dialect: hochalem.
+    date: 13,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M307. Component: MiGraKo core corpus (-G).'
+  - id: m308
+    title: Schlacht bei Göllheim, Böhmenschlacht, Minnehof
+    stages:
+    - mhg
+    dialect: ripuar.
+    date: 14,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M308. Component: MiGraKo core corpus (-G).'
+  - id: m309
+    title: 'Hartwig von dem Hage: Margaretenlegende. Tagzeiten'
+    stages:
+    - mhg
+    dialect: bair.-ostalem. (ostschwäb.)
+    date: 14,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M309. Component: MiGraKo core corpus (-G).'
+  - id: m310
+    title: Marien Himmelfahrt
+    stages:
+    - mhg
+    dialect: rhfrk.-hess.
+    date: 13,2
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M310. Component: MiGraKo core corpus (-G).'
+  - id: m311
+    title: 'Heinrich von Freiberg: Tristan (F)'
+    stages:
+    - mhg
+    dialect: omd. (böhmisch)
+    date: 14,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M311. Component: MiGraKo core corpus (-G).'
+  - id: m312
+    title: 'Hartmann von Aue: Iwein (B)'
+    stages:
+    - mhg
+    dialect: bair.
+    date: 13,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M312. Component: MiGraKo core corpus (-G).'
+  - id: m313
+    title: Karl und Galie (D)
+    stages:
+    - mhg
+    dialect: ripuar.
+    date: 13,2
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M313. Component: MiGraKo core corpus (-G).'
+  - id: m314
+    title: 'Ulrich von Liechtenstein: Frauendienst (M)'
+    stages:
+    - mhg
+    dialect: bair.
+    date: 13,2
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M314. Component: MiGraKo core corpus (-G).'
+  - id: m315
+    title: Landgraf Ludwigs Kreuzfahrt
+    stages:
+    - mhg
+    dialect: omd. (schlesisch)
+    date: 14,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M315. Component: MiGraKo core corpus (-G).'
+  - id: m316
+    title: 'Lupold Hornburg: Reden'
+    stages:
+    - mhg
+    dialect: ofrk.
+    date: 14,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M316. Component: MiGraKo core corpus (-G).'
+  - id: m317
+    title: 'Hugo von Langenstein: Martina'
+    stages:
+    - mhg
+    dialect: alem.
+    date: 14,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M317. Component: MiGraKo core corpus (-G).'
+  - id: m318
+    title: Evangelienbuch des Matthias von Beheim
+    stages:
+    - mhg
+    dialect: omd.
+    date: 14,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M318. Component: MiGraKo core corpus (-G).'
+  - id: m319
+    title: Maria Magdalena (Verslegende I)
+    stages:
+    - mhg
+    dialect: südbair.
+    date: 14,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M319. Component: MiGraKo core corpus (-G).'
+  - id: m320
+    title: Mühlhäuser Rechtsbuch (N)
+    stages:
+    - mhg
+    dialect: nordthür.
+    date: 13,2
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M320. Component: MiGraKo core corpus (-G).'
+  - id: m321
+    title: Nibelungenlied
+    stages:
+    - mhg
+    dialect: westbair.-ostalem.
+    date: 13,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M321. Component: MiGraKo core corpus (-G).'
+  - id: m322
+    title: 'Nikolaus von Straßburg: Predigten (C)'
+    stages:
+    - mhg
+    dialect: alem.
+    date: 14,2
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M322. Component: MiGraKo core corpus (-G).'
+  - id: m323
+    title: Oberaltaicher Evangelistar
+    stages:
+    - mhg
+    dialect: (ostmittel)bair.
+    date: 14,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M323. Component: MiGraKo core corpus (-G).'
+  - id: m324
+    title: Oxforder Benediktinerregel
+    stages:
+    - mhg
+    dialect: nordrhfrk.-hess.
+    date: 14,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M324. Component: MiGraKo core corpus (-G).'
+  - id: m325
+    title: 'Wolfram von Eschenbach: Parzival (D)'
+    stages:
+    - mhg
+    dialect: westbair.-ostalem.
+    date: 13,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M325. Component: MiGraKo core corpus (-G).'
+  - id: m326
+    title: Passional (A)
+    stages:
+    - mhg
+    dialect: omd.
+    date: 14,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M326. Component: MiGraKo core corpus (-G).'
+  - id: m327
+    title: Die Lilie (Prosateil)
+    stages:
+    - mhg
+    dialect: ripuar.
+    date: 13,2
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M327. Component: MiGraKo core corpus (-G).'
+  - id: m328
+    title: Mitteldeutsche Predigten (Fr/G/H1)
+    stages:
+    - mhg
+    dialect: rhfrk.
+    date: 13,2
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M328. Component: MiGraKo core corpus (-G).'
+  - id: m329
+    title: Millstätter Predigtsammlung
+    stages:
+    - mhg
+    dialect: bair.
+    date: 13,1-13,2
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M329. Component: MiGraKo core corpus (-G).'
+  - id: m330
+    title: Mitteldeutsche Predigten (K)
+    stages:
+    - mhg
+    dialect: 'Text composition: vermutl. wmd. (rhfrk.-hess.?); manuscript/script dialect: hessisch-thüringisch?'
+    date: 'Text: um 1200 / 13,1V; manuscript: 13,M'
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    - evidence-rem-details
+    note: 'Canonical ReM ID: M330. ANNIS group: 13_1-thurhess-PV-G. Component: MiGraKo core corpus (-G). Text-composition
+      and manuscript metadata are kept distinct in dialect and date.'
+  - id: m331
+    title: Hessische Reimpredigten
+    stages:
+    - mhg
+    dialect: zentralhess.
+    date: 14,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M331. Component: MiGraKo core corpus (-G).'
+  - id: m332
+    title: Schwarzwälder Predigten (Gr)
+    stages:
+    - mhg
+    dialect: alem.
+    date: 13,2
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M332. Component: MiGraKo core corpus (-G).'
+  - id: m333
+    title: 'Rappoltsteiner Parzifal (Philipp Colin und Claus Wisse: ''Der Nüwe Parzefal'')'
+    stages:
+    - mhg
+    dialect: alem. (elsäss.)
+    date: 14,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M333. Component: MiGraKo core corpus (-G).'
+  - id: m334
+    title: 'Hugo von Trimberg: Renner (E)'
+    stages:
+    - mhg
+    dialect: ofrk. (nürnbergisch)
+    date: 14,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M334. Component: MiGraKo core corpus (-G).'
+  - id: m335
+    title: Rheinisches Marienlob
+    stages:
+    - mhg
+    dialect: ripuar.
+    date: 13,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M335. Component: MiGraKo core corpus (-G).'
+  - id: m336
+    title: 'Rudolf von Ems: Wilhelm von Orlens (M)'
+    stages:
+    - mhg
+    dialect: alem.
+    date: 13,2
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M336. Component: MiGraKo core corpus (-G).'
+  - id: m337
+    title: Salomons Haus (+…)
+    stages:
+    - mhg
+    dialect: rhfrk.-hess.
+    date: 13,2
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M337. Component: MiGraKo core corpus (-G).'
+  - id: m338
+    title: Nürnberger Stadtbuch (Satzungsbuch I/A)
+    stages:
+    - mhg
+    dialect: ofrk.
+    date: 14,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M338. Component: MiGraKo core corpus (-G).'
+  - id: m339
+    title: Schwabenspiegel
+    stages:
+    - mhg
+    dialect: alem.
+    date: 13,2
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M339. Component: MiGraKo core corpus (-G).'
+  - id: m340
+    title: 'Johannes Tauler: Predigten (W2)'
+    stages:
+    - mhg
+    dialect: ripuar.
+    date: 14,2
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M340. Component: MiGraKo core corpus (-G).'
+  - id: m341
+    title: 'Gottfried von Straßburg: Tristan (f1/f + m)'
+    stages:
+    - mhg
+    dialect: westalem.
+    date: 13,1-13,2
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M341. Component: MiGraKo core corpus (-G).'
+  - id: m342
+    title: 'Gottfried von Straßburg: Tristan'
+    stages:
+    - mhg
+    dialect: westbair.-ostalem.
+    date: 13,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M342. Component: MiGraKo core corpus (-G).'
+  - id: m343
+    title: 'Ulrich von Türheim: Rennewart (B)'
+    stages:
+    - mhg
+    dialect: bair.-ostalem. (ostschwäb.)
+    date: 14,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M343. Component: MiGraKo core corpus (-G).'
+  - id: m344
+    title: Augsburger Urkunden
+    stages:
+    - mhg
+    dialect: ostschwäb.
+    date: 13,2
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - charter
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M344. Component: MiGraKo core corpus (-G).'
+  - id: m345
+    title: Augsburger Urkunden
+    stages:
+    - mhg
+    dialect: ostalem. (ostschwäb.)
+    date: 14,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - charter
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M345. Component: MiGraKo core corpus (-G).'
+  - id: m346
+    title: Freiburger Urkunden (1284-1298)
+    stages:
+    - mhg
+    dialect: alem.
+    date: 13,2
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - charter
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M346. Component: MiGraKo core corpus (-G).'
+  - id: m347
+    title: Freiburger Urkunden
+    stages:
+    - mhg
+    dialect: alem.
+    date: 14,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - charter
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M347. Component: MiGraKo core corpus (-G).'
+  - id: m348
+    title: Jena-Weidaer Urkunden
+    stages:
+    - mhg
+    dialect: thür.
+    date: 14,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - charter
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M348. Component: MiGraKo core corpus (-G).'
+  - id: m349
+    title: 'Gottfried Hagen: Kölner Urkunden'
+    stages:
+    - mhg
+    dialect: ripuar.
+    date: 13,2
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - charter
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M349. Component: MiGraKo core corpus (-G).'
+  - id: m350
+    title: Kölner Urkunden
+    stages:
+    - mhg
+    dialect: ripuar.
+    date: 14,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - charter
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M350. Component: MiGraKo core corpus (-G).'
+  - id: m351
+    title: Landshuter Urkunden
+    stages:
+    - mhg
+    dialect: mittelbair.
+    date: 14,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - charter
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M351. Component: MiGraKo core corpus (-G).'
+  - id: m352
+    title: Mainzer Urkunden
+    stages:
+    - mhg
+    dialect: rhfrk.
+    date: 14,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - charter
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M352. Component: MiGraKo core corpus (-G).'
+  - id: m353
+    title: Nürnberger Urkunden
+    stages:
+    - mhg
+    dialect: ofrk.
+    date: 14,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - charter
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M353. Component: MiGraKo core corpus (-G).'
+  - id: m354
+    title: Die Lilie (Versteil)
+    stages:
+    - mhg
+    dialect: ripuar.
+    date: 13,2
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M354. Component: MiGraKo core corpus (-G).'
+  - id: m355
+    title: Winsbeke und Winsbekin (I[J])
+    stages:
+    - mhg
+    dialect: bair.-ostalem.
+    date: 13,2
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M355. Component: MiGraKo core corpus (-G).'
+  - id: m356
+    title: Würzburger Polizeisätze
+    stages:
+    - mhg
+    dialect: ofrk.
+    date: 14,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M356. Component: MiGraKo core corpus (-G).'
+  - id: m357
+    title: 'Bruder Hermann: ''Das Leben der Gräfin Yolanda von Vianden'' (M)'
+    stages:
+    - mhg
+    dialect: westmoselfrk.
+    date: 14,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M357. Component: MiGraKo core corpus (-G).'
+  - id: m358
+    title: Zwifaltener Benediktinerregel
+    stages:
+    - mhg
+    dialect: ostalem.
+    date: 13,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M358. Component: MiGraKo core corpus (-G).'
+  - id: m359
+    title: 'Rudolf von Ems: Weltchronik (Z)'
+    stages:
+    - mhg
+    dialect: alem.
+    date: 13,2
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M359. Component: MiGraKo core corpus (-G).'
+  - id: m401
+    title: Baumgarten geistlicher Herzen (L)
+    stages:
+    - mhg
+    dialect: bair.-ostalem. (ostschwäb.)
+    date: 13,2
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M401. Component: MiGraKo core corpus (-G).'
+  - id: m402
+    title: Berliner Evangelistar
+    stages:
+    - mhg
+    dialect: thür.-obersächs.
+    date: 14,1-14,2
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M402. Component: MiGraKo core corpus (-G).'
+  - id: m402-y
+    title: Berliner Evangelistar
+    stages:
+    - mhg
+    dialect: thür.-obersächs.
+    date: 14,1-14,2
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M402Y. Component: ReM extension corpus (-X).'
+  - id: m403
+    title: Buch der Könige (D1)
+    stages:
+    - mhg
+    dialect: bair
+    date: 13,4V (80er Jahre)
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M403. Component: MiGraKo core corpus (-G).'
+  - id: m403-y
+    title: Buch der Könige
+    stages:
+    - mhg
+    dialect: bair
+    date: 13,4V (80er Jahre)
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M403Y. Component: ReM extension corpus (-X).'
+  - id: m404
+    title: Rede von den 15 Graden (P)
+    stages:
+    - mhg
+    dialect: mfrk. (ripuar.)
+    date: 14,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M404. Component: MiGraKo core corpus (-G).'
+  - id: m405
+    title: David von Augsburg, Traktate
+    stages:
+    - mhg
+    dialect: westl. mittelbair.
+    date: 13,E/um1300
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M405. Component: MiGraKo core corpus (-G).'
+  - id: m405-y
+    title: 'David von Augsburg: Traktate'
+    stages:
+    - mhg
+    dialect: westl. mittelbair.
+    date: 13,E/um1300
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M405Y. Component: ReM extension corpus (-X).'
+  - id: m406
+    title: 'Christine Ebner: ''Engelthaler Schwesternbuch'' (N2)'
+    stages:
+    - mhg
+    dialect: ofrk-nordbair
+    date: um 1350
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M406. Component: MiGraKo core corpus (-G).'
+  - id: m406-y
+    title: 'Christine Ebner: ''Engelthaler Schwesternbuch'' (N2)'
+    stages:
+    - mhg
+    dialect: ofrk-nordbair
+    date: um 1350
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M406Y. Component: ReM extension corpus (-X).'
+  - id: m407
+    title: 'Hermann von Fritzlar: Heiligenleben'
+    stages:
+    - mhg
+    dialect: hess-thür
+    date: 1349?
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M407. Component: MiGraKo core corpus (-G).'
+  - id: m407-y
+    title: 'Hermann von Fritzlar: Heiligenleben'
+    stages:
+    - mhg
+    dialect: hess-thür
+    date: 1349?
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M407Y. Component: ReM extension corpus (-X).'
+  - id: m408
+    title: Jenaer Martyrologium
+    stages:
+    - mhg
+    dialect: thür.
+    date: 13,2
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M408. Component: MiGraKo core corpus (-G).'
+  - id: m409
+    title: St. Pauler Predigten
+    stages:
+    - mhg
+    dialect: bair.
+    date: 13,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M409. Component: MiGraKo core corpus (-G).'
+  - id: m410
+    title: 'Ruprecht von Freising: Freisinger Rechtsbuch'
+    stages:
+    - mhg
+    dialect: mittelbair.
+    date: '14'
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M410. Component: MiGraKo core corpus (-G).'
+  - id: m411
+    title: Augsburger Stadtbuch
+    stages:
+    - mhg
+    dialect: ostschwäb.
+    date: 13,2
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    - char-align
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M411. Component: MiGraKo core corpus (-G).'
+  - id: m501
+    title: Lilienfelder Andachtsbuch
+    stages:
+    - mhg
+    dialect: bair-österreichisch
+    date: 12,2-13,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M501. Component: ReM extension corpus (-X).'
+  - id: m503
+    title: 'Albert von Augsburg: Leben des heiligen Ulrich'
+    stages:
+    - mhg
+    dialect: ostalem, md
+    date: 13,1V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M503. Component: ReM extension corpus (-X).'
+  - id: m504
+    title: Mitteldeutsche Predigten H2
+    stages:
+    - mhg
+    dialect: rheinfränkisch
+    date: 13,E
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M504. Component: ReM extension corpus (-X).'
+  - id: m505
+    title: Lancelot M
+    stages:
+    - mhg
+    dialect: mfrk (moselfrk?)
+    date: 13,M
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M505. Component: ReM extension corpus (-X).'
+  - id: m506
+    title: Hohenfurter Benediktinerregel
+    stages:
+    - mhg
+    dialect: md, obd
+    date: um/kurz nach 1250
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M506. Component: ReM extension corpus (-X).'
+  - id: m507
+    title: 'Sedulius: Carmen paschale, dt. Interlinearübersetzung'
+    stages:
+    - mhg
+    dialect: thür
+    date: 13,A
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M507. Component: ReM extension corpus (-X).'
+  - id: m508
+    title: Admonter Benediktinerregel
+    stages:
+    - mhg
+    dialect: bair
+    date: 13,E
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M508. Component: ReM extension corpus (-X).'
+  - id: m509
+    title: Mettener Predigtsammlung II
+    stages:
+    - mhg
+    dialect: bair
+    date: 13,3V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M509. Component: ReM extension corpus (-X).'
+  - id: m510
+    title: 'Gundacker von Judenburg: Christi Hort'
+    stages:
+    - mhg
+    dialect: bair
+    date: 14,1V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M510. Component: ReM extension corpus (-X).'
+  - id: m512
+    title: Vorauer Novelle
+    stages:
+    - mhg
+    dialect: alem
+    date: 13,3V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M512. Component: ReM extension corpus (-X).'
+  - id: m513
+    title: 'Hugo von St. Victor: Expositio in regulam St. Augustini'
+    stages:
+    - mhg
+    dialect: alem
+    date: 13,E oder um 1300
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M513. Component: ReM extension corpus (-X).'
+  - id: m514
+    title: Reinmar von Zweter
+    stages:
+    - mhg
+    dialect: alem
+    date: um 1300
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M514. Component: ReM extension corpus (-X).'
+  - id: m516
+    title: Der Sünden Widerstreit
+    stages:
+    - mhg
+    dialect: rhfrk-hess
+    date: '1278'
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M516. Component: ReM extension corpus (-X).'
+  - id: m517
+    title: 'Freidank: Bescheidenheit'
+    stages:
+    - mhg
+    dialect: südrhfrk
+    date: 13,4V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M517. Component: ReM extension corpus (-X).'
+  - id: m518
+    title: Gebetbuch für Nonnen
+    stages:
+    - mhg
+    dialect: bair
+    date: um 1310
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M518. Component: ReM extension corpus (-X).'
+  - id: m520
+    title: 'Österreichischer Bibelübersetzer: Klosterneuburger Evangelienwerk'
+    stages:
+    - mhg
+    dialect: bair
+    date: um 1340
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M520. Component: ReM extension corpus (-X).'
+  - id: m521
+    title: Franziskanerregel (Augsburger Drittordensregel)
+    stages:
+    - mhg
+    dialect: ostschwäb
+    date: 14,A
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M521. Component: ReM extension corpus (-X).'
+  - id: m522
+    title: Sigenot
+    stages:
+    - mhg
+    dialect: ostalem
+    date: 14,2V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M522. Component: ReM extension corpus (-X).'
+  - id: m523
+    title: 'Hugo von Konstanz: Predigten'
+    stages:
+    - mhg
+    dialect: alem
+    date: 14,A
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M523. Component: ReM extension corpus (-X).'
+  - id: m524
+    title: Caecilia (Verslegende)
+    stages:
+    - mhg
+    dialect: hochalem
+    date: 14,A
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M524. Component: ReM extension corpus (-X).'
+  - id: m525
+    title: Speculum humanae salvationis (Kremsmünsterer Reimparaphrase)
+    stages:
+    - mhg
+    dialect: alem
+    date: um 1350
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M525. Component: ReM extension corpus (-X).'
+  - id: m527
+    title: Deutschordensregeln und -statuten
+    stages:
+    - mhg
+    dialect: mfrk
+    date: um/kurz nach 1300
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M527. Component: ReM extension corpus (-X).'
+  - id: m528
+    title: Kölner Eidbücher
+    stages:
+    - mhg
+    dialect: rip
+    date: '1321'
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - charter
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M528. Component: ReM extension corpus (-X).'
+  - id: m529
+    title: 'Gottfried Hagen: Reimchronik der Stadt Köln (D)'
+    stages:
+    - mhg
+    dialect: rip
+    date: Ende 1. Viertel 14. Jh.
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M529. Component: ReM extension corpus (-X).'
+  - id: m530
+    title: Rheinischer Merlin (Merlin und Lüthild)
+    stages:
+    - mhg
+    dialect: rip
+    date: 1330-50
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M530. Component: ReM extension corpus (-X).'
+  - id: m531
+    title: '''Das Turnier'', ''Ritterfahrt'', ''Ritterpreis'''
+    stages:
+    - mhg
+    dialect: moselfrk
+    date: 14,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M531. Component: ReM extension corpus (-X).'
+  - id: m532
+    title: St. Galler Passionsspiel
+    stages:
+    - mhg
+    dialect: rhfrk
+    date: 1320-1340
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M532. Component: ReM extension corpus (-X).'
+  - id: m533
+    title: Klagschrift der Gesellschaft der alten Geschlechter zu Mainz
+    stages:
+    - mhg
+    dialect: rhfrk-hess
+    date: '1322'
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M533. Component: ReM extension corpus (-X).'
+  - id: m536
+    title: Leipziger Predigten A
+    stages:
+    - mhg
+    dialect: omd (mit bair. Spuren)
+    date: 14,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M536. Component: ReM extension corpus (-X).'
+  - id: m537
+    title: Christherre-Chronik
+    stages:
+    - mhg
+    dialect: omd
+    date: 14,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M537. Component: ReM extension corpus (-X).'
+  - id: m538
+    title: (Buch) Daniel
+    stages:
+    - mhg
+    dialect: omd
+    date: nicht vor 1331
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M538. Component: ReM extension corpus (-X).'
+  - id: m539
+    title: Das Buch von guter Speise
+    stages:
+    - mhg
+    dialect: ofrk
+    date: 1345-1354
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M539. Component: ReM extension corpus (-X).'
+  - id: m540
+    title: Nürnberger Stadtbuch
+    stages:
+    - mhg
+    dialect: ofrk (nürnbergisch)
+    date: um 1320/23-1360/62
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M540. Component: ReM extension corpus (-X).'
+  - id: m541-b
+    title: 'Herbort von Fritzlar: Liet von Troye B'
+    stages:
+    - mhg
+    dialect: hess, ofrk (?)
+    date: um 1300
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M541B. Component: ReM extension corpus (-X).'
+  - id: m541-h
+    title: 'Herbort von Fritzlar: Liet von Troye H'
+    stages:
+    - mhg
+    dialect: unterofrk-md
+    date: '1333'
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M541H. Component: ReM extension corpus (-X).'
+  - id: m541-s
+    title: 'Herbort von Fritzlar: Liet von Troye S'
+    stages:
+    - mhg
+    dialect: hess
+    date: 13,3V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M541S. Component: ReM extension corpus (-X).'
+  - id: m543
+    title: Hamburger Beichte
+    stages:
+    - mhg
+    dialect: rhfrk (teilweise)
+    date: 13,2V
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M543. Component: ReM extension corpus (-X).'
+  - id: m544-a
+    title: Mittelfränkische Urkunden
+    stages:
+    - mhg
+    dialect: mfrk, rhfrk (teilweise)
+    date: 13,2
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - charter
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M544A. Component: ReM extension corpus (-X).'
+  - id: m544-b
+    title: Mittelfränkische Urkunden (Erweiterung)
+    stages:
+    - mhg
+    dialect: mittelfränkisch (teils rheinfränkisch)
+    date: 13,2
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - charter
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M544B. Component: ReM extension corpus (-X).'
+  - id: m544-c
+    title: Mittelfränkische Urkunden 13. Jh. (Erweiterung von M349)
+    stages:
+    - mhg
+    dialect: mfrk
+    date: 13,2
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - charter
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M544C. Component: ReM extension corpus (-X).'
+  - id: m544-d
+    title: Mittelfränkische Urkunden 13. Jh. (Erweiterung von M349)
+    stages:
+    - mhg
+    dialect: mfrk
+    date: 13,2
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - charter
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M544D. Component: ReM extension corpus (-X).'
+  - id: m545
+    title: Mittelfränkische Urkunden des 14. Jh.s
+    stages:
+    - mhg
+    dialect: mfrk., rhfrk (teilweise)
+    date: 14,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - charter
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M545. Component: ReM extension corpus (-X).'
+  - id: m546
+    title: Flors inde Blanzeflors
+    stages:
+    - mhg
+    dialect: rip
+    date: 13,E
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - verse
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M546. Component: ReM extension corpus (-X).'
+  - id: m547
+    title: Kölner Klosterpredigten
+    stages:
+    - mhg
+    dialect: rip
+    date: '14'
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M547. Component: ReM extension corpus (-X).'
+  - id: m548
+    title: Lancelot Msp
+    stages:
+    - mhg
+    dialect: südrheinfränkisch, alemannisch
+    date: 13,2
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - prose
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M548. Component: ReM extension corpus (-X).'
+  - id: m549
+    title: Friedgebot
+    stages:
+    - mhg
+    dialect: rheinfränkisch
+    date: 14,1
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - charter
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M549. Component: ReM extension corpus (-X).'
+  - id: m550
+    title: Rheinfränkische Urkunden
+    stages:
+    - mhg
+    dialect: rheinfränkisch (alemannisch)
+    date: 13,2
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - charter
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M550. Component: ReM extension corpus (-X).'
+  - id: m551
+    title: Hessische Urkunden
+    stages:
+    - mhg
+    dialect: hessisch (hessisch-thüringisch), rheinfränkisch, ostmitteldeutsch
+    date: 13,2
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - charter
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M551. Component: ReM extension corpus (-X).'
+  - id: m552
+    title: Ostmitteldeutsche Urkunden
+    stages:
+    - mhg
+    dialect: ostmitteldeutsch (oberdeutsch)
+    date: 13,2
+    annotation_ids:
+    - lemma
+    - pos
+    - morphology
+    - normalization
+    - tokenization
+    text_types:
+    - charter
+    source_ids:
+    - evidence-rem-texts
+    note: 'Canonical ReM ID: M552. Component: ReM extension corpus (-X).'
+  source_ids:
+  - evidence-rem-homepage
+  - evidence-rem-access
+  - evidence-rem-zenodo
+  - evidence-rem-structure
+  - evidence-rem-layers
+  - evidence-rem-texts
+  - evidence-rem-details
+  - evidence-rem-metadata
+  - evidence-rem-news
+  - evidence-rem-zenodo-manifest
+  note: 'Version 2.1 is not superseded. It contains exactly 406 canonical texts. MiGraKo is the structurally sampled core
+    inherited from the Corpus of Middle High German Grammar; the ReM extension corpus was created by the project and contains
+    additional texts and passages. Components remain facts in notes, not synthetic texts. The distribution is a dataset-repository
+    ZIP release with separate TEI-compatible XML, Tabular JSON, CorA-XML, and GraphML archives and linked schemas. TEI naming
+    caveat: the TEI lemma attribute contains ANNIS norm, while the TEI norm attribute contains ANNIS tok_anno. The v2.1 changelog
+    corrected punctus elevatus parser handling and outdated file-header metadata. texts.html retains a stale M057 row, but
+    NEWS says “Removed: M057” and the complete v2.1 CorA-XML container manifest includes M056.xml and M058.xml but no M057.xml;
+    M057 is therefore excluded. char_align is present for every MiGraKo text and for a small unidentified extension subset;
+    only verified MiGraKo assignments are represented. No safe overlap or whole-corpus derivation is asserted.'

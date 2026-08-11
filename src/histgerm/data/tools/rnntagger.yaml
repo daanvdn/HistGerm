@@ -1,0 +1,82 @@
+id: res-rnntagger
+name: RNNTagger
+description: Neural command-line tool for part-of-speech tagging and lemmatization with pretrained parameters for modern and historical languages.
+reviewed_on: 2026-08-11
+links:
+  homepage: https://www.cis.uni-muenchen.de/~schmid/tools/RNNTagger/
+  documentation: https://www.cis.uni-muenchen.de/~schmid/tools/RNNTagger/
+  download: https://www.cis.uni-muenchen.de/~schmid/tools/RNNTagger/data/RNNTagger-1.5.0.zip
+  installation: https://www.cis.uni-muenchen.de/~schmid/tools/RNNTagger/
+  usage: https://www.cis.uni-muenchen.de/~schmid/tools/RNNTagger/
+  license: https://www.cis.uni-muenchen.de/~schmid/tools/RNNTagger/Tagger-Licence
+  citation: https://doi.org/10.1145/3322905.3322915
+
+tasks: [lemmatizer, pos_tagger]
+supported_stages: [enhg, mhg]
+input_formats: [plain_text]
+output_formats: [plain_text]
+
+access:
+  availability: [described, downloadable]
+  model_training: unclear
+  original_data_redistribution: unclear
+  processed_data_redistribution: unclear
+  trained_weight_publication: unclear
+  license: RNNTagger License
+  license_url: https://www.cis.uni-muenchen.de/~schmid/tools/RNNTagger/Tagger-Licence
+  requirements:
+    - Free software use is limited to evaluation, research, and teaching purposes.
+    - Any other use, in particular commercial use, requires a commercial license.
+    - Redistribution of the RNNTagger software to other persons requires written permission.
+  note: The terms address software use and redistribution, but do not separately identify the pretrained parameter files as models or establish model-training, original-data redistribution, processed-data redistribution, or trained-weight publication rights. Automated access was also unclear in the source inventory and is intentionally absent from V2.
+  source_ids: [evidence-rnntagger-homepage, evidence-rnntagger-license]
+
+note: "Creator: Helmut Schmid (person, creator). Version 1.5.0 is distributed as RNNTagger-1.5.0.zip in ZIP format; package name: RNNTagger. RNNTagger was implemented in Python using PyTorch. Command-line entry point: cmd/rnn-tagger-english.sh. Installation and usage are documented on the project page."
+
+sources:
+  - id: evidence-rnntagger-homepage
+    url: https://www.cis.uni-muenchen.de/~schmid/tools/RNNTagger/
+    accessed_on: 2026-08-11
+    supports:
+      - name
+      - description
+      - links
+      - tasks
+      - supported_stages
+      - input_formats
+      - output_formats
+      - access.availability
+      - note
+    quote: "The RNNTagger is a tool for annotating text with part-of-speech and lemma information. It comes with pretrained parameter files for over 50 modern and historical languages. RNNTagger was implemented in Python using the PyTorch library."
+    note: The page lists Early New High German and Middle High German among the supported historical languages and documents the 1.5.0 ZIP download, installation requirements, command-line example, output example, and citation.
+
+  - id: evidence-rnntagger-license
+    url: https://www.cis.uni-muenchen.de/~schmid/tools/RNNTagger/Tagger-Licence
+    accessed_on: 2026-08-11
+    supports: [access]
+    quote: "You can freely use the RNNTagger software for evaluation, research and teaching purposes. Any other usage of the system (in particular for commercial purposes) requires a commercial license. You are not allowed to distribute the RNNTagger software to other persons without written permission."
+    note: The terms expressly address software use and software redistribution, but do not separately identify the pretrained parameter files as models or address model training, processed data, or publication of trained weights.
+
+  - id: evidence-rnntagger-publication
+    url: https://api.crossref.org/works/10.1145/3322905.3322915
+    accessed_on: 2026-08-11
+    supports: [links.citation, sources]
+    citation: "Schmid, Helmut. 2019. Deep Learning-Based Morphological Taggers and Lemmatizers for Annotating Historical Texts. DATeCH, 133–137. https://doi.org/10.1145/3322905.3322915"
+    quote: Deep Learning-Based Morphological Taggers and Lemmatizers for Annotating Historical Texts
+    note: Crossref identifies the ACM proceedings article, author Helmut Schmid, publication date 2019-05-08, pages 133–137, and DOI 10.1145/3322905.3322915.
+
+  - id: evidence-rnntagger-publication-crossref
+    url: https://api.crossref.org/works/10.1145/3322905.3322915
+    accessed_on: 2026-08-11
+    supports: [links.citation, sources]
+    citation: "Schmid, Helmut. 2019. Deep Learning-Based Morphological Taggers and Lemmatizers for Annotating Historical Texts. DATeCH, 133–137. https://doi.org/10.1145/3322905.3322915"
+    quote: Deep Learning-Based Morphological Taggers and Lemmatizers for Annotating Historical Texts
+    note: Crossref identifies the ACM proceedings article, author Helmut Schmid, publication date 2019-05-08, pages 133–137, and DOI 10.1145/3322905.3322915.
+
+  - id: evidence-rnntagger-publication-project
+    url: https://www.cis.uni-muenchen.de/~schmid/tools/RNNTagger/
+    accessed_on: 2026-08-11
+    supports: [links.citation, sources]
+    citation: "Schmid, Helmut. 2019. Deep Learning-Based Morphological Taggers and Lemmatizers for Annotating Historical Texts. DATeCH, 133–137. https://doi.org/10.1145/3322905.3322915"
+    quote: "Helmut Schmid (2019). Deep Learning-Based Morphological Taggers and Lemmatizers for Annotating Historical Texts, DATeCH, May 2019, Brussels, Belgium."
+    note: The canonical tool page identifies this paper as the RNNTagger citation.

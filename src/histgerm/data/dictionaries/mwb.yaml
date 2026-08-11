@@ -1,0 +1,212 @@
+id: res-mwb
+name: Mittelhochdeutsches Wörterbuch
+aliases: [MWB]
+description: An epoch dictionary documenting the vocabulary and usage of German-language texts from 1050–1350.
+reviewed_on: 2026-08-11
+
+links:
+  homepage: https://mwb.adwmainz.net/exist/apps/mwb/pages/index.html
+  usage_documentation: https://mhdwb-online.de/hinweise-neu.html
+  api_documentation: https://www.uni-trier.de/forschung/mittelhochdeutsches-woerterbuch/mwb-online
+  api_reference: https://api.woerterbuchnetz.de/open-api/dictionaries/MWB
+  citation: https://www.hirzel.de/mittelhochdeutsches-woerterbuch.-erster-band/9783777623276
+  publisher: https://www.hirzel.de/mittelhochdeutsches-woerterbuch.-erster-band/9783777623276
+
+covered_stages: [mhg]
+covered_languages: [German]
+lexical_features:
+  - headwords
+  - lemmas
+  - spelling variants
+  - part of speech
+  - senses
+search_links:
+  - https://mwb.adwmainz.net/exist/apps/mwb/pages/entries/index.html
+  - https://mhdwb-online.de/hinweise-neu.html
+api_links:
+  - https://api.woerterbuchnetz.de/open-api/dictionaries/MWB
+  - https://api.woerterbuchnetz.de/open-api/dictionaries/MWB/lemmata/abe
+machine_readable: true
+citation_detail: >-
+  Articles identify works, research-relevant editions, and passages through
+  source sigla and cited locations. Source sigla link to bibliography records,
+  and cited locations can link to fuller electronic text context. The inspected
+  evidence did not establish page- and line-level detail for all citations.
+note: >-
+  The MWB is an epoch dictionary for high-medieval German-language texts from
+  1050–1350 (source wording: “1050 bis 1350”) and covers Middle High German with
+  German target descriptions. It is hosted by the Akademie der Wissenschaften
+  und der Literatur Mainz and the Niedersächsische Akademie der Wissenschaften
+  zu Göttingen, both in the role of host institution. The reviewed online
+  publication state is a–merhensun. The publication-status page describes this
+  extent as “rund 27.400 Artikel” (approximately 27,400 articles); this is a
+  qualified note, not an exact size. MWB Online provides a browsable HTML
+  interface. Its documented search covers the lemma list, word-form list,
+  bibliography, and published article headwords including lemma variants;
+  character-sequence search supports optional truncation. Users can retrieve
+  concordances, vary left and right context length, resolve source sigla to
+  bibliography records, and follow cited locations to fuller electronic text
+  context. Complete headword lists and search-result lists are provided with
+  associated addresses, supporting persistent article linking. The electronic
+  evidence archive assigns text word forms to normalized lemmata with documented
+  error tolerance, especially for hidden homographs and some high-frequency
+  vocabulary. These facts may support investigation of lemmatization and
+  dictionary variants, but documented lemmatization errors, the lack of a
+  verified bulk machine-readable download, unclear model-training permission,
+  and unverified transcription conventions remain limitations; no suitability
+  verdict is retained. Corpus-occurrence and context links are available, but no
+  verified HistGerm corpus identifier or link unit was established. The
+  Wörterbuchnetz Open API exposes machine-readable JSON encoded as UTF-8. A
+  lemma-pattern request such as /lemmata/abe returns the dictionary siglum,
+  lemma, grammatical label, Wörterbuchnetz identifier, book reference, and an
+  addressable entry result. The inspected response was structured JSON; no
+  dictionary payload was downloaded. The API services are freely accessible
+  without authentication, but this does not establish bulk-download, reuse,
+  redistribution, model-training, or trained-weight-publication permission.
+  API parameters, output, and continuous availability may change. The source
+  edition is “Mittelhochdeutsches Wörterbuch. Band 1: a–êvrouwe”, a dictionary
+  volume edited by Kurt Gärtner, Klaus Grubmüller, and Karl Stackmann, published
+  in Stuttgart by S. Hirzel in 2013, ISBN-13 9783777623276. Full citation:
+  “Gärtner, Kurt; Grubmüller, Klaus; Stackmann, Karl (eds.).
+  Mittelhochdeutsches Wörterbuch. Band 1: a–êvrouwe. Stuttgart: S. Hirzel, 2013.
+  ISBN 978-3-7776-2327-6.” No complete ISO publication date was established.
+  Later printed installments are published online after a six-month protection
+  period.
+
+access:
+  availability: [described, browsable, api]
+  model_training: unclear
+  original_data_redistribution: unclear
+  processed_data_redistribution: unclear
+  trained_weight_publication: unclear
+  requirements:
+    - No authentication is required for the inspected browser and API access.
+  note: >-
+    Machine-readable access is verified through the API. No bulk download,
+    download format, or download location was verified. No license was
+    established. “Freely accessible” describes API availability only and does
+    not establish permission to reuse data, train models, redistribute original
+    or processed data, or publish trained weights. API parameters, output, and
+    continuous availability may change.
+  source_ids:
+    - evidence-mwb-project
+    - evidence-mwb-usage
+    - evidence-mwb-entry
+    - evidence-mwb-api
+    - evidence-mwb-api-query
+
+sources:
+  - id: evidence-mwb-project
+    url: https://mwb.adwmainz.net/exist/apps/mwb/pages/about.html
+    accessed_on: 2026-08-11
+    supports:
+      - id
+      - name
+      - aliases
+      - description
+      - covered_stages
+      - covered_languages
+      - links.homepage
+      - note
+      - access
+    title: MWB project homepage
+    quote: "Das Mittelhochdeutsche Wörterbuch (MWB) ist ein Epochenwörterbuch zum hochmittelalterlichen (Hoch-)Deutsch (1050 bis 1350)."
+    note: Canonical project description for identity, abbreviation, stage, chronology, scope, institutions, online access, corpus links, and publication model.
+  - id: evidence-mwb-publication-status
+    url: https://mhdwb-online.de/
+    accessed_on: 2026-08-11
+    supports:
+      - note
+      - links.citation
+    title: MWB publication-status page
+    quote: "Online a – merhensun (rund 27.400 Artikel)"
+    note: Canonical publication-status page; supports the reviewed online extent and Band 1 source-edition metadata.
+  - id: evidence-mwb-usage
+    url: https://mhdwb-online.de/hinweise-neu.html
+    accessed_on: 2026-08-11
+    supports:
+      - search_links
+      - links.usage_documentation
+      - citation_detail
+      - note
+      - access
+    title: MWB usage documentation
+    quote: "Die Suchfunktion bietet zur Zeit bereits die Möglichkeit, in der Lemmaliste, der Wortformenliste, dem Quellenverzeichnis und in den Artikelstichwörtern (einschließlich Lemmavarianten) des bereits ausgearbeiteten Teils des MWB nach einer Zeichenfolge (ggf. mit Trunkierung) zu suchen."
+    note: Canonical usage documentation for search, concordance, corpus-context linking, normalization, and documented lemmatization limitations.
+  - id: evidence-mwb-entry
+    url: https://mwb.adwmainz.net/exist/apps/mwb/pages/entries/entry.html?lid=84000
+    accessed_on: 2026-08-11
+    supports:
+      - lexical_features
+      - citation_detail
+      - note
+      - access
+    title: MWB article lid 84000
+    quote: "Ralf Plate, abe biten stV., in Mittelhochdeutsches Wörterbuch, Band 1, a-êvrouwe. (Anfang des Artikels: MWB 1 6,41)"
+    note: Canonical article used only to establish directly visible headword, POS, German sense gloss, source citations, passage links, and article-level citation granularity.
+  - id: evidence-mwb-api
+    url: https://www.uni-trier.de/forschung/mittelhochdeutsches-woerterbuch/mwb-online
+    accessed_on: 2026-08-11
+    supports:
+      - links.api_documentation
+      - links.api_reference
+      - machine_readable
+      - access
+      - note
+    title: Institutional MWB API overview
+    quote: "Über das Online-Wörterbuch hinaus stellt das MWB einige Services für die automatisierte Abfrage des Wörterbuchmaterials zur Verfügung (API). Die Services sind frei zugänglich."
+    note: Responsible institution's API overview. It also warns that parameters, output, and continuous availability may change; it does not state reuse or model-training permission.
+  - id: evidence-mwb-api-query
+    url: https://api.woerterbuchnetz.de/open-api/dictionaries/MWB/lemmata/abe
+    accessed_on: 2026-08-11
+    supports:
+      - links.api_reference
+      - machine_readable
+      - lexical_features
+      - note
+      - access
+    title: Wörterbuchnetz Open API lemma response
+    quote: "{\"sigle\":\"MWB\",\"lemma\":\"abe\",\"gram\":\"Adv.\",\"wbnetzid\":\"247419600\",\"bookref\":\"247419600\"}"
+    note: Live canonical TCDH API response inspected as structured JSON; no dictionary payload was downloaded or committed.
+  - id: evidence-mwb-network
+    url: https://tcdh.uni-trier.de/de/projekt/woerterbuchnetz
+    accessed_on: 2026-08-11
+    supports:
+      - search_links
+      - note
+    title: TCDH Wörterbuchnetz project page
+    quote: "Zusätzlich zu dieser interaktiven Einzelvernetzung werden aber auch die vollständigen Stichwortlisten sowie Trefferlisten zu durchgeführten Suchen mit den zugehörigen Adressen zur Verfügung gestellt."
+    note: Canonical TCDH project page for persistent article addresses and external linking through headword and result lists.
+  - id: evidence-mwb-publisher
+    url: https://www.hirzel.de/mittelhochdeutsches-woerterbuch.-erster-band/9783777623276
+    accessed_on: 2026-08-11
+    supports:
+      - links.publisher
+      - links.citation
+      - citation_detail
+      - note
+    title: S. Hirzel Band 1 publisher record
+    citation: "Gärtner, Kurt; Grubmüller, Klaus; Stackmann, Karl (eds.). Mittelhochdeutsches Wörterbuch. Band 1: a–êvrouwe. Stuttgart: S. Hirzel, 2013. ISBN 978-3-7776-2327-6."
+    quote: "Die Belege werden in der Regel nach den für die moderne Forschung relevanten Ausgaben geboten."
+    note: Publisher record for Band 1, lexical coverage, edition basis, and links from the publication to online supplementary materials.
+  - id: evidence-mwb-band-1-project
+    url: https://mhdwb-online.de/
+    accessed_on: 2026-08-11
+    supports:
+      - links.citation
+      - note
+    title: MWB Band 1 project record
+    citation: "Gärtner, Kurt; Grubmüller, Klaus; Stackmann, Karl (eds.). Mittelhochdeutsches Wörterbuch. Band 1: a–êvrouwe. Stuttgart: S. Hirzel, 2013. ISBN 978-3-7776-2327-6."
+    quote: "Mittelhochdeutsches Wörterbuch. Band 1 a – êvrouwe. Im Auftrag der Akademie der Wissenschaften und der Literatur Mainz und der Akademie der Wissenschaften zu Göttingen herausgegeben von Kurt Gärtner, Klaus Grubmüller und Karl Stackmann. Stuttgart 2013."
+    note: Canonical project publication-status page for title, editors, place, and year.
+  - id: evidence-mwb-band-1-publisher
+    url: https://www.hirzel.de/mittelhochdeutsches-woerterbuch.-erster-band/9783777623276
+    accessed_on: 2026-08-11
+    supports:
+      - links.publisher
+      - links.citation
+      - note
+    title: MWB Band 1 ISBN record
+    citation: "Gärtner, Kurt; Grubmüller, Klaus; Stackmann, Karl (eds.). Mittelhochdeutsches Wörterbuch. Band 1: a–êvrouwe. Stuttgart: S. Hirzel, 2013. ISBN 978-3-7776-2327-6."
+    quote: "Band 1 (2013) enthält ein umfassendes Quellen- und Literaturverzeichnis."
+    note: Canonical publisher record and ISBN-bearing URL; no complete ISO publication date was established.

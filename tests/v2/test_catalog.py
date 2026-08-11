@@ -87,15 +87,27 @@ def _dictionary(
 
 
 def test_real_loader_preserves_no_filter_order_and_model_types() -> None:
-    """Load the bundled corpus without mocks and preserve authored text order."""
+    """Load bundled resources without mocks and preserve authored text order."""
 
     catalog = load_catalog()
 
-    assert [corpus.id for corpus in catalog.find_corpora()] == ["corpus-synthetic-demo"]
-    assert [text.id for text in catalog.find_texts()] == ["sermon-a", "sermon-b"]
-    assert catalog.find_tools() == []
-    assert catalog.find_dictionaries() == []
-    assert all(isinstance(text, object) for text in catalog.find_texts())
+    corpora = catalog.find_corpora()
+    texts = catalog.find_texts()
+    tools = catalog.find_tools()
+    dictionaries = catalog.find_dictionaries()
+
+    assert [corpus.id for corpus in corpora] == [
+        "res-rem",
+        "corpus-synthetic-demo",
+    ]
+    assert len(texts) == 408
+    assert [text.id for text in texts[:2]] == ["m001", "m002"]
+    assert [text.id for text in texts[-3:]] == ["m552", "sermon-a", "sermon-b"]
+    assert [tool.id for tool in tools] == ["res-rnntagger"]
+    assert [dictionary.id for dictionary in dictionaries] == ["res-mwb"]
+    assert all(isinstance(corpus, Corpus) for corpus in corpora)
+    assert all(isinstance(tool, Tool) for tool in tools)
+    assert all(isinstance(dictionary, Dictionary) for dictionary in dictionaries)
 
 
 @pytest.mark.parametrize(
@@ -143,13 +155,11 @@ def test_each_distinguishing_text_filter_works_on_its_own() -> None:
     catalog = load_catalog()
     cases = [
         ({"stage": "ohg"}, ["sermon-a"]),
-        ({"stage": "mhg"}, ["sermon-b"]),
         ({"dialect": "East Franconian (synthetic label)"}, ["sermon-a"]),
         (
             {"dialect": "Alemannic with mixed regional features (synthetic label)"},
             ["sermon-b"],
         ),
-        ({"annotation_type": "lemma"}, ["sermon-b"]),
         ({"tagset": "Synthetic lemma conventions"}, ["sermon-b"]),
         ({"date_contains": "late 9th"}, ["sermon-a"]),
         ({"date_contains": "1200–1250"}, ["sermon-b"]),
@@ -157,6 +167,29 @@ def test_each_distinguishing_text_filter_works_on_its_own() -> None:
 
     for filters, expected in cases:
         assert [text.id for text in catalog.find_texts(**filters)] == expected  # type: ignore[arg-type]
+
+    mhg_texts = catalog.find_texts(stage="mhg")
+    assert len(mhg_texts) == 407
+    assert [text.id for text in mhg_texts[:2]] == ["m001", "m002"]
+    assert [text.id for text in mhg_texts[-2:]] == ["m552", "sermon-b"]
+    lemma_texts = catalog.find_texts(annotation_type="lemma")
+    assert len(lemma_texts) == 407
+    assert [text.id for text in lemma_texts[:2]] == ["m001", "m002"]
+    assert [text.id for text in lemma_texts[-2:]] == ["m552", "sermon-b"]
+
+
+def test_corpus_id_isolates_each_bundled_corpus() -> None:
+    """Keep corpus-local text identity and authored order deterministic."""
+
+    catalog = load_catalog()
+
+    synthetic = catalog.find_texts(corpus_id="corpus-synthetic-demo")
+    rem = catalog.find_texts(corpus_id="res-rem")
+
+    assert [text.id for text in synthetic] == ["sermon-a", "sermon-b"]
+    assert len(rem) == 406
+    assert [text.id for text in rem[:2]] == ["m001", "m002"]
+    assert [text.id for text in rem[-2:]] == ["m551", "m552"]
 
 
 def test_text_filters_are_anded_and_ids_are_strictly_qualified() -> None:
@@ -235,8 +268,12 @@ def test_legal_warnings_resolve_four_rows_per_owner_context() -> None:
     """Resolve corpus access for texts and keep legal rows free of overlaps."""
 
     catalog = load_catalog()
-    corpus = catalog.find_corpora()[0]
-    first, second = catalog.find_texts()
+    corpus = next(
+        corpus
+        for corpus in catalog.find_corpora()
+        if corpus.id == "corpus-synthetic-demo"
+    )
+    first, second = catalog.find_texts(corpus_id="corpus-synthetic-demo")
 
     rows = catalog.legal_warnings([corpus, first, second])
 
@@ -284,8 +321,12 @@ def test_overlap_warnings_keep_corpus_and_text_authorship_separate() -> None:
     """Preserve authored overlap order without reciprocal inference or totals."""
 
     catalog = load_catalog()
-    corpus = catalog.find_corpora()[0]
-    first, second = catalog.find_texts()
+    corpus = next(
+        corpus
+        for corpus in catalog.find_corpora()
+        if corpus.id == "corpus-synthetic-demo"
+    )
+    first, second = catalog.find_texts(corpus_id="corpus-synthetic-demo")
 
     corpus_rows = catalog.overlap_warnings([corpus])
     text_rows = catalog.overlap_warnings([first, second])
@@ -316,7 +357,7 @@ def test_coverage_groups_use_qualified_unique_sorted_text_ids() -> None:
     """Build stable annotation groups and deduplicate repeated input texts."""
 
     catalog = load_catalog()
-    first, second = catalog.find_texts()
+    first, second = catalog.find_texts(corpus_id="corpus-synthetic-demo")
 
     assert catalog.coverage_summary([second, first, second], by=["stage"]) == [
         {

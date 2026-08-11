@@ -19,8 +19,13 @@ from histgerm.loading import (
 def test_synthetic_corpus_is_discoverable_and_loads_as_mapping() -> None:
     resources = discover_bundled_yaml()
 
-    assert resources == ("corpora/synthetic-corpus.yaml",)
-    payload = load_bundled_yaml(resources[0])
+    assert resources == (
+        "corpora/rem.yaml",
+        "corpora/synthetic-corpus.yaml",
+        "dictionaries/mwb.yaml",
+        "tools/rnntagger.yaml",
+    )
+    payload = load_bundled_yaml(resources[1])
     assert payload["id"] == "corpus-synthetic-demo"
     assert payload["versions"][0]["texts"][1]["title"] == (
         "Synthetic Later Sermon Witness"

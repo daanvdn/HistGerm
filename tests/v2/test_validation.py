@@ -11,6 +11,7 @@ from typing import Any
 import pytest
 import yaml  # type: ignore[import-untyped]
 
+from histgerm.models import Corpus, Dictionary, Tool
 from histgerm.validation import InventoryValidationError, validate_inventory
 
 
@@ -123,16 +124,38 @@ def _failure(root: Path) -> str:
     return str(caught.value)
 
 
-def test_bundled_synthetic_inventory_validates() -> None:
-    """Validate the bundled synthetic V2 corpus without mutation."""
+def test_bundled_inventory_validates() -> None:
+    """Validate the bundled V2 resources without mutation."""
 
     root = Path(__file__).parents[2] / "src" / "histgerm" / "data"
     inventory = validate_inventory(root)
 
     assert [resource.id for resource in inventory.resources] == [
-        "corpus-synthetic-demo"
+        "res-rem",
+        "corpus-synthetic-demo",
+        "res-mwb",
+        "res-rnntagger",
     ]
-    assert len(inventory.corpora[0].versions[0].texts) == 2
+    assert [type(resource) for resource in inventory.resources] == [
+        Corpus,
+        Corpus,
+        Dictionary,
+        Tool,
+    ]
+    assert len(inventory.resources) == 4
+    assert len(inventory.corpora) == 2
+    assert (
+        sum(
+            len(version.texts)
+            for corpus in inventory.corpora
+            for version in corpus.versions
+        )
+        == 408
+    )
+    rem_texts = inventory.corpora[0].versions[0].texts
+    assert len(rem_texts) == 406
+    assert rem_texts[0].id == "m001"
+    assert rem_texts[-1].id == "m552"
 
 
 @pytest.mark.parametrize(
