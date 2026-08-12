@@ -40,5 +40,7 @@ jobs:
       - name: Install locked dependencies
         run: uv sync --frozen --all-groups
 
-      - name: Install pinned Chromium
-        run: uv run playwright install --with-deps chromium
+      - name: Install Crawl4AI-compatible Chromium
+        env:
+          CRAWL4_AI_BASE_DIRECTORY: ${{ runner.temp }}/histgerm-crawl4ai
+        run: uv run python -m playwright install --with-deps chromium

@@ -23,15 +23,26 @@ from histgerm.models import (
     Tool,
 )
 from histgerm.research.inventory_vocabulary import (
+    CandidateDecision,
+    CandidateKey,
     ClassifierCandidate,
+    CleanedSourceDocument,
     FetchedDocument,
+    InventoryURL,
+    ReconciledVocabularyTerm,
+    SourceAssociation,
+    SourceReconciliation,
     URLKind,
     VocabularyKind,
     VocabularyLimits,
+    aggregate_reconciled_terms,
     enumerate_inventory_urls,
     extract_document,
+    generate_source_candidates,
     mine_inventory_vocabulary,
     normalize_term,
+    preserve_source_reconciliation,
+    reconcile_cleaned_source,
 )
 from histgerm.research.models import ResourceCategory
 
@@ -355,4 +366,372 @@ def test_invalid_category_is_rejected(category: str) -> None:
             category=cast(ResourceCategory, category),
             stages=[LanguageStage.MHG],
             transport=lambda url, *, max_bytes: FetchedDocument(url, "text/plain", b""),
+        )
+
+
+def inventory_source(url: str = "https://example.org/project") -> InventoryURL:
+    return InventoryURL(
+        url=url,
+        kinds=(URLKind.HOMEPAGE,),
+        resource_ids=("tool-tagger",),
+        source_fields=("links.homepage",),
+    )
+
+
+def cleaned_source(
+    text: str,
+    *,
+    url: str = "https://example.org/project",
+    title: str = "Historical Tagger (HT)",
+) -> CleanedSourceDocument:
+    return CleanedSourceDocument(
+        source_url=url,
+        cleaned_markdown=text,
+        structured_metadata={
+            "title": title,
+            "nested": {"language": "Middle High German"},
+        },
+    )
+
+
+def accept_all(
+    candidates: tuple[ClassifierCandidate, ...], *, max_terms: int
+) -> Sequence[CandidateDecision]:
+    return [
+        CandidateDecision(
+            candidate.normalized,
+            candidate.suggested_kind,
+            True,
+        )
+        for candidate in candidates[:max_terms]
+    ]
+
+
+def test_incremental_reconciliation_reuses_unchanged_decisions() -> None:
+    document = cleaned_source(
+        "A Middle High German tool for Part-of-speech tagging with HiTS."
+    )
+    first = reconcile_cleaned_source(
+        inventory_source(),
+        document,
+        category="tool",
+        stages=(LanguageStage.MHG,),
+        classifier=accept_all,
+    )
+    calls = 0
+
+    def classifier(
+        candidates: tuple[ClassifierCandidate, ...], *, max_terms: int
+    ) -> Sequence[CandidateDecision]:
+        nonlocal calls
+        calls += 1
+        return accept_all(candidates, max_terms=max_terms)
+
+    second = reconcile_cleaned_source(
+        inventory_source(),
+        document,
+        category="tool",
+        stages=(LanguageStage.MHG,),
+        prior_decisions=first.decisions,
+        prior_associations=first.associations,
+        classifier=classifier,
+    )
+
+    assert calls == 0
+    assert second.candidate_keys == first.candidate_keys
+    assert second.reused_decisions == len(first.candidate_keys)
+    assert second.new_decisions == 0
+    assert second.associations == first.associations
+
+
+def test_changed_source_classifies_only_new_candidate_keys() -> None:
+    first = reconcile_cleaned_source(
+        inventory_source(),
+        cleaned_source("A Middle High German tool using HiTS."),
+        category="tool",
+        stages=(LanguageStage.MHG,),
+        classifier=accept_all,
+    )
+    offered: list[tuple[CandidateKey, ...]] = []
+
+    def classifier(
+        candidates: tuple[ClassifierCandidate, ...], *, max_terms: int
+    ) -> Sequence[CandidateDecision]:
+        offered.append(
+            tuple(
+                CandidateKey(item.normalized, item.suggested_kind)
+                for item in candidates
+            )
+        )
+        return accept_all(candidates, max_terms=max_terms)
+
+    changed = reconcile_cleaned_source(
+        inventory_source(),
+        cleaned_source("A Middle High German tool using HiTS and STTS."),
+        category="tool",
+        stages=(LanguageStage.MHG,),
+        prior_decisions=first.decisions,
+        prior_associations=first.associations,
+        classifier=classifier,
+    )
+
+    assert offered == [
+        (
+            CandidateKey("stts", VocabularyKind.ALIAS),
+            CandidateKey("stts", VocabularyKind.TAGSET_STANDARD),
+        )
+    ]
+    assert changed.new_decisions == 2
+    assert changed.reused_decisions == len(first.candidate_keys)
+
+
+def test_rejected_decision_is_reused_without_association() -> None:
+    document = cleaned_source(
+        "A Middle High German tool.",
+        title="Historical Tagger (HT)",
+    )
+
+    def reject_aliases(
+        candidates: tuple[ClassifierCandidate, ...], *, max_terms: int
+    ) -> Sequence[CandidateDecision]:
+        return [
+            CandidateDecision(
+                item.normalized,
+                item.suggested_kind,
+                item.suggested_kind is not VocabularyKind.ALIAS,
+            )
+            for item in candidates
+        ]
+
+    first = reconcile_cleaned_source(
+        inventory_source(),
+        document,
+        category="tool",
+        stages=(LanguageStage.MHG,),
+        classifier=reject_aliases,
+    )
+    second = reconcile_cleaned_source(
+        inventory_source(),
+        document,
+        category="tool",
+        stages=(LanguageStage.MHG,),
+        prior_decisions=first.decisions,
+        prior_associations=first.associations,
+        classifier=lambda candidates, *, max_terms: pytest.fail(
+            "reused decisions must not be classified"
+        ),
+    )
+
+    assert any(
+        decision.suggested_kind is VocabularyKind.ALIAS and not decision.accepted
+        for decision in second.decisions
+    )
+    assert all(
+        association.kind is not VocabularyKind.ALIAS
+        for association in second.associations
+    )
+
+
+def test_classifier_unavailable_accepts_strong_matches_and_reports_gap() -> None:
+    result = reconcile_cleaned_source(
+        inventory_source(),
+        cleaned_source(
+            "A Middle High German tool for Part-of-speech tagging with HiTS."
+        ),
+        category="tool",
+        stages=(LanguageStage.MHG,),
+    )
+
+    accepted = {decision.key for decision in result.decisions if decision.accepted}
+    assert CandidateKey("hits", VocabularyKind.TAGSET_STANDARD) in accepted
+    assert CandidateKey("part of speech tagging", VocabularyKind.TASK) in accepted
+    assert result.classifier_gap is not None
+    assert result.classifier_gap.reason == "classifier unavailable"
+    assert all(
+        key.suggested_kind
+        not in {
+            VocabularyKind.TASK,
+            VocabularyKind.RESOURCE_TYPE,
+            VocabularyKind.TAGSET_STANDARD,
+            VocabularyKind.FORMAT,
+        }
+        for key in result.classifier_gap.undecided
+    )
+
+
+def test_absent_associations_become_inactive_without_deletion() -> None:
+    first = reconcile_cleaned_source(
+        inventory_source(),
+        cleaned_source("A Middle High German tool using HiTS and STTS."),
+        category="tool",
+        stages=(LanguageStage.MHG,),
+        classifier=accept_all,
+    )
+    changed = reconcile_cleaned_source(
+        inventory_source(),
+        cleaned_source("A Middle High German tool using HiTS."),
+        category="tool",
+        stages=(LanguageStage.MHG,),
+        prior_decisions=first.decisions,
+        prior_associations=first.associations,
+        classifier=accept_all,
+    )
+
+    stts = [
+        association
+        for association in changed.associations
+        if association.normalized == "stts"
+    ]
+    assert {item.kind for item in stts} == {
+        VocabularyKind.ALIAS,
+        VocabularyKind.TAGSET_STANDARD,
+    }
+    assert all(not item.active for item in stts)
+    assert changed.inactive_associations == 2
+
+
+def association(
+    source_url: str,
+    *,
+    active: bool,
+    wording: str = "HiTS",
+) -> SourceAssociation:
+    return SourceAssociation(
+        normalized="hits",
+        kind=VocabularyKind.TAGSET_STANDARD,
+        wording=wording,
+        source_url=source_url,
+        resource_ids=("tool-tagger",),
+        source_fields=("links.homepage",),
+        category="tool",
+        stages=(LanguageStage.MHG,),
+        active=active,
+    )
+
+
+def reconciliation(item: SourceAssociation) -> SourceReconciliation:
+    source = inventory_source(item.source_url)
+    return SourceReconciliation(
+        source=source,
+        associations=(item,),
+        decisions=(),
+        candidate_keys=(),
+        reused_decisions=0,
+        new_decisions=0,
+        inactive_associations=0,
+    )
+
+
+def test_aggregate_term_remains_active_while_any_source_is_active() -> None:
+    terms = aggregate_reconciled_terms(
+        (
+            reconciliation(association("https://example.org/one", active=False)),
+            reconciliation(association("https://example.org/two", active=True)),
+        )
+    )
+
+    assert len(terms) == 1
+    assert terms[0].active
+    assert len(terms[0].associations) == 2
+
+
+def test_access_gap_preserves_active_terms_and_orphan_preserves_history() -> None:
+    prior = association("https://example.org/project", active=True)
+    gap = preserve_source_reconciliation(
+        inventory_source(),
+        prior_associations=(prior,),
+        access_gap="synthetic timeout",
+    )
+    orphan = preserve_source_reconciliation(
+        inventory_source(),
+        prior_associations=(prior,),
+        orphaned=True,
+    )
+
+    assert gap.access_gap == "synthetic timeout"
+    assert gap.associations == (prior,)
+    assert aggregate_reconciled_terms((gap,))[0].active
+    assert orphan.orphaned
+    assert not orphan.associations[0].active
+    assert orphan.associations[0].wording == prior.wording
+    assert aggregate_reconciled_terms((orphan,))[0].associations
+
+
+def test_cleaned_input_and_incremental_bounds_are_enforced() -> None:
+    with pytest.raises(ValueError, match="byte limit"):
+        generate_source_candidates(
+            cleaned_source("x" * 20),
+            category="tool",
+            stages=(LanguageStage.MHG,),
+            limits=VocabularyLimits(max_page_bytes=10),
+        )
+    bounded_candidates = generate_source_candidates(
+        cleaned_source("A Middle High German tool with HiTS, STTS, XML, and JSON."),
+        category="tool",
+        stages=(LanguageStage.MHG,),
+        limits=VocabularyLimits(max_candidates_per_page=1),
+    )
+    assert len(bounded_candidates) == 1
+
+    decisions = tuple(
+        CandidateDecision(f"term {index}", VocabularyKind.PROJECT, True)
+        for index in range(2)
+    )
+    with pytest.raises(ValueError, match="max_decisions_per_source"):
+        preserve_source_reconciliation(
+            inventory_source(),
+            prior_decisions=decisions,
+            limits=VocabularyLimits(max_decisions_per_source=1),
+        )
+
+    sources = tuple(
+        reconciliation(association(f"https://example.org/{index}", active=True))
+        for index in range(2)
+    )
+    with pytest.raises(ValueError, match="max_pages"):
+        aggregate_reconciled_terms(
+            sources,
+            limits=VocabularyLimits(max_pages=1),
+        )
+
+    prior_terms = tuple(
+        ReconciledVocabularyTerm(
+            normalized=f"term {index}",
+            kind=VocabularyKind.PROJECT,
+            active=False,
+            associations=(),
+        )
+        for index in range(2)
+    )
+    with pytest.raises(ValueError, match="max_terms"):
+        aggregate_reconciled_terms(
+            (),
+            prior_terms=prior_terms,
+            limits=VocabularyLimits(max_terms=1),
+        )
+
+    with pytest.raises(ValueError, match="max_wordings_per_term"):
+        aggregate_reconciled_terms(
+            (
+                reconciliation(
+                    association(
+                        "https://example.org/one",
+                        active=True,
+                        wording="HiTS",
+                    )
+                ),
+                reconciliation(
+                    association(
+                        "https://example.org/two",
+                        active=True,
+                        wording="HITS",
+                    )
+                ),
+            ),
+            limits=VocabularyLimits(max_wordings_per_term=1),
+        )
+    with pytest.raises(ValueError, match="max_sources_per_term"):
+        aggregate_reconciled_terms(
+            sources,
+            limits=VocabularyLimits(max_sources_per_term=1),
         )

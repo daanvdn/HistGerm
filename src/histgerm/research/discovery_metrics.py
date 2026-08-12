@@ -20,6 +20,13 @@ class DiscoveryCoverage:
     model_leads: int = 0
     inventory_terms: int = 0
     inventory_leads: int = 0
+    vocabulary_revision: int | None = None
+    vocabulary_sources_refreshed: int = 0
+    vocabulary_sources_reused: int = 0
+    vocabulary_new_terms: int = 0
+    vocabulary_reused_decisions: int = 0
+    vocabulary_inactive_associations: int = 0
+    vocabulary_access_gaps: int = 0
     providers_by_mode: Counter[str] = field(default_factory=Counter)
     interfaces: Counter[str] = field(default_factory=Counter)
     access_gaps: Counter[str] = field(default_factory=Counter)
@@ -74,6 +81,13 @@ class DiscoveryCoverage:
             "model_leads": self.model_leads,
             "inventory_terms": self.inventory_terms,
             "inventory_leads": self.inventory_leads,
+            "vocabulary_revision": self.vocabulary_revision,
+            "vocabulary_sources_refreshed": self.vocabulary_sources_refreshed,
+            "vocabulary_sources_reused": self.vocabulary_sources_reused,
+            "vocabulary_new_terms": self.vocabulary_new_terms,
+            "vocabulary_reused_decisions": self.vocabulary_reused_decisions,
+            "vocabulary_inactive_associations": (self.vocabulary_inactive_associations),
+            "vocabulary_access_gaps": self.vocabulary_access_gaps,
             "candidate_dispositions": dict(self.dispositions),
             "unrelated_result_reasons": dict(self.unrelated_reasons),
             "access_gaps": dict(self.access_gaps),

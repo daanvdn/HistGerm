@@ -12,6 +12,8 @@ import pytest
 ROOT = Path(__file__).parents[2]
 AGENT = ROOT / ".github" / "agents" / "histgerm-inventory-curator.agent.md"
 CURATOR_DOC = ROOT / "docs" / "inventory-curator.md"
+README = ROOT / "README.md"
+VOCABULARY = "research/discovery-vocabulary.yaml"
 SKILL_ROOT = ROOT / ".github" / "skills"
 SKILLS = (
     "discover-histgerm-resources",
@@ -296,7 +298,7 @@ def test_exact_query_progression_is_precision_first_and_provider_aware(
     )
 
 
-def test_model_and_inventory_leads_are_bounded_transient_and_untrusted(
+def test_model_and_persistent_vocabulary_leads_are_bounded_and_untrusted(
     contracts: dict[str, str],
 ) -> None:
     """Lead generation precedes search but cannot become factual evidence."""
@@ -313,19 +315,107 @@ def test_model_and_inventory_leads_are_bounded_transient_and_untrusted(
             ("all three trusted inventory categories", "all trusted corpora"),
             ("tagsets",),
             ("boilerplate",),
-            ("untrusted leads",),
+            ("untrusted leads", "untrusted discovery lead"),
             ("never appear as an evidence source", "never evidence by itself"),
-            ("delete temporary content", "delete fetched temporary content"),
-            ("no cache", "never create a page cache"),
-            ("vocabulary registry",),
+            ("delete temporary content", "delete non-cache temporary content"),
+            (VOCABULARY, VOCABULARY.replace("/", "\\")),
+            ("expected revision", "expected_revision"),
+            ("stale revision",),
+            ("coordinator",),
         )
     curate = contracts[SKILLS[1]]
     assert_concepts(
         curate,
         ("model elicitation",),
-        ("inventory vocabulary mining",),
+        (VOCABULARY, VOCABULARY.replace("/", "\\")),
         ("never cite the model",),
         ("canonical or primary public sources",),
+    )
+
+
+def test_single_vocabulary_and_external_cache_contract(
+    contracts: dict[str, str],
+) -> None:
+    """Approve one lead registry and one external cache without weakening safety."""
+
+    documented = " ".join(CURATOR_DOC.read_text(encoding="utf-8").split())
+    readme = " ".join(README.read_text(encoding="utf-8").split())
+    for policy in (contracts["agent"], contracts[SKILLS[0]], documented):
+        assert_concepts(
+            policy,
+            (VOCABULARY, VOCABULARY.replace("/", "\\")),
+            ("terms",),
+            ("contexts", "observation contexts"),
+            ("classifications", "accepted/rejected classification decisions"),
+            ("untrusted",),
+            ("never inventory", "never satisfy"),
+            ("exactly one configured", "exactly one persistent cache root"),
+            ("outside the repository",),
+            ("30-day ttl",),
+            ("512 mib",),
+            ("exactly one selected canonical url", "one canonical url"),
+            ("no deep", "do not configure deep"),
+            (
+                "never schedule extracted links",
+                "does not schedule links",
+                "follow extracted links",
+            ),
+        )
+    for policy in (contracts["agent"], contracts[SKILLS[0]], documented, readme):
+        assert_concepts(
+            policy,
+            ("cached",),
+            ("generated markdown",),
+            ("browser profiles",),
+            ("sqlite",),
+            ("fetched",),
+            ("never", "excluded"),
+        )
+    for policy in (documented, readme):
+        assert_concepts(
+            policy,
+            ("%localappdata%\\histgerm\\crawl4ai\\.crawl4ai",),
+            ("xdg_cache_home",),
+        )
+    assert_concepts(
+        contracts["agent"],
+        ("additional generic cache", "generic cache/registry/snapshot framework"),
+        ("crawl snapshot",),
+        ("persistent report",),
+    )
+    vocabulary_files = sorted((ROOT / "research").glob("*vocabulary*.yaml"))
+    assert vocabulary_files == [ROOT / VOCABULARY]
+
+
+def test_vocabulary_reporting_validation_and_publication_allowlists(
+    contracts: dict[str, str],
+) -> None:
+    """Vocabulary changes retain metrics and enter gates only when changed."""
+
+    metrics = (
+        ("vocabulary revision",),
+        ("refreshed source", "refreshed and reused source counts"),
+        ("reused source", "refreshed and reused source counts"),
+        ("new terms",),
+        ("reused decisions",),
+        ("inactive associations",),
+        ("vocabulary access gaps",),
+    )
+    for name in ("agent", SKILLS[0], SKILLS[3]):
+        assert_concepts(contracts[name], *metrics)
+    assert_concepts(
+        contracts[SKILLS[2]],
+        (VOCABULARY, VOCABULARY.replace("/", "\\")),
+        ("changed-path allowlist",),
+        ("independent",),
+    )
+    assert_concepts(
+        contracts[SKILLS[3]],
+        (VOCABULARY, VOCABULARY.replace("/", "\\")),
+        ("only when it changed",),
+        ("validated",),
+        ("coordinator-only",),
+        ("independent",),
     )
 
 
@@ -358,7 +448,7 @@ def test_provider_audit_result_inspection_and_iterative_metrics(
     )
 
 
-@pytest.mark.parametrize("name", ("agent", SKILLS[0], SKILLS[1]))
+@pytest.mark.parametrize("name", (SKILLS[1],))
 def test_controlled_browser_is_opt_in_robots_first_and_fail_closed(
     contracts: dict[str, str], name: str
 ) -> None:
@@ -532,7 +622,7 @@ def test_validation_and_publication_gates(contracts: dict[str, str]) -> None:
             "Stage only the explicit changed paths",
             "Open `ready` only when every required validation passes",
             "Open `draft` only when",
-            "Ledger-only progress",
+            "Ledger-only or vocabulary-only progress",
             "Human review and merge are mandatory",
             "never execute the future MHG tools pilot",
         ),
@@ -598,10 +688,13 @@ def test_playwright_packaging_boundary_is_library_safe(
         validate,
         ("research/development dependency",),
         ("deterministic local/cloud curator setup",),
-        ("not a distributable `histgerm` runtime dependency",),
+        (
+            "not a distributable `histgerm` runtime dependency",
+            "neither is a distributable `histgerm` runtime dependency",
+        ),
         ("browser executable",),
         ("browser cache",),
-        ("fetched/rendered page",),
+        ("fetched/rendered page", "fetched/rendered or cached page"),
         ("source distribution",),
         ("recorded synthetic fixtures",),
         ("do not launch a live browser",),
@@ -609,6 +702,36 @@ def test_playwright_packaging_boundary_is_library_safe(
     project = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
     runtime = " ".join(project["project"].get("dependencies", ())).casefold()
     assert "playwright" not in runtime
+
+
+def test_required_vocabulary_and_crawl4ai_source_exclusions_are_declared() -> None:
+    """Packaging configuration must exclude all approved research state."""
+
+    project = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
+    exclusions = {
+        entry.casefold()
+        for entry in project["tool"]["uv"]["build-backend"]["source-exclude"]
+    }
+    assert VOCABULARY in exclusions
+    for required in (
+        "**/.crawl4ai/**",
+        "**/crawl4ai-cache/**",
+        "**/*.sqlite",
+        "**/*.sqlite3",
+        "**/generated-markdown/**",
+    ):
+        assert required in exclusions
+    assert exclusions & {
+        "**/.config/**",
+        "**/.playwright/**",
+        "**/browser-cache/**",
+        "**/browser-profiles/**",
+    }
+    assert exclusions & {
+        "**/browser-pages/**",
+        "**/fetched-pages/**",
+        "**/generated-pages/**",
+    }
 
 
 def test_contract_tests_cannot_open_real_pull_requests() -> None:

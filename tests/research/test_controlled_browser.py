@@ -670,14 +670,19 @@ def test_fallback_is_opt_in_and_never_replaces_successful_http() -> None:
 def test_playwright_is_scoped_and_cloud_install_is_locked() -> None:
     configuration = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
     assert all(
-        not dependency.casefold().startswith("playwright")
+        not dependency.casefold().startswith(("crawl4ai", "playwright"))
         for dependency in configuration["project"]["dependencies"]
     )
-    assert configuration["dependency-groups"]["research"] == ["playwright==1.54.0"]
+    assert configuration["dependency-groups"]["research"] == [
+        "crawl4ai==0.9.2",
+        "playwright==1.54.0",
+    ]
     exclusions = configuration["tool"]["uv"]["build-backend"]["source-exclude"]
     assert {"**/.playwright/**", "**/ms-playwright/**"} <= set(exclusions)
     setup = (ROOT / ".github" / "workflows" / "copilot-setup-steps.yml").read_text(
         encoding="utf-8"
     )
     assert "uv sync --frozen --all-groups" in setup
-    assert "uv run playwright install --with-deps chromium" in setup
+    assert "Install Crawl4AI-compatible Chromium" in setup
+    assert "CRAWL4_AI_BASE_DIRECTORY: ${{ runner.temp }}/histgerm-crawl4ai" in setup
+    assert "uv run python -m playwright install --with-deps chromium" in setup

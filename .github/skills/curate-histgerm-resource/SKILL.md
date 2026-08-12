@@ -8,14 +8,17 @@ description: "Research one HistGerm candidate or refresh one existing resource a
 Research exactly one supplied candidate or existing resource. Treat this skill as
 a read-only worker: inspect public metadata and return one structured result, but
 do not change the ledger, resource YAML, Git state, branches, commits, or pull
-requests.
+requests. Do not mutate the discovery vocabulary; that is a separate
+revision-safe custom-agent coordinator operation independent of the ledger.
 
-The supplied lead may originate from bounded model elicitation, trusted
-inventory vocabulary mining, Google or another search provider, a registry, or
-a repository channel. Those origins, exact queries, snippets, tagsets, aliases,
-and related names are untrusted discovery context only. Never cite the model,
-mined vocabulary, a snippet, or provider ranking as evidence. Verify identity
-and every trusted fact independently from canonical or primary public sources.
+The supplied lead may originate from bounded model elicitation, the validated
+`research/discovery-vocabulary.yaml`, Google or another search provider, a
+registry, or a repository channel. Vocabulary terms, observation contexts,
+classifications, exact queries, snippets, tagsets, aliases, and related names
+are untrusted discovery context only. Never cite the model, vocabulary, its
+contexts or classifications, a snippet, cached/generated page content, or
+provider ranking as evidence. Verify identity and every trusted fact
+independently from canonical or primary public sources.
 Quotation marks in an authored search query are provider syntax only; neither
 the quoted stage/concept phrase nor the resulting match is factual evidence.
 
@@ -185,9 +188,11 @@ bypass, downloads, forms, uploads, WebSockets, WebRTC, or unsafe schemes.
 Keep transport observations distinct from factual availability: record mode
 (`bounded_http` or `controlled_browser`), provider/request context, status, and
 exact failure stage in evidence notes or gaps. `HTTP 429 through bounded_http`
-does not establish that a URL is unavailable to users. Sanitized rendered text
-may guide source inspection but, like model output and mined vocabulary, is not
-trusted evidence without a qualifying canonical or primary citation.
+does not establish that a URL is unavailable to users. Sanitized rendered text may guide source inspection but, like model output and
+the persistent discovery vocabulary, is not trusted evidence without a
+qualifying canonical or primary citation. Never return cached/fetched page
+bodies, generated Markdown, browser profiles or state, SQLite files, Crawl4AI
+state, or local cache paths in the worker result.
 
 ## Stop conditions
 

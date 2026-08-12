@@ -5,12 +5,12 @@ from __future__ import annotations
 import json
 import re
 import unicodedata
-from collections.abc import Iterable, Sequence
+from collections.abc import Iterable, Mapping, Sequence
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from enum import StrEnum
 from html.parser import HTMLParser
-from typing import Protocol
+from typing import Literal, Protocol
 from urllib.parse import SplitResult, urlsplit, urlunsplit
 
 from histgerm.catalog import Catalog
@@ -241,6 +241,115 @@ class BoundedClassifier(Protocol):
     ) -> Sequence[str]: ...
 
 
+@dataclass(frozen=True, slots=True, order=True)
+class CandidateKey:
+    """Stable source-local decision key used by the persistent store."""
+
+    normalized: str
+    suggested_kind: VocabularyKind
+
+
+@dataclass(frozen=True, slots=True)
+class CandidateDecision:
+    """One rationale-free Boolean classification decision."""
+
+    normalized: str
+    suggested_kind: VocabularyKind
+    accepted: bool
+
+    def __post_init__(self) -> None:
+        if type(self.accepted) is not bool:
+            raise ValueError("candidate decisions must be Boolean")
+
+    @property
+    def key(self) -> CandidateKey:
+        return CandidateKey(self.normalized, self.suggested_kind)
+
+
+class IncrementalClassifier(Protocol):
+    """Classify only the supplied previously unseen candidate keys."""
+
+    def __call__(
+        self,
+        candidates: tuple[ClassifierCandidate, ...],
+        *,
+        max_terms: int,
+    ) -> Sequence[CandidateDecision]: ...
+
+
+@dataclass(frozen=True, slots=True)
+class CleanedSourceDocument:
+    """One renderer result containing no cached or raw response body."""
+
+    source_url: str
+    cleaned_markdown: str
+    structured_metadata: Mapping[str, object]
+
+
+class CleanedSourceDocumentLike(Protocol):
+    """Structural subset implemented by the future single-URL adapter result."""
+
+    @property
+    def source_url(self) -> str: ...
+
+    @property
+    def cleaned_markdown(self) -> str: ...
+
+    @property
+    def structured_metadata(self) -> Mapping[str, object]: ...
+
+
+@dataclass(frozen=True, slots=True)
+class SourceAssociation:
+    """One untrusted exact-wording observation attached to a source."""
+
+    normalized: str
+    kind: VocabularyKind
+    wording: str
+    source_url: str
+    resource_ids: tuple[str, ...]
+    source_fields: tuple[str, ...]
+    category: ResourceCategory
+    stages: tuple[LanguageStage, ...]
+    active: bool
+    untrusted: Literal[True] = True
+
+
+@dataclass(frozen=True, slots=True)
+class ClassifierGap:
+    """Bounded undecided keys left unapplied by classification."""
+
+    source_url: str
+    reason: str
+    undecided: tuple[CandidateKey, ...]
+
+
+@dataclass(frozen=True, slots=True)
+class SourceReconciliation:
+    """Complete source-local output ready for a future persistent store."""
+
+    source: InventoryURL
+    associations: tuple[SourceAssociation, ...]
+    decisions: tuple[CandidateDecision, ...]
+    candidate_keys: tuple[CandidateKey, ...]
+    reused_decisions: int
+    new_decisions: int
+    inactive_associations: int
+    classifier_gap: ClassifierGap | None = None
+    access_gap: str | None = None
+    orphaned: bool = False
+
+
+@dataclass(frozen=True, slots=True)
+class ReconciledVocabularyTerm:
+    """Aggregate term whose activity derives from source associations."""
+
+    normalized: str
+    kind: VocabularyKind
+    active: bool
+    associations: tuple[SourceAssociation, ...]
+
+
 @dataclass(frozen=True, slots=True)
 class VocabularyTerm:
     """One normalized term retaining every bounded exact source wording."""
@@ -287,6 +396,7 @@ class VocabularyLimits:
     max_terms: int = 256
     max_wordings_per_term: int = 4
     max_sources_per_term: int = 8
+    max_decisions_per_source: int = 256
 
     def __post_init__(self) -> None:
         values = (
@@ -301,6 +411,7 @@ class VocabularyLimits:
             self.max_terms,
             self.max_wordings_per_term,
             self.max_sources_per_term,
+            self.max_decisions_per_source,
         )
         if any(not isinstance(value, int) or value < 1 for value in values):
             raise ValueError("all vocabulary limits must be positive integers")
@@ -677,6 +788,423 @@ def _page_candidates(
     return tuple(candidates)
 
 
+def _cleaned_document(
+    source: CleanedSourceDocumentLike,
+    *,
+    limits: VocabularyLimits,
+) -> ExtractedDocument:
+    canonical = _canonical_url(source.source_url)
+    if canonical is None or canonical != source.source_url:
+        raise ValueError("source URL must be canonical public HTTP(S)")
+    try:
+        metadata_json = json.dumps(
+            dict(source.structured_metadata),
+            ensure_ascii=False,
+            sort_keys=True,
+        )
+    except (TypeError, ValueError) as error:
+        raise ValueError("structured metadata must be JSON-compatible") from error
+    encoded_bytes = len(source.cleaned_markdown.encode("utf-8")) + len(
+        metadata_json.encode("utf-8")
+    )
+    if encoded_bytes > min(limits.max_page_bytes, limits.max_total_bytes):
+        raise ValueError("cleaned source exceeds byte limit")
+    metadata_strings: list[str] = []
+    _collect_json_strings(
+        json.loads(metadata_json),
+        metadata_strings,
+        limits.max_visible_characters,
+    )
+    metadata = tuple(
+        sorted(
+            {
+                cleaned
+                for value in metadata_strings
+                if (cleaned := _clean_wording(value))
+            }
+        )
+    )
+    remaining_characters = max(
+        0,
+        limits.max_visible_characters - sum(map(len, metadata)),
+    )
+    return ExtractedDocument(
+        title=None,
+        headings=(),
+        metadata=metadata,
+        visible_text=_clean_wording(source.cleaned_markdown[:remaining_characters]),
+    )
+
+
+def generate_source_candidates(
+    source: CleanedSourceDocumentLike,
+    *,
+    category: ResourceCategory,
+    stages: Iterable[LanguageStage],
+    limits: VocabularyLimits | None = None,
+) -> tuple[ClassifierCandidate, ...]:
+    """Generate bounded deterministic candidates from cleaned renderer output."""
+
+    limits = limits or VocabularyLimits()
+    if category not in _CATEGORY_TERMS:
+        raise ValueError("category must be corpus, tool, or dictionary")
+    wanted_stages = frozenset(stages)
+    if not wanted_stages:
+        raise ValueError("at least one target stage is required")
+    document = _cleaned_document(source, limits=limits)
+    candidates = _page_candidates(
+        document,
+        url=source.source_url,
+        category=category,
+        stages=wanted_stages,
+        limit=min(limits.max_candidates_per_page, limits.max_terms),
+    )
+    return tuple(
+        sorted(
+            candidates,
+            key=lambda item: (
+                item.normalized,
+                item.suggested_kind.value,
+                item.wording,
+                item.source_url,
+            ),
+        )
+    )
+
+
+_STRONG_KINDS = frozenset(
+    {
+        VocabularyKind.TASK,
+        VocabularyKind.RESOURCE_TYPE,
+        VocabularyKind.TAGSET_STANDARD,
+        VocabularyKind.FORMAT,
+    }
+)
+
+
+def _decision_map(
+    decisions: Iterable[CandidateDecision],
+    *,
+    limits: VocabularyLimits,
+) -> dict[CandidateKey, CandidateDecision]:
+    result: dict[CandidateKey, CandidateDecision] = {}
+    for decision in decisions:
+        normalized = normalize_term(decision.normalized)
+        if normalized != decision.normalized or not normalized:
+            raise ValueError("decision normalized values must be canonical")
+        canonical = CandidateDecision(
+            normalized,
+            decision.suggested_kind,
+            decision.accepted,
+        )
+        if canonical.key in result:
+            raise ValueError("prior decisions must have unique candidate keys")
+        result[canonical.key] = canonical
+        if len(result) > limits.max_decisions_per_source:
+            raise ValueError("prior decisions exceed max_decisions_per_source")
+    return result
+
+
+def _association_sort_key(
+    association: SourceAssociation,
+) -> tuple[str, str, str, str, str, tuple[str, ...]]:
+    return (
+        association.normalized,
+        association.kind.value,
+        association.wording,
+        association.source_url,
+        association.category,
+        tuple(stage.value for stage in association.stages),
+    )
+
+
+def reconcile_cleaned_source(
+    source: InventoryURL,
+    document: CleanedSourceDocumentLike,
+    *,
+    category: ResourceCategory,
+    stages: Iterable[LanguageStage],
+    prior_decisions: Iterable[CandidateDecision] = (),
+    prior_associations: Iterable[SourceAssociation] = (),
+    classifier: IncrementalClassifier | None = None,
+    limits: VocabularyLimits | None = None,
+) -> SourceReconciliation:
+    """Reconcile one changed source while reusing source-local decisions."""
+
+    limits = limits or VocabularyLimits()
+    if document.source_url != source.url:
+        raise ValueError("cleaned document URL must match its inventory source")
+    wanted_stages = tuple(sorted(frozenset(stages), key=str))
+    candidates = generate_source_candidates(
+        document,
+        category=category,
+        stages=wanted_stages,
+        limits=limits,
+    )
+    candidates_by_key: dict[CandidateKey, list[ClassifierCandidate]] = {}
+    for candidate in candidates:
+        key = CandidateKey(candidate.normalized, candidate.suggested_kind)
+        candidates_by_key.setdefault(key, []).append(candidate)
+    candidate_keys = tuple(sorted(candidates_by_key))
+    prior_decision_items = tuple(prior_decisions)
+    decisions = _decision_map(prior_decision_items, limits=limits)
+    reused = sum(key in decisions for key in candidate_keys)
+    unseen = tuple(key for key in candidate_keys if key not in decisions)
+    undecided: set[CandidateKey] = set()
+    gap_reason: str | None = None
+
+    if classifier is None:
+        for key in unseen:
+            if key.suggested_kind in _STRONG_KINDS:
+                if len(decisions) >= limits.max_decisions_per_source:
+                    undecided.add(key)
+                    continue
+                decisions[key] = CandidateDecision(
+                    key.normalized, key.suggested_kind, True
+                )
+            else:
+                undecided.add(key)
+        if undecided:
+            gap_reason = "classifier unavailable"
+    elif unseen:
+        offered_keys = unseen[: limits.max_classifier_candidates]
+        offered = tuple(candidates_by_key[key][0] for key in offered_keys)
+        returned: Sequence[CandidateDecision] = ()
+        try:
+            returned = classifier(offered, max_terms=limits.max_classifier_terms)
+        except Exception as error:
+            gap_reason = str(error) or type(error).__name__
+        valid_returned: dict[CandidateKey, CandidateDecision] = {}
+        accepted_count = 0
+        offered_set = set(offered_keys)
+        for decision in returned:
+            normalized = normalize_term(decision.normalized)
+            key = CandidateKey(normalized, decision.suggested_kind)
+            if (
+                normalized != decision.normalized
+                or key not in offered_set
+                or key in valid_returned
+            ):
+                continue
+            if decision.accepted:
+                if accepted_count >= limits.max_classifier_terms:
+                    continue
+                accepted_count += 1
+            valid_returned[key] = CandidateDecision(
+                normalized, decision.suggested_kind, decision.accepted
+            )
+        available_slots = limits.max_decisions_per_source - len(decisions)
+        for key in sorted(valid_returned)[:available_slots]:
+            decisions[key] = valid_returned[key]
+        if gap_reason is not None:
+            for key in unseen:
+                if (
+                    key not in decisions
+                    and key.suggested_kind in _STRONG_KINDS
+                    and len(decisions) < limits.max_decisions_per_source
+                ):
+                    decisions[key] = CandidateDecision(
+                        key.normalized, key.suggested_kind, True
+                    )
+        undecided.update(key for key in unseen if key not in decisions)
+        if undecided and gap_reason is None:
+            gap_reason = "classifier left candidate keys undecided"
+
+    new_decisions = len(decisions) - len(prior_decision_items)
+    prior = tuple(prior_associations)
+    if len(prior) > limits.max_terms * limits.max_wordings_per_term:
+        raise ValueError("prior associations exceed configured bounds")
+    if any(association.source_url != source.url for association in prior):
+        raise ValueError("prior associations must belong to the reconciled source")
+
+    current: dict[
+        tuple[str, VocabularyKind, str, str, tuple[LanguageStage, ...]],
+        SourceAssociation,
+    ] = {}
+    for key, keyed_candidates in candidates_by_key.items():
+        current_decision = decisions.get(key)
+        if current_decision is None or not current_decision.accepted:
+            continue
+        for candidate in keyed_candidates[: limits.max_wordings_per_term]:
+            association = SourceAssociation(
+                normalized=key.normalized,
+                kind=key.suggested_kind,
+                wording=candidate.wording,
+                source_url=source.url,
+                resource_ids=source.resource_ids,
+                source_fields=source.source_fields,
+                category=category,
+                stages=wanted_stages,
+                active=True,
+            )
+            identity = (
+                association.normalized,
+                association.kind,
+                association.wording,
+                association.category,
+                association.stages,
+            )
+            current[identity] = association
+
+    merged = dict(current)
+    inactive = 0
+    for association in prior:
+        identity = (
+            association.normalized,
+            association.kind,
+            association.wording,
+            association.category,
+            association.stages,
+        )
+        if identity in merged:
+            continue
+        if association.active:
+            inactive += 1
+        merged[identity] = SourceAssociation(
+            normalized=association.normalized,
+            kind=association.kind,
+            wording=association.wording,
+            source_url=association.source_url,
+            resource_ids=source.resource_ids,
+            source_fields=source.source_fields,
+            category=association.category,
+            stages=association.stages,
+            active=False,
+            untrusted=True,
+        )
+    ordered_decisions = tuple(decisions[key] for key in sorted(decisions))[
+        : limits.max_decisions_per_source
+    ]
+    gap = (
+        ClassifierGap(source.url, gap_reason, tuple(sorted(undecided)))
+        if gap_reason is not None and undecided
+        else None
+    )
+    return SourceReconciliation(
+        source=source,
+        associations=tuple(sorted(merged.values(), key=_association_sort_key)),
+        decisions=ordered_decisions,
+        candidate_keys=candidate_keys,
+        reused_decisions=reused,
+        new_decisions=new_decisions,
+        inactive_associations=inactive,
+        classifier_gap=gap,
+    )
+
+
+def preserve_source_reconciliation(
+    source: InventoryURL,
+    *,
+    prior_decisions: Iterable[CandidateDecision] = (),
+    prior_associations: Iterable[SourceAssociation] = (),
+    access_gap: str | None = None,
+    orphaned: bool = False,
+    limits: VocabularyLimits | None = None,
+) -> SourceReconciliation:
+    """Preserve source state for an access gap, fresh reuse, or orphaning."""
+
+    limits = limits or VocabularyLimits()
+    decisions = _decision_map(prior_decisions, limits=limits)
+    original_associations = tuple(prior_associations)
+    associations = original_associations
+    if any(association.source_url != source.url for association in associations):
+        raise ValueError("prior associations must belong to the preserved source")
+    if orphaned:
+        associations = tuple(
+            SourceAssociation(
+                normalized=association.normalized,
+                kind=association.kind,
+                wording=association.wording,
+                source_url=association.source_url,
+                resource_ids=(),
+                source_fields=(),
+                category=association.category,
+                stages=association.stages,
+                active=False,
+                untrusted=True,
+            )
+            for association in associations
+        )
+    return SourceReconciliation(
+        source=source,
+        associations=tuple(sorted(associations, key=_association_sort_key)),
+        decisions=tuple(decisions[key] for key in sorted(decisions)),
+        candidate_keys=(),
+        reused_decisions=0,
+        new_decisions=0,
+        inactive_associations=sum(
+            prior.active and not current.active
+            for prior, current in zip(original_associations, associations, strict=True)
+        ),
+        access_gap=access_gap,
+        orphaned=orphaned,
+    )
+
+
+def aggregate_reconciled_terms(
+    reconciliations: Iterable[SourceReconciliation],
+    *,
+    prior_terms: Iterable[ReconciledVocabularyTerm] = (),
+    limits: VocabularyLimits | None = None,
+) -> tuple[ReconciledVocabularyTerm, ...]:
+    """Aggregate source associations without deleting unsupported history."""
+
+    limits = limits or VocabularyLimits()
+    grouped: dict[
+        tuple[str, VocabularyKind],
+        dict[tuple[str, str, str, tuple[str, ...]], SourceAssociation],
+    ] = {}
+    for term in prior_terms:
+        grouped.setdefault((term.normalized, term.kind), {}).update(
+            {
+                (
+                    association.source_url,
+                    association.wording,
+                    association.category,
+                    tuple(stage.value for stage in association.stages),
+                ): association
+                for association in term.associations
+            }
+        )
+    for source_count, reconciliation in enumerate(reconciliations, start=1):
+        if source_count > limits.max_pages:
+            raise ValueError("reconciliations exceed max_pages")
+        for association in reconciliation.associations:
+            key = (association.normalized, association.kind)
+            identity = (
+                association.source_url,
+                association.wording,
+                association.category,
+                tuple(stage.value for stage in association.stages),
+            )
+            grouped.setdefault(key, {})[identity] = association
+    if len(grouped) > limits.max_terms:
+        raise ValueError("aggregate terms exceed max_terms")
+
+    terms: list[ReconciledVocabularyTerm] = []
+    for (normalized, kind), associations_by_id in sorted(
+        grouped.items(), key=lambda item: (item[0][0], item[0][1].value)
+    ):
+        associations = tuple(
+            sorted(associations_by_id.values(), key=_association_sort_key)
+        )
+        sources = {association.source_url for association in associations}
+        wordings = {association.wording for association in associations}
+        if len(sources) > limits.max_sources_per_term:
+            raise ValueError("term sources exceed max_sources_per_term")
+        if len(wordings) > limits.max_wordings_per_term:
+            raise ValueError("term wordings exceed max_wordings_per_term")
+        terms.append(
+            ReconciledVocabularyTerm(
+                normalized=normalized,
+                kind=kind,
+                active=any(association.active for association in associations),
+                associations=associations,
+            )
+        )
+    return tuple(terms)
+
+
 def _record_stages(record: CatalogRecord) -> frozenset[LanguageStage]:
     if isinstance(record, Corpus):
         return frozenset(record.covered_stages)
@@ -849,14 +1377,7 @@ def mine_inventory_vocabulary(
             if len(classifier_candidates) < limits.max_classifier_candidates:
                 classifier_candidates.append(candidate)
 
-    accepted = (
-        set(deterministic)
-        if classifier is not None
-        else {
-            (candidate.suggested_kind, candidate.normalized)
-            for candidate in classifier_candidates
-        }
-    )
+    accepted = set(deterministic)
     classifier_gap: str | None = None
     if classifier is not None and classifier_candidates:
         offered = tuple(classifier_candidates[: limits.max_classifier_candidates])
@@ -875,6 +1396,13 @@ def mine_inventory_vocabulary(
                     )
         except Exception as error:
             classifier_gap = str(error) or type(error).__name__
+    elif classifier_candidates:
+        undecided = {
+            (candidate.suggested_kind, candidate.normalized)
+            for candidate in classifier_candidates
+        } - deterministic
+        if undecided:
+            classifier_gap = "classifier unavailable"
 
     for candidate in classifier_candidates:
         key = (candidate.suggested_kind, candidate.normalized)
@@ -916,19 +1444,32 @@ def mine_inventory_vocabulary(
 __all__ = [
     "BoundedClassifier",
     "BoundedTransport",
+    "CandidateDecision",
+    "CandidateKey",
     "ClassifierCandidate",
+    "ClassifierGap",
+    "CleanedSourceDocument",
+    "CleanedSourceDocumentLike",
     "ExtractedDocument",
     "FetchedDocument",
     "FetchedDocumentLike",
+    "IncrementalClassifier",
     "InventoryURL",
     "InventoryVocabulary",
     "MiningGap",
+    "ReconciledVocabularyTerm",
+    "SourceAssociation",
+    "SourceReconciliation",
     "URLKind",
     "VocabularyKind",
     "VocabularyLimits",
     "VocabularyTerm",
+    "aggregate_reconciled_terms",
     "enumerate_inventory_urls",
     "extract_document",
+    "generate_source_candidates",
     "mine_inventory_vocabulary",
     "normalize_term",
+    "preserve_source_reconciliation",
+    "reconcile_cleaned_source",
 ]

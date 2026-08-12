@@ -17,6 +17,18 @@ ROOT = Path(__file__).parents[1]
 DATA_ROOT = ROOT / "src" / "histgerm" / "data"
 RESOURCE_CATEGORIES = ("corpora", "dictionaries", "tools")
 RESEARCH_LEDGER = "research/discovery-ledger.yaml"
+RESEARCH_VOCABULARY = "research/discovery-vocabulary.yaml"
+FORBIDDEN_STATE_PARTS = {
+    ".crawl4ai",
+    ".playwright",
+    "browser-pages",
+    "browser-profiles",
+    "browser-state",
+    "crawl4ai-cache",
+    "fetched-pages",
+    "generated-markdown",
+    "ms-playwright",
+}
 MAX_MEMBER_SIZE = 1024 * 1024
 MAX_METADATA_SIZE = 512 * 1024
 MAGIC_READ_SIZE = 16
@@ -111,8 +123,10 @@ def assert_safe_file(name: str, size: int, leading_bytes: bytes) -> None:
     ):
         assert size < MAX_METADATA_SIZE
     normalized = path.as_posix()
-    assert normalized != RESEARCH_LEDGER
-    assert not normalized.endswith(f"/{RESEARCH_LEDGER}")
+    for research_state in (RESEARCH_LEDGER, RESEARCH_VOCABULARY):
+        assert normalized != research_state
+        assert not normalized.endswith(f"/{research_state}")
+    assert not (set(part.casefold() for part in path.parts) & FORBIDDEN_STATE_PARTS)
     assert not path.name.casefold().endswith(".lock")
 
 
@@ -128,6 +142,26 @@ def assert_safe_zip_member(archive: ZipFile, member: ZipInfo) -> None:
     with archive.open(member) as source:
         leading_bytes = source.read(MAGIC_READ_SIZE)
     assert_safe_file(member.filename, member.file_size, leading_bytes)
+
+
+@pytest.mark.parametrize(
+    "name",
+    [
+        "package/.crawl4ai/cache.db",
+        "package/browser-profiles/profile.json",
+        "package/browser-state/state.json",
+        "package/crawl4ai-cache/page.html",
+        "package/fetched-pages/page.html",
+        "package/generated-markdown/page.md",
+        "package/ms-playwright/browser.exe",
+        f"source/{RESEARCH_VOCABULARY}",
+    ],
+)
+def test_safe_file_rejects_synthetic_research_state(name: str) -> None:
+    """Reject cache, fetched-page, browser-state, and vocabulary fixtures."""
+
+    with pytest.raises(AssertionError):
+        assert_safe_file(name, 10, b"synthetic")
 
 
 def sdist_data_path(name: str) -> str | None:
@@ -194,6 +228,8 @@ def test_distributions_contain_every_authored_yaml_once(
     forbidden_names = {"manifest.json", "snapshot.json", "inventory.json"}
     assert not any(PurePosixPath(name).name in forbidden_names for name in wheel_names)
     assert not any(PurePosixPath(name).name in forbidden_names for name in sdist_names)
+    assert not any(name.endswith(RESEARCH_VOCABULARY) for name in wheel_names)
+    assert not any(name.endswith(RESEARCH_VOCABULARY) for name in sdist_names)
 
 
 def test_distributions_have_safe_members(
@@ -319,6 +355,9 @@ def test_repository_has_no_duplicate_inventory_or_third_party_payloads() -> None
         relative = Path(os.fsdecode(encoded))
         path = ROOT / relative
         assert not path.is_symlink()
+        assert not (
+            {part.casefold() for part in relative.parts} & FORBIDDEN_STATE_PARTS
+        )
         if not path.exists():
             continue
         size = path.stat().st_size

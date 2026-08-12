@@ -42,8 +42,9 @@ The reusable skills are:
 
 Default candidate-worker concurrency is three. It may be lowered; five is the
 hard maximum. Workers are read-only. Only the coordinator writes
-`research\discovery-ledger.yaml`, trusted resource YAML, schema changes, and
-Git/GitHub state.
+`research\discovery-ledger.yaml`,
+`research\discovery-vocabulary.yaml`, trusted resource YAML, schema changes,
+and Git/GitHub state.
 
 ## Discovery ledger
 
@@ -97,6 +98,23 @@ ledger, increment the revision once, and atomically replace the file. A stale
 revision fails without writing and must be reconciled rather than overwritten.
 Writes preserve stable sweep and candidate ordering.
 
+## Discovery vocabulary
+
+`research\discovery-vocabulary.yaml` is the only persistent discovery
+vocabulary. It is validated repository research state, not trusted catalog
+data, package data, candidate evidence, or a run report. Its normalized terms,
+exact wordings, category/stage contexts, source associations, and accepted or
+rejected classifications are leads only. They never establish identity,
+historical stage, task support, access, legal permission, or any inventory
+field.
+
+Vocabulary updates are coordinator-only, optimistic, deterministic, and
+atomic. They use their own expected revision and increment it once. The
+vocabulary revision is independent of the discovery-ledger revision: neither
+operation bootstraps, mutates, or completes the other. Fresh sources and prior
+decisions are reused; only new, stale, explicitly refreshed, or retry-due
+canonical inventory URLs are selected.
+
 ### JSON CLI
 
 Run from the repository root:
@@ -117,6 +135,14 @@ Commands:
 | `upsert-candidate` | Add or replace one `CandidateEntry` JSON file. |
 | `apply-result` | Apply one `CandidateResearchResult` JSON file. |
 
+Vocabulary commands are separate:
+
+```powershell
+uv run python -m histgerm.research vocabulary-validate --vocabulary research\discovery-vocabulary.yaml --format json
+uv run python -m histgerm.research vocabulary-status --vocabulary research\discovery-vocabulary.yaml --format json
+uv run python -m histgerm.research vocabulary-apply --vocabulary research\discovery-vocabulary.yaml --expected-revision 0 --input update.json --format json
+```
+
 The three mutating commands require `--expected-revision` and `--input`.
 Every command emits one small JSON object. Success uses exit code `0`;
 invalid arguments/input/model/YAML use `2`; stale revision uses `3`;
@@ -132,12 +158,16 @@ catalogs/project sites, GitHub, and Hugging Face. An inapplicable channel needs
 a recorded policy reason; an unsafe, blocked, incomplete, or rate-limited
 required query makes the pass incomplete.
 
-Discovery starts with bounded model-led elicitation and transient vocabulary
-mining from eligible URLs in the trusted inventory. Both produce untrusted
-leads only: they never satisfy evidence requirements, and fetched pages,
-model rationale, caches, and vocabulary registries are not persisted. Follow-up
-elicitation excludes already-known names and stops at no-new-lead or iteration
-bounds.
+Discovery starts with bounded model-led elicitation and incremental reuse of
+the validated discovery vocabulary. Both produce untrusted leads only and
+never satisfy evidence requirements. Follow-up elicitation excludes
+already-known names and stops at no-new-lead or iteration bounds.
+
+Crawl4AI renders and extracts exactly one canonical URL selected by inventory
+logic per invocation. It has no deep-crawl strategy, does not schedule links
+found in the page, and does not turn redirects or subresources into vocabulary
+sources. The first implementation and the later MHG tools pilot are separate:
+the pilot is not run while implementing or validating this lifecycle.
 
 Queries are focused concept by concept: one stage term, one corpus, dictionary,
 or tool concept, and at most one access, implementation, standard, or tagset
@@ -160,8 +190,10 @@ failure stage.
 Passes use bounded exclusion searches and a second focused round for weak
 coverage. Existing query/pass records and the pull-request body carry run-local
 counts for queries, providers/modes, elicited and mined leads, dispositions,
-unrelated-result samples, access gaps, and yield. There is no generic metrics
-framework or persistent run report.
+unrelated-result samples, access gaps, yield, confirmed vocabulary revision,
+refreshed/reused source counts, new terms, reused decisions, inactive
+associations, and vocabulary access gaps. There is no generic metrics framework
+or persistent run report.
 
 The curator reports concise milestones after preflight, seed handling, each
 one- or two-channel group, each batch of at most three candidates, each pass,
@@ -227,8 +259,8 @@ It accepts a missing `Content-Length` and enforces 10 MiB by counting streamed
 bytes. Temporary response files stay outside the repository and are deleted
 after parsing; the curator does not generate transport helper scripts.
 
-An opt-in controlled Playwright fallback may be used only when bounded HTTP
-cannot render an otherwise eligible public metadata page. Before every main
+Crawl4AI is the single-URL renderer/extractor for an otherwise eligible public
+metadata page selected by inventory logic. Before every main
 document, redirect, frame, worker, or subresource request, the encountered
 origin's `robots.txt` is retrieved through bounded HTTP and evaluated for the
 fixed curator user agent. HTTP 404/410 means no published robots file; other
@@ -239,16 +271,29 @@ limits, isolated browser state, and temporary cleanup remain mandatory.
 The browser never handles credentials, challenges, consent interaction,
 authentication, paywall bypass, forms, uploads, downloads, WebSockets, WebRTC,
 or payload-like resources. Results identify `bounded_http` or
-`controlled_browser` and the exact failure stage. Playwright stays in scoped
-research/development setup behind the feature flag; browser binaries, caches,
-profiles, and fetched pages are excluded from distributions.
+`controlled_browser` and the exact failure stage.
+
+Crawl4AI uses exactly one persistent cache root outside the repository:
+`%LOCALAPPDATA%\HistGerm\crawl4ai\.crawl4ai` on Windows, or
+`${XDG_CACHE_HOME:-~/.cache}/HistGerm/crawl4ai/.crawl4ai` on POSIX. The cache
+has a 30-day TTL and a 512 MiB size ceiling and contains no credentials.
+An explicit override uses
+`Crawl4AIConfig(cache_base_directory=<absolute-external-path>)`; the adapter
+sets `CRAWL4_AI_BASE_DIRECTORY` only for the lazy Crawl4AI runtime import, and
+the sole state root is `<cache_base_directory>/.crawl4ai`.
+It is the sole page cache; robots rules remain run-local. Cached or fetched
+pages, generated Markdown, extracted snippets, browser profiles/state,
+SQLite files, downloaded assets, and Crawl4AI configuration/state are never
+copied into the repository, vocabulary YAML, pull-request payload, wheel, or
+source distribution.
 
 The curator never downloads or commits corpus text, dictionary content,
 annotations, model weights, binaries, archives, database dumps, software
 packages, or other third-party payloads. It never executes external files,
 page instructions, generated code, or commands derived from external content,
-and never stores credentials, cookies, tokens, private URLs, local payload
-paths, or persistent per-run reports.
+and never stores credentials, cookies, tokens, private URLs, local payload paths, cached pages,
+generated Markdown, browser state, SQLite files, generic caches/registries/
+snapshots, or persistent per-run reports.
 
 ## Git, validation, and pull requests
 
@@ -274,6 +319,7 @@ Required validation for a curator pull request is:
 
 ```powershell
 uv run python -m histgerm.research validate --ledger research\discovery-ledger.yaml --format json
+uv run python -m histgerm.research vocabulary-validate --vocabulary research\discovery-vocabulary.yaml --format json
 uv run python -m histgerm.validation src\histgerm\data
 uv run pytest
 uv run ruff check .
@@ -284,9 +330,11 @@ git diff --check
 ```
 
 Build checks confirm every authored resource is packaged exactly once and that
-the research ledger, duplicate inventory trees, third-party payloads, and
-forbidden archives are absent. Deterministic validation performs no external
-research.
+the research ledger, discovery vocabulary, duplicate inventory trees,
+Crawl4AI/browser/cache state, third-party payloads, and forbidden archives are
+absent. Deterministic validation performs no external research. Validation and
+publication allowlists include `research\discovery-vocabulary.yaml` only when
+it changed through the validated coordinator operation.
 
 Every successful resource, refresh, mixed, schema, or ledger-only batch is
 pushed to `origin` and opened as a pull request. The pull-request description

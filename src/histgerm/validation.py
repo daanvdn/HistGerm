@@ -16,6 +16,10 @@ from histgerm.loading import (
     load_yaml_mapping_bytes,
 )
 from histgerm.models import Corpus, Dictionary, Tool
+from histgerm.research.vocabulary_store import (
+    VocabularyValidationError,
+    validate_vocabulary,
+)
 
 type Resource = Corpus | Tool | Dictionary
 _RESOURCE_CATEGORIES = frozenset({"corpora", "dictionaries", "tools"})
@@ -237,6 +241,36 @@ def _reference_diagnostics(
     return diagnostics
 
 
+def _repository_vocabulary_path(inventory_root: Path) -> Path | None:
+    """Locate research vocabulary only for the repository data directory."""
+
+    if not inventory_root.is_dir():
+        return None
+    resolved = inventory_root.resolve()
+    if tuple(part.casefold() for part in resolved.parts[-3:]) != (
+        "src",
+        "histgerm",
+        "data",
+    ):
+        return None
+    return resolved.parents[2] / "research" / "discovery-vocabulary.yaml"
+
+
+def _validate_repository_vocabulary(inventory_root: Path) -> None:
+    """Validate repository research state without changing inventory models."""
+
+    vocabulary_path = _repository_vocabulary_path(inventory_root)
+    if vocabulary_path is None:
+        return
+    relative = "research/discovery-vocabulary.yaml"
+    try:
+        validate_vocabulary(vocabulary_path)
+    except (OSError, ValidationError, VocabularyValidationError) as error:
+        raise InventoryValidationError(
+            [ValidationDiagnostic(relative, "", str(error))]
+        ) from error
+
+
 def validate_inventory(root: Path | str) -> ValidatedInventory:
     """Load restricted YAML and validate the complete V2 inventory."""
 
@@ -274,6 +308,7 @@ def validate_inventory(root: Path | str) -> ValidatedInventory:
     if diagnostics:
         raise InventoryValidationError(diagnostics)
 
+    _validate_repository_vocabulary(inventory_root)
     return ValidatedInventory(
         resources=tuple(resource for resource, _ in loaded),
         source_paths={resource.id: path for resource, path in loaded},

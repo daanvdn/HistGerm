@@ -68,6 +68,36 @@ authored metadata and does not imply completeness.
 uv run python -m histgerm.validation src\histgerm\data
 ```
 
+Repository-level inventory validation also validates the checked-in
+`research\discovery-vocabulary.yaml` when present. The vocabulary is untrusted
+research state; its terms, contexts, and classifications are discovery leads,
+never inventory evidence.
+
+## Curator research setup
+
+Install the locked research dependencies and compatible browser components
+using the checked-in setup:
+
+```powershell
+uv sync --locked --group research
+uv run python -m playwright install --with-deps chromium
+```
+
+Discovery uses Crawl4AI only as a single-URL renderer/extractor: each
+invocation receives one canonical inventory URL, never a deep crawl or
+discovered-link graph. Its single external cache root is
+`%LOCALAPPDATA%\HistGerm\crawl4ai\.crawl4ai` on Windows, or
+`${XDG_CACHE_HOME:-~/.cache}/HistGerm/crawl4ai/.crawl4ai` on POSIX, with a
+30-day TTL and 512 MiB ceiling. Keep that cache outside the checkout.
+Programmatic research runs may set an absolute external base with
+`Crawl4AIConfig(cache_base_directory=...)`; Crawl4AI state then lives only in
+that base's `.crawl4ai` directory.
+Cached/fetched pages, generated Markdown, browser profiles or state, SQLite
+files, and downloaded assets must never be committed or packaged.
+
+The initial vocabulary implementation and the MHG tools pilot are separate;
+do not run the live pilot as part of setup or implementation validation.
+
 ## Guides
 
 - [Data model and evidence rules](docs/model.md)

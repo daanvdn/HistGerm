@@ -33,7 +33,8 @@ them, then resume discovery to commit and return the pass.
 
 ## Coordinator boundary
 
-This skill is the coordinator for discovery-ledger writes only. It must not
+This skill coordinates discovery-ledger writes and prepares vocabulary updates
+for the calling custom-agent coordinator. It must not
 write trusted resource YAML, models, Git state, branches, commits, or pull
 requests. It discovers and upserts exact `CandidateEntry` objects, but does
 not invoke candidate research workers and does not duplicate, summarize, or
@@ -60,6 +61,14 @@ atomic-write logic in the prompt. Pass the last observed revision as
 On a stale revision, reload and reconcile rather than overwrite. Stop if
 atomic mutation or truthful revision reconciliation fails. Never bootstrap or
 replace an existing ledger during a discovery run.
+
+Only the calling custom-agent coordinator may also mutate
+`research/discovery-vocabulary.yaml`. Vocabulary and ledger revisions are
+independent optimistic counters: neither mutation changes, bootstraps,
+completes, or substitutes for the other. Candidate workers and Crawl4AI are
+read-only. Apply a complete schema-valid vocabulary update atomically with its
+last confirmed expected revision, increment it exactly once, and reload and
+reconcile on a stale revision.
 
 ## Select and inventory-check the sweep
 
@@ -104,17 +113,31 @@ former names, projects, and institutions only as untrusted leads; it must not
 invent URLs, versions, licenses, dates, or stage coverage and must never appear
 as an evidence source. Empty model output does not skip external search.
 
-Also mine transient vocabulary from bounded eligible canonical, documentation,
-official-repository, and metadata URLs already present across all trusted
-corpora, tools, and dictionaries. Deduplicate URLs and bound page count,
-concurrency, response bytes, and extraction output. Retain exact source wording
-alongside normalized bilingual tasks, resource types, aliases, named tagsets,
-standards, formats, projects, institutions, and related-resource names. Filter
-navigation, boilerplate, generic web language, and category- or stage-irrelevant
-noise. Fetched text and extracted terms are untrusted leads, not evidence.
-Reuse the vocabulary in memory for the run, record inaccessible pages as mining
-gaps rather than resource unavailability, delete temporary content, and create
-no cache, crawl snapshot, vocabulary registry, staging tree, or report file.
+Load and validate exactly `research/discovery-vocabulary.yaml`, then reconcile
+eligible canonical, documentation, official-repository, and metadata URLs
+already present across all trusted corpora, tools, and dictionaries. Refresh
+only new, stale, explicitly requested, or retry-due sources; reuse fresh active
+terms and unchanged accepted/rejected decisions without retrieval or model
+classification. Retain exact wording and source provenance alongside bounded
+normalized bilingual tasks, resource types, aliases, named tagsets, standards,
+formats, projects, institutions, and related-resource names. Filter navigation,
+boilerplate, generic web language, and category- or stage-irrelevant noise.
+Terms, observation contexts, source associations, and classifications are
+untrusted discovery leads only and never inventory or candidate evidence.
+Inactive associations remain auditable but do not expand queries.
+
+Invoke Crawl4AI for exactly one selected canonical URL at a time. Configure no
+deep-crawl strategy, never schedule extracted links or redirects as new crawl
+targets, and never make page subresources vocabulary sources. Reuse exactly one
+configured Crawl4AI cache root outside the repository, with the documented
+30-day TTL and 512 MiB size ceiling; do not create a second page cache. Record
+access gaps as retrieval-attempt metadata rather than resource unavailability,
+preserve prior active terms, and delete non-cache temporary content. Never copy
+raw or cached pages, generated Markdown, extracted snippets, browser profiles,
+cookies/state, SQLite files, fetched pages, downloaded assets, or Crawl4AI
+configuration into the repository, vocabulary YAML, or review payload. Create
+no additional generic cache or registry, crawl snapshot, staging tree, or
+persistent report.
 
 Every pass searches one concept at a time: one selected-stage name or
 abbreviation, one resource/task concept, and zero or one optional access,
@@ -233,13 +256,14 @@ undiscoverable resources do not exist.
 After the first focused round, issue iterative exclusion or “beyond known
 resources” queries using already-seen names in bounded provider-safe groups;
 never build one giant negative query. Run a second focused round for weakly
-covered concepts, terminology, institutions, or tagsets. Preserve run-local
-metrics in fields already available on query/pass records: focused queries
-attempted/completed, providers attempted by retrieval mode, model leads,
-inventory-mined terms and leads, candidate dispositions, unrelated-result
-samples, access gaps by provider/transport, and new-candidate yield by family
-and channel. Pass these metrics to publication for the pull-request body.
-Create no generic metrics framework or persistent report.
+covered concepts, terminology, institutions, or tagsets. Preserve run-local metrics in fields already available on query/pass records:
+focused queries attempted/completed, providers attempted by retrieval mode,
+model leads, candidate dispositions, unrelated-result samples, access gaps by
+provider/transport, new-candidate yield by family and channel, confirmed
+vocabulary revision, refreshed and reused source counts, new terms, reused
+decisions, inactive associations, and vocabulary access gaps. Pass these
+metrics to publication for the pull-request body. Create no generic metrics
+framework or persistent report.
 
 An empty discovery handoff is not proof that the sweep found no resources. If
 both output arrays are empty while the selected sweep remains incomplete,
@@ -317,16 +341,16 @@ content, local payload paths, secrets, credentials, or private URLs.
 
 ## Controlled browser fallback
 
-Playwright is an opt-in, feature-flagged fallback only for a public metadata
-page that bounded HTTP failed to render or negotiate. It must not replace a
-successful bounded HTTP retrieval. Before every browser network access,
+Crawl4AI is the single-URL rendering and extraction integration for an eligible
+public metadata page selected by inventory logic. It must not perform a deep
+or recursive crawl. Before every browser network access,
 retrieve the encountered origin's `/robots.txt` through bounded HTTP and
 evaluate it for the fixed curator user agent. Apply the result separately to
 the main document, redirects, frames, workers, and every subresource on every
 origin. HTTP 404 or 410 means no published robots file; any other retrieval or
 safe-parse failure is fail-closed. Honor disallow rules, crawl delays,
-published rate limits, and automation restrictions. Cache rules only in memory
-for the current run.
+published rate limits, and automation restrictions. Cache robots rules only in memory for the current run; this is distinct from
+the one approved external Crawl4AI page cache.
 
 Use a fresh isolated browser context per site or bounded request group. Supply
 no credentials, authorization headers, profile, persistent cookies, service

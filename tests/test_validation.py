@@ -127,7 +127,7 @@ def _failure(root: Path) -> str:
 
 
 def test_bundled_inventory_validates() -> None:
-    """Validate the bundled V2 resources without mutation."""
+    """Validate bundled resources and repository vocabulary without mutation."""
 
     root = Path(__file__).parents[1] / "src" / "histgerm" / "data"
     inventory = validate_inventory(root)
@@ -154,6 +154,50 @@ def test_bundled_inventory_validates() -> None:
         set(dictionary.corpus_links or []).issubset(corpus_ids)
         for dictionary in inventory.dictionaries
     )
+
+
+def test_repository_inventory_requires_valid_discovery_vocabulary(
+    tmp_path: Path,
+) -> None:
+    """Validate the research vocabulary only at the repository data boundary."""
+
+    data_root = tmp_path / "src" / "histgerm" / "data"
+    _write(data_root, "corpora", "corpus.yaml", _corpus())
+    vocabulary = tmp_path / "research" / "discovery-vocabulary.yaml"
+    vocabulary.parent.mkdir()
+    vocabulary.write_text(
+        "\n".join(
+            (
+                "schema_version: 1",
+                "revision: 0",
+                "updated_on: '2026-08-12'",
+                "sources: []",
+                "terms: []",
+                "",
+            )
+        ),
+        encoding="utf-8",
+    )
+
+    assert len(validate_inventory(data_root).corpora) == 1
+    vocabulary.write_text(
+        vocabulary.read_text(encoding="utf-8") + "unexpected: true\n",
+        encoding="utf-8",
+    )
+
+    message = _failure(data_root)
+    assert "research/discovery-vocabulary.yaml" in message
+    assert "Extra inputs are not permitted" in message
+    vocabulary.unlink()
+    assert "research/discovery-vocabulary.yaml" in _failure(data_root)
+
+
+def test_non_repository_inventory_does_not_require_vocabulary(tmp_path: Path) -> None:
+    """Preserve focused API validation for files and synthetic data roots."""
+
+    _write(tmp_path, "corpora", "corpus.yaml", _corpus())
+
+    assert len(validate_inventory(tmp_path).corpora) == 1
 
 
 def test_empty_inventory_is_rejected_as_missing_resources(tmp_path: Path) -> None:

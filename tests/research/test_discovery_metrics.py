@@ -54,3 +54,25 @@ def test_google_access_gap_is_counted_as_incomplete() -> None:
     assert snapshot["focused_queries_completed"] == 0
     assert snapshot["access_gaps"] == {"google:bounded_http": 1}
     assert snapshot["failures_by_stage"] == {"bounded_http:challenge": 1}
+
+
+def test_vocabulary_lifecycle_metrics_are_reported_separately() -> None:
+    metrics = DiscoveryCoverage(
+        vocabulary_revision=7,
+        vocabulary_sources_refreshed=2,
+        vocabulary_sources_reused=3,
+        vocabulary_new_terms=4,
+        vocabulary_reused_decisions=5,
+        vocabulary_inactive_associations=6,
+        vocabulary_access_gaps=1,
+    )
+
+    snapshot = metrics.snapshot()
+
+    assert snapshot["vocabulary_revision"] == 7
+    assert snapshot["vocabulary_sources_refreshed"] == 2
+    assert snapshot["vocabulary_sources_reused"] == 3
+    assert snapshot["vocabulary_new_terms"] == 4
+    assert snapshot["vocabulary_reused_decisions"] == 5
+    assert snapshot["vocabulary_inactive_associations"] == 6
+    assert snapshot["vocabulary_access_gaps"] == 1

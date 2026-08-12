@@ -33,8 +33,20 @@ from .ledger import (
     validate_ledger,
 )
 from .models import CandidateEntry, CandidateResearchResult, DiscoveryLedger, SearchPass
+from .vocabulary_store import (
+    DiscoveryVocabulary,
+    VocabularyPolicyError,
+    VocabularyRevisionError,
+    VocabularyValidationError,
+    VocabularyWriteError,
+    apply_vocabulary,
+    parse_vocabulary_bytes,
+    validate_vocabulary,
+    vocabulary_status,
+)
 
 _DEFAULT_LEDGER = Path('research') / 'discovery-ledger.yaml'
+_DEFAULT_VOCABULARY = Path('research') / 'discovery-vocabulary.yaml'
 _MUTATING_COMMANDS = {'record-search', 'upsert-candidate', 'apply-result'}
 
 class _ArgumentError(ValueError):
@@ -65,6 +77,13 @@ def _parser() -> _Parser:
     discover.add_argument('--max-mined-terms', type=int, default=8)
     discover.add_argument('--max-exclusion-groups', type=int, default=2)
     discover.add_argument('--format', choices=('json',), default='json')
+    for command in ('vocabulary-validate', 'vocabulary-status'):
+        child = subparsers.add_parser(command)
+        _vocabulary_arguments(child)
+    vocabulary_apply = subparsers.add_parser('vocabulary-apply')
+    _vocabulary_arguments(vocabulary_apply)
+    vocabulary_apply.add_argument('--expected-revision', required=True, type=int)
+    vocabulary_apply.add_argument('--input', required=True, type=Path)
     for command in sorted(_MUTATING_COMMANDS):
         child = subparsers.add_parser(command)
         _common_arguments(child)
@@ -74,6 +93,10 @@ def _parser() -> _Parser:
 
 def _common_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument('--ledger', type=Path, default=_DEFAULT_LEDGER)
+    parser.add_argument('--format', choices=('json',), default='json')
+
+def _vocabulary_arguments(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument('--vocabulary', type=Path, default=_DEFAULT_VOCABULARY)
     parser.add_argument('--format', choices=('json',), default='json')
 
 def _success(command: str, revision: int, result: dict[str, Any]) -> int:
@@ -97,6 +120,12 @@ def _read_input(path: Path, model: type[BaseModel]) -> BaseModel:
     if not isinstance(raw, dict):
         raise ValueError('input JSON must contain one object')
     return model.model_validate(raw)
+
+def _read_vocabulary_input(path: Path) -> DiscoveryVocabulary:
+    try:
+        return parse_vocabulary_bytes(path.read_bytes(), source_path=str(path))
+    except VocabularyValidationError as error:
+        raise ValueError(str(error)) from error
 
 def _validation_path(error: ValidationError) -> str:
     first = error.errors()[0]
@@ -132,6 +161,20 @@ def _run(arguments: argparse.Namespace, discovery_dependencies: DiscoveryDepende
         )
         _emit({'ok': True, 'command': command, 'result': discovery_result.as_json()})
         return 0
+    if command.startswith('vocabulary-'):
+        vocabulary_path: Path = arguments.vocabulary
+        if command == 'vocabulary-apply':
+            if arguments.expected_revision < 0:
+                raise _ArgumentError('--expected-revision must be non-negative')
+            vocabulary_payload = _read_vocabulary_input(arguments.input)
+            vocabulary = apply_vocabulary(vocabulary_path, vocabulary_payload, expected_revision=arguments.expected_revision)
+            return _success(command, vocabulary.revision, vocabulary_status(vocabulary))
+        vocabulary = validate_vocabulary(vocabulary_path)
+        if command == 'vocabulary-validate':
+            vocabulary_result = {'schema_version': vocabulary.schema_version, 'sources': len(vocabulary.sources), 'terms': len(vocabulary.terms)}
+        else:
+            vocabulary_result = vocabulary_status(vocabulary)
+        return _success(command, vocabulary.revision, vocabulary_result)
     ledger_path: Path = arguments.ledger
     if command == 'bootstrap':
         ledger = initialize_ledger(ledger_path, on=date.today())
@@ -179,13 +222,19 @@ def main(
         return _run(arguments, discovery_dependencies)
     except _ArgumentError as error:
         return _failure(command, 'invalid_arguments', 'arguments', str(error), 2)
+    except VocabularyRevisionError as error:
+        return _failure(command, 'stale_revision', 'revision', str(error), 3)
     except LedgerRevisionError as error:
         return _failure(command, 'stale_revision', 'revision', str(error), 3)
+    except VocabularyPolicyError as error:
+        return _failure(command, 'policy_violation', 'operation', str(error), 5)
     except LedgerPolicyError as error:
         return _failure(command, 'policy_violation', 'operation', str(error), 5)
     except _CapabilityError as error:
         return _failure(command, 'capability_unavailable', 'discovery', str(error), 6)
-    except (LedgerWriteError, OSError) as error:
+    except VocabularyValidationError as error:
+        return _failure(command, 'invalid_vocabulary', 'vocabulary', str(error), 2)
+    except (VocabularyWriteError, LedgerWriteError, OSError) as error:
         return _failure(command, 'filesystem_error', 'filesystem', str(error), 4)
     except ValidationError as error:
         return _failure(command, 'validation_error', _validation_path(error), str(error), 2)

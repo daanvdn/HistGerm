@@ -1,6 +1,6 @@
 ---
 name: publish-histgerm-batch
-description: "Independently publish one prepared and validated HistGerm inventory batch on a uniquely named non-default branch, then open its required ready or draft pull request. Use for resource, refresh, schema, mixed, or ledger-only batches; never use for research, validation repair, merge, or auto-merge."
+description: "Independently publish one prepared and validated HistGerm inventory batch on a uniquely named non-default branch, then open its required ready or draft pull request. Use for resource, refresh, schema, mixed, ledger-only, or vocabulary-only batches; never use for research, validation repair, merge, or auto-merge."
 ---
 
 # Publish a HistGerm Batch
@@ -67,7 +67,9 @@ work, and the current branch is not the default branch.
 At publication time `git status --porcelain` may contain the prepared batch,
 but every changed, deleted, renamed, copied, and untracked path must be in the
 explicit changed-path allowlist. Stop on any extra path. An empty batch also
-stops.
+stops. `research\discovery-vocabulary.yaml` may appear in the allowlist only
+when it changed through the validated, optimistic, coordinator-only vocabulary
+operation. Its revision is independent of the discovery-ledger revision.
 
 ## Branch identity
 
@@ -109,7 +111,9 @@ compare the staged path set with the allowlist and compare the staged diff with
 the validated batch. Stop before committing on a missing, extra, unsafe, or
 unvalidated path. Do not stage credentials, tokens, cookies, private URLs,
 local payload paths, temporary files, build artifacts, or a persistent run
-report.
+report. Never stage cached or fetched pages, raw bodies, generated Markdown,
+browser profiles/state, SQLite files, downloaded assets, or Crawl4AI cache or
+configuration state.
 
 Create one coherent conventional commit whose subject describes the
 user-visible inventory or workflow change and does not mention internal phase
@@ -142,19 +146,24 @@ branch as its head. Its description must contain all of:
 - providers attempted with each exact authored query, locale, retrieval mode,
   request-specific status, item-level unrelated-result samples, and access
   gaps;
-- model-elicited lead counts and trusted-inventory vocabulary terms/lead counts,
-  explicitly identified as untrusted leads rather than evidence;
+- model-elicited lead counts and vocabulary terms/lead counts, explicitly
+  identified as untrusted leads rather than evidence;
+- confirmed vocabulary revision, refreshed and reused source counts, new
+  terms, reused decisions, inactive associations, and vocabulary access gaps;
 - bounded HTTP versus controlled-browser observations and exact failure stages,
   including robots, challenge, authentication, consent, paywall, payload, byte,
   and cleanup stops;
-- whether the controlled-browser opt-in feature was used, and confirmation that
-  browser binaries, caches, profiles, fetched pages, and temporary output were
-  excluded from the distributions and commit;
+- whether Crawl4AI single-URL rendering was used, and confirmation that its
+  external cache is the sole page cache with the documented TTL/size policy
+  and that browser binaries, caches, profiles/state, fetched or cached pages,
+  generated Markdown, SQLite files, downloaded assets, and temporary output
+  were excluded from the distributions, commit, and review payload;
 - explicit confirmation that no third-party payload was retrieved or
   committed.
 
-Ledger-only progress is durable reviewed work and must open a pull request even
-when no trusted resource YAML changed. State clearly that it is ledger-only.
+Ledger-only or vocabulary-only progress is durable reviewed work and must open
+a pull request even when no trusted resource YAML changed. State clearly which
+research artifact changed and report both independent revisions.
 
 There is no persistent per-run report file. The pull-request description and
 this skill's JSON response are the complete run report. If the GitHub client

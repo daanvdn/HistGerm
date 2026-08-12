@@ -16,6 +16,10 @@ from histgerm.research.discovery_orchestration import (
 )
 from histgerm.research.inventory_vocabulary import FetchedDocument
 from histgerm.research.search_providers import ResponseFormat, SearchRequest
+from histgerm.research.vocabulary_store import (
+    DiscoveryVocabulary,
+    serialize_vocabulary,
+)
 
 
 def run_cli(*arguments: str) -> tuple[int, dict[str, Any]]:
@@ -159,3 +163,74 @@ def test_discover_cli_uses_injected_orchestration_without_ledger_mutation(
     code, response = run_cli("discover", "--category", "corpus", "--stage", "mhg")
     assert code == 6
     assert response["errors"][0]["code"] == "capability_unavailable"
+
+
+def test_vocabulary_validate_status_and_yaml_apply(tmp_path: Path) -> None:
+    vocabulary = tmp_path / "vocabulary.yaml"
+    initial = DiscoveryVocabulary(
+        schema_version=1,
+        revision=0,
+        updated_on="2026-08-12",
+        sources=[],
+        terms=[],
+    )
+    vocabulary.write_bytes(serialize_vocabulary(initial))
+
+    for command in ("vocabulary-validate", "vocabulary-status"):
+        code, response = run_cli(command, "--vocabulary", str(vocabulary))
+        assert code == 0
+        assert response["command"] == command
+        assert response["revision"] == 0
+
+    payload = tmp_path / "vocabulary-update.yaml"
+    payload.write_bytes(serialize_vocabulary(initial))
+    code, response = run_cli(
+        "vocabulary-apply",
+        "--vocabulary",
+        str(vocabulary),
+        "--expected-revision",
+        "0",
+        "--input",
+        str(payload),
+    )
+    assert code == 0
+    assert response["revision"] == 1
+    assert response["result"]["terms"] == 0
+
+
+def test_vocabulary_cli_reports_stale_and_invalid_files(tmp_path: Path) -> None:
+    vocabulary = tmp_path / "vocabulary.yaml"
+    initial = DiscoveryVocabulary(
+        schema_version=1,
+        revision=0,
+        updated_on="2026-08-12",
+        sources=[],
+        terms=[],
+    )
+    vocabulary.write_bytes(serialize_vocabulary(initial))
+    payload = tmp_path / "vocabulary.json"
+    payload.write_text(
+        json.dumps(initial.model_dump(mode="json")),
+        encoding="utf-8",
+    )
+
+    code, response = run_cli(
+        "vocabulary-apply",
+        "--vocabulary",
+        str(vocabulary),
+        "--expected-revision",
+        "1",
+        "--input",
+        str(payload),
+    )
+    assert code == 3
+    assert response["errors"][0]["code"] == "stale_revision"
+
+    vocabulary.write_text(
+        "schema_version: 1\nrevision: 0\nrevision: 1\n"
+        "updated_on: 2026-08-12\nsources: []\nterms: []\n",
+        encoding="utf-8",
+    )
+    code, response = run_cli("vocabulary-validate", "--vocabulary", str(vocabulary))
+    assert code == 2
+    assert response["errors"][0]["code"] == "invalid_vocabulary"
