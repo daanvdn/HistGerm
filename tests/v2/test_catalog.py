@@ -2,12 +2,28 @@
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Any
 
 import pytest
+import yaml  # type: ignore[import-untyped]
 
 from histgerm.catalog import Catalog, load_catalog
+from histgerm.loading import discover_bundled_yaml, load_bundled_yaml
 from histgerm.models import Corpus, Dictionary, LanguageStage, Task, Tool
+from histgerm.validation import validate_inventory
+
+
+def _resource_stages(
+    resource: Corpus | Dictionary | Tool,
+) -> list[LanguageStage]:
+    """Return the stage field defined by a narrowed resource type."""
+
+    if isinstance(resource, Corpus):
+        return resource.covered_stages
+    if isinstance(resource, Dictionary):
+        return resource.covered_stages or []
+    return resource.supported_stages or []
 
 
 def _source() -> dict[str, Any]:
@@ -19,6 +35,7 @@ def _source() -> dict[str, Any]:
         "accessed_on": "2026-08-11",
         "supports": [
             "name",
+            "covered_stages",
             "access.model_training",
             "access.original_data_redistribution",
             "access.processed_data_redistribution",
@@ -51,6 +68,7 @@ def _corpus() -> Corpus:
             "name": "Test Corpus",
             "sources": [_source()],
             "reviewed_on": "2026-08-11",
+            "covered_stages": ["enhg"],
             "access": _access(),
             "versions": [
                 {
@@ -164,19 +182,103 @@ def _dictionary(
 
 
 def test_real_loader_preserves_order_and_distinct_resource_types() -> None:
-    """Load exactly the three authored resources as distinct model types."""
+    """Load every discovered resource through its category-specific query."""
 
     catalog = load_catalog()
+    expected_ids = {
+        category: [
+            load_bundled_yaml(path)["id"]
+            for path in discover_bundled_yaml()
+            if path.startswith(f"{category}/")
+        ]
+        for category in ("corpora", "dictionaries", "tools")
+    }
 
-    assert [corpus.id for corpus in catalog.find_corpora()] == ["res-rem"]
-    assert [tool.id for tool in catalog.find_tools()] == ["res-rnntagger"]
-    assert [item.id for item in catalog.find_dictionaries()] == ["res-mwb"]
-    assert len(catalog.find_texts()) == 406
-    assert [text.id for text in catalog.find_texts()[:2]] == ["m001", "m002"]
-    assert catalog.find_texts()[-1].id == "m552"
-    assert isinstance(catalog.find_corpora()[0], Corpus)
-    assert isinstance(catalog.find_tools()[0], Tool)
-    assert isinstance(catalog.find_dictionaries()[0], Dictionary)
+    assert [corpus.id for corpus in catalog.find_corpora()] == expected_ids["corpora"]
+    assert [tool.id for tool in catalog.find_tools()] == expected_ids["tools"]
+    assert [item.id for item in catalog.find_dictionaries()] == expected_ids[
+        "dictionaries"
+    ]
+    texts = catalog.find_texts()
+    assert texts == [
+        text
+        for corpus in catalog.find_corpora()
+        for version in corpus.versions
+        for text in version.texts
+    ]
+    assert all(isinstance(corpus, Corpus) for corpus in catalog.find_corpora())
+    assert all(isinstance(tool, Tool) for tool in catalog.find_tools())
+    assert all(
+        isinstance(dictionary, Dictionary) for dictionary in catalog.find_dictionaries()
+    )
+
+
+def test_bundled_schema_ids_and_coverage_agree_across_inventory_and_catalog() -> None:
+    """Keep validated resources, catalog queries, and coverage IDs aligned."""
+
+    root = Path(__file__).parents[2] / "src" / "histgerm" / "data"
+    inventory = validate_inventory(root)
+    catalog = load_catalog()
+
+    catalog_resources: list[Corpus | Dictionary | Tool] = [
+        *catalog.find_corpora(),
+        *catalog.find_dictionaries(),
+        *catalog.find_tools(),
+    ]
+    assert {resource.id for resource in inventory.resources} == {
+        resource.id for resource in catalog_resources
+    }
+
+    for resource in catalog_resources:
+        for stage in _resource_stages(resource):
+            if isinstance(resource, Corpus):
+                assert resource in catalog.find_corpora(stage=stage)
+            elif isinstance(resource, Dictionary):
+                assert resource in catalog.find_dictionaries(stage=stage)
+            else:
+                assert resource in catalog.find_tools(stage=stage)
+
+    for corpus in catalog.find_corpora():
+        texts = catalog.find_texts(corpus_id=corpus.id)
+        assert texts == [text for version in corpus.versions for text in version.texts]
+        for stage in {stage for text in texts for stage in text.stages}:
+            stage_texts = catalog.find_texts(corpus_id=corpus.id, stage=stage)
+            rows = catalog.coverage_summary(stage_texts, by=["stage"])
+            assert rows == [
+                {
+                    "stage": stage.value,
+                    "text_count": len(stage_texts),
+                    "text_ids": sorted(
+                        f"{corpus.id}:{text.id}" for text in stage_texts
+                    ),
+                }
+            ]
+
+
+def test_textless_corpus_coverage_survives_validation_and_catalog(
+    tmp_path: Path,
+) -> None:
+    """Discover evidenced corpus coverage without fabricating text records."""
+
+    payload = _corpus().model_dump(mode="json", by_alias=True)
+    payload["id"] = "corpus-textless"
+    payload["versions"][0]["texts"] = []
+    path = tmp_path / "corpora" / "textless.yaml"
+    path.parent.mkdir()
+    path.write_text(
+        yaml.safe_dump(payload, sort_keys=False, allow_unicode=True),
+        encoding="utf-8",
+    )
+
+    inventory = validate_inventory(tmp_path)
+    catalog = Catalog(corpora=inventory.corpora)
+
+    assert inventory.corpora[0].covered_stages == [LanguageStage.ENHG]
+    assert [corpus.id for corpus in catalog.find_corpora(stage="enhg")] == [
+        "corpus-textless"
+    ]
+    assert catalog.find_corpora(stage="mhg") == []
+    assert catalog.find_texts(corpus_id="corpus-textless") == []
 
 
 def test_exactly_four_public_find_methods_exist() -> None:
@@ -275,15 +377,15 @@ def test_text_ids_are_strictly_scoped_and_exact() -> None:
         catalog.find_texts(corpus_id="corpus-test", text_id="corpus-test:sermon-a")
 
 
-def test_find_corpora_filters_by_any_owned_text_stage() -> None:
-    """Return corpora containing a text in the requested stage."""
+def test_find_corpora_filters_by_evidenced_corpus_level_stage() -> None:
+    """Use corpus coverage rather than deriving stages from inline texts."""
 
     corpus = _corpus()
     catalog = Catalog(corpora=[corpus])
 
     assert catalog.find_corpora() == [corpus]
-    assert catalog.find_corpora(stage="ohg") == [corpus]
-    assert catalog.find_corpora(stage="enhg") == []
+    assert catalog.find_corpora(stage="ohg") == []
+    assert catalog.find_corpora(stage="enhg") == [corpus]
 
 
 def test_tool_filters_use_task_enum_and_normalized_exact_membership() -> None:

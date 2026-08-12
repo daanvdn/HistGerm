@@ -1,4 +1,4 @@
-id: res-rnntagger
+id: tool-rnntagger
 name: RNNTagger
 description: Neural command-line tool for part-of-speech tagging and lemmatization with pretrained parameters for modern and historical languages.
 reviewed_on: 2026-08-11

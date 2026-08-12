@@ -103,7 +103,7 @@ class CorpusVersion(_StrictModel):
     availability: list[Availability] = Field(min_length=1)
     sizes: list[Size] | None = None
     annotations: list[AnnotationLayer]
-    texts: list[CorpusText] = Field(min_length=1)
+    texts: list[CorpusText]
     source_ids: list[str] | None = None
     note: str | None = None
 
@@ -142,6 +142,7 @@ class CorpusVersion(_StrictModel):
 class Corpus(BaseResource):
     """A corpus resource with versions, texts, access, and overlaps."""
 
+    covered_stages: list[LanguageStage] = Field(min_length=1)
     access: Access
     versions: list[CorpusVersion] = Field(min_length=1)
     overlaps: list[Overlap] | None = None
@@ -151,6 +152,10 @@ class Corpus(BaseResource):
     def validate_corpus_scope(self) -> Corpus:
         """Validate all corpus-local identifiers and source references."""
 
+        if not self.id.startswith("corpus-"):
+            raise ValueError("corpus IDs must start with 'corpus-'")
+        if not any("covered_stages" in source.supports for source in self.sources):
+            raise ValueError("covered_stages requires supporting source evidence")
         sources = self._validate_access_and_references(self.access)
         _require_unique([version.id for version in self.versions], "corpus version IDs")
         all_text_ids: list[str] = []

@@ -1,0 +1,136 @@
+schema_version: 1
+revision: 0
+initialized_on: '2026-08-12'
+updated_on: '2026-08-12'
+sweeps:
+- id: corpus-ohg
+  category: corpus
+  stage: ohg
+  state: not_started
+  pass_count: 0
+  consecutive_empty_passes: 0
+  passes: []
+- id: corpus-mhg
+  category: corpus
+  stage: mhg
+  state: not_started
+  pass_count: 0
+  consecutive_empty_passes: 0
+  passes: []
+- id: corpus-enhg
+  category: corpus
+  stage: enhg
+  state: not_started
+  pass_count: 0
+  consecutive_empty_passes: 0
+  passes: []
+- id: tool-ohg
+  category: tool
+  stage: ohg
+  state: not_started
+  pass_count: 0
+  consecutive_empty_passes: 0
+  passes: []
+- id: tool-mhg
+  category: tool
+  stage: mhg
+  state: not_started
+  pass_count: 0
+  consecutive_empty_passes: 0
+  passes: []
+- id: tool-enhg
+  category: tool
+  stage: enhg
+  state: not_started
+  pass_count: 0
+  consecutive_empty_passes: 0
+  passes: []
+- id: dictionary-ohg
+  category: dictionary
+  stage: ohg
+  state: not_started
+  pass_count: 0
+  consecutive_empty_passes: 0
+  passes: []
+- id: dictionary-mhg
+  category: dictionary
+  stage: mhg
+  state: not_started
+  pass_count: 0
+  consecutive_empty_passes: 0
+  passes: []
+- id: dictionary-enhg
+  category: dictionary
+  stage: enhg
+  state: not_started
+  pass_count: 0
+  consecutive_empty_passes: 0
+  passes: []
+candidates:
+- id: candidate-corpus-rem
+  name: Reference Corpus of Middle High German
+  category: corpus
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-11'
+  discovery_urls:
+  - https://linguistics.rub.de/rem/index.html
+  - https://linguistics.rub.de/rem/access/index.en.html
+  - https://zenodo.org/api/records/13982324
+  - https://linguistics.rub.de/rem/corpus/index.html
+  - https://linguistics.rub.de/rem/corpus/layers.html
+  - https://creativecommons.org/licenses/by-sa/4.0/legalcode.en
+  - https://linguistics.rub.de/rem/corpus/texts.html
+  - https://linguistics.rub.de/rem/corpus/details.html#M330
+  - https://linguistics.rub.de/rem/documentation/metadata.html
+  - https://linguistics.rub.de/rem/documentation/lemma.html
+  - https://linguistics.rub.de/rem/documentation/pos.html
+  - https://linguistics.rub.de/rem/documentation/morph.html
+  - https://linguistics.rub.de/comphist/resources/hits/
+  - https://doi.org/10.21248/jlcl.28.2013.170
+  - https://linguistics.rub.de/rem/access/NEWS
+  - https://zenodo.org/api/records/13982324/files/ReM-v2.1_coraxml.zip/container
+  discovery_stage_claims:
+  - mhg
+  disposition: added
+  resource_id: corpus-rem
+  disposition_reason: Diplomatically transcribed and annotated Middle High German
+    corpus covering 1050–1350.
+  refreshed_existing: false
+- id: candidate-tool-rnntagger
+  name: RNNTagger
+  category: tool
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-11'
+  discovery_urls:
+  - https://www.cis.uni-muenchen.de/~schmid/tools/RNNTagger/
+  - https://www.cis.uni-muenchen.de/~schmid/tools/RNNTagger/Tagger-Licence
+  - https://api.crossref.org/works/10.1145/3322905.3322915
+  discovery_stage_claims:
+  - enhg
+  - mhg
+  disposition: added
+  resource_id: tool-rnntagger
+  disposition_reason: Neural command-line tool for part-of-speech tagging and lemmatization
+    with pretrained parameters for modern and historical languages.
+  refreshed_existing: false
+- id: candidate-dictionary-mwb
+  name: Mittelhochdeutsches Wörterbuch
+  category: dictionary
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-11'
+  discovery_urls:
+  - https://mwb.adwmainz.net/exist/apps/mwb/pages/about.html
+  - https://mhdwb-online.de/
+  - https://mhdwb-online.de/hinweise-neu.html
+  - https://mwb.adwmainz.net/exist/apps/mwb/pages/entries/entry.html?lid=84000
+  - https://www.uni-trier.de/forschung/mittelhochdeutsches-woerterbuch/mwb-online
+  - https://api.woerterbuchnetz.de/open-api/dictionaries/MWB/lemmata/abe
+  - https://tcdh.uni-trier.de/de/projekt/woerterbuchnetz
+  - https://www.hirzel.de/mittelhochdeutsches-woerterbuch.-erster-band/9783777623276
+  discovery_stage_claims:
+  - mhg
+  disposition: added
+  resource_id: dictionary-mwb
+  disposition_reason: An epoch dictionary documenting the vocabulary and usage of
+    German-language texts from 1050–1350.
+  refreshed_existing: false

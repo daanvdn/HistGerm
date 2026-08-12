@@ -45,8 +45,14 @@ requires = ["uv_build>=0.9.2,<0.10.0"]
 build-backend = "uv_build"
 
 [tool.uv.build-backend]
+source-exclude = [
+    "**/*.lock",
+    "research/discovery-ledger.yaml",
+    "uv.lock",
+]
 source-include = [
     "src/histgerm/data/**/*.yaml",
+    "src/histgerm/data/**/*.yml",
     "src/histgerm/py.typed",
 ]
 

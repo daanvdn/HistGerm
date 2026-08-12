@@ -3,65 +3,231 @@
 from __future__ import annotations
 
 import os
+import stat
 import subprocess
 import sys
-from pathlib import Path
-from zipfile import ZipFile
+import tarfile
+from collections import Counter
+from pathlib import Path, PurePosixPath
+from zipfile import ZipFile, ZipInfo
 
 import pytest
 
 ROOT = Path(__file__).parents[2]
-AUTHORED_YAML = [
-    "histgerm/data/corpora/rem.yaml",
-    "histgerm/data/dictionaries/mwb.yaml",
-    "histgerm/data/tools/rnntagger.yaml",
-]
+DATA_ROOT = ROOT / "src" / "histgerm" / "data"
+RESOURCE_CATEGORIES = ("corpora", "dictionaries", "tools")
+RESEARCH_LEDGER = "research/discovery-ledger.yaml"
+MAX_MEMBER_SIZE = 1024 * 1024
+MAX_METADATA_SIZE = 512 * 1024
+MAGIC_READ_SIZE = 16
+PAYLOAD_SUFFIXES = {
+    ".7z",
+    ".avi",
+    ".bin",
+    ".bz2",
+    ".conll",
+    ".conllu",
+    ".corpus",
+    ".csv",
+    ".db",
+    ".dll",
+    ".dylib",
+    ".exe",
+    ".gz",
+    ".json",
+    ".mdb",
+    ".model",
+    ".mov",
+    ".mp3",
+    ".mp4",
+    ".onnx",
+    ".parquet",
+    ".pdf",
+    ".pt",
+    ".pth",
+    ".rar",
+    ".safetensors",
+    ".so",
+    ".sqlite",
+    ".sqlite3",
+    ".tar",
+    ".tgz",
+    ".tsv",
+    ".wav",
+    ".weights",
+    ".xml",
+    ".xz",
+    ".zip",
+}
+FORBIDDEN_MAGIC = (
+    b"PK\x03\x04",
+    b"\x1f\x8b",
+    b"BZh",
+    b"\xfd7zXZ\x00",
+    b"7z\xbc\xaf\x27\x1c",
+    b"Rar!",
+    b"MZ",
+    b"\x7fELF",
+    b"SQLite format 3\x00",
+)
+
+
+def authored_yaml() -> list[str]:
+    """Return the authored package-data paths in build-backend order."""
+
+    return sorted(
+        path.relative_to(ROOT / "src").as_posix()
+        for path in DATA_ROOT.rglob("*")
+        if path.is_file() and path.suffix.casefold() in {".yaml", ".yml"}
+    )
+
+
+def normalized_archive_path(name: str) -> PurePosixPath:
+    """Return a safe, normalized relative archive path."""
+
+    assert name
+    assert "\\" not in name
+    assert "\0" not in name
+    path = PurePosixPath(name.rstrip("/"))
+    assert not path.is_absolute()
+    assert path.parts
+    assert all(part not in {"", ".", ".."} for part in path.parts)
+    assert ":" not in path.parts[0]
+    assert path.as_posix() == name.rstrip("/")
+    return path
+
+
+def assert_safe_file(name: str, size: int, leading_bytes: bytes) -> None:
+    """Reject payload-like, oversized, or stateful distribution files."""
+
+    path = normalized_archive_path(name)
+    suffixes = "".join(path.suffixes).casefold()
+    assert path.suffix.casefold() not in PAYLOAD_SUFFIXES
+    assert not suffixes.endswith((".tar.gz", ".tar.bz2", ".tar.xz"))
+    assert not leading_bytes.startswith(FORBIDDEN_MAGIC)
+    assert size < MAX_MEMBER_SIZE
+    if path.suffix.casefold() in {".json", ".yaml", ".yml"} or (
+        "fixtures" in path.parts
+    ):
+        assert size < MAX_METADATA_SIZE
+    normalized = path.as_posix()
+    assert normalized != RESEARCH_LEDGER
+    assert not normalized.endswith(f"/{RESEARCH_LEDGER}")
+    assert not path.name.casefold().endswith(".lock")
+
+
+def assert_safe_zip_member(archive: ZipFile, member: ZipInfo) -> None:
+    """Validate a wheel member without extracting or fully reading it."""
+
+    normalized_archive_path(member.filename)
+    mode = member.external_attr >> 16
+    if member.is_dir():
+        assert not mode or stat.S_ISDIR(mode)
+        return
+    assert not mode or stat.S_ISREG(mode)
+    with archive.open(member) as source:
+        leading_bytes = source.read(MAGIC_READ_SIZE)
+    assert_safe_file(member.filename, member.file_size, leading_bytes)
+
+
+def sdist_data_path(name: str) -> str | None:
+    """Map an sdist member to its authored package-data path."""
+
+    parts = normalized_archive_path(name).parts
+    marker = ("src", "histgerm", "data")
+    for index in range(len(parts) - len(marker) + 1):
+        if parts[index : index + len(marker)] == marker:
+            return PurePosixPath(*parts[index + 1 :]).as_posix()
+    return None
 
 
 @pytest.fixture(scope="session")
-def built_wheel(tmp_path_factory: pytest.TempPathFactory) -> Path:
-    """Build one wheel for package-content and installed-import smoke tests."""
+def built_distributions(
+    tmp_path_factory: pytest.TempPathFactory,
+) -> tuple[Path, Path]:
+    """Build one wheel and sdist for package-boundary tests."""
 
-    output = tmp_path_factory.mktemp("wheel")
+    output = tmp_path_factory.mktemp("distributions")
+    environment = os.environ.copy()
+    environment["UV_OFFLINE"] = "1"
+    environment["UV_PYTHON_DOWNLOADS"] = "never"
     subprocess.run(
-        ["uv", "build", "--wheel", "--no-sources", "--out-dir", str(output)],
+        ["uv", "build", "--no-sources", "--out-dir", str(output)],
         cwd=ROOT,
+        env=environment,
         check=True,
         capture_output=True,
         text=True,
     )
     wheels = list(output.glob("*.whl"))
+    sdists = list(output.glob("*.tar.gz"))
     assert len(wheels) == 1
-    return wheels[0]
+    assert len(sdists) == 1
+    return wheels[0], sdists[0]
 
 
-def test_wheel_contains_only_three_authored_data_files_once(
-    built_wheel: Path,
+def test_distributions_contain_every_authored_yaml_once(
+    built_distributions: tuple[Path, Path],
 ) -> None:
-    """Exclude generated inventories and duplicate or third-party data."""
+    """Include exactly the dynamically discovered YAML in both artifacts."""
 
+    built_wheel, built_sdist = built_distributions
     with ZipFile(built_wheel) as archive:
-        names = archive.namelist()
+        wheel_names = archive.namelist()
+    with tarfile.open(built_sdist, mode="r:gz") as archive:
+        sdist_names = [member.name for member in archive if member.isfile()]
 
-    packaged_data = [
+    expected = authored_yaml()
+    wheel_yaml = [
         name
-        for name in names
-        if name.startswith("histgerm/data/") and not name.endswith("/")
+        for name in wheel_names
+        if name.startswith("histgerm/data/") and name.endswith((".yaml", ".yml"))
     ]
-    assert packaged_data == AUTHORED_YAML
-    assert all(names.count(path) == 1 for path in AUTHORED_YAML)
+    sdist_yaml = [
+        path
+        for name in sdist_names
+        if (path := sdist_data_path(name)) is not None
+        and path.endswith((".yaml", ".yml"))
+    ]
+    assert Counter(wheel_yaml) == Counter({path: 1 for path in expected})
+    assert Counter(sdist_yaml) == Counter({path: 1 for path in expected})
     forbidden_names = {"manifest.json", "snapshot.json", "inventory.json"}
-    assert not any(Path(name).name in forbidden_names for name in names)
-    assert not any(name.endswith(".json") for name in packaged_data)
+    assert not any(PurePosixPath(name).name in forbidden_names for name in wheel_names)
+    assert not any(PurePosixPath(name).name in forbidden_names for name in sdist_names)
+
+
+def test_distributions_have_safe_members(
+    built_distributions: tuple[Path, Path],
+) -> None:
+    """Reject unsafe paths, links, devices, payloads, state, and large members."""
+
+    built_wheel, built_sdist = built_distributions
+    with ZipFile(built_wheel) as archive:
+        for zip_member in archive.infolist():
+            assert_safe_zip_member(archive, zip_member)
+
+    with tarfile.open(built_sdist, mode="r:gz") as archive:
+        for tar_member in archive:
+            normalized_archive_path(tar_member.name)
+            assert tar_member.isdir() or tar_member.isfile()
+            if tar_member.isdir():
+                continue
+            extracted = archive.extractfile(tar_member)
+            assert extracted is not None
+            leading_bytes = extracted.read(MAGIC_READ_SIZE)
+            assert_safe_file(tar_member.name, tar_member.size, leading_bytes)
 
 
 def test_installed_wheel_imports_loads_yaml_and_queries_each_type(
-    built_wheel: Path, tmp_path: Path
+    built_distributions: tuple[Path, Path], tmp_path: Path
 ) -> None:
     """Install the wheel away from the checkout and smoke-test its public API."""
 
+    built_wheel, _ = built_distributions
     environment = os.environ.copy()
     environment.pop("PYTHONPATH", None)
+    environment["UV_OFFLINE"] = "1"
+    environment["UV_PYTHON_DOWNLOADS"] = "never"
     venv = tmp_path / "venv"
     subprocess.run(
         [
@@ -79,7 +245,15 @@ def test_installed_wheel_imports_loads_yaml_and_queries_each_type(
     )
     python = venv / ("Scripts/python.exe" if os.name == "nt" else "bin/python")
     subprocess.run(
-        ["uv", "pip", "install", "--python", str(python), str(built_wheel)],
+        [
+            "uv",
+            "pip",
+            "install",
+            "--offline",
+            "--python",
+            str(python),
+            str(built_wheel),
+        ],
         cwd=tmp_path,
         env=environment,
         check=True,
@@ -91,17 +265,20 @@ def test_installed_wheel_imports_loads_yaml_and_queries_each_type(
             "import histgerm",
             "from histgerm.catalog import load_catalog",
             "from histgerm.loading import discover_bundled_yaml, load_bundled_yaml",
-            f"assert discover_bundled_yaml() == {tuple(AUTHORED_YAML)!r}".replace(
-                "histgerm/data/", ""
-            ),
-            "assert load_bundled_yaml('corpora/rem.yaml')['id'] == 'res-rem'",
-            "assert load_bundled_yaml('dictionaries/mwb.yaml')['id'] == 'res-mwb'",
-            "assert load_bundled_yaml('tools/rnntagger.yaml')['id'] == 'res-rnntagger'",
+            f"expected = {tuple(authored_yaml())!r}".replace("histgerm/data/", ""),
+            "assert discover_bundled_yaml() == expected",
+            "expected_ids = {'corpora': set(), 'dictionaries': set(), 'tools': set()}",
+            "for path in expected:",
+            "    category = path.partition('/')[0]",
+            "    expected_ids[category].add(load_bundled_yaml(path)['id'])",
+            "assert all(expected_ids.values())",
             "catalog = load_catalog()",
-            "assert catalog.find_corpora(stage='mhg')[0].id == 'res-rem'",
-            "assert catalog.find_tools(task='lemmatizer')[0].id == 'res-rnntagger'",
-            "assert catalog.find_dictionaries("
-            "machine_readable=True)[0].id == 'res-mwb'",
+            "assert {item.id for item in catalog.find_corpora()} == "
+            "expected_ids['corpora']",
+            "assert {item.id for item in catalog.find_dictionaries()} == "
+            "expected_ids['dictionaries']",
+            "assert {item.id for item in catalog.find_tools()} == "
+            "expected_ids['tools']",
         ]
     )
     subprocess.run(
@@ -119,33 +296,41 @@ def test_repository_has_no_duplicate_inventory_or_third_party_payloads() -> None
 
     assert not (ROOT / "inventory").exists()
     assert not (ROOT / "src" / "histgerm" / "resources").exists()
-    data_root = ROOT / "src" / "histgerm" / "data"
-    files = sorted(path for path in data_root.rglob("*") if path.is_file())
-    assert [
-        path.relative_to(ROOT / "src").as_posix() for path in files
-    ] == AUTHORED_YAML
+    files = sorted(path for path in DATA_ROOT.rglob("*") if path.is_file())
+    assert [path.relative_to(ROOT / "src").as_posix() for path in files] == (
+        authored_yaml()
+    )
+    assert {path.parent.name for path in files} == set(RESOURCE_CATEGORIES)
 
-    payload_suffixes = {
-        ".7z",
-        ".conll",
-        ".conllu",
-        ".csv",
-        ".json",
-        ".tar",
-        ".tsv",
-        ".xml",
-        ".zip",
-    }
-    tracked = subprocess.run(
-        ["git", "ls-files", "-co", "--exclude-standard"],
+    staged = subprocess.run(
+        ["git", "ls-files", "--stage", "-z"],
         cwd=ROOT,
         check=True,
         capture_output=True,
-        text=True,
-    ).stdout.splitlines()
+    ).stdout.split(b"\0")
     assert not [
-        path
-        for path in tracked
-        if Path(path).suffix.casefold() in payload_suffixes
-        and not path.startswith("tests/v2/")
+        entry for entry in staged if entry and entry.split(maxsplit=1)[0] == b"160000"
     ]
+
+    repository_files = subprocess.run(
+        ["git", "ls-files", "-co", "--exclude-standard", "-z"],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+    ).stdout.split(b"\0")
+    for encoded in repository_files:
+        if not encoded:
+            continue
+        relative = Path(os.fsdecode(encoded))
+        path = ROOT / relative
+        assert not path.is_symlink()
+        size = path.stat().st_size
+        with path.open("rb") as source:
+            leading_bytes = source.read(MAGIC_READ_SIZE)
+        assert relative.suffix.casefold() not in PAYLOAD_SUFFIXES
+        assert not leading_bytes.startswith(FORBIDDEN_MAGIC)
+        assert size < MAX_MEMBER_SIZE
+        if relative.suffix.casefold() in {".json", ".yaml", ".yml"} or (
+            "fixtures" in relative.parts
+        ):
+            assert size < MAX_METADATA_SIZE

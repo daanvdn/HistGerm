@@ -30,13 +30,17 @@ class Dictionary(BaseResource):
         """Require corpus links to use stable corpus identifiers."""
 
         for value in values or []:
-            if not STABLE_ID_RE.fullmatch(value):
-                raise ValueError("corpus_links entries must be stable corpus IDs")
+            if not STABLE_ID_RE.fullmatch(value) or not value.startswith("corpus-"):
+                raise ValueError(
+                    "corpus_links entries must use corpus-prefixed stable IDs"
+                )
         return values
 
     @model_validator(mode="after")
     def validate_dictionary_sources(self) -> Dictionary:
         """Validate the dictionary's access evidence against local sources."""
 
+        if not self.id.startswith("dictionary-"):
+            raise ValueError("dictionary IDs must start with 'dictionary-'")
         self._validate_access_and_references(self.access)
         return self

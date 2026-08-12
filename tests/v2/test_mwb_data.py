@@ -23,9 +23,9 @@ def test_mwb_yaml_safely_loads_and_validates() -> None:
     dictionary = Dictionary.model_validate(payload)
     inventory = validate_inventory(MWB_PATH)
 
-    assert dictionary.id == "res-mwb"
+    assert dictionary.id == "dictionary-mwb"
     assert inventory.dictionaries == (dictionary,)
-    assert inventory.source_paths == {"res-mwb": "mwb.yaml"}
+    assert inventory.source_paths == {"dictionary-mwb": "mwb.yaml"}
 
 
 def test_mwb_preserves_identity_scope_and_online_state() -> None:

@@ -16,19 +16,21 @@ from histgerm.loading import (
 )
 
 
-def test_exactly_three_authored_yaml_records_are_discoverable() -> None:
+def test_bundled_yaml_records_are_discovered_with_category_consistent_ids() -> None:
     resources = discover_bundled_yaml()
+    category_prefixes = {
+        "corpora": "corpus-",
+        "dictionaries": "dictionary-",
+        "tools": "tool-",
+    }
+    payloads = [load_bundled_yaml(path) for path in resources]
 
-    assert resources == (
-        "corpora/rem.yaml",
-        "dictionaries/mwb.yaml",
-        "tools/rnntagger.yaml",
-    )
-    assert [load_bundled_yaml(path)["id"] for path in resources] == [
-        "res-rem",
-        "res-mwb",
-        "res-rnntagger",
-    ]
+    assert resources
+    assert len({payload["id"] for payload in payloads}) == len(payloads)
+    for path, payload in zip(resources, payloads, strict=True):
+        category = path.partition("/")[0]
+        assert category in category_prefixes
+        assert payload["id"].startswith(category_prefixes[category])
 
 
 @pytest.mark.parametrize(
@@ -121,20 +123,22 @@ def test_discovery_and_loading_use_package_resources(
 
 
 @pytest.mark.parametrize(
-    "resource", ["../escape.yaml", "/absolute.yaml", "record.json"]
+    "resource",
+    ["../escape.yaml", "/absolute.yaml", "record.json", "tools/missing.yaml"],
 )
 def test_bundled_resource_paths_stay_within_data_boundary(resource: str) -> None:
     with pytest.raises(InventoryDiscoveryError):
         load_bundled_yaml(resource)
 
 
-def test_source_checkout_contains_only_three_authored_yaml_files() -> None:
+def test_package_discovery_matches_source_checkout_yaml_files() -> None:
     data_home = Path(__file__).parents[2] / "src" / "histgerm" / "data"
-    paths = sorted(
-        path.relative_to(data_home).as_posix() for path in data_home.rglob("*")
+    source_paths = tuple(
+        sorted(
+            path.relative_to(data_home).as_posix()
+            for path in data_home.rglob("*")
+            if path.is_file() and path.suffix.casefold() in {".yaml", ".yml"}
+        )
     )
-    assert [path for path in paths if path.endswith((".yaml", ".yml"))] == [
-        "corpora/rem.yaml",
-        "dictionaries/mwb.yaml",
-        "tools/rnntagger.yaml",
-    ]
+
+    assert discover_bundled_yaml() == source_paths

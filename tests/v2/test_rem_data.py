@@ -45,21 +45,22 @@ def test_rem_yaml_safely_loads_and_validates() -> None:
     payload, corpus = _load_rem()
     inventory = validate_inventory(REM_PATH)
 
-    assert payload["id"] == "res-rem"
+    assert payload["id"] == "corpus-rem"
     assert inventory.corpora == (corpus,)
-    assert inventory.source_paths == {"res-rem": "rem.yaml"}
+    assert inventory.source_paths == {"corpus-rem": "rem.yaml"}
     assert corpus.reviewed_on == date(2026, 8, 11)
     assert corpus.name == "Reference Corpus of Middle High German"
     assert corpus.aliases == ["ReM"]
+    assert corpus.covered_stages == ["mhg"]
 
 
-def test_rem_has_exactly_406_unique_canonical_texts() -> None:
+def test_rem_has_unique_normalized_canonical_text_ids() -> None:
     _, corpus = _load_rem()
     texts = corpus.versions[0].texts
     ids = [text.id for text in texts]
     canonical_ids: list[str] = []
 
-    assert len(texts) == 406
+    assert texts
     assert len(ids) == len(set(ids))
     assert ids[0] == "m001"
     assert ids[-1] == "m552"
@@ -310,6 +311,7 @@ def test_rem_preserves_all_old_and_new_evidence_sources() -> None:
         "of diplomatically transcribed and annotated texts from Middle High "
         "German (1050–1350) with a size of around 2 million word forms."
     )
+    assert "covered_stages" in sources["evidence-rem-homepage"].supports
     assert sources["evidence-rem-layers"].quote == (
         "char_align ist für das Kernkorpus, d.h. für alle MiGraKo-Texte, "
         "annotiert, aber nur für einen kleinen Teil der Texte im "

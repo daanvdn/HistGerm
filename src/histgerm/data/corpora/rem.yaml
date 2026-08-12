@@ -1,9 +1,11 @@
-id: res-rem
+id: corpus-rem
 name: Reference Corpus of Middle High German
 aliases:
 - ReM
 description: Diplomatically transcribed and annotated Middle High German corpus covering 1050–1350.
 reviewed_on: '2026-08-11'
+covered_stages:
+- mhg
 links:
   homepage: https://linguistics.rub.de/rem/index.html
   citation: https://doi.org/10.5281/zenodo.13982324
@@ -45,6 +47,7 @@ sources:
   - name
   - aliases
   - description
+  - covered_stages
   - reviewed_on
   - links.homepage
   - versions

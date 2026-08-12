@@ -23,7 +23,7 @@ def test_rnntagger_yaml_safely_loads_and_validates() -> None:
     payload, tool = _load_rnntagger()
     inventory = validate_inventory(YAML_PATH)
 
-    assert payload["id"] == "res-rnntagger"
+    assert payload["id"] == "tool-rnntagger"
     assert inventory.tools == (tool,)
     assert tool.name == "RNNTagger"
     assert tool.description == (

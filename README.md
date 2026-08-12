@@ -5,9 +5,8 @@ corpora, NLP tools, and dictionaries. It records scholarly descriptions,
 coverage, access conditions, evidence, and known overlap; it does not distribute
 third-party data, software, or model weights.
 
-The bundled catalog is deliberately small: ReM (`res-rem`), RNNTagger
-(`res-rnntagger`), and the Mittelhochdeutsches Wörterbuch (`res-mwb`). It is a
-verified demonstration inventory, not a comprehensive census.
+The bundled catalog is a verified, evolving inventory, not a claim of a
+comprehensive census.
 
 ## Install
 
@@ -27,21 +26,18 @@ from histgerm import load_catalog
 catalog = load_catalog()
 
 corpora = catalog.find_corpora(stage="mhg")
-assert [item.id for item in corpora] == ["res-rem"]
 
 tools = catalog.find_tools(
     task="pos_tagger",
     stage="mhg",
     output_format="plain_text",
 )
-assert [item.id for item in tools] == ["res-rnntagger"]
 
 dictionaries = catalog.find_dictionaries(
     stage="mhg",
     lexical_feature="lemmas",
     machine_readable=True,
 )
-assert [item.id for item in dictionaries] == ["res-mwb"]
 ```
 
 All find methods return ordinary lists of Pydantic objects. HistGerm does not
@@ -50,7 +46,7 @@ using results:
 
 ```python
 texts = catalog.find_texts(
-    corpus_id="res-rem",
+    corpus_id="corpus-rem",
     text_id="m005",
     dialect="hess-thür",
     date_contains="um 1200",
@@ -77,4 +73,5 @@ uv run python -m histgerm.validation src\histgerm\data
 - [Data model and evidence rules](docs/model.md)
 - [Queries, warnings, and coverage](docs/querying.md)
 - [Contributing a corpus, tool, or dictionary](docs/contributing.md)
+- [Inventory curator workflow and research ledger](docs/inventory-curator.md)
 - [V2 breaking changes and intentional limitations](docs/migration.md)

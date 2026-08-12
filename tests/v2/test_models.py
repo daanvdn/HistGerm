@@ -145,8 +145,9 @@ def corpus_data() -> dict[str, Any]:
         "name": "Corpus One",
         "aliases": [" C1 "],
         "links": {"homepage": "https://example.org/corpus"},
-        "sources": [source_data()],
+        "sources": [source_data(supports=["name", "covered_stages"])],
         "reviewed_on": "2026-08-11",
+        "covered_stages": ["mhg"],
         "access": access_data(),
         "versions": [version_data()],
     }
@@ -337,6 +338,55 @@ def test_positive_construction_of_all_models() -> None:
     assert access.model_training is LegalPermission.UNCLEAR
     assert size.unit is SizeUnit.TEXT
     assert overlap.with_ == "external:other-corpus:other-text"
+
+
+def test_corpus_coverage_requires_evidence_and_texts_may_be_empty() -> None:
+    """Require evidenced corpus stages while permitting explicit textless releases."""
+
+    data = corpus_data()
+    data["versions"][0]["annotations"] = []
+    data["versions"][0]["texts"] = []
+    corpus = Corpus(**data)
+    assert corpus.covered_stages == [LanguageStage.MHG]
+    assert corpus.versions[0].texts == []
+
+    unsupported = corpus_data()
+    unsupported["sources"][0]["supports"] = ["name"]
+    with pytest.raises(ValidationError, match="supporting source evidence"):
+        Corpus(**unsupported)
+
+
+def test_placeholder_or_title_only_corpus_texts_are_rejected() -> None:
+    """Reject placeholder text records instead of requiring fabricated metadata."""
+
+    data = corpus_data()
+    data["versions"][0]["texts"] = [{"id": "placeholder", "title": "Unknown"}]
+    with pytest.raises(ValidationError):
+        Corpus(**data)
+
+
+@pytest.mark.parametrize(
+    ("factory", "bad_id", "message"),
+    [
+        (corpus_data, "resource-corpus", "corpus IDs"),
+        (tool_data, "resource-tool", "tool IDs"),
+        (dictionary_data, "resource-dictionary", "dictionary IDs"),
+    ],
+)
+def test_top_level_resource_ids_require_category_prefixes(
+    factory: Any, bad_id: str, message: str
+) -> None:
+    """Require category-specific prefixes on all top-level resources."""
+
+    data = factory()
+    data["id"] = bad_id
+    model = {
+        corpus_data: Corpus,
+        tool_data: Tool,
+        dictionary_data: Dictionary,
+    }[factory]
+    with pytest.raises(ValidationError, match=message):
+        model(**data)
 
 
 def test_tool_tasks_parse_and_reject_invalid_or_empty_values() -> None:

@@ -117,19 +117,13 @@ class Catalog:
         raise ValueError("text does not resolve uniquely within this catalog")
 
     def find_corpora(self, *, stage: LanguageStage | str | None = None) -> list[Corpus]:
-        """Find corpora whose inline texts contain the requested stage."""
+        """Find corpora whose evidenced coverage includes the requested stage."""
 
         wanted_stage = None if stage is None else _enum_value(stage, LanguageStage)
         if wanted_stage is None:
             return list(self.corpora)
         return [
-            corpus
-            for corpus in self.corpora
-            if any(
-                wanted_stage in text.stages
-                for version in corpus.versions
-                for text in version.texts
-            )
+            corpus for corpus in self.corpora if wanted_stage in corpus.covered_stages
         ]
 
     def find_texts(

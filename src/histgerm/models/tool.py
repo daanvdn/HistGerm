@@ -57,5 +57,7 @@ class Tool(BaseResource):
     def validate_tool_sources(self) -> Tool:
         """Validate the tool's access evidence against local sources."""
 
+        if not self.id.startswith("tool-"):
+            raise ValueError("tool IDs must start with 'tool-'")
         self._validate_access_and_references(self.access)
         return self

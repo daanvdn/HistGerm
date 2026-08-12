@@ -11,6 +11,7 @@ from typing import Any
 import pytest
 import yaml  # type: ignore[import-untyped]
 
+from histgerm.loading import discover_bundled_yaml, load_bundled_yaml
 from histgerm.models import Corpus, Dictionary, Tool
 from histgerm.validation import InventoryValidationError, validate_inventory
 
@@ -85,8 +86,9 @@ def _corpus(corpus_id: str = "corpus-one") -> dict[str, Any]:
     return {
         "id": corpus_id,
         "name": "Corpus One",
-        "sources": [_source()],
+        "sources": [_source(supports=["name", "covered_stages"])],
         "reviewed_on": "2026-08-11",
+        "covered_stages": ["mhg"],
         "access": _access(),
         "versions": [_version()],
     }
@@ -129,31 +131,35 @@ def test_bundled_inventory_validates() -> None:
 
     root = Path(__file__).parents[2] / "src" / "histgerm" / "data"
     inventory = validate_inventory(root)
+    paths = discover_bundled_yaml()
+    payload_ids = {path: load_bundled_yaml(path)["id"] for path in paths}
+    expected_types = {
+        "corpora": Corpus,
+        "dictionaries": Dictionary,
+        "tools": Tool,
+    }
 
-    assert [resource.id for resource in inventory.resources] == [
-        "res-rem",
-        "res-mwb",
-        "res-rnntagger",
-    ]
-    assert [type(resource) for resource in inventory.resources] == [
-        Corpus,
-        Dictionary,
-        Tool,
-    ]
-    assert len(inventory.resources) == 3
-    assert len(inventory.corpora) == 1
-    assert (
-        sum(
-            len(version.texts)
-            for corpus in inventory.corpora
-            for version in corpus.versions
-        )
-        == 406
+    assert inventory.source_paths == {
+        resource_id: path for path, resource_id in payload_ids.items()
+    }
+    assert len(inventory.resources) == len(paths)
+    assert len({resource.id for resource in inventory.resources}) == len(paths)
+    for resource in inventory.resources:
+        path = inventory.source_paths[resource.id]
+        assert resource.id == payload_ids[path]
+        assert isinstance(resource, expected_types[path.partition("/")[0]])
+
+    corpus_ids = {corpus.id for corpus in inventory.corpora}
+    assert all(
+        set(dictionary.corpus_links or []).issubset(corpus_ids)
+        for dictionary in inventory.dictionaries
     )
-    rem_texts = inventory.corpora[0].versions[0].texts
-    assert len(rem_texts) == 406
-    assert rem_texts[0].id == "m001"
-    assert rem_texts[-1].id == "m552"
+
+
+def test_empty_inventory_is_rejected_as_missing_resources(tmp_path: Path) -> None:
+    """Reject an inventory where discovery finds no authored resources."""
+
+    assert "contains no YAML resource files" in _failure(tmp_path)
 
 
 @pytest.mark.parametrize(
@@ -387,7 +393,7 @@ def test_non_unclear_legal_claims_need_direct_support(
     """Require exact legal support scope and a direct quotation."""
 
     corpus = _corpus()
-    corpus["sources"] = [_source(supports=supports, quote=quote)]
+    corpus["sources"] = [_source(supports=["covered_stages", *supports], quote=quote)]
     corpus["access"] = _access("permitted", ["source-main"])
     _write(tmp_path, "corpora", "corpus.yaml", corpus)
 
@@ -404,18 +410,13 @@ def test_explicit_unclear_legal_values_are_retained(tmp_path: Path) -> None:
     assert access.original_data_redistribution.value == "unclear"
 
 
-def test_duplicate_resource_ids_fail_across_files_and_types(tmp_path: Path) -> None:
-    """Reject duplicate inventory resource IDs even across model categories."""
+def test_duplicate_resource_ids_fail_across_files(tmp_path: Path) -> None:
+    """Reject duplicate inventory resource IDs across category files."""
 
-    _write(tmp_path, "corpora", "corpus.yaml", _corpus("shared-id"))
-    _write(
-        tmp_path,
-        "dictionaries",
-        "dictionary.yaml",
-        _dictionary("shared-id"),
-    )
+    _write(tmp_path, "corpora", "first.yaml", _corpus("corpus-shared"))
+    _write(tmp_path, "corpora", "second.yaml", _corpus("corpus-shared"))
 
-    assert "duplicate resource ID 'shared-id'" in _failure(tmp_path)
+    assert "duplicate resource ID 'corpus-shared'" in _failure(tmp_path)
 
 
 def test_duplicate_qualified_text_ids_fail_inventory_checks(tmp_path: Path) -> None:
