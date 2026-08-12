@@ -62,7 +62,12 @@ replace an existing ledger during a discovery run.
    resume the deterministic next incomplete sweep.
 2. Validate an optional seed URL under the public-source rules below. A seed is
    a lead, not trusted evidence and not permission to narrow the required
-   sweep.
+   sweep. Extract every distinct row from a bounded structured seed as a lead,
+   preserving its name, source wording, seed URL, and public resource URLs.
+   If the seed body exceeds 10 MiB, is inaccessible, challenge protected, or
+   has no parseable entries, record and return that exact seed gap through the
+   incomplete-pass state; it must not be reported as zero candidates. Continue
+   the independent required channels unless a required capability is absent.
 3. Load the trusted catalog and compare every lead with all current corpus,
    tool, and dictionary IDs, canonical names, known aliases, source URLs, and
    ledger candidates. Deduplicate by evidenced identity, never by similar
@@ -115,7 +120,9 @@ A channel is inapplicable only when its recorded query note gives an explicit
 policy reason. Coverage through another interface still records the covered
 channel. A blocked, rate-limited, unsafe, or otherwise incomplete required
 query has `completed: false` and makes the pass incomplete; it cannot count as
-an empty pass.
+an empty pass. Search results that are semantically unrelated to the exact
+stage/category query are a provider failure, not an empty result: mark the
+query incomplete and try another safe interface when available.
 
 ## Candidate and completion procedure
 
@@ -144,6 +151,11 @@ An incomplete pass never advances it. Stop only when the checked-in ledger
 logic reports the sweep complete and all candidates discovered by its passes
 are dispositioned. “Complete” means exhaustive under this protocol, not that
 undiscoverable resources do not exist.
+
+An empty discovery handoff is not proof that the sweep found no resources. If
+both output arrays are empty while the selected sweep remains incomplete,
+continue the required work or return control with an explicit incomplete/stop
+reason. Never silently present that handoff as a successful discovery result.
 
 ## Evidence and legal safety
 
@@ -195,11 +207,11 @@ concurrency. Record inaccessible required evidence as a gap or evidenced
 availability fact.
 
 Retrieve only public HTML, public metadata APIs, public archive/repository
-manifests, and clearly separated metadata-only files no larger than 1 MiB.
+manifests, and clearly separated metadata-only files no larger than 10 MiB.
 Inspect response headers first when possible. Refuse a declared size over
-1 MiB, an unbounded missing/unsafe size, payload-like content type or content
+10 MiB, an unbounded missing/unsafe size, payload-like content type or content
 disposition, or any response that changes into a payload. Stream allowed
-metadata only with a hard 1 MiB limit and stop before retaining excess bytes.
+metadata only with a hard 10 MiB limit and stop before retaining excess bytes.
 
 Never download corpus or dictionary content, annotations, model weights,
 binaries, archives, database dumps, software packages, or other third-party

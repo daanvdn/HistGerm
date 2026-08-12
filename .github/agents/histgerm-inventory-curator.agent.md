@@ -94,6 +94,14 @@ resources and ledger candidates, never by similar names or titles. Send a
 verified existing match immediately through `curate-histgerm-resource` in
 refresh mode. Block possible identity conflicts rather than merging them.
 
+Treat a supplied seed as an accelerator, not as the sweep result. For a
+bounded structured list, preserve every distinct row as an untrusted lead and
+pass its name, source wording, seed URL, and any public resource URLs into
+discovery. If the seed body exceeds 10 MiB, is inaccessible, is challenge
+protected, or exposes no parseable entries, report that exact seed gap; it
+must not be reported as zero candidates. Continue the independent required
+channel sweep unless a required capability is unavailable.
+
 Treat the discovery/curation handoff as lossless. Discovery returns only its
 plan-defined object containing exact model-valid `candidate_entries`,
 `search_passes`, and `ledger_revision`; it does not embed or summarize worker
@@ -113,6 +121,13 @@ needed to commit a pass after all referenced candidates are dispositioned.
 The identical retain, validate, apply, and write procedure is mandatory for
 refresh results; `refreshed_existing` in the ledger is not a substitute for
 the retained `CandidateResearchResult`.
+
+The discovery JSON is an internal handoff, not automatically a user-visible
+success result. If both returned arrays are empty, reload the selected sweep.
+The run cannot end while the selected sweep remains incomplete: continue the
+required channels, or report a stopped/incomplete run with the exact seed,
+channel, capability, and ledger gaps. Never describe an empty handoff as
+evidence that no candidates or corpora exist.
 
 Continue a sweep until the ledger validator reports two consecutive complete
 passes with no new candidates. A pass with new candidates resets the sequence;
@@ -200,9 +215,9 @@ controls, rate limits, and automation prohibitions. Never authenticate, bypass
 controls, scrape around a refusal, or retry aggressively.
 
 Retrieve only public HTML, public metadata APIs, public repository/archive
-manifests, and clearly separated metadata-only files no larger than 1 MiB.
+manifests, and clearly separated metadata-only files no larger than 10 MiB.
 Inspect headers first when possible; reject an oversized, unbounded,
-payload-like, or changing response. Enforce a hard 1 MiB streaming limit.
+payload-like, or changing response. Enforce a hard 10 MiB streaming limit.
 
 Never download or commit corpora, dictionary content, annotations, model
 weights, binaries, archives, database dumps, software packages, or other

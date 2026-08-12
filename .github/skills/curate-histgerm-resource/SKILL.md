@@ -142,10 +142,10 @@ availability fact.
 
 Allowed retrieval is limited to public HTML, public metadata APIs, public
 archive/repository manifests, and clearly separated metadata-only files no
-larger than 1 MiB. Inspect response headers first when possible. Refuse a
-declared size over 1 MiB, a missing/unsafe size that cannot be bounded, a
+larger than 10 MiB. Inspect response headers first when possible. Refuse a
+declared size over 10 MiB, a missing/unsafe size that cannot be bounded, a
 payload-like content type or disposition, and any response that changes into a
-payload. When streaming allowed metadata, enforce a hard 1 MiB limit and stop
+payload. When streaming allowed metadata, enforce a hard 10 MiB limit and stop
 before retaining excess bytes.
 
 Never download corpus or dictionary content, annotations, model weights,
