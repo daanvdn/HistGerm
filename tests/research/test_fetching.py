@@ -7,8 +7,16 @@ from pathlib import Path
 
 import pytest
 
-from histgerm.research.fetching import MetadataFetchError, fetch_public_metadata, main
-from histgerm.research.models import RequestDestination
+from histgerm.research.fetching import (
+    MetadataFetchError,
+    fetch_pinned_metadata,
+    fetch_public_metadata,
+    main,
+)
+from histgerm.research.models import (
+    RequestDestination,
+    resolve_request_destination,
+)
 
 
 class FakeResponse:
@@ -43,6 +51,28 @@ class FakeConnection:
 
     def close(self) -> None:
         self.closed = True
+
+
+class FailingReadResponse(FakeResponse):
+    def __init__(
+        self,
+        status: int,
+        body: bytes,
+        failure: OSError,
+        *,
+        fail_after_reads: int,
+        **headers: str,
+    ) -> None:
+        super().__init__(status, body, **headers)
+        self.failure = failure
+        self.fail_after_reads = fail_after_reads
+        self.read_count = 0
+
+    def read(self, amount: int | None = None) -> bytes:
+        if self.read_count >= self.fail_after_reads:
+            raise self.failure
+        self.read_count += 1
+        return super().read(amount)
 
 
 def resolver(
@@ -84,6 +114,8 @@ def test_missing_content_length_is_streamed_within_limit() -> None:
         connection_factory=create,
     )
     assert result.body == b"metadata"
+    assert result.mode == "bounded_http"
+    assert result.failure_stage is None
     _, connection = calls[0]
     assert connection.request_data == (
         "GET",
@@ -126,13 +158,16 @@ def test_undeclared_oversize_body_is_rejected_while_streaming() -> None:
     create, calls = factory(
         FakeResponse(200, b"12345678901", Content_Type="text/plain")
     )
-    with pytest.raises(MetadataFetchError, match="exceeds 10 bytes"):
+    with pytest.raises(MetadataFetchError, match="exceeds 10 bytes") as caught:
         fetch_public_metadata(
             "https://example.org/data",
             max_bytes=10,
             resolver=resolver,
             connection_factory=create,
         )
+    assert caught.value.mode == "bounded_http"
+    assert caught.value.stage == "response_body"
+    assert caught.value.limit_exceeded
     assert calls[0][1].closed
 
 
@@ -145,6 +180,59 @@ def test_exact_streaming_limit_is_allowed() -> None:
         connection_factory=create,
     )
     assert result.body == b"1234567890"
+
+
+def test_http_status_failure_has_exact_stage_and_status() -> None:
+    create, _ = factory(FakeResponse(404))
+    with pytest.raises(MetadataFetchError) as caught:
+        fetch_public_metadata(
+            "https://example.org/missing",
+            resolver=resolver,
+            connection_factory=create,
+        )
+    assert caught.value.stage == "response_status"
+    assert caught.value.status == 404
+
+
+@pytest.mark.parametrize(
+    ("status", "headers"),
+    [
+        (200, {"Content_Type": "text/plain"}),
+        (302, {"Location": "https://other.example.org/final"}),
+        (500, {}),
+    ],
+)
+@pytest.mark.parametrize("fail_after_reads", [0, 1])
+@pytest.mark.parametrize(
+    "failure",
+    [TimeoutError("body timed out"), ConnectionResetError("body reset")],
+)
+def test_response_body_socket_failures_are_wrapped_with_exact_audit_stage(
+    status: int,
+    headers: dict[str, str],
+    fail_after_reads: int,
+    failure: OSError,
+) -> None:
+    response = FailingReadResponse(
+        status,
+        b"partial",
+        failure,
+        fail_after_reads=fail_after_reads,
+        **headers,
+    )
+    create, calls = factory(response)
+    destination = resolve_request_destination(
+        "https://example.org/data",
+        resolver=resolver,
+    )
+    with pytest.raises(MetadataFetchError) as caught:
+        fetch_pinned_metadata(destination, connection_factory=create)
+    assert caught.value.mode == "bounded_http"
+    assert caught.value.stage == "response_body"
+    assert caught.value.failure_stage == "response_body"
+    assert caught.value.__cause__ is failure
+    assert str(failure) in str(caught.value)
+    assert calls[0][1].closed
 
 
 def test_redirect_is_resolved_and_pinned_again() -> None:

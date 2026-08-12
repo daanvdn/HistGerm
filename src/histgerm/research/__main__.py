@@ -16,6 +16,11 @@ from pydantic import BaseModel, ValidationError
 
 from histgerm.models import LanguageStage
 
+from .discovery_orchestration import (
+    DiscoveryConfig,
+    DiscoveryDependencies,
+    run_discovery,
+)
 from .ledger import (
     LedgerPolicyError,
     LedgerRevisionError,
@@ -35,6 +40,9 @@ _MUTATING_COMMANDS = {'record-search', 'upsert-candidate', 'apply-result'}
 class _ArgumentError(ValueError):
     """Represent an argparse failure without writing non-JSON output."""
 
+class _CapabilityError(RuntimeError):
+    """Report a missing injected external discovery capability."""
+
 class _Parser(argparse.ArgumentParser):
 
     def error(self, message: str) -> NoReturn:
@@ -50,6 +58,13 @@ def _parser() -> _Parser:
     _common_arguments(next_parser)
     next_parser.add_argument('--category', choices=('corpus', 'tool', 'dictionary'))
     next_parser.add_argument('--stage', choices=tuple(stage.value for stage in LanguageStage))
+    discover = subparsers.add_parser('discover')
+    discover.add_argument('--category', required=True, choices=('corpus', 'tool', 'dictionary'))
+    discover.add_argument('--stage', required=True, choices=tuple(stage.value for stage in LanguageStage))
+    discover.add_argument('--qualifier', action='append', default=[])
+    discover.add_argument('--max-mined-terms', type=int, default=8)
+    discover.add_argument('--max-exclusion-groups', type=int, default=2)
+    discover.add_argument('--format', choices=('json',), default='json')
     for command in sorted(_MUTATING_COMMANDS):
         child = subparsers.add_parser(command)
         _common_arguments(child)
@@ -100,8 +115,23 @@ def _status(ledger: DiscoveryLedger) -> dict[str, Any]:
     stale_resources = [{'candidate_id': candidate.id, 'resource_id': candidate.resource_id, 'name': candidate.name, 'last_checked_on': candidate.last_checked_on.isoformat()} for candidate in ledger.candidates if candidate.resource_id is not None and candidate.last_checked_on <= stale_cutoff]
     return {'matrix': [{'id': sweep.id, 'state': sweep.state, 'pass_count': sweep.pass_count, 'consecutive_empty_passes': sweep.consecutive_empty_passes, 'last_run_on': sweep.last_run_on.isoformat() if sweep.last_run_on is not None else None} for sweep in ledger.sweeps], 'candidates': {'total': len(ledger.candidates), **dispositions}, 'blocked': blocked, 'stale_resources': stale_resources}
 
-def _run(arguments: argparse.Namespace) -> int:
+def _run(arguments: argparse.Namespace, discovery_dependencies: DiscoveryDependencies | None) -> int:
     command: str = arguments.command
+    if command == 'discover':
+        if discovery_dependencies is None:
+            raise _CapabilityError('discover requires injected model, retrieval, provider, and inspection capabilities')
+        discovery_result = run_discovery(
+            DiscoveryConfig(
+                category=arguments.category,
+                stage=LanguageStage(arguments.stage),
+                qualifiers=tuple(arguments.qualifier),
+                max_mined_terms=arguments.max_mined_terms,
+                max_exclusion_groups=arguments.max_exclusion_groups,
+            ),
+            discovery_dependencies,
+        )
+        _emit({'ok': True, 'command': command, 'result': discovery_result.as_json()})
+        return 0
     ledger_path: Path = arguments.ledger
     if command == 'bootstrap':
         ledger = initialize_ledger(ledger_path, on=date.today())
@@ -134,7 +164,11 @@ def _run(arguments: argparse.Namespace) -> int:
         result = {'candidate_id': applied.id, 'disposition': applied.disposition, 'resource_id': applied.resource_id}
     return _success(command, updated.revision, result)
 
-def main(argv: list[str] | None=None) -> int:
+def main(
+    argv: list[str] | None=None,
+    *,
+    discovery_dependencies: DiscoveryDependencies | None = None,
+) -> int:
     """Run one CLI command and emit exactly one JSON response."""
     if argv is None and hasattr(sys.stdout, 'reconfigure'):
         sys.stdout.reconfigure(encoding='utf-8')
@@ -142,13 +176,15 @@ def main(argv: list[str] | None=None) -> int:
     command = raw_arguments[0] if raw_arguments else ''
     try:
         arguments = _parser().parse_args(raw_arguments)
-        return _run(arguments)
+        return _run(arguments, discovery_dependencies)
     except _ArgumentError as error:
         return _failure(command, 'invalid_arguments', 'arguments', str(error), 2)
     except LedgerRevisionError as error:
         return _failure(command, 'stale_revision', 'revision', str(error), 3)
     except LedgerPolicyError as error:
         return _failure(command, 'policy_violation', 'operation', str(error), 5)
+    except _CapabilityError as error:
+        return _failure(command, 'capability_unavailable', 'discovery', str(error), 6)
     except (LedgerWriteError, OSError) as error:
         return _failure(command, 'filesystem_error', 'filesystem', str(error), 4)
     except ValidationError as error:

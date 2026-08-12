@@ -1,0 +1,3 @@
+User-agent: HistGerm-Metadata-Curator
+Disallow: /private
+Allow: /private/public

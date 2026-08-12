@@ -2,12 +2,20 @@ from __future__ import annotations
 
 import json
 import subprocess
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
 from conftest import candidate_data, pass_data, write_json
 
+from histgerm.catalog import load_catalog
 from histgerm.research.__main__ import main
+from histgerm.research.discovery_orchestration import (
+    DiscoveryDependencies,
+    ProviderResponse,
+)
+from histgerm.research.inventory_vocabulary import FetchedDocument
+from histgerm.research.search_providers import ResponseFormat, SearchRequest
 
 
 def run_cli(*arguments: str) -> tuple[int, dict[str, Any]]:
@@ -17,6 +25,18 @@ def run_cli(*arguments: str) -> tuple[int, dict[str, Any]]:
     output = io.StringIO()
     with contextlib.redirect_stdout(output):
         code = main(list(arguments))
+    return code, json.loads(output.getvalue())
+
+
+def run_discovery_cli(
+    dependencies: DiscoveryDependencies, *arguments: str
+) -> tuple[int, dict[str, Any]]:
+    import contextlib
+    import io
+
+    output = io.StringIO()
+    with contextlib.redirect_stdout(output):
+        code = main(list(arguments), discovery_dependencies=dependencies)
     return code, json.loads(output.getvalue())
 
 
@@ -85,3 +105,57 @@ def test_cli_stdout_is_utf8() -> None:
         [*command, "--ledger", "research/discovery-ledger.yaml"]
     )
     assert "T\u00fcbingen" in output.decode("utf-8")
+
+
+def test_discover_cli_uses_injected_orchestration_without_ledger_mutation(
+    tmp_path: Path,
+) -> None:
+    calls = 0
+
+    def provider(request: SearchRequest) -> ProviderResponse:
+        nonlocal calls
+        calls += 1
+        body = (
+            "<rss><channel/></rss>"
+            if request.response_format is ResponseFormat.RSS
+            else "<main>No results</main>"
+        )
+        return ProviderResponse(
+            retrieval_mode="bounded_http",
+            observed_at=datetime(2026, 8, 12, tzinfo=UTC),
+            http_status=200,
+            body=body,
+        )
+
+    responses = iter(['{"candidates":[]}', '{"candidates":[]}'])
+    dependencies = DiscoveryDependencies(
+        catalog=load_catalog(),
+        model_call=lambda prompt: next(responses),
+        vocabulary_transport=lambda url, *, max_bytes: FetchedDocument(
+            url, "text/plain", b"Middle High German corpus"
+        ),
+        provider_fetch=provider,
+        result_inspector=lambda result: ("unrelated", "offline fixture"),
+    )
+    ledger = tmp_path / "must-not-exist.yaml"
+    code, response = run_discovery_cli(
+        dependencies,
+        "discover",
+        "--category",
+        "corpus",
+        "--stage",
+        "mhg",
+        "--max-mined-terms",
+        "0",
+        "--max-exclusion-groups",
+        "1",
+    )
+    assert code == 0
+    assert response["command"] == "discover"
+    assert response["result"]["metrics"]["model_leads"] == 0
+    assert calls > 0
+    assert not ledger.exists()
+
+    code, response = run_cli("discover", "--category", "corpus", "--stage", "mhg")
+    assert code == 6
+    assert response["errors"][0]["code"] == "capability_unavailable"

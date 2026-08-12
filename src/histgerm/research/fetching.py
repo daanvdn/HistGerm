@@ -12,7 +12,7 @@ import sys
 from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Protocol
+from typing import Literal, Protocol
 from urllib.parse import urljoin, urlsplit
 
 from .models import AddressResolver, RequestDestination, resolve_request_destination
@@ -30,6 +30,46 @@ _ALLOWED_APPLICATION_TYPES = {
 class MetadataFetchError(ValueError):
     """Report a public-metadata policy or transport failure."""
 
+    def __init__(
+        self,
+        message: str,
+        *,
+        mode: RetrievalMode = "bounded_http",
+        stage: RetrievalFailureStage,
+        status: int | None = None,
+        limit_exceeded: bool = False,
+    ) -> None:
+        self.mode = mode
+        self.stage = stage
+        self.failure_stage = stage
+        self.status = status
+        self.limit_exceeded = limit_exceeded
+        super().__init__(message)
+
+
+type RetrievalMode = Literal["bounded_http", "controlled_browser"]
+type RetrievalFailureStage = Literal[
+    "destination_validation",
+    "connection",
+    "request",
+    "response_status",
+    "response_headers",
+    "response_body",
+    "redirect",
+    "robots_fetch",
+    "robots_parse",
+    "robots_policy",
+    "rate_limit",
+    "browser_launch",
+    "browser_context",
+    "browser_request",
+    "browser_response",
+    "session_budget",
+    "challenge",
+    "render",
+    "cleanup",
+]
+
 
 @dataclass(frozen=True)
 class FetchedMetadata:
@@ -37,6 +77,18 @@ class FetchedMetadata:
 
     url: str
     content_type: str
+    body: bytes
+    mode: RetrievalMode = "bounded_http"
+    failure_stage: RetrievalFailureStage | None = None
+
+
+@dataclass(frozen=True)
+class PinnedMetadataResponse:
+    """Contain one response fetched from an already validated destination."""
+
+    url: str
+    status: int
+    headers: dict[str, str]
     body: bytes
 
 
@@ -112,24 +164,38 @@ def _host_header(destination: RequestDestination) -> str:
     )
 
 
-def _content_type(response: ResponseLike) -> str:
+def _content_type(response: ResponseLike, *, allow_browser_script: bool = False) -> str:
     header = response.getheader("Content-Type")
     if header is None:
-        raise MetadataFetchError("metadata response has no Content-Type")
+        raise MetadataFetchError(
+            "metadata response has no Content-Type", stage="response_headers"
+        )
     media_type = header.partition(";")[0].strip().lower()
     allowed = (
         media_type.startswith("text/")
         or media_type in _ALLOWED_APPLICATION_TYPES
+        or (
+            allow_browser_script
+            and media_type
+            in {
+                "application/javascript",
+                "application/ecmascript",
+                "application/x-javascript",
+            }
+        )
         or media_type.endswith("+json")
         or media_type.endswith("+xml")
     )
     if not allowed:
         raise MetadataFetchError(
-            f"metadata response type {media_type!r} is not allowed"
+            f"metadata response type {media_type!r} is not allowed",
+            stage="response_headers",
         )
     disposition = (response.getheader("Content-Disposition") or "").casefold()
     if "attachment" in disposition:
-        raise MetadataFetchError("metadata response is an attachment")
+        raise MetadataFetchError(
+            "metadata response is an attachment", stage="response_headers"
+        )
     return header
 
 
@@ -139,17 +205,91 @@ def _read_bounded(response: ResponseLike, max_bytes: int) -> bytes:
         try:
             length = int(declared)
         except ValueError as error:
-            raise MetadataFetchError("invalid Content-Length") from error
+            raise MetadataFetchError(
+                "invalid Content-Length", stage="response_headers"
+            ) from error
         if length < 0 or length > max_bytes:
-            raise MetadataFetchError(f"metadata response exceeds {max_bytes} bytes")
+            raise MetadataFetchError(
+                f"metadata response exceeds {max_bytes} bytes",
+                stage="response_headers",
+                limit_exceeded=True,
+            )
     chunks: list[bytes] = []
     total = 0
     while chunk := response.read(min(64 * 1024, max_bytes - total + 1)):
         total += len(chunk)
         if total > max_bytes:
-            raise MetadataFetchError(f"metadata response exceeds {max_bytes} bytes")
+            raise MetadataFetchError(
+                f"metadata response exceeds {max_bytes} bytes",
+                stage="response_body",
+                limit_exceeded=True,
+            )
         chunks.append(chunk)
     return b"".join(chunks)
+
+
+def fetch_pinned_metadata(
+    destination: RequestDestination,
+    *,
+    max_bytes: int = MAX_METADATA_BYTES,
+    timeout: float = 30,
+    connection_factory: ConnectionFactory = _connection,
+    allow_browser_script: bool = False,
+) -> PinnedMetadataResponse:
+    """Fetch one hop from a validated IP without redirects or DNS fallback."""
+    if max_bytes < 1 or timeout <= 0:
+        raise ValueError("fetch limits must be positive")
+    current_url = str(destination.url)
+    connection = connection_factory(destination, timeout)
+    try:
+        try:
+            connection.request(
+                "GET",
+                _request_target(current_url),
+                None,
+                {
+                    "Accept": "text/html, text/plain, application/json, "
+                    "application/ld+json, application/xml",
+                    "Accept-Encoding": "identity",
+                    "Connection": "close",
+                    "Host": _host_header(destination),
+                    "User-Agent": "HistGerm-Metadata-Curator/1",
+                },
+            )
+        except OSError as error:
+            raise MetadataFetchError(
+                f"metadata request failed: {error}", stage="request"
+            ) from error
+        try:
+            response = connection.getresponse()
+        except OSError as error:
+            raise MetadataFetchError(
+                f"metadata response failed: {error}", stage="connection"
+            ) from error
+        headers = {
+            name: value
+            for name in (
+                "Content-Type",
+                "Content-Disposition",
+                "Content-Length",
+                "Location",
+                "Retry-After",
+            )
+            if (value := response.getheader(name)) is not None
+        }
+        if 200 <= response.status < 300:
+            _content_type(response, allow_browser_script=allow_browser_script)
+        try:
+            body = _read_bounded(response, max_bytes)
+        except OSError as error:
+            raise MetadataFetchError(
+                f"metadata response body failed: {error}",
+                mode="bounded_http",
+                stage="response_body",
+            ) from error
+        return PinnedMetadataResponse(current_url, response.status, headers, body)
+    finally:
+        connection.close()
 
 
 def fetch_public_metadata(
@@ -166,43 +306,42 @@ def fetch_public_metadata(
         raise ValueError("fetch limits must be positive")
     current_url = url
     for redirect_count in range(max_redirects + 1):
-        destination = resolve_request_destination(current_url, resolver=resolver)
-        current_url = str(destination.url)
-        connection = connection_factory(destination, timeout)
         try:
-            connection.request(
-                "GET",
-                _request_target(current_url),
-                None,
-                {
-                    "Accept": "text/html, text/plain, application/json, "
-                    "application/ld+json, application/xml",
-                    "Accept-Encoding": "identity",
-                    "Connection": "close",
-                    "Host": _host_header(destination),
-                    "User-Agent": "HistGerm-Metadata-Curator/1",
-                },
-            )
-            response = connection.getresponse()
-            if response.status in _REDIRECT_STATUSES:
-                location = response.getheader("Location")
-                if location is None:
-                    raise MetadataFetchError("redirect response has no Location")
-                if redirect_count == max_redirects:
-                    raise MetadataFetchError("metadata redirect limit exceeded")
-                current_url = urljoin(current_url, location)
-                continue
-            if not 200 <= response.status < 300:
+            destination = resolve_request_destination(current_url, resolver=resolver)
+        except ValueError as error:
+            raise MetadataFetchError(
+                str(error), stage="destination_validation"
+            ) from error
+        current_url = str(destination.url)
+        response = fetch_pinned_metadata(
+            destination,
+            max_bytes=max_bytes,
+            timeout=timeout,
+            connection_factory=connection_factory,
+        )
+        if response.status in _REDIRECT_STATUSES:
+            location = response.headers.get("Location")
+            if location is None:
                 raise MetadataFetchError(
-                    f"metadata request returned HTTP {response.status}"
+                    "redirect response has no Location", stage="redirect"
                 )
-            content_type = _content_type(response)
-            body = _read_bounded(response, max_bytes)
-            return FetchedMetadata(current_url, content_type, body)
-        except OSError as error:
-            raise MetadataFetchError(f"metadata request failed: {error}") from error
-        finally:
-            connection.close()
+            if redirect_count == max_redirects:
+                raise MetadataFetchError(
+                    "metadata redirect limit exceeded", stage="redirect"
+                )
+            current_url = urljoin(current_url, location)
+            continue
+        if not 200 <= response.status < 300:
+            raise MetadataFetchError(
+                f"metadata request returned HTTP {response.status}",
+                stage="response_status",
+                status=response.status,
+            )
+        return FetchedMetadata(
+            current_url,
+            response.headers["Content-Type"],
+            response.body,
+        )
     raise AssertionError("redirect loop must return or raise")
 
 

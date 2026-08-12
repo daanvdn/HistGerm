@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import ast
 import re
+import tomllib
 from pathlib import Path
 
 import pytest
@@ -54,6 +55,14 @@ def contracts() -> dict[str, str]:
 def assert_phrases(policy: str, phrases: tuple[str, ...]) -> None:
     for phrase in phrases:
         assert phrase in policy
+
+
+def assert_concepts(policy: str, *concepts: tuple[str, ...]) -> None:
+    """Require each policy concept while allowing clear equivalent wording."""
+
+    folded = policy.casefold()
+    for alternatives in concepts:
+        assert any(term.casefold() in folded for term in alternatives), alternatives
 
 
 def test_exact_agent_and_skill_inventory_contract() -> None:
@@ -201,6 +210,125 @@ def test_discovery_is_bilingual_complete_and_refreshes_matches(
         assert disposition in policy
 
 
+def test_focused_queries_cover_broad_bilingual_concepts(
+    contracts: dict[str, str],
+) -> None:
+    """Discovery separates concepts while covering broader terms and tagsets."""
+
+    discover = contracts[SKILLS[0]]
+    assert_concepts(
+        discover,
+        ("one concept at a time", "one resource/task concept"),
+        ("never combine unrelated task families",),
+        ("tagging", "wortartenannotation"),
+        ("morphology", "morphologische annotation"),
+        ("lemmatization", "lemmatisierung"),
+        ("normalization", "normalisierung"),
+        ("parsing", "syntaxanalyse"),
+        ("segmentation", "tokenisierung"),
+        ("language model", "sprachmodell"),
+        ("pipeline", "sprachverarbeitung"),
+        ("stts",),
+        ("hits",),
+        ("corpus and dictionary", "corpus and dictionary terms"),
+    )
+    assert "German and English queries" in discover
+
+
+def test_model_and_inventory_leads_are_bounded_transient_and_untrusted(
+    contracts: dict[str, str],
+) -> None:
+    """Lead generation precedes search but cannot become factual evidence."""
+
+    for name in ("agent", SKILLS[0]):
+        policy = contracts[name]
+        assert_concepts(
+            policy,
+            ("before external search", "before any external query"),
+            ("model-led elicitation",),
+            ("explicitly exclude",),
+            ("no new distinct",),
+            ("iteration bound", "iteration limit"),
+            ("all three trusted inventory categories", "all trusted corpora"),
+            ("tagsets",),
+            ("boilerplate",),
+            ("untrusted leads",),
+            ("never appear as an evidence source", "never evidence by itself"),
+            ("delete temporary content", "delete fetched temporary content"),
+            ("no cache", "never create a page cache"),
+            ("vocabulary registry",),
+        )
+    curate = contracts[SKILLS[1]]
+    assert_concepts(
+        curate,
+        ("model elicitation",),
+        ("inventory vocabulary mining",),
+        ("never cite the model",),
+        ("canonical or primary public sources",),
+    )
+
+
+def test_provider_audit_result_inspection_and_iterative_metrics(
+    contracts: dict[str, str],
+) -> None:
+    """Provider outcomes remain contextual and coverage stays in existing records."""
+
+    discover = contracts[SKILLS[0]]
+    assert_concepts(
+        discover,
+        ("google",),
+        ("brave",),
+        ("bing",),
+        ("independent",),
+        ("inspect every returned item",),
+        ("item-level rejection reasons",),
+        ("provider",),
+        ("locale",),
+        ("retrieval mode",),
+        ("http 429 through bounded_http",),
+        ("captcha",),
+        ("consent",),
+        ("iterative exclusion", "beyond known resources"),
+        ("weakly covered",),
+        ("new-candidate yield",),
+        ("existing `searchqueryrecord`/pass fields", "fields already available"),
+        ("no generic metrics framework",),
+        ("persistent report",),
+    )
+
+
+@pytest.mark.parametrize("name", ("agent", SKILLS[0], SKILLS[1]))
+def test_controlled_browser_is_opt_in_robots_first_and_fail_closed(
+    contracts: dict[str, str], name: str
+) -> None:
+    """Browser fallback preserves request, robots, payload, and access controls."""
+
+    assert_concepts(
+        contracts[name],
+        ("opt-in",),
+        ("bounded http",),
+        ("robots.txt", "robots policy"),
+        ("every origin", "every encountered origin", "encountered origin's"),
+        ("404 or 410",),
+        ("fail-closed",),
+        ("redirect",),
+        ("frame",),
+        ("worker",),
+        ("subresource",),
+        ("mixed",),
+        ("tls",),
+        ("byte limit", "byte budgets", "aggregate-session byte"),
+        ("temporary",),
+        ("captcha", "challenge"),
+        ("consent",),
+        ("paywall",),
+        ("websockets",),
+        ("webrtc",),
+        ("controlled_browser",),
+        ("failure stage",),
+    )
+
+
 def test_evidence_uncertainty_and_refresh_contracts(
     contracts: dict[str, str],
 ) -> None:
@@ -313,7 +441,7 @@ def test_validation_and_publication_gates(contracts: dict[str, str]) -> None:
         agent,
         (
             "`GATE-CURATOR` has explicit project owner approval",
-            "Never execute the MHG-corpora pilot",
+            "Never execute the future MHG tools pilot",
             "All required checks must run",
             "failure is `failed`, never draft",
             "including ledger-only progress",
@@ -345,7 +473,7 @@ def test_validation_and_publication_gates(contracts: dict[str, str]) -> None:
             "Open `draft` only when",
             "Ledger-only progress",
             "Human review and merge are mandatory",
-            "never execute pilot work",
+            "never execute the future MHG tools pilot",
         ),
     )
 
@@ -375,6 +503,51 @@ def test_pr_report_and_no_persistent_report_contract(
             "remove it immediately",
         ),
     )
+
+
+def test_publication_reports_discovery_coverage_and_transport(
+    contracts: dict[str, str],
+) -> None:
+    """The existing PR report carries metrics, retrieval truth, and pilot boundary."""
+
+    publish = contracts[SKILLS[3]]
+    assert_concepts(
+        publish,
+        ("focused queries attempted/completed",),
+        ("new-candidate yield",),
+        ("providers attempted",),
+        ("item-level unrelated-result samples",),
+        ("model-elicited lead counts",),
+        ("untrusted leads rather than evidence",),
+        ("bounded http versus controlled-browser",),
+        ("exact failure stages",),
+        ("browser binaries",),
+        ("future mhg tools pilot",),
+        ("never execute",),
+    )
+
+
+def test_playwright_packaging_boundary_is_library_safe(
+    contracts: dict[str, str],
+) -> None:
+    """Playwright remains scoped research tooling and distributions exclude state."""
+
+    validate = contracts[SKILLS[2]]
+    assert_concepts(
+        validate,
+        ("research/development dependency",),
+        ("deterministic local/cloud curator setup",),
+        ("not a distributable `histgerm` runtime dependency",),
+        ("browser executable",),
+        ("browser cache",),
+        ("fetched/rendered page",),
+        ("source distribution",),
+        ("recorded synthetic fixtures",),
+        ("do not launch a live browser",),
+    )
+    project = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
+    runtime = " ".join(project["project"].get("dependencies", ())).casefold()
+    assert "playwright" not in runtime
 
 
 def test_contract_tests_cannot_open_real_pull_requests() -> None:

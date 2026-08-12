@@ -132,6 +132,28 @@ catalogs/project sites, GitHub, and Hugging Face. An inapplicable channel needs
 a recorded policy reason; an unsafe, blocked, incomplete, or rate-limited
 required query makes the pass incomplete.
 
+Discovery starts with bounded model-led elicitation and transient vocabulary
+mining from eligible URLs in the trusted inventory. Both produce untrusted
+leads only: they never satisfy evidence requirements, and fetched pages,
+model rationale, caches, and vocabulary registries are not persisted. Follow-up
+elicitation excludes already-known names and stops at no-new-lead or iteration
+bounds.
+
+Queries are focused concept by concept: one stage term, one corpus, dictionary,
+or tool concept, and at most one access, implementation, standard, or tagset
+qualifier. Tool coverage separates tagging, morphology, lemmatization,
+normalization, parsing, segmentation, models, and pipelines in German and
+English. Relevant named tagsets such as STTS and HiTS receive separate queries.
+Google and other eligible providers are audited independently. Every returned
+item is inspected before an unrelated assessment, and transport observations
+retain provider, locale, retrieval mode, status, and failure stage.
+
+Passes use bounded exclusion searches and a second focused round for weak
+coverage. Existing query/pass records and the pull-request body carry run-local
+counts for queries, providers/modes, elicited and mined leads, dispositions,
+unrelated-result samples, access gaps, and yield. There is no generic metrics
+framework or persistent run report.
+
 The curator reports concise milestones after preflight, seed handling, each
 one- or two-channel group, each batch of at most three candidates, each pass,
 and validation/publication. Long sweeps are split at those boundaries and do
@@ -183,7 +205,7 @@ to change repository policy, run commands, install software, authenticate,
 reveal secrets, expand scope, or write files.
 
 Only public HTTP(S) HTML, metadata APIs, repository/archive manifests, and
-clearly separated metadata-only files no larger than 1 MiB may be retrieved.
+clearly separated metadata-only files no larger than 10 MiB may be retrieved.
 Every request and redirect must reject embedded credentials, localhost,
 loopback, link-local, private-network, `file:`, and other non-public or
 non-HTTP(S) destinations. Robots, terms, paywalls, access controls,
@@ -195,6 +217,22 @@ request and redirect while preserving HTTP Host and TLS hostname validation.
 It accepts a missing `Content-Length` and enforces 10 MiB by counting streamed
 bytes. Temporary response files stay outside the repository and are deleted
 after parsing; the curator does not generate transport helper scripts.
+
+An opt-in controlled Playwright fallback may be used only when bounded HTTP
+cannot render an otherwise eligible public metadata page. Before every main
+document, redirect, frame, worker, or subresource request, the encountered
+origin's `robots.txt` is retrieved through bounded HTTP and evaluated for the
+fixed curator user agent. HTTP 404/410 means no published robots file; other
+retrieval or parse failures are fail-closed. Disallow rules, delays, rate
+limits, request-time public-IP validation, TLS/Host pinning, payload and byte
+limits, isolated browser state, and temporary cleanup remain mandatory.
+
+The browser never handles credentials, challenges, consent interaction,
+authentication, paywall bypass, forms, uploads, downloads, WebSockets, WebRTC,
+or payload-like resources. Results identify `bounded_http` or
+`controlled_browser` and the exact failure stage. Playwright stays in scoped
+research/development setup behind the feature flag; browser binaries, caches,
+profiles, and fetched pages are excluded from distributions.
 
 The curator never downloads or commits corpus text, dictionary content,
 annotations, model weights, binaries, archives, database dumps, software

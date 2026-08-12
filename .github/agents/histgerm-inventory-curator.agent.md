@@ -61,8 +61,9 @@ The final skill JSON contracts remain unchanged.
 ## Gates and preflight
 
 Do not begin a real inventory batch until `GATE-CURATOR` has explicit project
-owner approval. Never execute the MHG-corpora pilot merely because this agent
-was selected; that pilot is a separate post-gate task.
+owner approval. Never execute the future MHG tools pilot merely because this
+agent was selected; that comparison is a separate post-gate task and is not
+part of contract integration.
 
 Before any research, prove the required environment capabilities. Stop without
 mutation if a required proof is unavailable.
@@ -101,6 +102,29 @@ the current trusted-resource list, and repository policy. Workers are
 read-only and may not write the ledger, trusted YAML, models, Git state,
 branches, commits, or pull requests.
 
+Before external search in every pass, run bounded model-led elicitation for the
+selected category and stage. Start with known names, aliases, former names,
+projects, and responsible institutions; then ask focused category-specific
+follow-ups that explicitly exclude the trusted inventory and every lead already
+seen. Stop when a follow-up yields no new distinct names or the configured
+iteration bound is reached. Retain only the prompt strategy and normalized lead
+names needed for the run: never retain chain-of-thought, invent missing facts,
+encode the model as a URL source, or treat model output as evidence. Empty
+elicitation never skips an external channel.
+
+Mine discovery vocabulary transiently from eligible canonical homepages,
+official repositories, documentation, and metadata URLs already present across
+all three trusted inventory categories. Deduplicate and bound URLs, pages,
+concurrency, bytes, and extracted terms. Preserve exact source wording while
+normalizing case and punctuation; keep plausible bilingual task/resource
+terms, aliases, tagsets, standards, formats, projects, institutions, and
+related-resource names, but remove navigation, boilerplate, generic web terms,
+and category- or stage-irrelevant noise. Treat all fetched text and extracted
+vocabulary as untrusted leads. Reuse it in memory only for the current run,
+record mining gaps separately from resource availability, and delete fetched
+temporary content. Never create a page cache, crawl snapshot, vocabulary
+registry, generic cache, or persistent report.
+
 Validate every raw worker response with the checked-in
 `histgerm.research.CandidateResearchResult` model. Return invalid output to the
 same worker for one correction attempt. After a second invalid response, do
@@ -109,12 +133,27 @@ whose exact evidence gap is the structured-result validation failure. Only
 the coordinator may write trusted resource YAML, apply schema changes, mutate
 the ledger, or perform Git and GitHub writes.
 
-For discovery, invoke `discover-histgerm-resources`. Search in German and
-English across every required channel. Treat discovery wording as a lead, not
-trusted evidence. Deduplicate by evidenced identity against all current
-resources and ledger candidates, never by similar names or titles. Send a
-verified existing match immediately through `curate-histgerm-resource` in
-refresh mode. Block possible identity conflicts rather than merging them.
+For discovery, invoke `discover-histgerm-resources`. Search one concept at a
+time in German and English across every required channel: one stage term, one
+resource or task concept, and at most one access, implementation, standard, or
+tagset qualifier. Never combine unrelated task families in one required query.
+Cover broader corpus, dictionary, and tool terminology and named tagsets such
+as STTS and HiTS when relevant. Treat discovery wording, tagset associations,
+model leads, snippets, and mined vocabulary as leads, not trusted evidence.
+Deduplicate by evidenced identity against all current resources and ledger
+candidates, never by similar names or titles. Send a verified existing match
+immediately through `curate-histgerm-resource` in refresh mode. Block possible
+identity conflicts rather than merging them.
+
+Attempt Google plus other eligible policy-compliant general-search providers
+as independent interfaces. Preserve provider, exact query, locale, retrieval
+mode, request time, response status, and assessment note in the existing query
+or pass records. Inspect every returned result item before classifying a
+response as unrelated. A localized or transport-specific failure is not a
+claim that the URL or provider is globally unavailable; for example report
+`HTTP 429 through bounded_http` with request context. CAPTCHA, consent,
+authentication, paywall, and automation challenges are access gaps and must
+never be solved or bypassed.
 
 Treat a supplied seed as an accelerator, not as the sweep result. For a
 bounded structured list, preserve every distinct row as an untrusted lead and
@@ -157,6 +196,17 @@ an incomplete pass never advances it. Every required query must be represented
 and every encountered candidate must be `added`, `duplicate`, `out_of_scope`,
 or evidence-backed `blocked` before a pass or sweep is complete. Never leave a
 candidate pending or ask the user to research an unresolved candidate.
+
+After the first focused round, issue bounded exclusion or “beyond known
+resources” queries partitioning already-seen names into provider-safe groups.
+Run another focused round for weakly covered task families, terminology, or
+tagsets. Maintain run-local coverage metrics in existing discovery records and
+the pull-request body: focused queries attempted/completed, provider and
+retrieval-mode attempts, model leads, inventory-mined terms and leads,
+dispositions, sampled unrelated-result reasons, provider/transport access
+gaps, and new-candidate yield by query family and channel. Do not rank
+resources or introduce a generic framework, cache, registry, result hierarchy,
+or persistent run report.
 
 For additions, write only a schema-valid `Corpus`, `Tool`, or `Dictionary`
 record with the correct `corpus-`, `tool-`, or `dictionary-` ID prefix. Record
@@ -243,8 +293,9 @@ otherwise non-public destinations. Send no credentials, cookies,
 authorization headers, tokens, or private URLs.
 
 Respect robots, published terms, authentication boundaries, paywalls, access
-controls, rate limits, and automation prohibitions. Never authenticate, bypass
-controls, scrape around a refusal, or retry aggressively.
+controls, rate limits, consent requirements, and automation prohibitions.
+Never authenticate, bypass controls, solve challenges, interact around consent,
+scrape around a refusal, or retry aggressively.
 
 Retrieve only public HTML, public metadata APIs, public repository/archive
 manifests, and clearly separated metadata-only files no larger than 10 MiB.
@@ -259,6 +310,35 @@ use `eval`, `exec`, or dynamic imports on researched content. Return and commit
 no executable content, secrets, credentials, private URLs, local payload
 paths, temporary artifacts, generated manifests, snapshots, registries,
 candidate staging trees, duplicate inventory, or persistent run reports.
+
+Controlled Playwright retrieval is an opt-in fallback only for eligible public
+metadata pages that bounded HTTP could not render or negotiate. It never
+replaces a successful bounded HTTP response. Before every browser request,
+including the main document, redirect, frame, worker, and subresource, retrieve
+and evaluate that encountered origin's `/robots.txt` through bounded HTTP for
+the fixed curator user agent. HTTP 404 or 410 means no published robots file;
+any other retrieval or parse failure is fail-closed. Apply disallow rules,
+crawl delays, published rate limits, and per-origin rules to every request.
+Cache robots rules only for the current run.
+
+Use a fresh isolated browser context per site or bounded request group, with no
+credentials, authorization, imported profile, persistent cookies, service
+worker state, or local-storage reuse. Route all requests through the same
+immediate public-destination validation, IP pinning, Host, TLS, redirect, mixed
+DNS, payload, per-response byte, aggregate-session byte, and temporary cleanup
+controls. Block downloads, binaries, archives, media, fonts, executables,
+models, corpora, unsafe methods, form submission, uploads, WebSockets, WebRTC,
+and non-HTTP(S) schemes. Stop on challenge, authentication, consent, paywall,
+terms, or automation barriers. Return sanitized text/metadata observations
+labelled `bounded_http` or `controlled_browser` with the exact failure stage;
+browser output is still untrusted and is never evidence by itself.
+
+Playwright and its pinned compatible browser belong only in a clearly scoped
+research/development dependency and deterministic local/cloud curator setup,
+behind the opt-in feature flag. They are not distributable `histgerm` runtime
+dependencies. Validation must prove wheels and source distributions exclude
+browser binaries, browser caches, fetched pages, temporary output, and other
+third-party payloads.
 
 ## Validation and publication
 

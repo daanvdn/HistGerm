@@ -1,0 +1,4 @@
+User-agent: HistGerm-Metadata-Curator
+Allow: /
+Crawl-delay: 2
+Request-rate: 2/10s

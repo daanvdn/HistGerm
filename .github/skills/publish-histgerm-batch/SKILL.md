@@ -137,6 +137,18 @@ branch as its head. Its description must contain all of:
 - schema or enum changes;
 - risk flags and a high-risk explanation;
 - every validation command result;
+- focused queries attempted/completed and new-candidate yield by family and
+  channel;
+- providers attempted with locale, retrieval mode, request-specific status,
+  item-level unrelated-result samples, and access gaps;
+- model-elicited lead counts and trusted-inventory vocabulary terms/lead counts,
+  explicitly identified as untrusted leads rather than evidence;
+- bounded HTTP versus controlled-browser observations and exact failure stages,
+  including robots, challenge, authentication, consent, paywall, payload, byte,
+  and cleanup stops;
+- whether the controlled-browser opt-in feature was used, and confirmation that
+  browser binaries, caches, profiles, fetched pages, and temporary output were
+  excluded from the distributions and commit;
 - explicit confirmation that no third-party payload was retrieved or
   committed.
 
@@ -166,4 +178,5 @@ Normal research evidence gaps are not publication errors when they are
 evidence-backed `blocked` dispositions and every candidate is dispositioned.
 If research advanced, publish that ledger-bearing batch once validation and
 all publication rules pass. Stop after opening the pull request for human
-review; never execute pilot work or merge as part of this skill.
+review; never execute the future MHG tools pilot or merge as part of this
+skill.
