@@ -250,10 +250,12 @@ def _ledger_file_lock(lock: Path) -> Iterator[None]:
     try:
         if os.name == 'nt':
             import msvcrt
+            locking = getattr(msvcrt, 'locking')  # noqa: B009
+            lock_nblck = getattr(msvcrt, 'LK_NBLCK')  # noqa: B009
             while True:
                 try:
                     os.lseek(descriptor, 0, os.SEEK_SET)
-                    msvcrt.locking(descriptor, msvcrt.LK_NBLCK, 1)
+                    locking(descriptor, lock_nblck, 1)
                     acquired = True
                     break
                 except OSError:
@@ -279,7 +281,9 @@ def _ledger_file_lock(lock: Path) -> Iterator[None]:
         try:
             if acquired and os.name == 'nt':
                 os.lseek(descriptor, 0, os.SEEK_SET)
-                msvcrt.locking(descriptor, msvcrt.LK_UNLCK, 1)
+                getattr(msvcrt, 'locking')(  # noqa: B009
+                    descriptor, getattr(msvcrt, 'LK_UNLCK'), 1  # noqa: B009
+                )
             elif acquired:
                 getattr(fcntl, 'flock')(  # noqa: B009
                     descriptor, getattr(fcntl, 'LOCK_UN')  # noqa: B009
