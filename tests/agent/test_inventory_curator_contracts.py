@@ -28,7 +28,6 @@ AGENT_FRONTMATTER = "\n".join(
         "name: histgerm-inventory-curator",
         "description: Discovers, verifies, adds, refreshes, validates, and "
         "publishes evidence-backed Historical German inventory metadata.",
-        "target: github-copilot",
         "model: gpt-5.6-sol",
         'tools: ["read", "search", "edit", "execute", "web", "agent", "github/*"]',
         "disable-model-invocation: true",
