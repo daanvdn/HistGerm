@@ -1,0 +1,80 @@
+id: corpus-medieval-ner
+name: Named-Entity Dataset for Medieval Latin, Middle High German and Old Norse
+description: A multilingual named-entity dataset listing lemmata and tokens from Decem Libri Historium (Medieval Latin), Völsunga
+  saga (Old Norse), and Nibelungenlied (Middle High German).
+links:
+  record: https://zenodo.org/records/4571507
+  doi: https://doi.org/10.5281/zenodo.4571507
+sources:
+- id: evidence-medieval-ner-record
+  url: https://zenodo.org/api/records/4571507
+  accessed_on: '2026-08-12'
+  supports:
+  - name
+  - description
+  - covered_stages
+  - links
+  - reviewed_on
+  - access.availability
+  - access.license
+  - versions
+  - versions.annotations
+  - versions.sizes
+  - notes
+  title: Named-Entity Dataset for Medieval Latin, Middle High German and Old Norse
+  citation: Besnier, Clément (2021). Named-Entity Dataset for Medieval Latin, Middle High German and Old Norse, version 1.0.0.
+    Zenodo. https://doi.org/10.5281/zenodo.4571507
+  quote: This is a list of lemmata and their tokens as they appear in Decem Libri Historium (Medieval Latin), Völsunga saga
+    (Old Norse) and Nibelungenlied (Middle High German).
+  note: Creator-deposited public metadata establishes identity, Middle High German coverage, version, release date, file metadata,
+    availability, and the CC BY 4.0 label. No payload was downloaded.
+reviewed_on: '2026-08-12'
+covered_stages:
+- mhg
+access:
+  availability:
+  - described
+  - downloadable
+  model_training: unclear
+  original_data_redistribution: unclear
+  processed_data_redistribution: unclear
+  trained_weight_publication: unclear
+  license: CC BY 4.0
+  note: Zenodo labels the record CC BY 4.0, but no schema-specific legal permission is inferred from that label.
+  source_ids:
+  - evidence-medieval-ner-record
+versions:
+- id: v1-0-0
+  label: 1.0.0
+  released_on: '2021-03-01'
+  links:
+    record: https://zenodo.org/records/4571507
+    doi: https://doi.org/10.5281/zenodo.4571507
+  license: CC BY 4.0
+  availability:
+  - described
+  - downloadable
+  sizes:
+  - value: 100179
+    unit: byte
+    source: Zenodo API file metadata for ner-dataset.csv
+    note: The record lists one file; no payload was downloaded.
+  annotations:
+  - id: named-entities
+    type: named_entities
+    source_ids:
+    - evidence-medieval-ner-record
+    note: The deposited resource is explicitly titled a named-entity dataset; tagset, quality, and production method are not
+      stated.
+  texts: []
+  source_ids:
+  - evidence-medieval-ner-record
+  note: The single listed file is ner-dataset.csv. No CorpusText is modeled because the metadata does not supply required
+    dialect and date fields or identify the Nibelungenlied edition or witness.
+notes:
+- Only the explicitly named Middle High German component, Nibelungenlied, contributes to covered_stages. Medieval Latin and
+  Old Norse are retained in the description rather than mapped to HistGerm historical-German stages.
+- The resource is represented as the deposited multilingual lemma/token named-entity dataset, not as a full-text Nibelungenlied
+  corpus or edition.
+- A shared Nibelungenlied work title with corpus-rem:m321 is insufficient to assert structured overlap without edition or
+  witness identity.

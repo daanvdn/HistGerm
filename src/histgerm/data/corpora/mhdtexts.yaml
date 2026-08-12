@@ -1,0 +1,64 @@
+id: corpus-mhdtexts
+name: MHDtexts
+description: A plain-text corpus of Middle High German texts.
+links:
+  repository: https://github.com/cmm2209/MHDtexts
+sources:
+- id: evidence-mhdtexts-repository
+  url: https://api.github.com/repos/cmm2209/MHDtexts
+  accessed_on: '2026-08-12'
+  supports:
+  - name
+  - description
+  - covered_stages
+  - links.repository
+  - access.availability
+  - versions
+  title: Official MHDtexts GitHub repository metadata
+  quote: Plain text corpus of Mittelhochdeutsch texts
+  note: Official repository metadata explicitly establishes corpus identity and Middle High German scope and reports public
+    visibility and the default main branch.
+- id: evidence-mhdtexts-main-commit
+  url: https://api.github.com/repos/cmm2209/MHDtexts/commits/main
+  accessed_on: '2026-08-12'
+  supports:
+  - versions
+  - versions.links
+  - versions.note
+  title: Official metadata for the current MHDtexts main commit
+  quote: created combined text
+  note: Commit metadata pins the represented main snapshot to 07048171750c809dd5895a34a71115f00d5c4948 and reports the combined
+    MHDtexts.txt addition; no data file was downloaded.
+reviewed_on: '2026-08-12'
+covered_stages:
+- mhg
+access:
+  availability:
+  - browsable
+  model_training: unclear
+  original_data_redistribution: unclear
+  processed_data_redistribution: unclear
+  trained_weight_publication: unclear
+  note: Official metadata establishes a public repository and therefore browsable metadata, but no legal permission is inferred
+    and no corpus payload was retrieved.
+  source_ids:
+  - evidence-mhdtexts-repository
+versions:
+- id: main-0704817
+  label: main at 07048171750c809dd5895a34a71115f00d5c4948
+  links:
+    repository_branch: https://github.com/cmm2209/MHDtexts/tree/07048171750c809dd5895a34a71115f00d5c4948
+    commit: https://github.com/cmm2209/MHDtexts/commit/07048171750c809dd5895a34a71115f00d5c4948
+  availability:
+  - browsable
+  annotations: []
+  texts: []
+  source_ids:
+  - evidence-mhdtexts-repository
+  - evidence-mhdtexts-main-commit
+  note: Commit-pinned snapshot of the rolling main branch. No release date is asserted, and structured texts are omitted because
+    required per-text dialect and date evidence is unavailable without corpus payload access.
+notes:
+- The official repository description directly establishes MHG corpus scope; repository presence alone was not treated as
+  evidence.
+- Possible overlap with ReM is unresolved and no structured overlap or duplicate relationship is asserted.

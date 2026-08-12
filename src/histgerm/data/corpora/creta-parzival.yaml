@@ -1,0 +1,84 @@
+id: corpus-creta-parzival
+name: CRETA CUTE Parzival subcorpus
+aliases:
+- Parzival
+description: A downloadable CRETA CUTE subcorpus of Wolfram von Eschenbach's Middle High German Parzival, with typed entity-reference
+  annotations for books 3–6.
+links:
+  project_page: https://www.creta.uni-stuttgart.de/cute/datenmaterial/korpus/index.html
+  data_page: https://www.creta.uni-stuttgart.de/cute/datenmaterial/index.html
+  annotation_page: https://www.creta.uni-stuttgart.de/cute/datenmaterial/entitaetsannotationen/index.html
+sources:
+- id: creta-corpus-page
+  url: https://www.creta.uni-stuttgart.de/cute/datenmaterial/korpus/index.html
+  accessed_on: '2026-08-12'
+  supports:
+  - name
+  - aliases
+  - description
+  - covered_stages
+  - versions
+  - notes
+  title: Korpus | CRETA
+  quote: Der Parzival Wolframs von Eschenbach ist ein arthurischer Gralroman in mittelhochdeutscher Sprache, entstanden zwischen
+    1200 und 1210.
+- id: creta-material-page
+  url: https://www.creta.uni-stuttgart.de/cute/datenmaterial/index.html
+  accessed_on: '2026-08-12'
+  supports:
+  - access.availability
+  - download_links
+  - versions
+  - annotations
+  title: Datenmaterial | CRETA
+  note: The canonical table lists Parzival with 30,491 tokens, 2,001 entities, and version 1, and provides direct TSV, XMI,
+    and Markdown links for books 3–6.
+- id: creta-annotation-page
+  url: https://www.creta.uni-stuttgart.de/cute/datenmaterial/entitaetsannotationen/index.html
+  accessed_on: '2026-08-12'
+  supports:
+  - annotations
+  title: Entitätsannotationen | CRETA
+  quote: Unser Korpus enthält annotierte typisierte Entitätenreferenzen.
+reviewed_on: '2026-08-12'
+covered_stages:
+- mhg
+access:
+  availability:
+  - described
+  - downloadable
+  model_training: unclear
+  original_data_redistribution: unclear
+  processed_data_redistribution: unclear
+  trained_weight_publication: unclear
+  note: Canonical pages provide direct data links but no reviewed terms establishing the modeled permissions.
+  source_ids:
+  - creta-corpus-page
+  - creta-material-page
+versions:
+- id: v1
+  label: Version 1
+  links:
+    data_page: https://www.creta.uni-stuttgart.de/cute/datenmaterial/index.html
+  availability:
+  - downloadable
+  sizes:
+  - value: 30491
+    unit: token
+    source: CRETA canonical data-material table
+    note: Reported for the Parzival subcorpus.
+  annotations:
+  - id: named-entities
+    type: named_entities
+    source_ids:
+    - creta-material-page
+    - creta-annotation-page
+    note: Typed entity-reference annotations; the canonical table reports 2,001 entities.
+  texts: []
+  source_ids:
+  - creta-corpus-page
+  - creta-material-page
+  note: The annotated material covers books 3–6. No CorpusText entry is modeled because the canonical evidence does not state
+    the required dialect or identify the edition or witness.
+notes:
+- The source edition or witness is not identified, so no overlap or duplicate relationship with a trusted corpus is asserted.

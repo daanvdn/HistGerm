@@ -48,7 +48,7 @@ def test_rem_yaml_safely_loads_and_validates() -> None:
     assert payload["id"] == "corpus-rem"
     assert inventory.corpora == (corpus,)
     assert inventory.source_paths == {"corpus-rem": "rem.yaml"}
-    assert corpus.reviewed_on == date(2026, 8, 11)
+    assert corpus.reviewed_on == date(2026, 8, 12)
     assert corpus.name == "Reference Corpus of Middle High German"
     assert corpus.aliases == ["ReM"]
     assert corpus.covered_stages == ["mhg"]
@@ -304,10 +304,15 @@ def test_rem_preserves_all_old_and_new_evidence_sources() -> None:
         "evidence-rem-news",
         "evidence-rem-zenodo-manifest",
     }
-    assert {source.accessed_on for source in sources.values()} == {date(2026, 8, 11)}
+    assert {source.accessed_on for source in sources.values()} == {
+        date(2026, 8, 11),
+        date(2026, 8, 12),
+    }
+    assert sources["evidence-rem-zenodo"].accessed_on == date(2026, 8, 12)
+    assert sources["evidence-rem-hits-publication"].accessed_on == date(2026, 8, 11)
     assert all(source.supports for source in sources.values())
     assert sources["evidence-rem-homepage"].quote == (
-        "The “Reference Corpus of Middle High German” (short ReM) is a corpus "
+        "The “Reference Corpus of Middle High German” (short: ReM) is a corpus "
         "of diplomatically transcribed and annotated texts from Middle High "
         "German (1050–1350) with a size of around 2 million word forms."
     )
@@ -318,7 +323,7 @@ def test_rem_preserves_all_old_and_new_evidence_sources() -> None:
         "Erweiterungskorpus."
     )
     assert sources["evidence-rem-zenodo"].note is not None
-    assert "Files were not downloaded" in sources["evidence-rem-zenodo"].note
+    assert "no files were downloaded" in sources["evidence-rem-zenodo"].note.casefold()
 
 
 def test_rem_does_not_infer_overlaps_or_shared_works() -> None:

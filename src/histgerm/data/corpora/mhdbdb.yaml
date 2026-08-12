@@ -1,0 +1,78 @@
+id: corpus-mhdbdb
+name: Mittelhochdeutsche Begriffsdatenbank
+aliases:
+- MHDBDB
+description: TEI-encoded Middle High German literature texts with semantic annotations and a web-based exploration interface.
+links:
+  corpus_search: https://dhcraft.org/mhdbdb-tei-only/hilfe-korpussuche.html
+  repository: https://github.com/DigitalHumanitiesCraft/mhdbdb-tei-only
+sources:
+- id: evidence-mhdbdb-institutional
+  url: https://uni-salzburg.elsevierpure.com/en/datasets/mhdbdb-tei-repository/
+  accessed_on: '2026-08-12'
+  supports:
+  - name
+  - aliases
+  - description
+  - covered_stages
+  - links.repository
+  - versions
+  - versions.label
+  - versions.availability
+  - reviewed_on
+  title: MHDBDB TEI Repository - Paris-Lodron-University Salzburg
+  quote: TEI-encoded Middle High German literature texts with semantic annotations and web-based exploration interface from
+    the Mittelhochdeutsche Begriffsdatenbank (MHDBDB), University of Salzburg.
+  note: Institutional dataset metadata establishes corpus identity, stage, repository provenance, and availability in June
+    2025.
+- id: evidence-mhdbdb-search
+  url: https://dhcraft.org/mhdbdb-tei-only/hilfe-korpussuche.html
+  accessed_on: '2026-08-12'
+  supports:
+  - covered_stages
+  - access.availability
+  - links.corpus_search
+  - texts
+  title: Korpussuche-Hilfe - MHDBDB
+  quote: Die Korpussuche ist die Hauptanwendung der MHDBDB. Sie durchsucht 667 mittelhochdeutsche Texte nach einem Lemma
+  note: Canonical interface documentation supports browsable access and explicit Middle High German corpus coverage.
+- id: evidence-mhdbdb-repository
+  url: https://api.github.com/repos/DigitalHumanitiesCraft/mhdbdb-tei-only
+  accessed_on: '2026-08-12'
+  supports:
+  - links.repository
+  - access.availability
+  - versions.links
+  - versions.availability
+  title: GitHub repository metadata for DigitalHumanitiesCraft/mhdbdb-tei-only
+  quote: '"clone_url": "https://github.com/DigitalHumanitiesCraft/mhdbdb-tei-only.git"'
+  note: Public repository metadata supplies an HTTPS clone URL; no repository payload was downloaded.
+reviewed_on: '2026-08-12'
+covered_stages:
+- mhg
+access:
+  availability:
+  - described
+  - browsable
+  - downloadable
+  model_training: unclear
+  original_data_redistribution: unclear
+  processed_data_redistribution: unclear
+  trained_weight_publication: unclear
+  source_ids:
+  - evidence-mhdbdb-institutional
+  - evidence-mhdbdb-search
+  - evidence-mhdbdb-repository
+versions:
+- id: tei-repository
+  label: MHDBDB TEI Repository
+  links:
+    repository: https://github.com/DigitalHumanitiesCraft/mhdbdb-tei-only
+  availability:
+  - described
+  - downloadable
+  annotations: []
+  texts: []
+  source_ids:
+  - evidence-mhdbdb-institutional
+  - evidence-mhdbdb-repository

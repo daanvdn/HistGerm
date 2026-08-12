@@ -1,0 +1,145 @@
+id: corpus-badw-mhg
+name: Mittelhochdeutsch-Korpus
+description: A handschriftentreu transcribed corpus of approximately 1.1 million word forms from more than 100 temporally
+  and geographically distributed Middle High German texts, with lexical, morphological, morphosyntactic, and graphonological
+  annotation.
+links:
+  upstream_repository: https://daten.badw.de/mhd-korpus
+  mirror_repository: https://github.com/badw-dh/Mittelhochdeutsch-Korpus
+sources:
+- id: evidence-badw-repository
+  url: https://api.github.com/repos/badw-dh/Mittelhochdeutsch-Korpus
+  accessed_on: '2026-08-12'
+  supports:
+  - name
+  - description
+  - links
+  - access.availability
+  - versions
+  title: GitHub repository metadata for badw-dh/Mittelhochdeutsch-Korpus
+  quote: 'This github repository is mirrored from:  https://daten.badw.de/mhd-korpus. Müller, Stefan / Klein, Thomas: Mittelhochdeutsch-Korpus.
+    Erarbeitet vom DFG-Projekt Mittelhochdeutsche Grammatik'
+  note: Repository identity, upstream location, public mirror, default branch, and HTTPS clone metadata; no corpus payload
+    was downloaded.
+- id: evidence-badw-readme-scope
+  url: https://api.github.com/repos/badw-dh/Mittelhochdeutsch-Korpus/readme
+  accessed_on: '2026-08-12'
+  supports:
+  - description
+  - covered_stages
+  - versions
+  - versions.annotations
+  - versions.sizes
+  title: Mittelhochdeutsch-Korpus README
+  quote: Rund 1 100 000 Wortformen aus gut 100 zeitlich und räumlich gestreuten, verfassernah überlieferten Texten – handschriftentreu
+    transkribiert – lexikalisch, morphologisch, morphosyntaktisch und graphonologisch annotiert.
+  note: Canonical repository documentation for Middle High German scope, approximate size, transcription, and annotation dimensions.
+- id: evidence-badw-readme-version
+  url: https://api.github.com/repos/badw-dh/Mittelhochdeutsch-Korpus/readme
+  accessed_on: '2026-08-12'
+  supports:
+  - access.availability
+  - versions
+  - versions.links
+  - versions.availability
+  - notes
+  title: Mittelhochdeutsch-Korpus README
+  quote: Die zunächst ausgewählte “arbeitsfassung” ist die in Arbeit befindliche, also veränderliche Fassung.
+  note: The README documents the mutable working branch, fixed edition-like branches, raw-data downloads, and browsable reading
+    views.
+- id: evidence-badw-readme-license
+  url: https://api.github.com/repos/badw-dh/Mittelhochdeutsch-Korpus/readme
+  accessed_on: '2026-08-12'
+  supports:
+  - access.license
+  - versions.license
+  title: Mittelhochdeutsch-Korpus README
+  quote: CC BY-SA
+  note: The linked target is the CC BY-SA 4.0 German legal code; schema-specific permissions remain unclear.
+- id: evidence-rem-migrako-relationship
+  url: https://linguistics.rub.de/rem/corpus/index.html
+  accessed_on: '2026-08-12'
+  supports:
+  - notes
+  title: ReM corpus structure documentation
+  quote: Gruppen auf -G stammen aus dem Korpus der Mittelhochdeutschen Grammatik (MiGraKo)
+  note: Documents MiGraKo incorporation into ReM; it does not directly establish release-level identity with the current BAdW
+    publication.
+- id: evidence-rem-migrako-personnel
+  url: https://linguistics.rub.de/rem/people/migrako.html
+  accessed_on: '2026-08-12'
+  supports:
+  - notes
+  title: ReM MiGraKo project personnel
+  quote: Mitarbeiter des Korpus der Mittelhochdeutschen Grammatik (MiGraKo)
+  note: Supports comparison of the shared project provenance without asserting corpus or release identity.
+reviewed_on: '2026-08-12'
+covered_stages:
+- mhg
+access:
+  availability:
+  - described
+  - browsable
+  - downloadable
+  model_training: unclear
+  original_data_redistribution: unclear
+  processed_data_redistribution: unclear
+  trained_weight_publication: unclear
+  license: CC BY-SA 4.0
+  license_url: https://creativecommons.org/licenses/by-sa/4.0/legalcode.de
+  note: The README documents browsable reading views and downloadable raw data. The repository is public and exposes an HTTPS
+    clone URL. The license label is recorded without inferring any schema-specific permission.
+  source_ids:
+  - evidence-badw-repository
+  - evidence-badw-readme-version
+  - evidence-badw-readme-license
+versions:
+- id: arbeitsfassung
+  label: arbeitsfassung
+  links:
+    mirror_branch: https://github.com/badw-dh/Mittelhochdeutsch-Korpus/tree/arbeitsfassung
+    upstream_branch: https://daten.badw.de/mhd-korpus/-/tree/arbeitsfassung
+  license: CC BY-SA 4.0
+  availability:
+  - described
+  - browsable
+  - downloadable
+  sizes:
+  - value: 1100000
+    unit: orthographic_word
+    source: Mittelhochdeutsch-Korpus README
+    note: 'Approximate: the source says rund 1,100,000 word forms.'
+  annotations:
+  - id: lexical
+    type: other
+    tagset_name: Lexical annotation
+    source_ids:
+    - evidence-badw-readme-scope
+  - id: morphology
+    type: morphology
+    source_ids:
+    - evidence-badw-readme-scope
+  - id: morphosyntax
+    type: other
+    tagset_name: Morphosyntactic annotation
+    source_ids:
+    - evidence-badw-readme-scope
+  - id: graphonology
+    type: other
+    tagset_name: Graphonological annotation
+    source_ids:
+    - evidence-badw-readme-scope
+  texts: []
+  source_ids:
+  - evidence-badw-repository
+  - evidence-badw-readme-scope
+  - evidence-badw-readme-version
+  - evidence-badw-readme-license
+  note: Mutable working version reported as the repository default branch; no release date is inferred.
+notes:
+- ReM documentation places MiGraKo material in corpus-rem, and the BAdW publication descends from the same DFG Middle High
+  German Grammar project, but exact release-level identity and the extent of subsequent improvements are not directly established;
+  no overlap edge is asserted.
+- 'This corpus is not merged with corpus-mwb-textarchiv or dictionary-mwb: the trusted MWB records represent a separately
+  named text-archive component and a dictionary, while this resource is the maintained publication of a corpus created for
+  the DFG Middle High German Grammar project.'

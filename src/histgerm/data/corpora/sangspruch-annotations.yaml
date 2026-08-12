@@ -1,0 +1,57 @@
+id: corpus-sangspruch-annotations
+name: SFB1391 B03 AB Sangspruch Annotationen
+description: Archived annotation data for the aesthetic vocabulary of a Middle High German sangspruch text corpus, comprising
+  twelve collaborative annotation rounds, associated guidelines, and corpus and export tables.
+links:
+  citation: https://doi.org/10.5281/zenodo.13378982
+  repository: https://zenodo.org/records/13378982
+sources:
+- id: evidence-sangspruch-zenodo
+  url: https://zenodo.org/api/records/13378982
+  accessed_on: '2026-08-12'
+  supports:
+  - id
+  - name
+  - description
+  - covered_stages
+  - links
+  - access
+  - versions
+  - reviewed_on
+  title: SFB1391 B03 AB Sangspruch Annotationen
+  citation: Braun, Manuel; Staib, Miriam. SFB1391 B03 AB Sangspruch Annotationen. Zenodo. https://doi.org/10.5281/zenodo.13378982
+  quote: The data archived here comprise a total of twelve annotation rounds (as well as the associated guidelines) in which
+    the aesthetic vocabulary of the Middle High German sangspruch was collaboratively annotated as part of subproject B03
+    "Semantics of the Aesthetic in German-Language Literature of the Middle Ages" of SFB 1391 "Other Aesthetics".
+  note: Public repository metadata for identity, Middle High German scope, corpus character, publication date, DOI, and metadata-page
+    availability. No files were retrieved.
+reviewed_on: '2026-08-12'
+covered_stages:
+- mhg
+access:
+  availability:
+  - described
+  model_training: unclear
+  original_data_redistribution: unclear
+  processed_data_redistribution: unclear
+  trained_weight_publication: unclear
+  note: The public metadata describes the archive. Download availability and all legal permissions remain intentionally unasserted
+    because no payload or legal source was inspected.
+  source_ids:
+  - evidence-sangspruch-zenodo
+versions:
+- id: zenodo-13378982
+  released_on: '2024-08-27'
+  links:
+    record: https://zenodo.org/records/13378982
+  availability:
+  - described
+  annotations: []
+  texts: []
+  source_ids:
+  - evidence-sangspruch-zenodo
+  note: The record describes twelve annotation rounds and associated guidelines; metadata alone does not support encoding
+    individual layers or texts.
+notes:
+- The identity is the Zenodo annotation archive itself, not the broader SFB 1391 project; no duplicate or overlap relationship
+  with the Reference Corpus of Middle High German is asserted.

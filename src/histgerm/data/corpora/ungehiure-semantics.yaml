@@ -1,0 +1,78 @@
+id: corpus-ungehiure-semantics
+name: Annotation historische Semantik von mhd. ungehiure
+description: An openly downloadable research dataset containing annotated search results for ungehiure from the Middle High
+  German Conceptual Database, a corpus overview and text list, CATMA annotation exports, and derived analyses.
+links:
+  record: https://zenodo.org/records/13305364
+  doi: https://doi.org/10.5281/zenodo.13305364
+sources:
+- id: zenodo-record
+  url: https://zenodo.org/api/records/13305364
+  accessed_on: '2026-08-12'
+  supports:
+  - id
+  - name
+  - description
+  - links.record
+  - links.doi
+  - access
+  - access.availability
+  - access.license
+  - versions
+  - versions.released_on
+  - versions.availability
+  - versions.links
+  - reviewed_on
+  title: Zenodo record 13305364
+  quote: The dataset contains all data used as a basis for the article Marion Darilek, Ungeheuerlich.
+  note: Public registry metadata for identity, resource type, Version 1.0, publication date, DOI, open file availability,
+    and the cc-by-4.0 license identifier. Files were not downloaded.
+- id: zenodo-documentation
+  url: https://zenodo.org/api/records/13305364/files/Dokumentation_Datensatz_Annotationen_ungehiure_DEU_ENG.txt/content
+  accessed_on: '2026-08-12'
+  supports:
+  - description
+  - covered_stages
+  - versions
+  - versions.annotations
+  - versions.texts
+  title: Documentation data set annotations ungehiure
+  quote: the annotated text (the search results for ‘ungehiure’ in the “Mittelhochdeutsche Begriffsdatenbank” [“Middle High
+    German Conceptual Database”, short MHDBDB, https://mhdbdb-old.sbg.ac.at/]),
+  note: Small metadata-only documentation file describing corpus content and MHG source scope; no corpus or annotation payload
+    was downloaded.
+reviewed_on: '2026-08-12'
+covered_stages:
+- mhg
+access:
+  availability:
+  - downloadable
+  model_training: unclear
+  original_data_redistribution: unclear
+  processed_data_redistribution: unclear
+  trained_weight_publication: unclear
+  license: CC-BY-4.0
+  note: Zenodo describes the record as open and exposes file download links. The license identifier is recorded, but specific
+    machine-learning and redistribution permissions remain unclear because no legal text was reviewed.
+  source_ids:
+  - zenodo-record
+versions:
+- id: v1-0
+  label: Version 1.0
+  released_on: '2024-08-14'
+  links:
+    record: https://zenodo.org/records/13305364
+    doi: https://doi.org/10.5281/zenodo.13305364
+  license: CC-BY-4.0
+  availability:
+  - downloadable
+  annotations: []
+  texts: []
+  source_ids:
+  - zenodo-record
+  - zenodo-documentation
+  note: Documentation reports an annotated MHDBDB search-result text, a corpus overview and text list, CATMA tag-set and annotation
+    exports, and analyses. Individual payload files were not inspected.
+notes:
+- This resource is a focused research dataset derived from MHDBDB search results for ungehiure; no whole-corpus overlap or
+  identity relationship is asserted.

@@ -1,0 +1,93 @@
+id: corpus-mwb-textarchiv
+name: Digitales Textarchiv des Mittelhochdeutschen Wörterbuchs
+description: A named MWB Online archive component listing source editions for which the MWB offers digital full texts in historically
+  varying PDF, HTML, or XML formats.
+links:
+  homepage: https://mwb.adwmainz.net/exist/apps/mwb/pages/texts/index.html
+  usage_documentation: https://mhdwb-online.de/hinweise.html
+sources:
+- id: evidence-mwb-textarchiv-help
+  url: https://mhdwb-online.de/hinweise.html
+  accessed_on: '2026-08-12'
+  supports:
+  - name
+  - description
+  - links
+  - access
+  - versions
+  - notes
+  title: Mittelhochdeutsches Wörterbuch – Hinweise zur Benutzung
+  quote: 'Digitales Textarchiv Liste aller Quellen, zu denen das MWB digitale Volltexte anbietet. Hierbei handelt es sich
+    aus projekt-historischen Gründen um verschiedene Formate: PDF, HTML oder XML.'
+  note: Canonical description of the archive component, its contents, and varying presentation formats.
+- id: evidence-mwb-textarchiv-index
+  url: https://mwb.adwmainz.net/exist/apps/mwb/pages/texts/index.html
+  accessed_on: '2026-08-12'
+  supports:
+  - name
+  - links.homepage
+  - access
+  - versions
+  title: Textarchiv - Mittelhochdeutsches Wörterbuch
+  quote: Textarchiv Sigle Kurztitel Bibliographische Angabe Textart
+  note: Canonical browsable archive index; linked full-text payloads were not requested.
+- id: evidence-mwb-project-archive
+  url: https://mwb.adwmainz.net/exist/apps/mwb/pages/about.html
+  accessed_on: '2026-08-12'
+  supports:
+  - covered_stages
+  - access
+  - notes
+  title: Projekt - Mittelhochdeutsches Wörterbuch
+  quote: das deutsch-amerikanische Kooperationsprojekt Digitales Mittelhochdeutsche Textarchiv / Digital Middle High German
+    Text Archive, in dem einige Quellentexte für das digitale Volltextarchiv des MWBs digitalisiert wurden, das über diese
+    Seite teilweise öffentlich zugänglich ist.
+  note: Supports Middle High German content and partial public availability while distinguishing the cooperation project from
+    the MWB full-text archive.
+- id: evidence-mwb-corpus-scope
+  url: https://adw-goe.de/en/research/research-projects-within-the-academies-programme/middle-high-german-dictionary/
+  accessed_on: '2026-08-12'
+  supports:
+  - covered_stages
+  - description
+  - notes
+  title: Middle High German Dictionary
+  quote: The dictionary is based on a corpus of philologically reliable editions of all types of texts from the entire period.
+  note: Responsible academy evidence for the Middle High German source-corpus context; it does not equate the full source
+    corpus with the online Textarchiv.
+reviewed_on: '2026-08-12'
+covered_stages:
+- mhg
+access:
+  availability:
+  - described
+  - browsable
+  model_training: unclear
+  original_data_redistribution: unclear
+  processed_data_redistribution: unclear
+  trained_weight_publication: unclear
+  note: The archive index is browsable, and canonical project documentation describes the MWB full-text archive as partly
+    publicly accessible. Available representations vary among PDF, HTML, and XML; no linked payload was inspected. No legal
+    permissions were established.
+  source_ids:
+  - evidence-mwb-textarchiv-help
+  - evidence-mwb-textarchiv-index
+  - evidence-mwb-project-archive
+versions:
+- id: online
+  links:
+    archive_index: https://mwb.adwmainz.net/exist/apps/mwb/pages/texts/index.html
+  availability:
+  - described
+  - browsable
+  annotations: []
+  texts: []
+  source_ids:
+  - evidence-mwb-textarchiv-help
+  - evidence-mwb-textarchiv-index
+  - evidence-mwb-project-archive
+  note: Represents the online archive state reviewed on 2026-08-12; canonical evidence provides no release label or release
+    date.
+notes:
+- This record represents only the separately named Digitales Textarchiv component. It does not identify the complete electronic
+  Belegarchiv, the dictionary's full underlying source corpus, or the separate D-MHGTA cooperation project as the same corpus.

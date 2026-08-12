@@ -1,0 +1,90 @@
+id: corpus-mhg-rubrics
+name: Collection of Middle High German Rubrics in Miscellany Manuscripts 12th-16th centuries
+description: A manually compiled collection of almost 1,432 Middle High German rubrics from 68 miscellany manuscripts, corresponding
+  to more than 800 works.
+links:
+  record: https://zenodo.org/records/3373827
+  doi: https://doi.org/10.5281/zenodo.3373827
+sources:
+- id: evidence-mhg-rubrics-record
+  url: https://zenodo.org/records/3373827
+  accessed_on: '2026-08-12'
+  supports:
+  - name
+  - description
+  - covered_stages
+  - links
+  - reviewed_on
+  - versions
+  title: Collection of Middle High German Rubrics in Miscellany Manuscripts 12th-16th centuries
+  citation: Fernandez Riva, Gustavo (2019). Collection of Middle High German Rubrics in Miscellany Manuscripts 12th-16th centuries,
+    version 1.0. Zenodo. https://doi.org/10.5281/zenodo.3373827
+  quote: This is a collection of Middle High German Rubrics from miscellany manuscripts.
+  note: Creator-deposited public HTML metadata establishes identity, stage, description, DOI, version, and publication date.
+- id: evidence-mhg-rubrics-files
+  url: https://zenodo.org/records/3373827
+  accessed_on: '2026-08-12'
+  supports:
+  - access.availability
+  - versions.links
+  - versions.availability
+  - versions.annotations
+  title: Collection of Middle High German Rubrics in Miscellany Manuscripts 12th-16th centuries
+  quote: Titles are in paleographic transcription (without abbreviations) and lemmatised.
+  note: The public record page lists three downloadable CSV files and describes lemmatized rubric titles; no file payload
+    was downloaded.
+- id: evidence-mhg-rubrics-license
+  url: https://zenodo.org/records/3373827
+  accessed_on: '2026-08-12'
+  supports:
+  - access.license
+  - versions.license
+  title: Collection of Middle High German Rubrics in Miscellany Manuscripts 12th-16th centuries
+  quote: Creative Commons Attribution 4.0 International
+  note: Repository license label and canonical URL only; no schema-specific legal permission is inferred.
+reviewed_on: '2026-08-12'
+covered_stages:
+- mhg
+access:
+  availability:
+  - described
+  - downloadable
+  model_training: unclear
+  original_data_redistribution: unclear
+  processed_data_redistribution: unclear
+  trained_weight_publication: unclear
+  license: Creative Commons Attribution 4.0 International
+  license_url: https://creativecommons.org/licenses/by/4.0/legalcode
+  note: Zenodo labels the record CC BY 4.0, but the four modeled permissions remain unclear because no direct permission text
+    was reviewed.
+  source_ids:
+  - evidence-mhg-rubrics-files
+  - evidence-mhg-rubrics-license
+versions:
+- id: v1-0
+  label: '1.0'
+  released_on: '2019-08-21'
+  links:
+    record: https://zenodo.org/records/3373827
+    doi: https://doi.org/10.5281/zenodo.3373827
+  license: Creative Commons Attribution 4.0 International
+  availability:
+  - described
+  - downloadable
+  annotations:
+  - id: lemmatized-rubric-titles
+    type: lemma
+    source_ids:
+    - evidence-mhg-rubrics-files
+    note: The record states that titles in rubrics.csv are provided in paleographic transcription without abbreviations and
+      are lemmatized.
+  texts: []
+  source_ids:
+  - evidence-mhg-rubrics-record
+  - evidence-mhg-rubrics-files
+  - evidence-mhg-rubrics-license
+  note: The record lists rubrics.csv, works.csv, and manuscripts.csv. No dataset file was downloaded.
+notes:
+- The record describes almost 1,432 rubrics from 68 manuscripts and more than 800 works; these approximate counts are not
+  represented as exact structured sizes.
+- Only Middle High German is verified. The 12th-16th-century title span is not treated as explicit Early New High German coverage.

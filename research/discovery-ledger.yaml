@@ -1,5 +1,5 @@
 schema_version: 1
-revision: 0
+revision: 71
 initialized_on: '2026-08-12'
 updated_on: '2026-08-12'
 sweeps:
@@ -13,10 +13,446 @@ sweeps:
 - id: corpus-mhg
   category: corpus
   stage: mhg
-  state: not_started
-  pass_count: 0
-  consecutive_empty_passes: 0
-  passes: []
+  state: complete
+  pass_count: 5
+  consecutive_empty_passes: 2
+  last_run_on: '2026-08-12'
+  passes:
+  - id: pass-corpus-mhg-2026-08-12-1
+    run_on: '2026-08-12'
+    queries:
+    - query: Mittelhochdeutsch MHG Korpus Textkorpus Textsammlung Sprachdaten
+      language: de
+      channel: web_de
+      source_urls:
+      - https://search.brave.com/search?q=Mittelhochdeutsch%20MHG%20Korpus%20Textkorpus%20Textsammlung%20Sprachdaten%26source%3Dweb
+      completed: true
+      note: Brave returned relevant German results including ReM and MHDBDB after
+        DuckDuckGo challenged automation, Bing returned unrelated results, and Google
+        required consent state.
+    - query: Middle High German MHG corpus text collection dataset language data
+      language: en
+      channel: web_en
+      source_urls:
+      - https://search.brave.com/search?q=Middle%20High%20German%20MHG%20corpus%20%22text%20collection%22%20dataset%20%22language%20data%22%26source%3Dweb
+      completed: true
+      note: Brave returned relevant English results including ReM and MHDBDB.
+    - query: Middle High German MHG corpus text collection dataset language data
+      language: en
+      channel: clarin
+      source_urls:
+      - https://vlo.clarin.eu/search?query=Middle%20High%20German%20MHG%20corpus%20%22text%20collection%22%20dataset%20%22language%20data%22
+      - https://www.clarin.si/repository/xmlui/discover?query=Middle%20High%20German%20MHG%20corpus%20%22text%20collection%22%20dataset%20%22language%20data%22
+      - https://search.brave.com/search?q=site%3Avlo.clarin.eu%20%22Middle%20High%20German%22%26source%3Dweb
+      completed: true
+      note: VLO and a relevant CLARIN center were covered through public alternate
+        interfaces; indexed VLO records and CLARIN.SI results were inspected without
+        cookies.
+    - query: Middle High German MHG corpus
+      language: en
+      channel: olac
+      source_urls:
+      - https://web.archive.org/web/20250224055045id_/http://www.language-archives.org/language/gmh
+      - https://web.archive.org/cdx/search/cdx?url=www.language-archives.org/language/gmh%26output%3Djson
+      completed: true
+      note: The live OLAC endpoint timed out at its only public IP; the public archived
+        OLAC gmh catalog was inspected and contained no corpus listings.
+    - query: '"Middle High German" OR Mittelhochdeutsch'
+      language: en
+      channel: zenodo
+      source_urls:
+      - https://zenodo.org/api/records?q=%22Middle%20High%20German%22%20OR%20Mittelhochdeutsch%26size%3D25
+      completed: true
+      note: Inspected the first 25 public metadata records and preserved all corpus-like
+        leads.
+    - query: Mittelhochdeutsch MHG Korpus Textkorpus Textsammlung Sprachdaten
+      language: de
+      channel: institutional
+      source_urls:
+      - https://linguistics.rub.de/rem/index.html
+      - https://mhdbdb.plus.ac.at/
+      - https://ipchg.iu.edu/index.html
+      - https://www.creta.uni-stuttgart.de/cute/datenmaterial/korpus/index.html
+      completed: true
+      note: Inspected responsible institutional and canonical project pages represented
+        by the discovered leads.
+    - query: Mittelhochdeutsch OR "Middle High German"
+      language: en
+      channel: github
+      source_urls:
+      - https://api.github.com/search/repositories?q=Mittelhochdeutsch%20OR%20%22Middle%20High%20German%22%26per_page%3D50
+      completed: true
+      note: Inspected 30 public repository metadata hits and preserved corpus-like
+        leads.
+    - query: Middle High German MHG corpus dataset
+      language: en
+      channel: huggingface
+      source_urls:
+      - https://huggingface.co/api/datasets?search=Middle%20High%20German%26limit%3D25
+      - https://huggingface.co/api/datasets?search=mittelhochdeutsch%26limit%3D50
+      - https://huggingface.co/api/datasets?search=medieval%20german%26limit%3D50
+      completed: true
+      note: No relevant public Middle High German corpus dataset was returned; medieval
+        German results were unrelated gated image datasets.
+    candidate_ids:
+    - candidate-corpus-rem
+    - candidate-corpus-mhdbdb
+    - candidate-corpus-ipchg-mhg
+    - candidate-corpus-hgb
+    - candidate-corpus-mhg-treebank
+    - candidate-corpus-mhg4sna
+    - candidate-corpus-creta-parzival
+    - candidate-corpus-bomiko-migrako
+    - candidate-corpus-koeln-bonn-mitteldeutsch
+    - candidate-corpus-mhdbdb-postdata
+    - candidate-corpus-german-sermons
+    - candidate-corpus-tueba-ddc
+    - candidate-corpus-mwb-source
+    - candidate-corpus-mhg-rubrics
+    - candidate-corpus-mhg-schwertnamen
+    - candidate-corpus-ungehiure-semantics
+    - candidate-corpus-mhg-schemen
+    - candidate-corpus-handschriftencensus-network
+    - candidate-corpus-medieval-ner
+    - candidate-corpus-cltk-mhg-texts
+    - candidate-corpus-badw-mhg
+    - candidate-corpus-mhdtexts
+    new_candidate_ids:
+    - candidate-corpus-mhdbdb
+    - candidate-corpus-ipchg-mhg
+    - candidate-corpus-hgb
+    - candidate-corpus-mhg-treebank
+    - candidate-corpus-mhg4sna
+    - candidate-corpus-creta-parzival
+    - candidate-corpus-bomiko-migrako
+    - candidate-corpus-koeln-bonn-mitteldeutsch
+    - candidate-corpus-mhdbdb-postdata
+    - candidate-corpus-german-sermons
+    - candidate-corpus-tueba-ddc
+    - candidate-corpus-mwb-source
+    - candidate-corpus-mhg-rubrics
+    - candidate-corpus-mhg-schwertnamen
+    - candidate-corpus-ungehiure-semantics
+    - candidate-corpus-mhg-schemen
+    - candidate-corpus-handschriftencensus-network
+    - candidate-corpus-medieval-ner
+    - candidate-corpus-cltk-mhg-texts
+    - candidate-corpus-badw-mhg
+    - candidate-corpus-mhdtexts
+    complete: true
+    note: Seed and independent bilingual/channel sweep; all 22 referenced candidates
+      have final dispositions.
+  - id: pass-corpus-mhg-2026-08-12-2
+    run_on: '2026-08-12'
+    queries:
+    - query: Mittelhochdeutsch MHG Korpus Textkorpus Textsammlung Sprachdaten Download
+        Annotation
+      language: de
+      channel: web_de
+      source_urls:
+      - https://search.brave.com/search?q=Mittelhochdeutsch%20MHG%20Korpus%20Textkorpus%20Textsammlung%20Sprachdaten%20Download%20Annotation%26source%3Dweb
+      completed: true
+      note: Relevant German results inspected.
+    - query: Middle High German MHG corpus text collection dataset language data download
+        annotation
+      language: en
+      channel: web_en
+      source_urls:
+      - https://search.brave.com/search?q=Middle%20High%20German%20MHG%20corpus%20%22text%20collection%22%20dataset%20%22language%20data%22%20download%20annotation%26source%3Dweb
+      completed: true
+      note: Relevant English results inspected.
+    - query: site:vlo.clarin.eu "Middle High German" corpus annotation
+      language: en
+      channel: clarin
+      source_urls:
+      - https://search.brave.com/search?q=site%3Avlo.clarin.eu%20%22Middle%20High%20German%22%20corpus%20annotation%26source%3Dweb
+      - https://www.clarin.si/repository/xmlui/discover?query=Middle%20High%20German
+      completed: true
+      note: VLO indexed records and CLARIN.SI center search inspected via public interfaces.
+    - query: Middle High German MHG corpus
+      language: en
+      channel: olac
+      source_urls:
+      - https://web.archive.org/cdx/search/cdx?url=www.language-archives.org/language/gmh%26output%3Djson
+      completed: true
+      note: Public OLAC archive metadata rechecked; no corpus listing.
+    - query: '"Middle High German" corpus dataset annotation'
+      language: en
+      channel: zenodo
+      source_urls:
+      - https://zenodo.org/api/records?q=%22Middle%20High%20German%22%20corpus%20dataset%20annotation%26size%3D25
+      completed: true
+      note: First 25 public metadata records inspected; four new corpus-like leads
+        preserved.
+    - query: '"Middle High German" corpus university project'
+      language: en
+      channel: institutional
+      source_urls:
+      - https://search.brave.com/search?q=%22Middle%20High%20German%22%20corpus%20university%20project%26source%3Dweb
+      completed: true
+      note: Institutional project results inspected; three new leads preserved.
+    - query: '"Middle High German" corpus dataset'
+      language: en
+      channel: github
+      source_urls:
+      - https://api.github.com/search/repositories?q=%22Middle%20High%20German%22%20corpus%20dataset%26per_page%3D50
+      completed: true
+      note: Public repository search returned no additional repositories.
+    - query: Middle High German MHG corpus dataset
+      language: en
+      channel: huggingface
+      source_urls:
+      - https://huggingface.co/api/datasets?search=Middle%20High%20German%26limit%3D25%26full%3Dfalse
+      completed: true
+      note: No matching datasets returned.
+    candidate_ids:
+    - candidate-corpus-formulaic-legal
+    - candidate-corpus-sangspruch-annotations
+    - candidate-corpus-suesse-annotations
+    - candidate-corpus-mhdbdb-textseries
+    - candidate-corpus-dmgh-interlinked
+    - candidate-corpus-mhg-intensifiers
+    - candidate-corpus-altdeutsche-originalurkunden
+    new_candidate_ids:
+    - candidate-corpus-formulaic-legal
+    - candidate-corpus-sangspruch-annotations
+    - candidate-corpus-suesse-annotations
+    - candidate-corpus-mhdbdb-textseries
+    - candidate-corpus-dmgh-interlinked
+    - candidate-corpus-mhg-intensifiers
+    - candidate-corpus-altdeutsche-originalurkunden
+    complete: true
+    note: Second full bilingual/channel pass; seven new leads found and dispositioned,
+      resetting the empty-pass sequence.
+  - id: pass-corpus-mhg-2026-08-12-3
+    run_on: '2026-08-12'
+    queries:
+    - query: Mittelhochdeutsch MHG Korpus Textkorpus Textsammlung Sprachdaten Version
+        Veröffentlichung
+      language: de
+      channel: web_de
+      source_urls:
+      - https://search.yahoo.com/search?p=Mittelhochdeutsch%20MHG%20Korpus%20Textkorpus%20Textsammlung%20Sprachdaten%20Version%20Ver%C3%B6ffentlichung
+      completed: true
+      note: Yahoo completed the exact German query without relevant new results; challenged
+        or unrelated provider responses were not counted.
+    - query: Middle High German MHG corpus text collection dataset language data release
+        repository
+      language: en
+      channel: web_en
+      source_urls:
+      - https://search.yahoo.com/search?p=Middle%20High%20German%20MHG%20corpus%20%22text%20collection%22%20dataset%20%22language%20data%22%20release%20repository
+      completed: true
+      note: Yahoo returned relevant ReM results; no additional lead beyond repository-channel
+        findings.
+    - query: site:vlo.clarin.eu "Middle High German" dataset
+      language: en
+      channel: clarin
+      source_urls:
+      - https://search.brave.com/search?q=site%3Avlo.clarin.eu%20%22Middle%20High%20German%22%20dataset%26source%3Dweb
+      completed: true
+      note: Indexed VLO records inspected through alternate public interface.
+    - query: Middle High German MHG corpus
+      language: en
+      channel: olac
+      source_urls:
+      - https://web.archive.org/cdx/search/cdx?url=www.language-archives.org/language/gmh%26output%3Djson
+      completed: true
+      note: Archived OLAC catalog metadata rechecked.
+    - query: '"Middle High German" release repository'
+      language: en
+      channel: zenodo
+      source_urls:
+      - https://zenodo.org/api/records?q=%22Middle%20High%20German%22%20release%20repository%26size%3D25
+      completed: true
+      note: Public metadata inspected; two new corpus-like leads preserved and dispositioned.
+    - query: '"Mittelhochdeutsch" Korpus Universität Daten'
+      language: de
+      channel: institutional
+      source_urls:
+      - https://tcdh.uni-trier.de/en/projekt/digital-middle-high-german-inter-linked
+      - https://tcdh.uni-trier.de/en/projekt/digitization-corpus-altdeutscher-originalurkunden
+      completed: true
+      note: Responsible institutional project results inspected directly.
+    - query: '"Middle High German" texts'
+      language: en
+      channel: github
+      source_urls:
+      - https://api.github.com/search/repositories?q=%22Middle%20High%20German%22%20texts%26per_page%3D50
+      completed: true
+      note: Public repository hits inspected; POS benchmark lead dispositioned.
+    - query: Middle High German MHG corpus dataset
+      language: en
+      channel: huggingface
+      source_urls:
+      - https://huggingface.co/api/datasets?search=Middle%20High%20German%26limit%3D50%26full%3Dfalse
+      completed: true
+      note: No matching datasets returned.
+    candidate_ids:
+    - candidate-corpus-mhg-proto-canon
+    - candidate-corpus-der-borte
+    - candidate-corpus-mhd-pos-benchmark
+    new_candidate_ids:
+    - candidate-corpus-mhg-proto-canon
+    - candidate-corpus-der-borte
+    - candidate-corpus-mhd-pos-benchmark
+    complete: true
+    note: Third full pass found and dispositioned three new leads, resetting the empty-pass
+      sequence.
+  - id: pass-corpus-mhg-2026-08-12-4
+    run_on: '2026-08-12'
+    queries:
+    - query: Mittelhochdeutsch MHG Korpus Textkorpus Textsammlung Sprachdaten Version
+        Veröffentlichung
+      language: de
+      channel: web_de
+      source_urls:
+      - https://search.yahoo.com/search?p=Mittelhochdeutsch%20MHG%20Korpus%20Textkorpus%20Textsammlung%20Sprachdaten%20Version%20Ver%C3%B6ffentlichung
+      completed: true
+      note: Exact German query completed; no new relevant leads.
+    - query: Middle High German MHG corpus text collection dataset language data release
+        repository
+      language: en
+      channel: web_en
+      source_urls:
+      - https://search.yahoo.com/search?p=Middle%20High%20German%20MHG%20corpus%20%22text%20collection%22%20dataset%20%22language%20data%22%20release%20repository
+      completed: true
+      note: Relevant known results only.
+    - query: Middle High German MHG corpus dataset
+      language: en
+      channel: clarin
+      source_urls:
+      - https://www.clarin.si/repository/xmlui/discover?query=Middle%20High%20German
+      completed: true
+      note: Relevant CLARIN center search repeated after VLO interface reset; no new
+        lead.
+    - query: Middle High German MHG corpus
+      language: en
+      channel: olac
+      source_urls:
+      - https://web.archive.org/cdx/search/cdx?url=www.language-archives.org/language/gmh%26output%3Djson
+      completed: true
+      note: Archived OLAC catalog unchanged and contained no corpus listing.
+    - query: '"Middle High German" release repository'
+      language: en
+      channel: zenodo
+      source_urls:
+      - https://zenodo.org/api/records?q=%22Middle%20High%20German%22%20release%20repository%26size%3D25
+      completed: true
+      note: Only already dispositioned leads returned.
+    - query: '"Mittelhochdeutsch" Korpus Universität Daten'
+      language: de
+      channel: institutional
+      source_urls:
+      - https://tcdh.uni-trier.de/en/projekt/digital-middle-high-german-inter-linked
+      completed: true
+      note: Institutional source rechecked; already dispositioned lead only.
+    - query: '"Middle High German" texts'
+      language: en
+      channel: github
+      source_urls:
+      - https://api.github.com/search/repositories?q=%22Middle%20High%20German%22%20texts%26per_page%3D50
+      completed: true
+      note: Only already dispositioned or non-corpus repositories returned.
+    - query: Middle High German MHG corpus dataset
+      language: en
+      channel: huggingface
+      source_urls:
+      - https://huggingface.co/api/datasets?search=Middle%20High%20German%26limit%3D50%26full%3Dfalse
+      completed: true
+      note: No matching datasets returned.
+    candidate_ids:
+    - candidate-corpus-rem
+    - candidate-corpus-mhdbdb
+    - candidate-corpus-mhg4sna
+    - candidate-corpus-ungehiure-semantics
+    - candidate-corpus-formulaic-legal
+    - candidate-corpus-mhg-rubrics
+    - candidate-corpus-mhg-proto-canon
+    - candidate-corpus-der-borte
+    - candidate-corpus-cltk-mhg-texts
+    - candidate-corpus-mhd-pos-benchmark
+    new_candidate_ids: []
+    complete: true
+    note: First consecutive complete pass with no new candidates.
+  - id: pass-corpus-mhg-2026-08-12-5
+    run_on: '2026-08-12'
+    queries:
+    - query: Mittelhochdeutsch MHG Korpus Textkorpus Textsammlung Sprachdaten Version
+        Veröffentlichung
+      language: de
+      channel: web_de
+      source_urls:
+      - https://search.yahoo.com/search?p=Mittelhochdeutsch%20MHG%20Korpus%20Textkorpus%20Textsammlung%20Sprachdaten%20Version%20Ver%C3%B6ffentlichung
+      completed: true
+      note: Exact German query repeated with no new relevant leads.
+    - query: Middle High German MHG corpus text collection dataset language data release
+        repository
+      language: en
+      channel: web_en
+      source_urls:
+      - https://search.yahoo.com/search?p=Middle%20High%20German%20MHG%20corpus%20%22text%20collection%22%20dataset%20%22language%20data%22%20release%20repository
+      completed: true
+      note: Known relevant results only.
+    - query: Middle High German MHG corpus dataset
+      language: en
+      channel: clarin
+      source_urls:
+      - https://www.clarin.si/repository/xmlui/discover?query=Middle%20High%20German
+      completed: true
+      note: CLARIN center search repeated; no new lead.
+    - query: Middle High German MHG corpus
+      language: en
+      channel: olac
+      source_urls:
+      - https://web.archive.org/cdx/search/cdx?url=www.language-archives.org/language/gmh%26output%3Djson
+      completed: true
+      note: Archived OLAC catalog metadata unchanged.
+    - query: '"Middle High German" release repository'
+      language: en
+      channel: zenodo
+      source_urls:
+      - https://zenodo.org/api/records?q=%22Middle%20High%20German%22%20release%20repository%26size%3D25
+      completed: true
+      note: Only already dispositioned leads returned.
+    - query: '"Mittelhochdeutsch" Korpus Universität Daten'
+      language: de
+      channel: institutional
+      source_urls:
+      - https://tcdh.uni-trier.de/en/projekt/digital-middle-high-german-inter-linked
+      completed: true
+      note: Institutional source unchanged.
+    - query: '"Middle High German" texts'
+      language: en
+      channel: github
+      source_urls:
+      - https://api.github.com/search/repositories?q=%22Middle%20High%20German%22%20texts%26per_page%3D50
+      completed: true
+      note: Only already dispositioned or non-corpus repositories returned.
+    - query: site:huggingface.co/datasets "Middle High German" corpus
+      language: en
+      channel: huggingface
+      source_urls:
+      - https://search.yahoo.com/search?p=site%3Ahuggingface.co%2Fdatasets%20%22Middle%20High%20German%22%20corpus
+      completed: true
+      note: Covered through an alternate public interface after the Hub API reset;
+        the only dataset result was unrelated FineWeb2, so no MHG corpus lead was
+        added.
+    candidate_ids:
+    - candidate-corpus-rem
+    - candidate-corpus-mhdbdb
+    - candidate-corpus-mhg4sna
+    - candidate-corpus-ungehiure-semantics
+    - candidate-corpus-formulaic-legal
+    - candidate-corpus-mhg-rubrics
+    - candidate-corpus-mhg-proto-canon
+    - candidate-corpus-der-borte
+    - candidate-corpus-cltk-mhg-texts
+    - candidate-corpus-mhd-pos-benchmark
+    new_candidate_ids: []
+    complete: true
+    note: Second consecutive complete pass with no new candidates; sweep completion
+      threshold reached.
 - id: corpus-enhg
   category: corpus
   stage: enhg
@@ -67,51 +503,795 @@ sweeps:
   consecutive_empty_passes: 0
   passes: []
 candidates:
+- id: candidate-corpus-altdeutsche-originalurkunden
+  name: Corpus der altdeutschen Originalurkunden bis zum Jahr 1300
+  category: corpus
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-12'
+  discovery_urls:
+  - https://tcdh.uni-trier.de/en/projekt/digitization-corpus-altdeutscher-originalurkunden
+  discovery_stage_claims:
+  - mhg
+  disposition: added
+  resource_id: corpus-altdeutsche-originalurkunden
+  disposition_reason: Added as a distinct corpus. Canonical TCDH evidence identifies
+    the Corpus der altdeutschen Originalurkunden bis zum Jahr 1300 and explicitly
+    describes it as central to Middle High German research; OHG and ENHG are not claimed.
+    Its unversioned online edition was publicly browsable on 2026-08-12, while the
+    latest visible functionality-news item is dated 2007-06-05 and is not misrepresented
+    as a release. No identity match with corpus-rem was established, all legal permissions
+    remain unclear, and no payload was retrieved.
+  evidence_gaps:
+  - The canonical pages do not state a numbered release, release label, or release
+    date; the proposed version therefore represents the live unversioned online edition
+    and does not convert the 2007 functionality-news date into a release date.
+  - No canonical statement directly establishes OHG or ENHG coverage; only MHG is
+    claimed from the explicit project statement.
+  - No canonical legal terms directly support any modeled reuse or training permission,
+    so all four permissions remain unclear.
+  - Individual corpus texts and annotation layers were not enumerated from the metadata-only
+    pages and no corpus payload was accessed.
+  refreshed_existing: false
+- id: candidate-corpus-badw-mhg
+  name: Mittelhochdeutsch-Korpus
+  category: corpus
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-12'
+  discovery_urls:
+  - https://github.com/badw-dh/Mittelhochdeutsch-Korpus
+  discovery_stage_claims:
+  - mhg
+  disposition: added
+  resource_id: corpus-badw-mhg
+  disposition_reason: Add corpus-badw-mhg as the separately published and maintained
+    Mittelhochdeutsch-Korpus. Canonical repository metadata and documentation directly
+    establish Middle High German scope, corpus size, annotations, a mutable working
+    version, and public browse/download access. It is not merged by title with corpus-mwb-textarchiv
+    or dictionary-mwb. ReM documents incorporation of MiGraKo material, but the reviewed
+    sources do not directly establish release-level identity or the extent of later
+    BAdW improvements, so neither a duplicate disposition nor a structured overlap
+    is asserted.
+  evidence_gaps:
+  - The reviewed canonical sources do not directly equate the current maintained BAdW
+    Mittelhochdeutsch-Korpus publication with the exact MiGraKo material incorporated
+    into corpus-rem, and they do not establish how post-project improvements compare
+    release by release; no duplicate or structured overlap is asserted.
+  - No canonical source establishes identity or a structured overlap with retained
+    corpus-mwb-textarchiv or any other retained corpus. The shared Middle High German
+    wording is not used as identity evidence; dictionary-mwb remains a different resource
+    category and project component.
+  - No exact release date or currently latest fixed-edition branch was established.
+    The proposed version represents only the mutable arbeitsfassung reported as the
+    repository default branch.
+  - No direct statement establishes model-training, original-data-redistribution,
+    processed-data-redistribution, or trained-weight-publication permission; all four
+    remain unclear despite the CC BY-SA 4.0 label.
+  - Per-text dates, dialects, witnesses, editions, and annotation assignments were
+    not established from the safely retrieved metadata, so no CorpusText records are
+    proposed and no corpus payload or linked PDF was requested.
+  refreshed_existing: false
+- id: candidate-corpus-bomiko-migrako
+  name: Korpus der Mittelhochdeutschen Grammatik (MiGraKo)
+  category: corpus
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-12'
+  discovery_urls:
+  - https://chatgpt.com/share/6a7c38da-66a4-83eb-af19-9f2ee531977d
+  discovery_stage_claims:
+  - mhg
+  disposition: duplicate
+  resource_id: corpus-rem
+  disposition_reason: Duplicate of trusted corpus-rem at corpus-inventory granularity.
+    Canonical ReM documentation establishes that BoMiKo was the predecessor from which
+    MiGraKo emerged and that MiGraKo -G groups are incorporated into ReM. The candidate
+    label therefore denotes a predecessor-successor sequence whose represented corpus
+    material is already covered by corpus-rem, not an independent additional corpus
+    record.
+  refreshed_existing: false
+- id: candidate-corpus-cltk-mhg-texts
+  name: Reference Corpus of Middle High German
+  category: corpus
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-12'
+  discovery_urls:
+  - https://github.com/cltk/middle_high_german_texts
+  discovery_stage_claims:
+  - mhg
+  disposition: duplicate
+  resource_id: corpus-rem
+  disposition_reason: Duplicate of trusted corpus-rem. The CLTK repository README
+    identifies its target as the Referenzkorpus Mittelhochdeutsch, says the corpus
+    is unchanged, and describes the repository as parsing code rather than an independent
+    corpus. MHG scope is explicit. GitHub exposes no repository release or tag; its
+    latest revision is commit 363cd475840b4b9de8e0fdcd8269c8022d204dbf from 2019-09-23.
+    The underlying ReM corpus's latest published release is version 2.1 dated 2024-10-28.
+  refreshed_existing: false
+- id: candidate-corpus-creta-parzival
+  name: Parzival
+  category: corpus
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-12'
+  discovery_urls:
+  - https://chatgpt.com/share/6a7c38da-66a4-83eb-af19-9f2ee531977d
+  - https://www.creta.uni-stuttgart.de/cute/datenmaterial/korpus/index.html
+  - https://www.creta.uni-stuttgart.de/cute/datenmaterial/index.html
+  discovery_stage_claims:
+  - mhg
+  disposition: added
+  resource_id: corpus-creta-parzival
+  disposition_reason: Add corpus-creta-parzival as a distinct, canonically documented
+    Middle High German Parzival subcorpus with downloadable version-1 entity annotations
+    for books 3–6. The shared work title alone does not establish duplication of any
+    trusted corpus; edition and witness identity remain unresolved.
+  evidence_gaps:
+  - The canonical pages do not identify the textual edition or witness used for the
+    Parzival subcorpus, so overlap with corpus-rem, corpus-mhdbdb, corpus-ipchg, corpus-hgb,
+    or corpus-mhg4sna cannot be established.
+  - No reviewed canonical terms or license directly establish any modeled legal permission.
+  - The canonical pages do not state the required corpus-text dialect, so the proposed
+    version does not enumerate a CorpusText object.
+  refreshed_existing: false
+- id: candidate-corpus-der-borte
+  name: '''Der Borte'' Dietrichs von der Glezze - Mittelhochdeutscher Text mit neuhochdeutscher
+    Übersetzung'
+  category: corpus
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-12'
+  discovery_urls:
+  - https://zenodo.org/records/20626546
+  discovery_stage_claims:
+  - mhg
+  disposition: added
+  resource_id: corpus-der-borte
+  disposition_reason: Add corpus-der-borte as a schema-valid single-text corpus resource.
+    Zenodo metadata explicitly identifies its edition text as Middle High German and
+    describes structured CSV/XLSX data with translations and commentary. The proposal
+    omits a CorpusText rather than guessing mandatory dialect and date fields; no
+    payload was retrieved and legal permissions remain unclear.
+  evidence_gaps:
+  - The metadata does not explicitly state the text's dialect or date, both required
+    for a CorpusText object, so the proposed version does not enumerate the single
+    text.
+  - The CSV and XLSX payloads were not retrieved, so row counts, file-internal structure,
+    and the extent of the grammatical and semantic commentary remain unverified.
+  - No reviewed source directly states model-training, original-data-redistribution,
+    processed-data-redistribution, or trained-weight-publication permission; all four
+    fields remain unclear.
+  refreshed_existing: false
+- id: candidate-corpus-dmgh-interlinked
+  name: Digital Middle High German Inter-Linked
+  category: corpus
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-12'
+  discovery_urls:
+  - https://tcdh.uni-trier.de/en/projekt/digital-middle-high-german-inter-linked
+  discovery_stage_claims:
+  - mhg
+  disposition: added
+  resource_id: corpus-dmgh-interlinked
+  disposition_reason: Add as corpus-dmgh-interlinked. Canonical TCDH documentation
+    explicitly establishes a corpus-like collection of Middle High German texts, TEI/XML
+    digitization, and separate historical interfaces. MWB documentation shows that
+    some D-MHGTA source texts contributed to corpus-mwb-textarchiv, supporting overlap
+    but not duplicate identity. MHDBDB is separately identified as a Salzburg semantic
+    corpus and is not merged by shared MHG/TEI characteristics. The current linked
+    corpus endpoint remains unverified because certificate validation failed, and
+    no payload was retrieved.
+  evidence_gaps:
+  - The linked project corpus site could not be inspected safely because its HTTPS
+    endpoint failed hostname certificate validation; current corpus-interface availability
+    and current browsability therefore remain unverified.
+  - No fixed corpus release label, exact release date, complete text inventory, per-text
+    metadata, or annotation-layer taxonomy was established from accessible canonical
+    metadata.
+  - MWB documentation establishes that some D-MHGTA source texts were digitized for
+    the MWB digital full-text archive, but it does not identify the exact texts or
+    establish that D-MHGTA and corpus-mwb-textarchiv are identical; only corpus-level
+    overlap is recorded.
+  - The reviewed MHDBDB institutional metadata establishes a separately identified
+    Salzburg corpus but does not establish whether its collection overlaps D-MHGTA
+    at text level.
+  - No direct license or terms establish model-training, original-data redistribution,
+    processed-data redistribution, or trained-weight-publication permission; all four
+    permissions remain unclear.
+  refreshed_existing: false
+- id: candidate-corpus-formulaic-legal
+  name: Quantifying Formulaic Flexibility of Middle High German Legal Texts
+  category: corpus
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-12'
+  discovery_urls:
+  - https://zenodo.org/records/8141830
+  discovery_stage_claims:
+  - mhg
+  disposition: blocked
+  disposition_reason: 'Blocked: the supplied Zenodo candidate is a thesis record about
+    Middle High German legal texts, not sufficient evidence for a separately released
+    corpus or its latest release.'
+  evidence_gaps:
+  - The supplied record establishes a master's thesis rather than a separately released
+    corpus; canonical or primary evidence establishing corpus identity and a latest
+    corpus release was not available in the safe metadata, and the sole listed file
+    is a PDF payload that policy prohibits downloading.
+  refreshed_existing: false
+- id: candidate-corpus-german-sermons
+  name: Diachronic Corpus of German Sermons
+  category: corpus
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-12'
+  discovery_urls:
+  - https://chatgpt.com/share/6a7c38da-66a4-83eb-af19-9f2ee531977d
+  discovery_stage_claims:
+  - mhg
+  disposition: blocked
+  disposition_reason: 'Blocked: the institutional record establishes a 2016 presentation
+    about a German sermon corpus under compilation, but its HTML metadata does not
+    explicitly establish HistGerm stage coverage or a released/current corpus, and
+    the linked presentation PDF was not retrieved under the no-payload policy.'
+  evidence_gaps:
+  - The institutional HTML record describes a 2016 presentation and says the corpus
+    was being compiled; it does not establish a released corpus, a current project
+    status, or corpus-data availability.
+  - The abstract names Old High German, Middle High German, and Early New High German
+    only while contrasting prior scholarship; it does not explicitly state that the
+    described corpus contains texts from any of those stages, so no HistGerm stage
+    can be verified.
+  - The linked accepted-version PDF is a third-party payload and was not retrieved
+    under the no-payload rule; no separate canonical project page, repository manifest,
+    or metadata-only release record establishing stage coverage and availability was
+    identified.
+  refreshed_existing: false
+- id: candidate-corpus-handschriftencensus-network
+  name: Handschriftencensus data for Network of Shared Manuscript Transmission
+  category: corpus
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-12'
+  discovery_urls:
+  - https://zenodo.org/records/3402483
+  discovery_stage_claims:
+  - mhg
+  disposition: blocked
+  disposition_reason: The canonical Zenodo record directly supports MHG relevance
+    but describes nodes and edges for manuscript-transmission network analysis, not
+    a textual corpus. Category corpus is therefore unsupported, so no schema-valid
+    Corpus record can be proposed.
+  evidence_gaps:
+  - Canonical metadata does not establish this node-and-edge network-analysis dataset
+    as a textual corpus representable by the HistGerm Corpus schema; no corpus texts,
+    linguistic text collection, or corpus structure are documented.
+  refreshed_existing: false
+- id: candidate-corpus-hgb
+  name: Corpus of Historical German, Bochum
+  category: corpus
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-12'
+  discovery_urls:
+  - https://chatgpt.com/share/6a7c38da-66a4-83eb-af19-9f2ee531977d
+  discovery_stage_claims:
+  - mhg
+  disposition: added
+  resource_id: corpus-hgb
+  disposition_reason: Add as corpus-hgb. Canonical Ruhr University Bochum documentation
+    and the public Zenodo release directly establish a distinct Version 1.0 Middle
+    High German corpus of almost 29,000 ReM-derived tokens annotated with an extended
+    UD scheme. The derivation from trusted corpus-rem is represented explicitly; HGB
+    is not merged with ReM. Legal permissions remain unclear beyond the recorded CC
+    BY-SA 4.0 license label.
+  evidence_gaps:
+  - The retrieved sources do not directly state the schema-specific permissions for
+    model training, original-data redistribution, processed-data redistribution, or
+    trained-weight publication; these fields remain unclear despite the Zenodo CC
+    BY-SA 4.0 license label.
+  - No text-level inventory was established from safely retrieved metadata, and no
+    corpus archive, annotation payload, PDF, or other dataset file was downloaded.
+  refreshed_existing: false
+- id: candidate-corpus-ipchg-mhg
+  name: Indiana Parsed Corpus of Historical (High) German
+  category: corpus
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-12'
+  discovery_urls:
+  - https://chatgpt.com/share/6a7c38da-66a4-83eb-af19-9f2ee531977d
+  - https://ipchg.iu.edu/corpus/index.html
+  - https://ipchg.iu.edu/corpus/licenses.html
+  - https://ipchg.iu.edu/corpus/versions.html
+  discovery_stage_claims:
+  - mhg
+  disposition: added
+  resource_id: corpus-ipchg
+  disposition_reason: Add as corpus-ipchg. Canonical project documentation directly
+    establishes MHG and ENHG coverage. The MHG component adapts selected ReM texts,
+    but IPCHG provides its own syntactic parsing and is not identical to trusted corpus-rem.
+    Legal permissions remain unclear because the canonical license label and hyperlink
+    target disagree.
+  evidence_gaps:
+  - The canonical license page labels the license 'CC BY-AT 4.0' while both license
+    hyperlinks target CC BY-SA 4.0; until the project clarifies the label, model-training,
+    original-data redistribution, processed-data redistribution, and trained-weight
+    publication permissions remain unclear.
+  refreshed_existing: false
+- id: candidate-corpus-koeln-bonn-mitteldeutsch
+  name: Kölner Korpus hessisch-thüringischer Texte and Bonner Korpus mitteldeutscher
+    Texte
+  category: corpus
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-12'
+  discovery_urls:
+  - https://chatgpt.com/share/6a7c38da-66a4-83eb-af19-9f2ee531977d
+  discovery_stage_claims:
+  - mhg
+  disposition: blocked
+  disposition_reason: Blocked because the supplied row conjoins two canonically distinct
+    historical corpora. ReM documentation states that both flowed into trusted corpus-rem,
+    but does not establish the composite seed as one resource or as identical to ReM.
+    Splitting the row or merging either historical corpus into corpus-rem would exceed
+    the evidence.
+  evidence_gaps:
+  - Canonical ReM documentation identifies the seed's two names as two separate historical
+    corpora; no source establishes the supplied combined row as a single resource
+    identity, so it cannot be added without splitting or merging identities.
+  - Canonical evidence establishes that material from both historical corpora flowed
+    into corpus-rem, but not that either historical corpusâ€”or their combined seedâ€”is
+    identical to corpus-rem; duplicate status cannot be asserted.
+  - No direct canonical or primary statement was established that assigns the entire
+    supplied combined identity an OHG, MHG, or ENHG coverage stage; ReM's MHG scope
+    cannot safely be projected back onto the complete historical source corpora.
+  refreshed_existing: false
+- id: candidate-corpus-medieval-ner
+  name: Named-Entity Dataset for Medieval Latin, Middle High German and Old Norse
+  category: corpus
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-12'
+  discovery_urls:
+  - https://zenodo.org/records/4571507
+  discovery_stage_claims:
+  - mhg
+  disposition: added
+  resource_id: corpus-medieval-ner
+  disposition_reason: 'Add corpus-medieval-ner as the distinct multilingual named-entity
+    dataset deposited at Zenodo: version 1.0.0 lists lemmata and tokens from three
+    named works, with Nibelungenlied explicitly identified as the Middle High German
+    component. The record is not treated as a full-text Nibelungenlied edition. A
+    title-level comparison with retained corpus-rem:m321 does not establish overlap
+    or duplication because edition and witness identity are absent; all modeled legal
+    permissions remain unclear.'
+  evidence_gaps:
+  - The Zenodo metadata does not identify the edition or witness underlying its Nibelungenlied
+    tokens. Retained corpus-rem contains a text titled Nibelungenlied (m321), but
+    the shared work title alone does not establish duplicate, derived-from, or overlap
+    identity; no structured relationship with corpus-rem or another retained corpus
+    is asserted.
+  - No reviewed direct legal statement establishes model training, original-data redistribution,
+    processed-data redistribution, or trained-weight publication permission; all four
+    modeled permissions remain unclear despite the CC BY 4.0 label.
+  - The metadata does not state the Nibelungenlied component's dialect, date, edition,
+    or witness, so the required fields for a CorpusText record cannot be populated
+    without guessing; no CorpusText is proposed.
+  - The metadata does not establish named-entity tagset details, annotation quality,
+    or production method.
+  refreshed_existing: false
+- id: candidate-corpus-mhd-pos-benchmark
+  name: MHD POS Tagging Benchmark
+  category: corpus
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-12'
+  discovery_urls:
+  - https://github.com/DigitalHumanitiesCraft/mhd-pos-tagging-benchmark
+  discovery_stage_claims:
+  - mhg
+  disposition: out_of_scope
+  disposition_reason: Out of scope for category corpus. The canonical repository describes
+    MHD POS Tagging Benchmark as benchmark code that evaluates taggers against a separately
+    downloaded ReM corpus, not as a distinct benchmark corpus. MHDBDB is referenced
+    as the target POS tagset in a HiTS-to-MHDBDB mapping, not as the benchmark data.
+    The candidate is therefore neither a verified duplicate of nor a verified overlap
+    with corpus-mhdbdb, and no matched resource is asserted. Research was limited
+    to bounded public GitHub metadata and documentation; no corpus payload was accessed.
+  evidence_gaps:
+  - The reviewed metadata does not establish whether any individual ReM v2.1 texts
+    also occur in corpus-mhdbdb; no text-level overlap is asserted and no corpus payload
+    was accessed.
+  refreshed_existing: false
+- id: candidate-corpus-mhdbdb
+  name: Mittelhochdeutsche Begriffsdatenbank (MHDBDB)
+  category: corpus
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-12'
+  discovery_urls:
+  - https://chatgpt.com/share/6a7c38da-66a4-83eb-af19-9f2ee531977d
+  - https://dhcraft.org/mhdbdb-tei-only/hilfe-korpussuche.html
+  - https://uni-salzburg.elsevierpure.com/en/datasets/mhdbdb-tei-repository/
+  discovery_stage_claims:
+  - mhg
+  disposition: added
+  resource_id: corpus-mhdbdb
+  disposition_reason: 'Added as corpus-mhdbdb: institutional and canonical project
+    evidence directly identifies a TEI-encoded corpus of Middle High German texts
+    with web exploration, while public repository metadata supplies downloadable access.
+    Legal permissions and detailed release, text, and annotation metadata remain unresolved
+    and are intentionally not inferred.'
+  evidence_gaps:
+  - The scope of the repository's detected MIT license label for the corpus texts
+    and annotations was not established; model training, original-data redistribution,
+    processed-data redistribution, and trained-weight publication therefore remain
+    unclear.
+  - No citable release or version identifier and no exact release date were established;
+    the institutional record gives only June 2025, so released_on is omitted.
+  - Text-level inventory and annotation-layer taxonomy were not established from safely
+    retrieved metadata; no corpus payload was downloaded.
+  refreshed_existing: false
+- id: candidate-corpus-mhdbdb-postdata
+  name: Middle High German Conceptual Database
+  category: corpus
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-12'
+  discovery_urls:
+  - https://chatgpt.com/share/6a7c38da-66a4-83eb-af19-9f2ee531977d
+  - https://postdata.linhd.uned.es/corpus-y-datasets/
+  discovery_stage_claims:
+  - mhg
+  disposition: added
+  resource_id: corpus-mhdbdb-postdata
+  disposition_reason: 'Added as corpus-mhdbdb-postdata, not merged with corpus-mhdbdb:
+    canonical POSTDATA evidence explicitly identifies a separately linked public poetry
+    subset of the Salzburg MHDBDB with metric annotation. The subset is therefore
+    distinct at corpus granularity and derived from corpus-mhdbdb; its linked repository
+    now returns HTTP 404, so current downloadability, exact release metadata, membership,
+    and legal permissions remain unresolved.'
+  evidence_gaps:
+  - The separately linked POSTDATA repository currently returns HTTP 404; no exact
+    release identifier, release date, current downloadable artifact, or subset membership
+    list could be verified without accessing a corpus payload.
+  - No direct legal statement establishes model training, original-data redistribution,
+    processed-data redistribution, or trained-weight publication permissions; all
+    remain unclear.
+  refreshed_existing: false
+- id: candidate-corpus-mhdbdb-textseries
+  name: MHDBDB-Textreihentypologie
+  category: corpus
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-12'
+  discovery_urls:
+  - https://www.fdr.uni-hamburg.de/record/12414
+  discovery_stage_claims:
+  - mhg
+  disposition: out_of_scope
+  disposition_reason: Out of scope for category corpus. The canonical institutional
+    repository describes MHDBDB-Textreihentypologie as a SKOS vocabulary and application-oriented
+    thesaurus for classifying and annotating Middle High and Early New High German
+    text-series genres, not as a corpus of texts. Its MHDBDB branding does not establish
+    identity with corpus-mhdbdb, and no name-based merge or duplicate match is asserted.
+    Only the bounded HTML metadata record was retrieved; no dataset payload was accessed.
+  refreshed_existing: false
+- id: candidate-corpus-mhdtexts
+  name: MHDtexts
+  category: corpus
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-12'
+  discovery_urls:
+  - https://github.com/cmm2209/MHDtexts
+  discovery_stage_claims:
+  - mhg
+  disposition: added
+  resource_id: corpus-mhdtexts
+  disposition_reason: Add corpus-mhdtexts as a minimally represented Middle High German
+    corpus. The official repository owner's explicit description establishes the canonical
+    MHDtexts identity and MHG corpus scope, while current commit metadata supports
+    only a commit-pinned main snapshot. Provenance, overlap with ReM, payload-derived
+    details, formal release status, and all modeled legal permissions remain unresolved.
+  evidence_gaps:
+  - The repository has no retrievable README, homepage, license declaration, or cited
+    primary publication, so corpus provenance, selection criteria, text sources, and
+    the relationship or possible overlap with trusted corpus-rem remain unresolved.
+  - No tagged or formally published corpus release was established; the proposed version
+    is explicitly a commit-pinned snapshot of the rolling main branch.
+  - No corpus payload was retrieved, so text-level titles, dialects, dates, annotations,
+    exact membership, and sizes remain unverified and are not encoded.
+  - No direct terms establish model training, original-data redistribution, processed-data
+    redistribution, or trained-weight publication permissions; all four remain unclear.
+  refreshed_existing: false
+- id: candidate-corpus-mhg-intensifiers
+  name: TTHE SYSTEM OF GERMAN INTENSIFIERS IN A CORPUS OF MIDDLE HIGH GERMAN
+  category: corpus
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-12'
+  discovery_urls:
+  - https://hammer.purdue.edu/articles/thesis/TTHE_SYSTEM_OF_GERMAN_INTENSIFIERS_IN_A_CORPUS_OF_MIDDLE_HIGH_GERMAN/21699428
+  discovery_stage_claims:
+  - mhg
+  disposition: blocked
+  disposition_reason: 'Blocked as a corpus: Purdue''s canonical metadata identifies
+    the candidate URL as a thesis whose only deposited file is a PDF, not a released
+    corpus. The abstract directly limits the studied data to Middle High German (1050-1350),
+    so MHG is verified, but no separate corpus release, version, or relationship to
+    corpus-rem can be established. No payload was retrieved.'
+  evidence_gaps:
+  - Canonical institutional metadata identifies the deposited object as a thesis and
+    lists only a PDF; it does not establish a separately released corpus or corpus
+    version, so a schema-valid corpus record cannot be proposed.
+  - The metadata does not identify the underlying corpus or text sources, so identity
+    or overlap with trusted corpus-rem cannot be established without additional primary
+    metadata; the thesis PDF and all corpus payloads were not retrieved.
+  refreshed_existing: false
+- id: candidate-corpus-mhg-proto-canon
+  name: 'Code and data for "The Proto-Canon of Middle High German Literature: An Empirical
+    Study of Literaturexkurse and Transmission"'
+  category: corpus
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-12'
+  discovery_urls:
+  - https://zenodo.org/records/20833864
+  discovery_stage_claims:
+  - mhg
+  disposition: blocked
+  disposition_reason: Blocked as a corpus. The v0.0.0 deposit is canonically classified
+    as software and documents analytical spreadsheets for Middle High German inter-authorial
+    references and manuscript transmission, so MHG scope is verified but a text-corpus
+    record is not. The only explicit data relationship is derivation of transmission
+    data from Handschriftencensus; no relationship to trusted corpus-rem or another
+    corpus is established. No payload was retrieved.
+  evidence_gaps:
+  - Canonical metadata identifies the release as software, and its documentation and
+    data-directory manifest identify two analytical spreadsheets rather than a versioned
+    corpus of language texts; corpus identity and the required Corpus versions/texts
+    therefore cannot be established without inventing metadata.
+  - Canonical documentation establishes derivation from Handschriftencensus for manuscript-transmission
+    data and from a scholarly catalogue for inter-authorial references, but it does
+    not establish any corpus-level overlap, derivation, or same-work relationship
+    with the trusted corpus-rem or another corpus; no payload was retrieved.
+  refreshed_existing: false
+- id: candidate-corpus-mhg-rubrics
+  name: Collection of Middle High German Rubrics in Miscellany Manuscripts 12th-16th
+    centuries
+  category: corpus
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-12'
+  discovery_urls:
+  - https://zenodo.org/records/3373827
+  discovery_stage_claims:
+  - mhg
+  disposition: added
+  resource_id: corpus-mhg-rubrics
+  disposition_reason: 'Added as corpus-mhg-rubrics: creator-deposited Zenodo metadata
+    directly identifies a distinct Middle High German rubric corpus, version 1.0,
+    published 2019-08-21 with three listed CSV files and lemmatized rubric titles.
+    Comparison with retained corpus-rem, corpus-mhdbdb, corpus-ipchg, corpus-hgb,
+    corpus-mhg4sna, corpus-creta-parzival, corpus-mhdbdb-postdata, and corpus-mwb-textarchiv
+    found no verified identity match; overlap and all modeled legal permissions remain
+    unresolved rather than inferred.'
+  evidence_gaps:
+  - No direct legal statement reviewed here establishes model training, original-data
+    redistribution, processed-data redistribution, or trained-weight publication permission;
+    all four permissions remain unclear despite the CC BY 4.0 label.
+  - The canonical metadata does not establish identity or a structured overlap relationship
+    with retained corpus-rem, corpus-mhdbdb, corpus-ipchg, corpus-hgb, corpus-mhg4sna,
+    corpus-creta-parzival, corpus-mhdbdb-postdata, or corpus-mwb-textarchiv; no overlap
+    is asserted.
+  - The title's 12th-16th-century span does not explicitly classify any included material
+    as Early New High German, so only the directly stated Middle High German stage
+    is verified.
+  - Per-rubric dates, dialects, and manuscript languages are only described as fields
+    in a listed corpus file; because no payload was downloaded, no CorpusText records
+    are proposed.
+  refreshed_existing: false
+- id: candidate-corpus-mhg-schemen
+  name: Mittelhochdeutsch Schemen.
+  category: corpus
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-12'
+  discovery_urls:
+  - https://zenodo.org/records/2074702
+  discovery_stage_claims:
+  - mhg
+  disposition: out_of_scope
+  disposition_reason: Zenodo identifies this candidate as E. Sievers's 1903 journal
+    article, not a corpus. It is therefore out of scope for the corpus inventory;
+    no payload was retrieved.
+  refreshed_existing: false
+- id: candidate-corpus-mhg-schwertnamen
+  name: Mittelhochdeutsche Schwertnamen (Groß- und Kleinschreibung in ausgewählten
+    Manuskripten)
+  category: corpus
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-12'
+  discovery_urls:
+  - https://zenodo.org/records/17232661
+  discovery_stage_claims:
+  - mhg
+  disposition: added
+  resource_id: corpus-mhg-schwertnamen
+  disposition_reason: 'The corpus category is truthful and the resource is in scope:
+    canonical Zenodo metadata explicitly calls it a corpus and identifies it as Middle
+    High German. It is distinct from the trusted ReM corpus, so a minimal corpus record
+    is proposed without payload-derived details.'
+  evidence_gaps:
+  - The corpus payload was not retrieved, so text-level dialect, dating, annotation,
+    and size metadata remain unverified.
+  refreshed_existing: false
+- id: candidate-corpus-mhg-treebank
+  name: Middle High German Treebank / Baumbank Mittelhochdeutsch
+  category: corpus
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-12'
+  discovery_urls:
+  - https://chatgpt.com/share/6a7c38da-66a4-83eb-af19-9f2ee531977d
+  discovery_stage_claims:
+  - mhg
+  disposition: duplicate
+  resource_id: corpus-rem
+  disposition_reason: Duplicate of trusted corpus-rem at corpus-inventory granularity.
+    Canonical documentation identifies Middle High German Treebank / Baumbank Mittelhochdeutsch
+    version 0.1 as an automatically enriched syntactic and semantic annotation edition
+    based on ReM 1.0 and explicitly says it is not an independent corpus but an additional
+    annotation layer over ReM. It is not corpus-mhdbdb or corpus-ipchg.
+  refreshed_existing: false
+- id: candidate-corpus-mhg4sna
+  name: 'MHG4SNA: Middle high german texts annotated for social network analysis'
+  category: corpus
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-12'
+  discovery_urls:
+  - https://chatgpt.com/share/6a7c38da-66a4-83eb-af19-9f2ee531977d
+  discovery_stage_claims:
+  - mhg
+  disposition: added
+  resource_id: corpus-mhg4sna
+  disposition_reason: Add corpus-mhg4sna as a distinct Middle High German annotated
+    corpus. Creator-deposited Zenodo metadata and the official repository establish
+    identity, MHG scope, version 1.0.0, downloadable access, annotations, and explicit
+    overlap with corpus-mhdbdb; no modeled legal permission is directly established.
+  evidence_gaps:
+  - No direct license text or terms establish model training, original-data redistribution,
+    processed-data redistribution, or trained-weight publication; all four permissions
+    remain unclear.
+  - Canonical metadata names five works but does not provide the per-text dialect
+    and date values required by the CorpusText schema, so they are not encoded as
+    structured text records.
+  refreshed_existing: false
+- id: candidate-corpus-mwb-source
+  name: Digitales Textarchiv des Mittelhochdeutschen Wörterbuchs
+  category: corpus
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-12'
+  discovery_urls:
+  - https://chatgpt.com/share/6a7c38da-66a4-83eb-af19-9f2ee531977d
+  - https://adw-goe.de/en/research/research-projects-within-the-academies-programme/middle-high-german-dictionary/
+  - https://www.akademienunion.de/en/research/project-database/middle-high-german-dictionary-mwb
+  - https://mhdwb-online.de/hinweise.html
+  discovery_stage_claims:
+  - mhg
+  disposition: added
+  resource_id: corpus-mwb-textarchiv
+  disposition_reason: Add the separately named and browsable MWB Digitales Textarchiv
+    as corpus-mwb-textarchiv, not as a duplicate of dictionary-mwb. Canonical documentation
+    identifies it as an archive of source editions with offered digital full texts
+    and explicitly separates it from the Belegarchiv and dictionary; the record does
+    not claim equivalence with the complete lexicographic source corpus or the D-MHGTA
+    cooperation project.
+  evidence_gaps:
+  - Canonical pages do not equate the named Digitales Textarchiv with either the complete
+    electronic Gesamtlemmaliste/Belegarchiv or the dictionary's full underlying source
+    corpus; the proposed record is limited to the separately named Textarchiv component.
+  - No canonical release label, release date, or fixed-membership statement for the
+    Digitales Textarchiv was established.
+  - No direct license or terms establish model-training, original-data redistribution,
+    processed-data redistribution, or trained-weight-publication permission; all four
+    permissions remain unclear.
+  - The reviewed metadata did not establish per-text dates and dialects required for
+    structured CorpusText records, so no inline text records are proposed.
+  refreshed_existing: false
 - id: candidate-corpus-rem
   name: Reference Corpus of Middle High German
   category: corpus
   discovered_on: '2026-08-12'
-  last_checked_on: '2026-08-11'
+  last_checked_on: '2026-08-12'
   discovery_urls:
+  - https://chatgpt.com/share/6a7c38da-66a4-83eb-af19-9f2ee531977d
   - https://linguistics.rub.de/rem/index.html
-  - https://linguistics.rub.de/rem/access/index.en.html
-  - https://zenodo.org/api/records/13982324
-  - https://linguistics.rub.de/rem/corpus/index.html
-  - https://linguistics.rub.de/rem/corpus/layers.html
-  - https://creativecommons.org/licenses/by-sa/4.0/legalcode.en
-  - https://linguistics.rub.de/rem/corpus/texts.html
-  - https://linguistics.rub.de/rem/corpus/details.html#M330
-  - https://linguistics.rub.de/rem/documentation/metadata.html
-  - https://linguistics.rub.de/rem/documentation/lemma.html
-  - https://linguistics.rub.de/rem/documentation/pos.html
-  - https://linguistics.rub.de/rem/documentation/morph.html
-  - https://linguistics.rub.de/comphist/resources/hits/
-  - https://doi.org/10.21248/jlcl.28.2013.170
-  - https://linguistics.rub.de/rem/access/NEWS
-  - https://zenodo.org/api/records/13982324/files/ReM-v2.1_coraxml.zip/container
   discovery_stage_claims:
   - mhg
-  disposition: added
+  disposition: duplicate
   resource_id: corpus-rem
-  disposition_reason: Diplomatically transcribed and annotated Middle High German
-    corpus covering 1050–1350.
-  refreshed_existing: false
-- id: candidate-tool-rnntagger
-  name: RNNTagger
-  category: tool
+  disposition_reason: Refresh confirms that candidate-corpus-rem is the existing corpus-rem
+    and that ReM remains an in-scope Middle High German corpus at version 2.1 with
+    described, browsable, and downloadable access under the stated CC BY-SA 4.0 license.
+    The proposal advances reviewed_on and five rechecked source dates to 2026-08-12,
+    updates the exact canonical citation and homepage quotation, and replaces the
+    now robots-disallowed Zenodo metadata API provenance URL with the public HTML
+    record. No release, stage, corpus-content, availability, or permission assessment
+    changes are supported. Historical container-manifest evidence is preserved with
+    an explicit current robots limitation.
+  evidence_gaps:
+  - Zenodo robots.txt disallowed the v2.1 container-manifest API on 2026-08-12; the
+    2026-08-11 manifest evidence resolving M057 is retained without revalidation.
+    The robots-disallowed record metadata API was replaced by the public HTML record.
+  refreshed_existing: true
+- id: candidate-corpus-sangspruch-annotations
+  name: SFB1391 B03 AB Sangspruch Annotationen
+  category: corpus
   discovered_on: '2026-08-12'
-  last_checked_on: '2026-08-11'
+  last_checked_on: '2026-08-12'
   discovery_urls:
-  - https://www.cis.uni-muenchen.de/~schmid/tools/RNNTagger/
-  - https://www.cis.uni-muenchen.de/~schmid/tools/RNNTagger/Tagger-Licence
-  - https://api.crossref.org/works/10.1145/3322905.3322915
+  - https://zenodo.org/records/13378982
   discovery_stage_claims:
-  - enhg
   - mhg
   disposition: added
-  resource_id: tool-rnntagger
-  disposition_reason: Neural command-line tool for part-of-speech tagging and lemmatization
-    with pretrained parameters for modern and historical languages.
+  resource_id: corpus-sangspruch-annotations
+  disposition_reason: 'Added as a distinct corpus resource: canonical Zenodo metadata
+    identifies archived annotation data for a Middle High German sangspruch text corpus
+    and explicitly establishes MHG scope. The proposal records metadata-only described
+    availability and leaves all legal permissions unclear; no payload was retrieved
+    and no relationship to ReM is asserted.'
+  refreshed_existing: false
+- id: candidate-corpus-suesse-annotations
+  name: SFB1391 B03 AB Süße Annotationen
+  category: corpus
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-12'
+  discovery_urls:
+  - https://zenodo.org/records/7701565
+  discovery_stage_claims:
+  - mhg
+  disposition: added
+  resource_id: corpus-suesse-annotations
+  disposition_reason: The canonical Zenodo record identifies a restricted v1 annotation
+    dataset, not a separately named underlying corpus. It directly states that the
+    archived annotations concern the süeze word family in a representative corpus
+    of Middle High German texts, establishing MHG scope. The metadata supports a corpus-schema
+    record with restricted/request-only access; all legal permissions remain unclear,
+    and no payload was accessed.
+  evidence_gaps:
+  - The public metadata does not identify the individual corpus texts or expose the
+    restricted files, so text-level inventory, per-round file contents, sizes, and
+    legal permissions remain unverified.
+  refreshed_existing: false
+- id: candidate-corpus-tueba-ddc
+  name: Tübingen Baumbank des Deutschen Diachron (TüBa-D/DC)
+  category: corpus
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-12'
+  discovery_urls:
+  - https://chatgpt.com/share/6a7c38da-66a4-83eb-af19-9f2ee531977d
+  - https://www.sfs.uni-tuebingen.de/en/research/tuebingen-treebank-of-german/
+  - https://journals.colorado.edu/index.php/lilt/article/view/1271
+  - https://aclanthology.org/L12-1033/
+  discovery_stage_claims:
+  - mhg
+  disposition: blocked
+  disposition_reason: TüBa-D/DC is explicitly identified by a primary publication
+    as a diachronic German corpus with a manually evaluated subcorpus spanning Middle
+    High German to Modern High German, so MHG scope is verified and it is not a match
+    for retained corpus-rem. Addition is blocked because current corpus availability
+    and release/version identity are not authoritatively established; the supplied
+    institutional project page is currently 404.
+  evidence_gaps:
+  - 'Current authoritative corpus availability and the latest representable release/version
+    cannot be established: the supplied institutional project URL returns HTTP 404,
+    while the accessible primary publication reports only 2012-era storage and query-access
+    claims.'
+  refreshed_existing: false
+- id: candidate-corpus-ungehiure-semantics
+  name: Annotation historische Semantik von mhd. ungehiure
+  category: corpus
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-12'
+  discovery_urls:
+  - https://zenodo.org/records/13305364
+  discovery_stage_claims:
+  - mhg
+  disposition: added
+  resource_id: corpus-ungehiure-semantics
+  disposition_reason: 'Added as a corpus: Zenodo metadata and its small bilingual
+    documentation identify a Version 1.0 dataset containing an annotated text, corpus
+    overview, and annotation exports based on Middle High German MHDBDB results. It
+    is not the trusted ReM corpus; no payload was downloaded and legal permissions
+    remain unclear.'
+  evidence_gaps:
+  - The public metadata and documentation do not explicitly state model-training,
+    original-data-redistribution, processed-data-redistribution, or trained-weight-publication
+    permissions; all four permission fields remain unclear.
+  - Text-level dialect and dating metadata were not established without inspecting
+    corpus payloads, so the proposed record does not enumerate individual texts.
   refreshed_existing: false
 - id: candidate-dictionary-mwb
   name: Mittelhochdeutsches Wörterbuch
@@ -133,4 +1313,21 @@ candidates:
   resource_id: dictionary-mwb
   disposition_reason: An epoch dictionary documenting the vocabulary and usage of
     German-language texts from 1050–1350.
+  refreshed_existing: false
+- id: candidate-tool-rnntagger
+  name: RNNTagger
+  category: tool
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-11'
+  discovery_urls:
+  - https://www.cis.uni-muenchen.de/~schmid/tools/RNNTagger/
+  - https://www.cis.uni-muenchen.de/~schmid/tools/RNNTagger/Tagger-Licence
+  - https://api.crossref.org/works/10.1145/3322905.3322915
+  discovery_stage_claims:
+  - enhg
+  - mhg
+  disposition: added
+  resource_id: tool-rnntagger
+  disposition_reason: Neural command-line tool for part-of-speech tagging and lemmatization
+    with pretrained parameters for modern and historical languages.
   refreshed_existing: false

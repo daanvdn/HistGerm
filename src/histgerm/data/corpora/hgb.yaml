@@ -1,0 +1,104 @@
+id: corpus-hgb
+name: Corpus of Historical German, Bochum
+aliases:
+- HGB
+description: A corpus of almost 29,000 tokens drawn from ReM texts and annotated with an extended Universal Dependencies scheme.
+links:
+  homepage: https://linguistics.ruhr-uni-bochum.de/~dipper/resources/index.html
+  release_record: https://zenodo.org/records/10870745
+  repository: https://gitlab.ruhr-uni-bochum.de/comphist/lrec-coling_2024_hgb
+sources:
+- id: evidence-hgb-canonical
+  url: https://linguistics.ruhr-uni-bochum.de/~dipper/resources/index.html
+  accessed_on: '2026-08-12'
+  supports:
+  - name
+  - aliases
+  - description
+  - links.homepage
+  - links.release_record
+  - overlaps
+  - versions.annotations
+  - reviewed_on
+  title: Stefanie Dipper - Resources | Department of Linguistics, RUB
+  quote: 'First version of the Corpus of Historical German, Bochum (short: HGB), a corpus of currently almost 29K tokens of
+    ReM texts, annotated with an extended UD scheme.'
+  note: Canonical identity, ReM derivation, annotation, and release-link evidence.
+- id: evidence-hgb-stage
+  url: https://linguistics.ruhr-uni-bochum.de/~dipper/resources/index.html
+  accessed_on: '2026-08-12'
+  supports:
+  - covered_stages
+  - overlaps
+  title: Stefanie Dipper - Resources | Department of Linguistics, RUB
+  quote: 'Reference Corpus of Middle High German (short: ReM), a corpus of diplomatically transcribed and annotated texts
+    from Middle High German (1050-1350)'
+  note: Canonical definition of ReM; the same page states that HGB consists of ReM texts.
+- id: evidence-hgb-release
+  url: https://zenodo.org/records/10870745
+  accessed_on: '2026-08-12'
+  supports:
+  - name
+  - description
+  - covered_stages
+  - links.release_record
+  - links.repository
+  - access.availability
+  - access.license
+  - versions
+  - versions.label
+  - versions.released_on
+  - versions.links
+  - versions.license
+  - versions.availability
+  - reviewed_on
+  title: Corpus of Historical German, Bochum
+  quote: Published May 23, 2024 | Version 1.0 Dataset Open Corpus of Historical German, Bochum
+  note: Zenodo metadata records the version, release date, downloadable files, software repository, Middle High German language,
+    and CC BY-SA 4.0 label; no files were downloaded.
+reviewed_on: '2026-08-12'
+covered_stages:
+- mhg
+access:
+  availability:
+  - described
+  - downloadable
+  model_training: unclear
+  original_data_redistribution: unclear
+  processed_data_redistribution: unclear
+  trained_weight_publication: unclear
+  license: Creative Commons Attribution Share Alike 4.0 International
+  source_ids:
+  - evidence-hgb-canonical
+  - evidence-hgb-release
+versions:
+- id: v1-0
+  label: Version 1.0
+  released_on: '2024-05-23'
+  links:
+    release_record: https://zenodo.org/records/10870745
+    repository: https://gitlab.ruhr-uni-bochum.de/comphist/lrec-coling_2024_hgb
+  license: Creative Commons Attribution Share Alike 4.0 International
+  availability:
+  - downloadable
+  annotations:
+  - id: extended-ud
+    type: other
+    tagset_name: extended UD scheme
+    source_ids:
+    - evidence-hgb-canonical
+  texts: []
+  source_ids:
+  - evidence-hgb-canonical
+  - evidence-hgb-release
+overlaps:
+- relationship: derived_from
+  with: corpus-rem
+  note: The canonical page states that HGB consists of ReM texts and adds an extended UD annotation scheme; HGB is therefore
+    represented as a distinct derived corpus rather than a duplicate of corpus-rem.
+  source_ids:
+  - evidence-hgb-canonical
+  - evidence-hgb-stage
+notes:
+- Zenodo records the release language as Middle High German (ca. 1050-1500).
+- The corpus archive and other release files were not downloaded during curation.

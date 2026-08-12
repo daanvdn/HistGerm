@@ -1,0 +1,137 @@
+id: corpus-ipchg
+name: Indiana Parsed Corpus of Historical (High) German
+aliases:
+- IPCHG
+- Indiana Parsed Corpus of Historical High German
+description: Syntactically parsed corpus of High German texts spanning the 11th through 20th centuries, including explicitly
+  documented Middle High German and Early New High German components.
+links:
+  homepage: https://ipchg.iu.edu/index.html
+  corpus_description: https://ipchg.iu.edu/corpus/index.html
+  download: https://github.com/cdsapp/IPCHG-Corpus
+  license_information: https://ipchg.iu.edu/corpus/licenses.html
+sources:
+- id: evidence-ipchg-home
+  url: https://ipchg.iu.edu/index.html
+  accessed_on: '2026-08-12'
+  supports:
+  - id
+  - name
+  - aliases
+  - description
+  - links.homepage
+  - reviewed_on
+  title: Indiana Parsed Corpus of Historical (High) German
+  quote: The IPCHG is a syntactically parsed corpus of High German texts from the 11th through 20th centuries.
+  note: Canonical identity and scope statement.
+- id: evidence-ipchg-structure
+  url: https://ipchg.iu.edu/corpus/corpus_structure.html
+  accessed_on: '2026-08-12'
+  supports:
+  - covered_stages
+  - versions
+  - notes
+  title: IPCHG structure of corpus
+  quote: 'Middle High German: 1050-1350 43 texts selected from the Referenzkorpus Mittelhochdeutsch (ReM), adapted under a
+    CC BY-SA license. Approx. 295,000 words'
+  note: Canonical stage breakdown directly establishes MHG; the same page directly establishes ENHG as 1350-1650.
+- id: evidence-ipchg-structure-enhg
+  url: https://ipchg.iu.edu/corpus/corpus_structure.html
+  accessed_on: '2026-08-12'
+  supports:
+  - covered_stages
+  - versions
+  - notes
+  title: IPCHG structure of corpus
+  quote: 'Early New High German: 1350-1650 61 texts selected mostly from the Referenzkorpus Frühneuhochdeutsch (ReF), adapted
+    under a CC BY-SA license.'
+  note: Canonical stage breakdown directly establishes ENHG.
+- id: evidence-ipchg-description
+  url: https://ipchg.iu.edu/corpus/index.html
+  accessed_on: '2026-08-12'
+  supports:
+  - description
+  - links.corpus_description
+  - versions.annotations
+  title: IPCHG corpus description and texts
+  quote: Every word is tagged for part of speech and morphological features (and will eventually be lemmatized). Sentences
+    are syntactically parsed according to the Penn annotation system.
+  note: Canonical annotation and download page.
+- id: evidence-ipchg-download
+  url: https://ipchg.iu.edu/corpus/index.html
+  accessed_on: '2026-08-12'
+  supports:
+  - links.download
+  - access
+  - versions.availability
+  title: IPCHG corpus description and texts
+  quote: 'To download the most current versions of the texts, and the easiest way to download the whole corpus, use our GitHub
+    page: Download all texts on GitHub'
+  note: Canonical download statement; no corpus files were downloaded.
+- id: evidence-ipchg-versions
+  url: https://ipchg.iu.edu/corpus/versions.html
+  accessed_on: '2026-08-12'
+  supports:
+  - versions
+  title: IPCHG version numbers
+  quote: 'ver0_9: Compound sentences (initially marked as IP-MAT-CONJ for training the parser) have been split into separate
+    sentence tokens.'
+  note: Canonical version history lists ver0_9 last and describes version 1 as future work.
+- id: evidence-ipchg-license
+  url: https://ipchg.iu.edu/corpus/licenses.html
+  accessed_on: '2026-08-12'
+  supports:
+  - access
+  - links.license_information
+  - notes
+  title: IPCHG source corpora and licenses
+  quote: Our versions of the texts are made available here under the same CC BY-AT 4.0 license.
+  note: The displayed CC BY-AT 4.0 label conflicts with its CC BY-SA 4.0 hyperlink target, so the proposed record does not
+    assert a license or any specific legal permission.
+reviewed_on: '2026-08-12'
+covered_stages:
+- mhg
+- enhg
+access:
+  availability:
+  - downloadable
+  model_training: unclear
+  original_data_redistribution: unclear
+  processed_data_redistribution: unclear
+  trained_weight_publication: unclear
+  note: The canonical page states use and redistribution conditions, but its displayed CC BY-AT 4.0 label conflicts with links
+    to CC BY-SA 4.0; permissions remain unclear pending clarification.
+  source_ids:
+  - evidence-ipchg-download
+  - evidence-ipchg-license
+versions:
+- id: ver0-9
+  label: ver0_9
+  availability:
+  - downloadable
+  annotations:
+  - id: pos
+    type: pos
+    source_ids:
+    - evidence-ipchg-description
+  - id: morphology
+    type: morphology
+    source_ids:
+    - evidence-ipchg-description
+  - id: syntax
+    type: other
+    tagset_name: Penn annotation system
+    source_ids:
+    - evidence-ipchg-description
+  texts: []
+  source_ids:
+  - evidence-ipchg-description
+  - evidence-ipchg-download
+  - evidence-ipchg-versions
+  note: The canonical history lists ver0_9 last; version 1 is described as expected after lemma correction.
+notes:
+- The MHG component covers 1050-1350 and is described as 43 texts selected from ReM, approximately 295,000 words.
+- The ENHG component covers 1350-1650 and is described as 61 texts selected mostly from ReF.
+- IPCHG says its source texts are adapted from ReM, ReF, and DTA while the syntactic parsing is its own; no whole-corpus duplicate
+  or structured overlap is asserted.
+- The corpus continues into New High German (1650-1950), which is outside the HistGerm stage enum.
