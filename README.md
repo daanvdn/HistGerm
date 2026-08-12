@@ -104,7 +104,6 @@ do not run the live pilot as part of setup or implementation validation.
 - [Queries, warnings, and coverage](docs/querying.md)
 - [Contributing a corpus, tool, or dictionary](docs/contributing.md)
 - [Inventory curator workflow and research ledger](docs/inventory-curator.md)
-- [V2 breaking changes and intentional limitations](docs/migration.md)
 
 <!-- histgerm-catalog:start -->
 ## Captured resources
