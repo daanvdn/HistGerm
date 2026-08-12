@@ -973,7 +973,7 @@ dev = [
     { name = "pre-commit", specifier = ">=4.6.2,<5" },
     { name = "pytest", specifier = ">=8.3,<9" },
     { name = "pytest-cov", specifier = ">=6,<7" },
-    { name = "pytest-xdist" },
+    { name = "pytest-xdist", specifier = ">=3.8.0,<4" },
     { name = "ruff", specifier = ">=0.11,<1" },
 ]
 research = [
