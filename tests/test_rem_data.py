@@ -10,7 +10,7 @@ from histgerm.loading import load_yaml_mapping_bytes
 from histgerm.models import Corpus
 from histgerm.validation import validate_inventory
 
-ROOT = Path(__file__).parents[2]
+ROOT = Path(__file__).parents[1]
 REM_PATH = ROOT / "src" / "histgerm" / "data" / "corpora" / "rem.yaml"
 COMMON_ANNOTATIONS = {
     "lemma",

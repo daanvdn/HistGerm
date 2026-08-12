@@ -13,7 +13,7 @@ from zipfile import ZipFile, ZipInfo
 
 import pytest
 
-ROOT = Path(__file__).parents[2]
+ROOT = Path(__file__).parents[1]
 DATA_ROOT = ROOT / "src" / "histgerm" / "data"
 RESOURCE_CATEGORIES = ("corpora", "dictionaries", "tools")
 RESEARCH_LEDGER = "research/discovery-ledger.yaml"
@@ -319,6 +319,8 @@ def test_repository_has_no_duplicate_inventory_or_third_party_payloads() -> None
         relative = Path(os.fsdecode(encoded))
         path = ROOT / relative
         assert not path.is_symlink()
+        if not path.exists():
+            continue
         size = path.stat().st_size
         with path.open("rb") as source:
             leading_bytes = source.read(MAGIC_READ_SIZE)

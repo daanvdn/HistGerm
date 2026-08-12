@@ -7,7 +7,7 @@ from histgerm.loading import load_yaml_mapping_bytes
 from histgerm.models import Dictionary
 from histgerm.validation import validate_inventory
 
-ROOT = Path(__file__).parents[2]
+ROOT = Path(__file__).parents[1]
 MWB_PATH = ROOT / "src" / "histgerm" / "data" / "dictionaries" / "mwb.yaml"
 
 

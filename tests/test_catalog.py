@@ -1,4 +1,4 @@
-"""Behavior tests for the minimal HistGerm V2 catalog facade."""
+"""Behavior tests for the HistGerm catalog facade."""
 
 from __future__ import annotations
 
@@ -216,7 +216,7 @@ def test_real_loader_preserves_order_and_distinct_resource_types() -> None:
 def test_bundled_schema_ids_and_coverage_agree_across_inventory_and_catalog() -> None:
     """Keep validated resources, catalog queries, and coverage IDs aligned."""
 
-    root = Path(__file__).parents[2] / "src" / "histgerm" / "data"
+    root = Path(__file__).parents[1] / "src" / "histgerm" / "data"
     inventory = validate_inventory(root)
     catalog = load_catalog()
 

@@ -132,7 +132,7 @@ def test_bundled_resource_paths_stay_within_data_boundary(resource: str) -> None
 
 
 def test_package_discovery_matches_source_checkout_yaml_files() -> None:
-    data_home = Path(__file__).parents[2] / "src" / "histgerm" / "data"
+    data_home = Path(__file__).parents[1] / "src" / "histgerm" / "data"
     source_paths = tuple(
         sorted(
             path.relative_to(data_home).as_posix()
