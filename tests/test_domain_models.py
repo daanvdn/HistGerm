@@ -1,4 +1,4 @@
-"""Focused tests for the approved HistGerm V2 model contract."""
+"""Focused tests for the approved HistGerm domain model contract."""
 
 from __future__ import annotations
 

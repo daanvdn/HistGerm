@@ -45,6 +45,12 @@ only after every referenced candidate has a final ledger disposition.
 Candidate research workers are strictly read-only under that separate
 coordinator dispatch.
 
+The calling custom-agent coordinator owns user-visible progress. Return to it
+after seed handling, each named group of at most two required channels, and
+each candidate batch of at most three so it can report concise counts and the
+current ledger revision. Do not combine an entire sweep into one opaque tool
+call or worker batch.
+
 Only the coordinator may mutate the ledger. Use
 `uv run python -m histgerm.research` commands for `validate`, `status`, `next`,
 `upsert-candidate`, `apply-result`, and `record-search`; do not duplicate
@@ -195,6 +201,13 @@ back to hostname resolution. If the available retrieval interface cannot
 prove IP pinning, original Host, TLS SNI/certificate validation, and disabled
 fallback, make no request and record the query incomplete.
 
+Use only the checked-in bounded transport for retrieval:
+`uv run python -m histgerm.research.fetching <url> --output <os-temp-file>`.
+The output must be outside the repository and deleted after parsing. It pins
+each request and redirect, preserves Host and TLS validation, accepts a missing
+`Content-Length`, and counts streamed bytes against the 10 MiB limit. Never
+generate a helper script or replace it with ad hoc `curl`.
+
 Allow only public `http://` or `https://` URLs. Reject embedded credentials,
 private URLs, `file:`, non-HTTP(S), localhost, loopback, link-local,
 private-network, and otherwise non-public destinations. Send no credentials,
@@ -208,10 +221,9 @@ availability fact.
 
 Retrieve only public HTML, public metadata APIs, public archive/repository
 manifests, and clearly separated metadata-only files no larger than 10 MiB.
-Inspect response headers first when possible. Refuse a declared size over
-10 MiB, an unbounded missing/unsafe size, payload-like content type or content
-disposition, or any response that changes into a payload. Stream allowed
-metadata only with a hard 10 MiB limit and stop before retaining excess bytes.
+Refuse a declared size over 10 MiB, payload-like content type or content
+disposition, or any response that changes into a payload. Missing
+`Content-Length` is allowed only through the checked-in streaming limit.
 
 Never download corpus or dictionary content, annotations, model weights,
 binaries, archives, database dumps, software packages, or other third-party

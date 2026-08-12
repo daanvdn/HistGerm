@@ -1,0 +1,116 @@
+id: corpus-mhg4sna
+name: 'MHG4SNA: Middle high german texts annotated for social network analysis'
+aliases:
+- MHG4SNA
+description: A corpus of multiple Middle High German texts annotated for social network analysis, including entity mentions
+  and grounding, direct speech, narrator comments, POS tags, and segmentation.
+links:
+  record: https://zenodo.org/records/7544005
+  doi: https://doi.org/10.5281/zenodo.7544005
+  repository: https://github.com/NoraKet/MHG4SNA
+sources:
+- id: evidence-mhg4sna-zenodo
+  url: https://zenodo.org/api/records/7544005
+  accessed_on: '2026-08-12'
+  supports:
+  - name
+  - aliases
+  - description
+  - covered_stages
+  - links.record
+  - links.doi
+  - links.repository
+  - access.availability
+  - versions
+  - versions.links
+  - versions.availability
+  - versions.annotations
+  - overlaps
+  title: Zenodo record for MHG4SNA version 1.0.0
+  quote: This corpus contains multiple middle high german texts with annotations for social network analysis.
+  note: Creator-deposited metadata for identity, scope, release, access, formats, annotations, named works, MHDBDB overlap,
+    DOI, and repository. No corpus files were downloaded.
+- id: evidence-mhg4sna-github
+  url: https://api.github.com/repos/NoraKet/MHG4SNA
+  accessed_on: '2026-08-12'
+  supports:
+  - links.repository
+  - name
+  - description
+  title: Official MHG4SNA GitHub repository metadata
+  quote: Annotations on middle high german texts for social network analysis
+  note: Official repository metadata corroborates the project identity and repository URL.
+reviewed_on: '2026-08-12'
+covered_stages:
+- mhg
+access:
+  availability:
+  - downloadable
+  model_training: unclear
+  original_data_redistribution: unclear
+  processed_data_redistribution: unclear
+  trained_weight_publication: unclear
+  note: The canonical metadata documents downloads but does not directly establish any modeled legal permission.
+  source_ids:
+  - evidence-mhg4sna-zenodo
+versions:
+- id: v1-0-0
+  label: v1.0.0
+  released_on: '2023-01-17'
+  links:
+    record: https://zenodo.org/records/7544005
+    doi: https://doi.org/10.5281/zenodo.7544005
+    repository_tag: https://github.com/NoraKet/MHG4SNA/tree/v1.0.0
+  availability:
+  - downloadable
+  annotations:
+  - id: named-entities
+    type: named_entities
+    source_ids:
+    - evidence-mhg4sna-zenodo
+    note: Named entities and entity mentions for persons and locations.
+  - id: pos
+    type: pos
+    source_ids:
+    - evidence-mhg4sna-zenodo
+    note: POS tags produced with a Middle High German POS tagger.
+  - id: entity-grounding
+    type: other
+    tagset_name: Entity grounding
+    source_ids:
+    - evidence-mhg4sna-zenodo
+    note: Entity references are mapped to the entity instances they denote.
+  - id: direct-speech
+    type: other
+    tagset_name: DS
+    source_ids:
+    - evidence-mhg4sna-zenodo
+    note: Direct-speech passages, including embedded direct speech.
+  - id: narrator-comments
+    type: other
+    tagset_name: EK and EK2
+    source_ids:
+    - evidence-mhg4sna-zenodo
+    note: Narrator comments, descriptions, digressions, and timeline pauses.
+  - id: segmentation
+    type: other
+    tagset_name: Thirty-verse segments
+    source_ids:
+    - evidence-mhg4sna-zenodo
+    note: Texts are segmented into passages of 30 verses.
+  texts: []
+  source_ids:
+  - evidence-mhg4sna-zenodo
+  note: Canonical metadata names Parzival, Erec, Iwein, Willehalm, and Das Rolandslied des Pfaffen Konrad; structured text
+    entries are omitted because required per-text dialect and date values are not supplied.
+overlaps:
+- relationship: overlaps
+  with: corpus-mhdbdb
+  note: Canonical metadata states that all included texts are part of MHDBDB; MHG4SNA adds social-network-analysis annotations
+    and derived formats.
+  source_ids:
+  - evidence-mhg4sna-zenodo
+notes:
+- The release supplies CONLL, CSV, and GEXF formats according to canonical metadata.
+- The trusted corpus-mhdbdb overlap is explicit, but the distinct project name, release, annotations, and outputs do not support
+  a duplicate disposition.

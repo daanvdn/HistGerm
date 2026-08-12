@@ -3,45 +3,13 @@ name: Reference Corpus of Middle High German
 aliases:
 - ReM
 description: Diplomatically transcribed and annotated Middle High German corpus covering 1050–1350.
-reviewed_on: '2026-08-11'
-covered_stages:
-- mhg
 links:
   homepage: https://linguistics.rub.de/rem/index.html
   citation: https://doi.org/10.5281/zenodo.13982324
-access:
-  availability:
-  - described
-  - browsable
-  - downloadable
-  model_training: unclear
-  original_data_redistribution: permitted
-  processed_data_redistribution: unclear
-  trained_weight_publication: unclear
-  license: Creative Commons Attribution-ShareAlike 4.0 International
-  license_url: https://creativecommons.org/licenses/by-sa/4.0/
-  requirements:
-  - When sharing, retain supplied creator and license information, link to the material and license where practicable, and
-    indicate modifications.
-  - Cite Roussel, Klein, Dipper, Wegera, and Wich-Reif (2024), Referenzkorpus Mittelhochdeutsch (1050–1350), Version 2.1,
-    and ISLRN 937-948-254-174-0.
-  note: Automated-access permission was unclear in the source inventory and is intentionally absent from V2. CC BY-SA 4.0
-    directly supports original-data redistribution; model training, processed-data redistribution, and trained-weight publication
-    remain unclear.
-  source_ids:
-  - evidence-rem-access
-  - evidence-rem-license
-notes:
-- 'Creators (persons, role creator): Adam Roussel, Thomas Klein, Stefanie Dipper, Klaus-Peter Wegera, and Claudia Wich-Reif.'
-- ReM is diplomatically transcribed. tok_dipl preserves historical tokenization and letter representation close to historical
-  forms; tok_anno uses modernized tokenization and simplified spelling. The punc layer marks sentence or segment boundaries
-  with functional boundary tags.
-- Several corpora flowed into ReM. This does not support a whole-corpus derived_from relationship, so no structured overlap
-  is asserted.
 sources:
 - id: evidence-rem-homepage
   url: https://linguistics.rub.de/rem/index.html
-  accessed_on: '2026-08-11'
+  accessed_on: '2026-08-12'
   supports:
   - id
   - name
@@ -53,13 +21,13 @@ sources:
   - versions
   - texts
   title: ReM project homepage
-  quote: The “Reference Corpus of Middle High German” (short ReM) is a corpus of diplomatically transcribed and annotated
-    texts from Middle High German (1050–1350) with a size of around 2 million word forms.
+  quote: 'The “Reference Corpus of Middle High German” (short: ReM) is a corpus of diplomatically transcribed and annotated
+    texts from Middle High German (1050–1350) with a size of around 2 million word forms.'
   note: Canonical bilingual project description for identity, short name, stage, chronology, transcription, and approximate
     size.
 - id: evidence-rem-access
   url: https://linguistics.rub.de/rem/access/index.en.html
-  accessed_on: '2026-08-11'
+  accessed_on: '2026-08-12'
   supports:
   - access
   - links.citation
@@ -67,13 +35,13 @@ sources:
   - versions.availability
   title: ReM access and download page
   citation: Roussel, Adam; Klein, Thomas; Dipper, Stefanie; Wegera, Klaus-Peter; Wich-Reif, Claudia (2024). Referenzkorpus
-    Mittelhochdeutsch (1050–1350), Version 2.1. ISLRN 937-948-254-174-0. https://doi.org/10.5281/zenodo.13982324
+    Mittelhochdeutsch (1050–1350), Version 2.1, https://www.linguistics.ruhr-uni-bochum.de/rem/. ISLRN 937-948-254-174-0.
   quote: The Reference Corpus of Middle High German is licensed under a Creative Commons Attribution-ShareAlike 4.0 International
     License.
   note: Canonical access page for the requested citation, ANNIS browser, downloads, schemas, and CC BY-SA 4.0 declaration.
 - id: evidence-rem-zenodo
-  url: https://zenodo.org/api/records/13982324
-  accessed_on: '2026-08-11'
+  url: https://zenodo.org/records/13982324
+  accessed_on: '2026-08-12'
   supports:
   - versions
   - versions.links
@@ -81,12 +49,13 @@ sources:
   - versions.sizes
   - note
   - sources
-  title: ReM version 2.1 Zenodo release metadata
+  title: ReM version 2.1 Zenodo release page
   citation: Roussel, Adam; Klein, Thomas; Dipper, Stefanie; Wegera, Klaus-Peter; Wich-Reif, Claudia (2024). Referenzkorpus
     Mittelhochdeutsch (1050–1350), Version 2.1. ISLRN 937-948-254-174-0. https://doi.org/10.5281/zenodo.13982324
   quote: Texts have been digitized and richly annotated, e.g. with parts of speech, morphology and lemmas.
-  note: Canonical metadata for version 2.1, release date, creators, DOI, ISLRN, downloads, formats, annotation presence, and
-    size. Files were not downloaded.
+  note: Public Zenodo release page for version 2.1, publication date, creators, DOI, ISLRN, listed downloads and sizes, format
+    descriptions, annotation presence, and approximate corpus size. The API metadata endpoint is now disallowed by Zenodo
+    robots.txt, so this refresh uses the public HTML record; no files were downloaded.
 - id: evidence-rem-structure
   url: https://linguistics.rub.de/rem/corpus/index.html
   accessed_on: '2026-08-11'
@@ -114,7 +83,7 @@ sources:
     unequal component coverage, and sentence segmentation.
 - id: evidence-rem-license
   url: https://creativecommons.org/licenses/by-sa/4.0/legalcode.en
-  accessed_on: '2026-08-11'
+  accessed_on: '2026-08-12'
   supports:
   - access.original_data_redistribution
   - access.requirements
@@ -206,7 +175,7 @@ sources:
   note: Published HiTS tagset description and rationale.
 - id: evidence-rem-news
   url: https://linguistics.rub.de/rem/access/NEWS
-  accessed_on: '2026-08-11'
+  accessed_on: '2026-08-12'
   supports:
   - versions
   - versions.note
@@ -214,7 +183,7 @@ sources:
   title: ReM changelog
   quote: 'Removed: M057.'
   note: Version 2.0 removed M057; version 2.1 made punctuation-parser and metadata-header corrections and made no text additions
-    or removals.
+    or removals. Revalidated as a canonical, declared 2,821-byte metadata-only changelog under the hard streaming cap.
 - id: evidence-rem-zenodo-manifest
   url: https://zenodo.org/api/records/13982324/files/ReM-v2.1_coraxml.zip/container
   accessed_on: '2026-08-11'
@@ -224,7 +193,33 @@ sources:
   - texts
   title: ReM v2.1 CorA-XML container manifest
   note: The complete version 2.1 container manifest contains M056.xml and M058.xml but no M057.xml. This resolves the stale
-    texts.html row in favor of excluding M057; no corpus payload was downloaded.
+    texts.html row in favor of excluding M057; no corpus payload was downloaded. On 2026-08-12 Zenodo robots.txt disallowed
+    this API endpoint, so the 2026-08-11 historical manifest evidence was retained.
+reviewed_on: '2026-08-12'
+covered_stages:
+- mhg
+access:
+  availability:
+  - described
+  - browsable
+  - downloadable
+  model_training: unclear
+  original_data_redistribution: permitted
+  processed_data_redistribution: unclear
+  trained_weight_publication: unclear
+  license: Creative Commons Attribution-ShareAlike 4.0 International
+  license_url: https://creativecommons.org/licenses/by-sa/4.0/
+  requirements:
+  - When sharing, retain supplied creator and license information, link to the material and license where practicable, and
+    indicate modifications.
+  - Cite Roussel, Klein, Dipper, Wegera, and Wich-Reif (2024), Referenzkorpus Mittelhochdeutsch (1050–1350), Version 2.1,
+    and ISLRN 937-948-254-174-0.
+  note: Automated-access permission was unclear in the source inventory and is intentionally absent from V2. CC BY-SA 4.0
+    directly supports original-data redistribution; model training, processed-data redistribution, and trained-weight publication
+    remain unclear.
+  source_ids:
+  - evidence-rem-access
+  - evidence-rem-license
 versions:
 - id: ver-rem-2-1
   label: '2.1'
@@ -7343,3 +7338,10 @@ versions:
     NEWS says “Removed: M057” and the complete v2.1 CorA-XML container manifest includes M056.xml and M058.xml but no M057.xml;
     M057 is therefore excluded. char_align is present for every MiGraKo text and for a small unidentified extension subset;
     only verified MiGraKo assignments are represented. No safe overlap or whole-corpus derivation is asserted.'
+notes:
+- 'Creators (persons, role creator): Adam Roussel, Thomas Klein, Stefanie Dipper, Klaus-Peter Wegera, and Claudia Wich-Reif.'
+- ReM is diplomatically transcribed. tok_dipl preserves historical tokenization and letter representation close to historical
+  forms; tok_anno uses modernized tokenization and simplified spelling. The punc layer marks sentence or segment boundaries
+  with functional boundary tags.
+- Several corpora flowed into ReM. This does not support a whole-corpus derived_from relationship, so no structured overlap
+  is asserted.

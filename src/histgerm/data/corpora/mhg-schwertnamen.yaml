@@ -1,0 +1,73 @@
+id: corpus-mhg-schwertnamen
+name: Mittelhochdeutsche Schwertnamen (Groß- und Kleinschreibung in ausgewählten Manuskripten)
+description: Structured corpus data recording sword names, capitalization, manuscript or print sources, and relevant transcriptions
+  for selected medieval German works.
+links:
+  record: https://zenodo.org/records/17232661
+  metadata: https://zenodo.org/api/records/17232661
+  doi: https://doi.org/10.5281/zenodo.17232661
+sources:
+- id: zenodo-title
+  url: https://zenodo.org/api/records/17232661
+  accessed_on: '2026-08-12'
+  supports:
+  - name
+  - covered_stages
+  - links
+  title: Zenodo record 17232661
+  quote: Mittelhochdeutsche Schwertnamen (Groß- und Kleinschreibung in ausgewählten Manuskripten)
+- id: zenodo-description
+  url: https://zenodo.org/api/records/17232661
+  accessed_on: '2026-08-12'
+  supports:
+  - description
+  - versions.zenodo-17232661
+  title: Zenodo record 17232661
+  quote: 'Das Korpus umfasst folgende Werke:'
+- id: zenodo-access
+  url: https://zenodo.org/api/records/17232661
+  accessed_on: '2026-08-12'
+  supports:
+  - access.availability
+  - versions.zenodo-17232661.availability
+  title: Zenodo record 17232661
+  quote: '"access_right": "open"'
+  note: The metadata includes a public file manifest and content link; the corpus payload was not retrieved.
+- id: zenodo-license
+  url: https://zenodo.org/api/records/17232661
+  accessed_on: '2026-08-12'
+  supports:
+  - access.license
+  title: Zenodo record 17232661
+  quote: '"license": {"id": "cc-by-4.0"}'
+  note: Repository license identifier only; no modeled permission is inferred.
+reviewed_on: '2026-08-12'
+covered_stages:
+- mhg
+access:
+  availability:
+  - downloadable
+  model_training: unclear
+  original_data_redistribution: unclear
+  processed_data_redistribution: unclear
+  trained_weight_publication: unclear
+  license: CC-BY-4.0
+  source_ids:
+  - zenodo-access
+  - zenodo-license
+versions:
+- id: zenodo-17232661
+  links:
+    record: https://zenodo.org/records/17232661
+    metadata: https://zenodo.org/api/records/17232661
+  license: CC-BY-4.0
+  availability:
+  - downloadable
+  annotations: []
+  texts: []
+  source_ids:
+  - zenodo-description
+  - zenodo-access
+  - zenodo-license
+  note: Zenodo metadata identifies this published record as the latest version and lists one openly accessible spreadsheet;
+    the payload was not retrieved.

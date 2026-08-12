@@ -1,0 +1,84 @@
+id: corpus-der-borte
+name: '''Der Borte'' Dietrichs von der Glezze - Mittelhochdeutscher Text mit neuhochdeutscher Übersetzung'
+description: A structured single-text dataset containing the Middle High German edition text of Der Borte by Dietrich von
+  der Glezze, verse numbers, two New High German translations, and grammatical and semantic commentary.
+links:
+  record: https://zenodo.org/records/20626546
+  metadata: https://zenodo.org/api/records/20626546
+  doi: https://doi.org/10.5281/zenodo.20626546
+sources:
+- id: zenodo-identity-stage
+  url: https://zenodo.org/api/records/20626546
+  accessed_on: '2026-08-12'
+  supports:
+  - name
+  - covered_stages
+  - links
+  title: Zenodo record 20626546
+  quote: 'Der mittelhochdeutsche Text der Edition basiert auf dieser Ausgabe: Dietrich von der Glezze: Der Borte.'
+- id: zenodo-description
+  url: https://zenodo.org/api/records/20626546
+  accessed_on: '2026-08-12'
+  supports:
+  - description
+  - versions
+  - notes
+  title: Zenodo record 20626546
+  quote: Die Dateien (.csv und .xlsx) beinhalten Versnummer, den Editionstext nach Ridder/Ziegeler, eine grammatisch genaue
+    und eine ans Neuhochdeutsche stilistisch angepasstere „schöne“ Übersetzung sowie einen grammatischen und semantischen
+    Kommentar.
+- id: zenodo-access
+  url: https://zenodo.org/api/records/20626546
+  accessed_on: '2026-08-12'
+  supports:
+  - access.availability
+  - versions.released_on
+  - versions.availability
+  title: Zenodo record 20626546
+  quote: '"access_right": "open"'
+  note: The metadata lists CSV and XLSX files and publication date 2026-06-10; no payload was retrieved.
+- id: zenodo-license
+  url: https://zenodo.org/api/records/20626546
+  accessed_on: '2026-08-12'
+  supports:
+  - access.license
+  - versions
+  title: Zenodo record 20626546
+  quote: '"license": {"id": "cc-by-4.0"}'
+  note: Repository license identifier only; no modeled permission is inferred.
+reviewed_on: '2026-08-12'
+covered_stages:
+- mhg
+access:
+  availability:
+  - downloadable
+  model_training: unclear
+  original_data_redistribution: unclear
+  processed_data_redistribution: unclear
+  trained_weight_publication: unclear
+  license: CC-BY-4.0
+  note: Zenodo reports open access and lists downloadable files. The license identifier is recorded, but all modeled permissions
+    remain unclear because no direct permission statement was reviewed.
+  source_ids:
+  - zenodo-access
+  - zenodo-license
+versions:
+- id: zenodo-20626546
+  released_on: '2026-06-10'
+  links:
+    record: https://zenodo.org/records/20626546
+    metadata: https://zenodo.org/api/records/20626546
+  license: CC-BY-4.0
+  availability:
+  - downloadable
+  annotations: []
+  texts: []
+  source_ids:
+  - zenodo-description
+  - zenodo-access
+  - zenodo-license
+  note: This release contains one Middle High German edition text with two New High German translations and commentary in
+    CSV and XLSX. No CorpusText object is asserted because the public metadata does not state the required dialect and date.
+notes:
+- A single-text structured dataset is representable by the Corpus schema; the schema does not require multiple texts.
+- No identity or overlap with the trusted Reference Corpus of Middle High German is asserted.

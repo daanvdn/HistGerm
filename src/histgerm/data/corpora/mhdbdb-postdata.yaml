@@ -1,0 +1,110 @@
+id: corpus-mhdbdb-postdata
+name: Middle High German Conceptual Database
+description: A separately published POSTDATA poetry subset of the University of Salzburg MHDBDB corpus with metric annotation.
+links:
+  landing_page: https://postdata.linhd.uned.es/corpus-y-datasets/
+  repository: https://github.com/linhd-postdata/MHDBDB
+sources:
+- id: evidence-postdata-mhdbdb-identity
+  url: https://postdata.linhd.uned.es/corpus-y-datasets/
+  accessed_on: '2026-08-12'
+  supports:
+  - name
+  - covered_stages
+  - reviewed_on
+  title: Corpora and datasets — POSTDATA
+  quote: Middle High German Conceptual Database
+  note: Canonical POSTDATA table entry directly establishes the resource name and Middle High German stage.
+- id: evidence-postdata-mhdbdb-subset
+  url: https://postdata.linhd.uned.es/corpus-y-datasets/
+  accessed_on: '2026-08-12'
+  supports:
+  - description
+  - overlaps
+  title: Corpora and datasets — POSTDATA
+  quote: Subset of the available poems in the MHDB Database at the University of Salzburg
+  note: Canonical wording establishes that this is a subset of corpus-mhdbdb, not a duplicate record for the complete Salzburg
+    corpus.
+- id: evidence-postdata-mhdbdb-release
+  url: https://postdata.linhd.uned.es/corpus-y-datasets/
+  accessed_on: '2026-08-12'
+  supports:
+  - access.availability
+  - versions.availability
+  title: Corpora and datasets — POSTDATA
+  quote: Public
+  note: The canonical table describes the subset as public, although its linked repository is currently unavailable.
+- id: evidence-postdata-mhdbdb-metric
+  url: https://postdata.linhd.uned.es/corpus-y-datasets/
+  accessed_on: '2026-08-12'
+  supports:
+  - annotations
+  title: Corpora and datasets — POSTDATA
+  quote: Metric
+  note: The canonical table reports metric annotation for this subset.
+- id: evidence-postdata-mhdbdb-link
+  url: https://postdata.linhd.uned.es/corpus-y-datasets/
+  accessed_on: '2026-08-12'
+  supports:
+  - links.repository
+  - versions.links
+  title: Corpora and datasets — POSTDATA
+  quote: https://github.com/linhd-postdata/MHDBDB
+  note: POSTDATA provides a repository link specific to the subset.
+- id: evidence-postdata-mhdbdb-unavailable
+  url: https://api.github.com/repos/linhd-postdata/MHDBDB
+  accessed_on: '2026-08-12'
+  supports:
+  - access.availability
+  - versions.availability
+  - links.repository
+  title: GitHub repository metadata for linhd-postdata/MHDBDB
+  quote: '"message":"Not Found"'
+  note: The current public metadata endpoint returns HTTP 404.
+reviewed_on: '2026-08-12'
+covered_stages:
+- mhg
+access:
+  availability:
+  - described
+  - unavailable
+  model_training: unclear
+  original_data_redistribution: unclear
+  processed_data_redistribution: unclear
+  trained_weight_publication: unclear
+  note: POSTDATA describes the subset as public, but the linked GitHub repository currently returns HTTP 404.
+  source_ids:
+  - evidence-postdata-mhdbdb-release
+  - evidence-postdata-mhdbdb-unavailable
+versions:
+- id: postdata-subset
+  label: POSTDATA MHDBDB poetry subset
+  links:
+    repository: https://github.com/linhd-postdata/MHDBDB
+  availability:
+  - described
+  - unavailable
+  annotations:
+  - id: metric
+    type: other
+    tagset_name: Metric
+    source_ids:
+    - evidence-postdata-mhdbdb-metric
+    note: POSTDATA labels the subset's annotation as Metric; no finer annotation taxonomy was established.
+  texts: []
+  source_ids:
+  - evidence-postdata-mhdbdb-release
+  - evidence-postdata-mhdbdb-link
+  - evidence-postdata-mhdbdb-unavailable
+  note: POSTDATA reports approximately 500,000 verses in plain text. The repository is currently unavailable, and no exact
+    release date or identifier was established.
+overlaps:
+- relationship: derived_from
+  with: corpus-mhdbdb
+  note: POSTDATA explicitly describes this resource as a subset of the poems available in the University of Salzburg MHDB
+    Database.
+  source_ids:
+  - evidence-postdata-mhdbdb-subset
+notes:
+- This record represents the separately published POSTDATA subset; corpus-mhdbdb remains the retained record for the broader
+  Salzburg corpus.

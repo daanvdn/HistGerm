@@ -129,6 +129,13 @@ web client from resolving the hostname again, and never fall back to hostname
 resolution. If the retrieval interface cannot prove all of these controls,
 make no request and return an evidence gap.
 
+Use only the checked-in bounded transport for retrieval:
+`uv run python -m histgerm.research.fetching <url> --output <os-temp-file>`.
+The output must be outside the repository and deleted after parsing. It pins
+each request and redirect, preserves Host and TLS validation, accepts a missing
+`Content-Length`, and counts streamed bytes against the 10 MiB limit. Never
+generate a helper script or replace it with ad hoc `curl`.
+
 Allow only public `http://` or `https://` URLs. Reject URLs containing
 credentials and reject `file:`, non-HTTP(S), localhost, loopback, link-local,
 private-network, and otherwise non-public destinations. Do not send
@@ -143,10 +150,9 @@ availability fact.
 Allowed retrieval is limited to public HTML, public metadata APIs, public
 archive/repository manifests, and clearly separated metadata-only files no
 larger than 10 MiB. Inspect response headers first when possible. Refuse a
-declared size over 10 MiB, a missing/unsafe size that cannot be bounded, a
-payload-like content type or disposition, and any response that changes into a
-payload. When streaming allowed metadata, enforce a hard 10 MiB limit and stop
-before retaining excess bytes.
+declared size over 10 MiB, a payload-like content type or disposition, and any
+response that changes into a payload. Missing `Content-Length` is allowed only
+through the checked-in streaming limit.
 
 Never download corpus or dictionary content, annotations, model weights,
 binaries, archives, database dumps, software packages, or other third-party

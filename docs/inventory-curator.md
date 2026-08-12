@@ -132,6 +132,11 @@ catalogs/project sites, GitHub, and Hugging Face. An inapplicable channel needs
 a recorded policy reason; an unsafe, blocked, incomplete, or rate-limited
 required query makes the pass incomplete.
 
+The curator reports concise milestones after preflight, seed handling, each
+one- or two-channel group, each batch of at most three candidates, each pass,
+and validation/publication. Long sweeps are split at those boundaries and do
+not remain silent for more than ten minutes while work is active.
+
 A resource is in scope only when canonical, responsible institutional,
 official repository/model-card, registry, or primary scholarly evidence
 explicitly establishes OHG, MHG, or ENHG coverage. Secondary lists may reveal
@@ -184,6 +189,12 @@ loopback, link-local, private-network, `file:`, and other non-public or
 non-HTTP(S) destinations. Robots, terms, paywalls, access controls,
 authentication boundaries, rate limits, and automation prohibitions are
 respected.
+
+Retrieval uses `histgerm.research.fetching`, which resolves and pins every
+request and redirect while preserving HTTP Host and TLS hostname validation.
+It accepts a missing `Content-Length` and enforces 10 MiB by counting streamed
+bytes. Temporary response files stay outside the repository and are deleted
+after parsing; the curator does not generate transport helper scripts.
 
 The curator never downloads or commits corpus text, dictionary content,
 annotations, model weights, binaries, archives, database dumps, software

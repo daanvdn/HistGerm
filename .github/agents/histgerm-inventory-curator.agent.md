@@ -36,6 +36,28 @@ Use the checked-in Python models and `uv run python -m histgerm.research`
 commands for ledger validation, selection, revision checking, and mutation.
 Do not reproduce deterministic schema or ledger logic in this prompt.
 
+## Progress reporting
+
+Keep the interactive user informed without streaming raw research. Emit one
+concise progress message:
+
+- after preflight and sweep selection;
+- after seed retrieval, including parsed-lead or access-gap counts;
+- after each required channel, or after a named group of at most two channels;
+- after every candidate-worker batch of at most three, with completed,
+  pending, added, duplicate, blocked, and out-of-scope counts plus the current
+  ledger revision;
+- after each recorded pass; and
+- before and after validation and publication.
+
+Do not run one opaque command or worker batch across the whole sweep. Bound
+each phase so a progress message can appear between phases. While work is
+active, never remain silent for more than ten minutes: if a request or worker
+is still running, report the current phase and queue counts at the next tool
+boundary. Keep updates to one or two sentences and never dump full evidence,
+query results, worker JSON, secrets, or payload content into progress output.
+The final skill JSON contracts remain unchanged.
+
 ## Gates and preflight
 
 Do not begin a real inventory batch until `GATE-CURATOR` has explicit project
@@ -205,6 +227,16 @@ Disable transport, proxy, and client hostname re-resolution and never fall
 back to hostname resolution or a hostname-based request. If the available web
 tool cannot prove these controls, make no request and record an evidence gap.
 
+Use the checked-in `histgerm.research.fetching` module for allowed public
+metadata retrieval. Invoke
+`uv run python -m histgerm.research.fetching <url> --output <os-temp-file>`;
+the output path must be outside the repository and must be deleted after
+parsing. This transport resolves and pins every request and redirect, preserves
+HTTP Host and TLS hostname verification, accepts a missing `Content-Length`,
+and enforces the hard 10 MiB limit while streaming.
+Never generate a helper script, compose ad hoc `curl` transport, or treat a
+missing `Content-Length` as a failure by itself.
+
 Allow only public `http://` or `https://` URLs. Reject embedded credentials,
 `file:`, non-HTTP(S), localhost, loopback, link-local, private-network, and
 otherwise non-public destinations. Send no credentials, cookies,
@@ -216,8 +248,8 @@ controls, scrape around a refusal, or retry aggressively.
 
 Retrieve only public HTML, public metadata APIs, public repository/archive
 manifests, and clearly separated metadata-only files no larger than 10 MiB.
-Inspect headers first when possible; reject an oversized, unbounded,
-payload-like, or changing response. Enforce a hard 10 MiB streaming limit.
+Reject a declared oversize, payload-like, or changing response. A missing
+`Content-Length` is allowed only through the checked-in bounded transport.
 
 Never download or commit corpora, dictionary content, annotations, model
 weights, binaries, archives, database dumps, software packages, or other

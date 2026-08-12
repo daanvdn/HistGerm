@@ -1,0 +1,85 @@
+id: corpus-altdeutsche-originalurkunden
+name: Corpus der altdeutschen Originalurkunden bis zum Jahr 1300
+aliases:
+- Corpus altdeutscher Originalurkunden
+description: Digital edition of 4,422 German-language legal and business documents from the beginnings through 1299, explicitly
+  described as a central corpus for research into Middle High German.
+links:
+  project_page: https://tcdh.uni-trier.de/en/projekt/digitization-corpus-altdeutscher-originalurkunden
+  browser: http://tcdh01.uni-trier.de/cgi-bin/iCorpus/CorpusIndex.tcl
+sources:
+- id: evidence-originalurkunden-project
+  url: https://tcdh.uni-trier.de/en/projekt/digitization-corpus-altdeutscher-originalurkunden
+  accessed_on: '2026-08-12'
+  supports:
+  - name
+  - aliases
+  - description
+  - covered_stages
+  - links.project_page
+  - reviewed_on
+  - versions
+  title: Digitization of the Corpus altdeutscher Originalurkunden
+  quote: With the digitization of the "corpus of old German original documents up to the year 1300", this central text corpus
+    for research into Middle High German was made accessible in a new form.
+  note: Canonical project evidence for corpus identity, explicit MHG scope, chronology, extent, and digital-edition status.
+- id: evidence-originalurkunden-browser
+  url: http://tcdh01.uni-trier.de/cgi-bin/iCorpus/CorpusIndex.tcl
+  accessed_on: '2026-08-12'
+  supports:
+  - links.browser
+  - access
+  - versions
+  - versions.links
+  - versions.availability
+  title: Corpus der altdeutschen Originalurkunden
+  quote: '[zu den Urkunden]'
+  note: The public application landing page exposed navigation into the charter collection and a document-entry link; only
+    bounded HTML metadata was retrieved.
+- id: evidence-originalurkunden-news
+  url: http://tcdh01.uni-trier.de/cgi-bin/iCorpus/CorpusIndex.tcl?hea=&for=&nav=&cnt=news
+  accessed_on: '2026-08-12'
+  supports:
+  - versions.note
+  - notes
+  title: Corpus der altdeutschen Originalurkunden - News
+  quote: 05.06.2007
+  note: Most recent documented functionality update on the application's visible News page; not evidence of a numbered release
+    or release date.
+reviewed_on: '2026-08-12'
+covered_stages:
+- mhg
+access:
+  availability:
+  - described
+  - browsable
+  model_training: unclear
+  original_data_redistribution: unclear
+  processed_data_redistribution: unclear
+  trained_weight_publication: unclear
+  note: The project is described by TCDH and its public online application was browsable on the review date. No direct legal
+    statement supports any modeled permission.
+  source_ids:
+  - evidence-originalurkunden-project
+  - evidence-originalurkunden-browser
+versions:
+- id: online-edition
+  label: Online edition
+  links:
+    browser: http://tcdh01.uni-trier.de/cgi-bin/iCorpus/CorpusIndex.tcl
+  availability:
+  - browsable
+  annotations: []
+  texts: []
+  source_ids:
+  - evidence-originalurkunden-project
+  - evidence-originalurkunden-browser
+  - evidence-originalurkunden-news
+  note: No numbered release or release date is stated. The live unversioned online edition was accessed on 2026-08-12; its
+    latest documented functionality update is dated 2007-06-05.
+notes:
+- The canonical project statement explicitly supports MHG only; OHG and ENHG are not claimed from the title, chronology, or
+  source silence.
+- 'This resource is not the trusted corpus-rem: the canonical pages identify it as a distinct charter corpus and digitization
+  project, so no name-based merge or duplicate match is asserted.'
+- Only bounded public HTML metadata was retrieved; no corpus documents, downloads, archives, or other payloads were accessed.

@@ -1,0 +1,110 @@
+id: corpus-suesse-annotations
+name: SFB1391 B03 AB Süße Annotationen
+description: Restricted annotation dataset comprising six annotation rounds and associated guidelines for occurrences of the
+  süeze word family in a representative corpus of Middle High German texts.
+links:
+  repository_record: https://zenodo.org/records/7701565
+sources:
+- id: zenodo-identity
+  url: https://zenodo.org/records/7701565
+  accessed_on: '2026-08-12'
+  supports:
+  - name
+  - links.repository_record
+  title: SFB1391 B03 AB Süße Annotationen
+  quote: SFB1391 B03 AB Süße Annotationen
+- id: zenodo-scope
+  url: https://zenodo.org/records/7701565
+  accessed_on: '2026-08-12'
+  supports:
+  - description
+  - covered_stages
+  - annotations
+  title: SFB1391 B03 AB Süße Annotationen
+  quote: all words from the word family of "süeze" in a representative corpus of Middle High German texts were annotated with
+    regard to their domains of application or use and their aesthetic semantization.
+- id: zenodo-version
+  url: https://zenodo.org/records/7701565
+  accessed_on: '2026-08-12'
+  supports:
+  - versions.v1.label
+  title: SFB1391 B03 AB Süße Annotationen
+  quote: Version v1
+- id: zenodo-release
+  url: https://zenodo.org/records/7701565
+  accessed_on: '2026-08-12'
+  supports:
+  - versions.v1.released_on
+  title: SFB1391 B03 AB Süße Annotationen
+  quote: Published March 6, 2023
+- id: zenodo-access
+  url: https://zenodo.org/records/7701565
+  accessed_on: '2026-08-12'
+  supports:
+  - access
+  - versions.v1.availability
+  title: SFB1391 B03 AB Süße Annotationen
+  quote: The record is publicly accessible, but files are restricted.
+- id: zenodo-login
+  url: https://zenodo.org/records/7701565
+  accessed_on: '2026-08-12'
+  supports:
+  - access.availability
+  - access.requirements
+  - versions.v1.availability
+  title: SFB1391 B03 AB Süße Annotationen
+  quote: Log in to check if you have access.
+- id: zenodo-request
+  url: https://zenodo.org/records/7701565
+  accessed_on: '2026-08-12'
+  supports:
+  - access.availability
+  - access.requirements
+  - versions.v1.availability
+  title: SFB1391 B03 AB Süße Annotationen
+  quote: Request access
+reviewed_on: '2026-08-12'
+covered_stages:
+- mhg
+access:
+  availability:
+  - authentication_required
+  - request_only
+  model_training: unclear
+  original_data_redistribution: unclear
+  processed_data_redistribution: unclear
+  trained_weight_publication: unclear
+  requirements:
+  - Log in to check whether access is available.
+  - Request access from the record page.
+  note: The metadata record is public, but the files are restricted.
+  source_ids:
+  - zenodo-access
+  - zenodo-login
+  - zenodo-request
+versions:
+- id: v1
+  label: v1
+  released_on: '2023-03-06'
+  availability:
+  - authentication_required
+  - request_only
+  annotations:
+  - id: usage-domains-aesthetic-semantization
+    type: other
+    source_ids:
+    - zenodo-scope
+    note: Annotations classify uses of the süeze word family by application or use domain and aesthetic semantization.
+  texts: []
+  source_ids:
+  - zenodo-scope
+  - zenodo-version
+  - zenodo-release
+  - zenodo-access
+  - zenodo-login
+  - zenodo-request
+  note: Public metadata describes six annotation rounds and associated guidelines; the restricted files and individual corpus
+    texts were not inspected.
+notes:
+- This record represents the Süße annotation dataset. The underlying representative corpus is not identified as a separately
+  named corpus in the public record.

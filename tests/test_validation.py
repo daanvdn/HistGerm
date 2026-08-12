@@ -1,4 +1,4 @@
-"""Focused tests for minimal HistGerm V2 inventory validation."""
+"""Focused tests for HistGerm inventory validation."""
 
 from __future__ import annotations
 
@@ -129,7 +129,7 @@ def _failure(root: Path) -> str:
 def test_bundled_inventory_validates() -> None:
     """Validate the bundled V2 resources without mutation."""
 
-    root = Path(__file__).parents[2] / "src" / "histgerm" / "data"
+    root = Path(__file__).parents[1] / "src" / "histgerm" / "data"
     inventory = validate_inventory(root)
     paths = discover_bundled_yaml()
     payload_ids = {path: load_bundled_yaml(path)["id"] for path in paths}

@@ -8,7 +8,7 @@ from histgerm.models import Tool
 from histgerm.validation import validate_inventory
 
 YAML_PATH = (
-    Path(__file__).parents[2] / "src" / "histgerm" / "data" / "tools" / "rnntagger.yaml"
+    Path(__file__).parents[1] / "src" / "histgerm" / "data" / "tools" / "rnntagger.yaml"
 )
 
 

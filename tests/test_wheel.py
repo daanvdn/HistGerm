@@ -13,7 +13,7 @@ from zipfile import ZipFile, ZipInfo
 
 import pytest
 
-ROOT = Path(__file__).parents[2]
+ROOT = Path(__file__).parents[1]
 DATA_ROOT = ROOT / "src" / "histgerm" / "data"
 RESOURCE_CATEGORIES = ("corpora", "dictionaries", "tools")
 RESEARCH_LEDGER = "research/discovery-ledger.yaml"
@@ -228,30 +228,17 @@ def test_installed_wheel_imports_loads_yaml_and_queries_each_type(
     environment.pop("PYTHONPATH", None)
     environment["UV_OFFLINE"] = "1"
     environment["UV_PYTHON_DOWNLOADS"] = "never"
-    venv = tmp_path / "venv"
-    subprocess.run(
-        [
-            "uv",
-            "venv",
-            str(venv),
-            "--python",
-            f"{sys.version_info.major}.{sys.version_info.minor}",
-        ],
-        cwd=tmp_path,
-        env=environment,
-        check=True,
-        capture_output=True,
-        text=True,
-    )
-    python = venv / ("Scripts/python.exe" if os.name == "nt" else "bin/python")
+    environment["UV_CACHE_DIR"] = str(tmp_path / "empty-uv-cache")
+    target = tmp_path / "installed"
     subprocess.run(
         [
             "uv",
             "pip",
             "install",
             "--offline",
-            "--python",
-            str(python),
+            "--no-deps",
+            "--target",
+            str(target),
             str(built_wheel),
         ],
         cwd=tmp_path,
@@ -260,11 +247,19 @@ def test_installed_wheel_imports_loads_yaml_and_queries_each_type(
         capture_output=True,
         text=True,
     )
+    environment["PYTHONPATH"] = str(target)
+    environment["PYTHONNOUSERSITE"] = "1"
+    for name in tuple(environment):
+        if name.startswith("COV_CORE_"):
+            environment.pop(name)
     script = "\n".join(
         [
             "import histgerm",
+            "from pathlib import Path",
             "from histgerm.catalog import load_catalog",
             "from histgerm.loading import discover_bundled_yaml, load_bundled_yaml",
+            f"installed = Path({str(target)!r}).resolve()",
+            "assert Path(histgerm.__file__).resolve().is_relative_to(installed)",
             f"expected = {tuple(authored_yaml())!r}".replace("histgerm/data/", ""),
             "assert discover_bundled_yaml() == expected",
             "expected_ids = {'corpora': set(), 'dictionaries': set(), 'tools': set()}",
@@ -282,7 +277,7 @@ def test_installed_wheel_imports_loads_yaml_and_queries_each_type(
         ]
     )
     subprocess.run(
-        [str(python), "-c", script],
+        [sys.executable, "-c", script],
         cwd=tmp_path,
         env=environment,
         check=True,
@@ -324,6 +319,8 @@ def test_repository_has_no_duplicate_inventory_or_third_party_payloads() -> None
         relative = Path(os.fsdecode(encoded))
         path = ROOT / relative
         assert not path.is_symlink()
+        if not path.exists():
+            continue
         size = path.stat().st_size
         with path.open("rb") as source:
             leading_bytes = source.read(MAGIC_READ_SIZE)
