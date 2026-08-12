@@ -139,8 +139,9 @@ branch as its head. Its description must contain all of:
 - every validation command result;
 - focused queries attempted/completed and new-candidate yield by family and
   channel;
-- providers attempted with locale, retrieval mode, request-specific status,
-  item-level unrelated-result samples, and access gaps;
+- providers attempted with each exact authored query, locale, retrieval mode,
+  request-specific status, item-level unrelated-result samples, and access
+  gaps;
 - model-elicited lead counts and trusted-inventory vocabulary terms/lead counts,
   explicitly identified as untrusted leads rather than evidence;
 - bounded HTTP versus controlled-browser observations and exact failure stages,

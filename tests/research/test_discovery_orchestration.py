@@ -159,3 +159,84 @@ def test_provider_failure_is_audited_without_stopping_required_channels() -> Non
     assert all(
         "bounded_http transport" in record.observation for record in result.assessments
     )
+
+
+def test_provider_aware_exact_variants_fallbacks_and_exclusions() -> None:
+    requests: list[SearchRequest] = []
+
+    def provider_fetch(request: SearchRequest) -> ProviderResponse:
+        requests.append(request)
+        body = (
+            "<rss><channel/></rss>"
+            if request.response_format is ResponseFormat.RSS
+            else "<main>No results</main>"
+        )
+        return ProviderResponse(
+            retrieval_mode="bounded_http",
+            observed_at=datetime(2026, 8, 12, tzinfo=UTC),
+            http_status=200,
+            body=body,
+        )
+
+    result = run_discovery(
+        DiscoveryConfig(
+            category="tool",
+            stage=LanguageStage.MHG,
+            max_mined_terms=0,
+            max_exclusion_groups=1,
+            exclusion_group_size=1,
+            vocabulary=VocabularyLimits(max_pages=1),
+        ),
+        DiscoveryDependencies(
+            catalog=load_catalog(),
+            model_call=EmptyModel([]),
+            vocabulary_transport=lambda url, *, max_bytes: FetchedDocument(
+                url, "text/plain", b""
+            ),
+            provider_fetch=provider_fetch,
+            result_inspector=lambda result: ("unrelated", "no matching resource"),
+        ),
+    )
+
+    exact_parser = '"Middle High German" parser'
+    assert any(
+        request.channel == "general_web_bing" and request.query == exact_parser
+        for request in requests
+    )
+    assert any(
+        request.channel == "institutional" and request.query == exact_parser
+        for request in requests
+    )
+    assert any(
+        request.channel == "clarin" and request.query == "Middle High German parser"
+        for request in requests
+    )
+
+    bing_queries = [
+        request.query for request in requests if request.channel == "general_web_bing"
+    ]
+    assert any(
+        query.startswith('"Middle High German" "dependency parser" -"')
+        for query in bing_queries
+    )
+    assert any(query.startswith('MHG dependency parser -"') for query in bing_queries)
+    assert not any(
+        query.startswith('"Middle High German" "parser"') for query in bing_queries
+    )
+    assert len(bing_queries) == len(set(bing_queries))
+
+    clarin_queries = [
+        request.query for request in requests if request.channel == "clarin"
+    ]
+    assert not any(query.startswith("MHG ") for query in clarin_queries)
+    assert not any('"dependency parser"' in query for query in clarin_queries)
+    strict_exclusion = next(
+        query
+        for query in bing_queries
+        if query.startswith('"Middle High German" "dependency parser" -"')
+    )
+    assert strict_exclusion.count('"') == 6
+    assert result.metrics["focused_queries_attempted"] == len(requests)
+    assert [record.query for record in result.assessments] == [
+        request.query for request in requests
+    ]

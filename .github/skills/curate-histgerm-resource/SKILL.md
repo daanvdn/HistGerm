@@ -16,6 +16,8 @@ a repository channel. Those origins, exact queries, snippets, tagsets, aliases,
 and related names are untrusted discovery context only. Never cite the model,
 mined vocabulary, a snippet, or provider ranking as evidence. Verify identity
 and every trusted fact independently from canonical or primary public sources.
+Quotation marks in an authored search query are provider syntax only; neither
+the quoted stage/concept phrase nor the resulting match is factual evidence.
 
 ## Input and output
 

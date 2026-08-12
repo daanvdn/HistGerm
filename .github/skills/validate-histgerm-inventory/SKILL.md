@@ -52,9 +52,15 @@ broader terminology and named tagsets, bounded model elicitation before web
 search, iterative exclusions, transient trusted-inventory vocabulary mining,
 Google/provider audit details, item-level result inspection,
 transport-specific observations, existing-record coverage metrics, controlled
-browser scope, robots semantics, and publication reporting. Prefer semantic
-co-occurrence and invariant assertions over guesses about private helper names
-or implementation structure.
+browser scope, robots semantics, and publication reporting. The tests must
+semantically enforce quoted multiword stage phrases as the general-engine
+precision-first form, natural German single-word stages, no whole-query
+quoting, bounded exact-concept variants only for weak coverage, controlled
+stage-abbreviation recall, provider-supported syntax with plain fallback for
+uncertain quote semantics, search quotes as untrusted non-evidence, complete
+query/provider/locale/mode/status auditing, and item-level inspection. Prefer
+semantic co-occurrence and invariant assertions over guesses about private
+helper names or implementation structure.
 
 ## Deterministic command set
 

@@ -119,10 +119,27 @@ no cache, crawl snapshot, vocabulary registry, staging tree, or report file.
 Every pass searches one concept at a time: one selected-stage name or
 abbreviation, one resource/task concept, and zero or one optional access,
 implementation, standard, or tagset qualifier. Never combine unrelated task
-families in one required query. Record each exact query string, `de` or `en`,
-stable channel, provider, locale, retrieval mode, request-specific status,
-inspected result/registry URLs, completion Boolean, and assessment or access
-note in the existing `SearchQueryRecord`/pass fields.
+families in one required query.
+
+For general search engines, the precision-first formulation quotes the exact
+multiword stage phrase and leaves the separate concept unquoted, for example
+`"Middle High German" parser`. German single-word stage forms such as
+`Althochdeutsch`, `Mittelhochdeutsch`, and `Frühneuhochdeutsch` remain natural
+unquoted terms. Never quote the entire query. If a family remains weakly
+covered, try one bounded variant quoting an exact multiword concept phrase;
+after that, use the stage abbreviation (`OHG`, `MHG`, or `ENHG`) as a
+controlled-recall variant. Quoted phrases are search syntax and untrusted
+leads, never evidence of identity, scope, task support, tagset use, or any
+inventory fact.
+
+Use provider-specific operators and quotation syntax only where the provider
+or interface supports them. Preserve a plain, unquoted formulation for
+registries, repositories, APIs, and interfaces with uncertain quote semantics;
+do not assume general-engine syntax transfers between providers. Record each
+exact authored query string, `de` or `en`, stable channel, provider, locale,
+retrieval mode, request-specific status, inspected result/registry URLs,
+completion Boolean, and assessment or access note in the existing
+`SearchQueryRecord`/pass fields.
 
 - OHG: `Althochdeutsch`, `Old High German`, `OHG`.
 - MHG: `Mittelhochdeutsch`, `Middle High German`, `MHG`.

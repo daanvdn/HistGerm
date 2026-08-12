@@ -137,9 +137,19 @@ For discovery, invoke `discover-histgerm-resources`. Search one concept at a
 time in German and English across every required channel: one stage term, one
 resource or task concept, and at most one access, implementation, standard, or
 tagset qualifier. Never combine unrelated task families in one required query.
+For general search engines, use an exact quoted multiword stage phrase as the
+precision-first form, for example `"Middle High German" parser`. Keep German
+single-word stage forms such as `Mittelhochdeutsch` natural and unquoted. Do
+not quote the whole query. Use an exact quoted concept phrase only as a bounded
+weak-coverage variant, then use the stage abbreviation in a controlled recall
+variant. Apply provider-specific operators or quoting only when that interface
+documents support; preserve plain syntax for registries, repositories, or
+other interfaces whose quote semantics are uncertain.
 Cover broader corpus, dictionary, and tool terminology and named tagsets such
 as STTS and HiTS when relevant. Treat discovery wording, tagset associations,
-model leads, snippets, and mined vocabulary as leads, not trusted evidence.
+model leads, snippets, mined vocabulary, and quoted search syntax as leads, not
+trusted evidence. Quotes constrain discovery syntax; they never establish a
+fact or satisfy evidence requirements.
 Deduplicate by evidenced identity against all current resources and ledger
 candidates, never by similar names or titles. Send a verified existing match
 immediately through `curate-histgerm-resource` in refresh mode. Block possible

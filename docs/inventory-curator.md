@@ -144,9 +144,18 @@ or tool concept, and at most one access, implementation, standard, or tagset
 qualifier. Tool coverage separates tagging, morphology, lemmatization,
 normalization, parsing, segmentation, models, and pipelines in German and
 English. Relevant named tagsets such as STTS and HiTS receive separate queries.
+For general search engines, an exact quoted multiword stage phrase is the
+precision-first form, for example `"Middle High German" parser`; the entire
+query is never quoted. German single-word stage forms remain naturally
+unquoted. An exact quoted concept phrase is used only as a bounded weak-coverage
+variant, followed by a controlled stage-abbreviation recall variant.
+Provider-specific syntax is used only where supported, while registries and
+interfaces with uncertain quote semantics retain plain queries. Search quotes
+are untrusted discovery syntax, never evidence.
 Google and other eligible providers are audited independently. Every returned
 item is inspected before an unrelated assessment, and transport observations
-retain provider, locale, retrieval mode, status, and failure stage.
+retain the exact authored query, provider, locale, retrieval mode, status, and
+failure stage.
 
 Passes use bounded exclusion searches and a second focused round for weak
 coverage. Existing query/pass records and the pull-request body carry run-local

@@ -11,6 +11,7 @@ import pytest
 
 ROOT = Path(__file__).parents[2]
 AGENT = ROOT / ".github" / "agents" / "histgerm-inventory-curator.agent.md"
+CURATOR_DOC = ROOT / "docs" / "inventory-curator.md"
 SKILL_ROOT = ROOT / ".github" / "skills"
 SKILLS = (
     "discover-histgerm-resources",
@@ -233,6 +234,66 @@ def test_focused_queries_cover_broad_bilingual_concepts(
         ("corpus and dictionary", "corpus and dictionary terms"),
     )
     assert "German and English queries" in discover
+
+
+def test_exact_query_progression_is_precision_first_and_provider_aware(
+    contracts: dict[str, str],
+) -> None:
+    """Quoted stages improve precision without turning search syntax into evidence."""
+
+    documented = " ".join(CURATOR_DOC.read_text(encoding="utf-8").split())
+    for policy in (contracts["agent"], contracts[SKILLS[0]], documented):
+        assert_concepts(
+            policy,
+            ('"middle high german" parser',),
+            ("multiword stage phrase",),
+            ("precision-first",),
+            ("single-word stage",),
+            ("unquoted",),
+            (
+                "never quote the entire query",
+                "entire query is never quoted",
+                "do not quote the whole query",
+            ),
+            ("weak-coverage variant", "remains weakly covered"),
+            ("stage abbreviation", "stage-abbreviation"),
+            (
+                "controlled recall",
+                "controlled-recall",
+                "controlled stage-abbreviation recall",
+            ),
+            ("provider-specific",),
+            ("uncertain quote semantics", "quote semantics are uncertain"),
+            ("untrusted",),
+            ("never evidence", "never establish"),
+        )
+
+    discover = contracts[SKILLS[0]]
+    assert_concepts(
+        discover,
+        ("exact authored query",),
+        ("provider",),
+        ("locale",),
+        ("retrieval mode",),
+        ("request-specific status",),
+        ("inspect every returned item",),
+    )
+    curate = contracts[SKILLS[1]]
+    assert_concepts(
+        curate,
+        ("quotation marks in an authored search query",),
+        ("provider syntax only",),
+        ("not factual evidence", "nor the resulting match is factual evidence"),
+    )
+    publish = contracts[SKILLS[3]]
+    assert_concepts(
+        publish,
+        ("exact authored query",),
+        ("locale",),
+        ("retrieval mode",),
+        ("request-specific status",),
+        ("item-level unrelated-result samples",),
+    )
 
 
 def test_model_and_inventory_leads_are_bounded_transient_and_untrusted(

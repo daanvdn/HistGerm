@@ -20,10 +20,12 @@ from .elicitation import (
 from .fetching import RetrievalFailureStage, RetrievalMode
 from .focused_queries import (
     FocusedQuery,
+    QueryFormulation,
     ResourceCategory,
     apply_exclusion_group,
     bounded_exclusion_groups,
     generate_focused_queries,
+    render_query,
 )
 from .inventory_vocabulary import (
     BoundedClassifier,
@@ -196,6 +198,10 @@ _REQUIRED_CHANNELS: tuple[_Channel, ...] = (
     _Channel("github", SearchProvider.GITHUB, ResponseFormat.HTML),
     _Channel("huggingface", SearchProvider.HUGGINGFACE, ResponseFormat.HTML),
 )
+_GENERAL_WEB_CHANNELS = frozenset(
+    {"general_web_google", "general_web_bing", "general_web_brave"}
+)
+_EXACT_STAGE_CHANNELS = _GENERAL_WEB_CHANNELS | {"institutional"}
 
 
 def run_discovery(
@@ -237,20 +243,21 @@ def run_discovery(
     )
     assessments: list[SearchAssessmentRecord] = []
     leads: dict[str, SearchResult] = {}
-    lead_queries: set[str] = set()
+    productive_requests: set[tuple[FocusedQuery, str]] = set()
 
     for query in queries:
         for channel in _REQUIRED_CHANNELS:
+            formulation = _first_round_formulation(channel)
             record = _execute_query(
-                query.text,
+                render_query(query, formulation),
                 query,
                 channel,
                 dependencies,
             )
             assessments.append(record)
             retained = _retain_leads(record, leads)
-            if retained:
-                lead_queries.add(query.text)
+            if _has_lead(record):
+                productive_requests.add((query, channel.name))
             metrics.record_assessment(
                 record,
                 family=query.family,
@@ -268,11 +275,17 @@ def run_discovery(
         max_names=config.exclusion_group_size,
         max_characters=config.exclusion_character_limit,
     )[: config.max_exclusion_groups]
-    weak_queries = [query for query in queries if query.text not in lead_queries]
-    for query in weak_queries:
-        for group in exclusion_groups:
-            excluded_text = apply_exclusion_group(query, group)
-            for channel in _REQUIRED_CHANNELS:
+    for query in queries:
+        for channel in _REQUIRED_CHANNELS:
+            if (query, channel.name) in productive_requests:
+                continue
+            formulations = _weak_coverage_formulations(query, channel)
+            rendered_variants = _rendered_exclusion_variants(
+                query,
+                formulations,
+                exclusion_groups,
+            )
+            for excluded_text in rendered_variants:
                 record = _execute_query(
                     excluded_text,
                     query,
@@ -340,6 +353,52 @@ def _execute_query(
     )
 
 
+def _first_round_formulation(channel: _Channel) -> QueryFormulation:
+    return "exact_stage" if channel.name in _EXACT_STAGE_CHANNELS else "plain"
+
+
+def _weak_coverage_formulations(
+    query: FocusedQuery,
+    channel: _Channel,
+) -> tuple[QueryFormulation, ...]:
+    base = _first_round_formulation(channel)
+    if channel.name not in _GENERAL_WEB_CHANNELS:
+        return (base,)
+    formulations: list[QueryFormulation] = [base]
+    if " " in " ".join(query.concept.split()):
+        formulations.append("exact_stage_and_concept")
+    formulations.append("stage_abbreviation")
+    return tuple(formulations)
+
+
+def _rendered_exclusion_variants(
+    query: FocusedQuery,
+    formulations: Sequence[QueryFormulation],
+    exclusion_groups: Sequence[Sequence[str]],
+) -> tuple[str, ...]:
+    texts: list[str] = []
+    seen: set[str] = set()
+    groups: Sequence[Sequence[str] | None] = (
+        exclusion_groups if exclusion_groups else (None,)
+    )
+    for formulation in formulations:
+        for group in groups:
+            text = (
+                render_query(query, formulation)
+                if group is None
+                else apply_exclusion_group(
+                    query,
+                    group,
+                    formulation=formulation,
+                )
+            )
+            key = text.casefold()
+            if key not in seen:
+                seen.add(key)
+                texts.append(text)
+    return tuple(texts)
+
+
 def _retain_leads(
     record: SearchAssessmentRecord,
     leads: dict[str, SearchResult],
@@ -353,6 +412,10 @@ def _retain_leads(
             leads[key] = result
             retained += 1
     return retained
+
+
+def _has_lead(record: SearchAssessmentRecord) -> bool:
+    return any(inspection.classification == "lead" for inspection in record.inspections)
 
 
 def _queries(

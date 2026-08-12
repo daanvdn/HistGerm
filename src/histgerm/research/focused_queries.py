@@ -10,6 +10,12 @@ from histgerm.models import LanguageStage
 
 type ResourceCategory = Literal["corpus", "tool", "dictionary"]
 type QueryLanguage = Literal["de", "en"]
+type QueryFormulation = Literal[
+    "plain",
+    "exact_stage",
+    "exact_stage_and_concept",
+    "stage_abbreviation",
+]
 
 _STAGE_TERMS: dict[LanguageStage, dict[QueryLanguage, str]] = {
     LanguageStage.OHG: {"de": "Althochdeutsch", "en": "Old High German"},
@@ -110,6 +116,12 @@ _CONCEPTS: dict[ResourceCategory, dict[str, dict[QueryLanguage, tuple[str, ...]]
 }
 
 _TAGSET_QUALIFIERS: tuple[str, ...] = ("STTS", "HiTS")
+_STAGE_ABBREVIATIONS: dict[LanguageStage, str] = {
+    LanguageStage.OHG: "OHG",
+    LanguageStage.MHG: "MHG",
+    LanguageStage.ENHG: "ENHG",
+}
+_DOUBLE_QUOTES = str.maketrans({character: " " for character in '"“”„‟'})
 
 
 @dataclass(frozen=True, slots=True)
@@ -129,8 +141,43 @@ class FocusedQuery:
     def text(self) -> str:
         """Return the exact query text."""
 
-        parts = (self.stage_term, self.concept, self.qualifier)
-        return " ".join(part for part in parts if part is not None)
+        return render_query(self)
+
+
+def render_query(
+    query: FocusedQuery,
+    formulation: QueryFormulation = "exact_stage",
+) -> str:
+    """Render one stage, one concept, and at most one separate qualifier."""
+
+    stage = _clean_term(query.stage_term)
+    concept = _clean_term(query.concept)
+    qualifier = _clean_term(query.qualifier) if query.qualifier is not None else None
+    if not stage or not concept:
+        raise ValueError("query stage and concept must not be empty")
+    if formulation == "plain":
+        rendered_stage = stage
+        rendered_concept = concept
+        rendered_qualifier = qualifier
+    elif formulation == "exact_stage":
+        rendered_stage = _quote_phrase(stage)
+        rendered_concept = concept
+        rendered_qualifier = _quote_phrase(qualifier) if qualifier else None
+    elif formulation == "exact_stage_and_concept":
+        rendered_stage = _quote_phrase(stage)
+        rendered_concept = _quote_phrase(concept)
+        rendered_qualifier = _quote_phrase(qualifier) if qualifier else None
+    elif formulation == "stage_abbreviation":
+        rendered_stage = _STAGE_ABBREVIATIONS[query.stage]
+        rendered_concept = concept
+        rendered_qualifier = _quote_phrase(qualifier) if qualifier else None
+    else:
+        raise ValueError(f"unknown query formulation {formulation!r}")
+    return " ".join(
+        part
+        for part in (rendered_stage, rendered_concept, rendered_qualifier)
+        if part is not None
+    )
 
 
 def iter_focused_queries(
@@ -190,14 +237,19 @@ def generate_focused_queries(
 ) -> tuple[FocusedQuery, ...]:
     """Build a reusable immutable focused-query matrix."""
 
-    return tuple(
-        iter_focused_queries(
-            category,
-            stage,
-            qualifiers=qualifiers,
-            include_named_tagsets=include_named_tagsets,
-        )
-    )
+    queries: list[FocusedQuery] = []
+    rendered: set[str] = set()
+    for query in iter_focused_queries(
+        category,
+        stage,
+        qualifiers=qualifiers,
+        include_named_tagsets=include_named_tagsets,
+    ):
+        key = render_query(query).casefold()
+        if key not in rendered:
+            rendered.add(key)
+            queries.append(query)
+    return tuple(queries)
 
 
 def bounded_exclusion_groups(
@@ -232,11 +284,17 @@ def bounded_exclusion_groups(
     return tuple(groups)
 
 
-def apply_exclusion_group(query: FocusedQuery, names: Sequence[str]) -> str:
+def apply_exclusion_group(
+    query: FocusedQuery,
+    names: Sequence[str],
+    *,
+    formulation: QueryFormulation = "exact_stage",
+) -> str:
     """Append one bounded exclusion group while preserving the focused query."""
 
     exclusions = " ".join(f'-"{name}"' for name in _unique_clean_terms(names))
-    return f"{query.text} {exclusions}" if exclusions else query.text
+    base = render_query(query, formulation)
+    return f"{base} {exclusions}" if exclusions else base
 
 
 def _clean_qualifiers(values: Iterable[str]) -> tuple[str, ...]:
@@ -250,7 +308,7 @@ def _unique_clean_terms(values: Iterable[str]) -> tuple[str, ...]:
     result: list[str] = []
     seen: set[str] = set()
     for value in values:
-        cleaned = " ".join(value.split()).replace('"', "")
+        cleaned = _clean_term(value)
         if not cleaned:
             continue
         key = cleaned.casefold()
@@ -260,12 +318,22 @@ def _unique_clean_terms(values: Iterable[str]) -> tuple[str, ...]:
     return tuple(result)
 
 
+def _clean_term(value: str) -> str:
+    return " ".join(value.translate(_DOUBLE_QUOTES).split())
+
+
+def _quote_phrase(value: str) -> str:
+    return f'"{value}"' if len(value.split()) > 1 else value
+
+
 __all__ = [
     "FocusedQuery",
+    "QueryFormulation",
     "QueryLanguage",
     "ResourceCategory",
     "apply_exclusion_group",
     "bounded_exclusion_groups",
     "generate_focused_queries",
     "iter_focused_queries",
+    "render_query",
 ]
