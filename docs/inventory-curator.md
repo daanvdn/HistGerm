@@ -174,6 +174,11 @@ or tool concept, and at most one access, implementation, standard, or tagset
 qualifier. Tool coverage separates tagging, morphology, lemmatization,
 normalization, parsing, segmentation, models, and pipelines in German and
 English. Relevant named tagsets such as STTS and HiTS receive separate queries.
+Tool/model coverage also separates tokenizer/`Tokenisierung`, word
+embedding/`Worteinbettung` or `Wortrepräsentation`, pretrained/`vortrainiertes`
+and masked/`maskiertes` language models, and bounded architecture terms such as
+BERT architecture or BERT family/`BERT-Architektur` or `BERT-Modellfamilie`
+without naming or hard-coding a particular resource.
 For general search engines, an exact quoted multiword stage phrase is the
 precision-first form, for example `"Middle High German" parser`; the entire
 query is never quoted. German single-word stage forms remain naturally
@@ -186,6 +191,16 @@ Google and other eligible providers are audited independently. Every returned
 item is inspected before an unrelated assessment, and transport observations
 retain the exact authored query, provider, locale, retrieval mode, status, and
 failure stage.
+Inspected public repository README metadata, model cards, topics, aliases,
+authors or institutions, and canonical cross-platform links are mined solely
+as untrusted leads. New leads require bounded concept-at-a-time follow-up
+queries and cross-channel identity pivots among repository, model-provider,
+institutional, registry, and scholarly channels. A public repository README
+that is the only inspected source of a stage wording, architecture family, or
+canonical cross-platform link still creates untrusted leads and requires
+bounded follow-up discovery; it never establishes an inventory fact. Supported
+provider pagination is exhausted for each bounded query; unsupported
+pagination, provider limits, rate limits, and safety limits are explicit gaps.
 
 Passes use bounded exclusion searches and a second focused round for weak
 coverage. Existing query/pass records and the pull-request body carry run-local
@@ -194,6 +209,13 @@ unrelated-result samples, access gaps, yield, confirmed vocabulary revision,
 refreshed/reused source counts, new terms, reused decisions, inactive
 associations, and vocabulary access gaps. There is no generic metrics framework
 or persistent run report.
+
+The completeness gate prohibits a complete query, pass, or sweep while any
+supported provider page, discovered metadata lead, bounded follow-up,
+cross-channel identity pivot, or required German/English tool/model
+architecture family remains uninspected or unqueried. Unsupported pagination
+and provider or iteration limits remain explicit incomplete gaps rather than
+silently exhausted coverage.
 
 The curator reports concise milestones after preflight, seed handling, each
 one- or two-channel group, each batch of at most three candidates, each pass,

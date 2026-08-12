@@ -23,8 +23,16 @@ CATEGORY = {
         "en": "corpus text collection dataset language data",
     },
     "tool": {
-        "de": "Tagger Lemmatisierer Parser Sprachmodell",
-        "en": "tagger lemmatizer parser language model",
+        "de": (
+            "Tagger Lemmatisierer Parser Sprachmodell Tokenizer "
+            "BERT-Architektur BERT-Modellfamilie vortrainiertes Sprachmodell "
+            "maskiertes Sprachmodell Worteinbettung"
+        ),
+        "en": (
+            "tagger lemmatizer parser language model tokenizer "
+            "BERT architecture BERT family pretrained language model "
+            "masked language model word embedding"
+        ),
     },
     "dictionary": {
         "de": "Wörterbuch Lexikon Wortschatz",

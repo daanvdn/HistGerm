@@ -68,6 +68,27 @@ def assert_concepts(policy: str, *concepts: tuple[str, ...]) -> None:
         assert any(term.casefold() in folded for term in alternatives), alternatives
 
 
+def assert_sentence_concepts(
+    policy: str, anchor: str, *concepts: tuple[str, ...]
+) -> None:
+    """Require related concepts to coexist in the same contract sentence."""
+
+    sentences = re.split(r"(?<=[.!?;])\s+", policy)
+    matching = [
+        sentence.casefold()
+        for sentence in sentences
+        if anchor.casefold() in sentence.casefold()
+    ]
+    assert matching, anchor
+    assert any(
+        all(
+            any(term.casefold() in sentence for term in alternatives)
+            for alternatives in concepts
+        )
+        for sentence in matching
+    ), (anchor, concepts)
+
+
 def test_exact_agent_and_skill_inventory_contract() -> None:
     """The manually invoked agent pins its model and wires exactly four skills."""
 
@@ -229,13 +250,69 @@ def test_focused_queries_cover_broad_bilingual_concepts(
         ("normalization", "normalisierung"),
         ("parsing", "syntaxanalyse"),
         ("segmentation", "tokenisierung"),
+        ("tokenizer", "tokenisierung"),
         ("language model", "sprachmodell"),
+        ("pretrained language model", "vortrainiertes sprachmodell"),
+        ("masked language model", "maskiertes sprachmodell"),
+        ("word embedding", "worteinbettung", "wortrepräsentation"),
+        ("bert architecture", "bert-architektur"),
+        ("bert family", "bert-modellfamilie"),
         ("pipeline", "sprachverarbeitung"),
         ("stts",),
         ("hits",),
         ("corpus and dictionary", "corpus and dictionary terms"),
     )
     assert "German and English queries" in discover
+
+
+def test_repository_metadata_signals_force_bounded_follow_up(
+    contracts: dict[str, str],
+) -> None:
+    """README-only architecture, stage, and platform signals cannot be dropped."""
+
+    synthetic_readme_signal = (
+        ("only inspected source",),
+        ("stage wording",),
+        ("architecture family",),
+        ("canonical cross-platform link",),
+        ("untrusted leads",),
+        ("requires bounded follow-up discovery",),
+    )
+    documented = " ".join(CURATOR_DOC.read_text(encoding="utf-8").split())
+    for policy in (contracts["agent"], contracts[SKILLS[0]], documented):
+        assert_concepts(
+            policy,
+            ("readme metadata", "repository readme"),
+            ("model cards",),
+            ("topics",),
+            ("aliases",),
+            ("authors",),
+            ("institutions",),
+            ("canonical cross-platform links",),
+            ("solely as untrusted leads",),
+            ("bounded",),
+            ("follow-up",),
+            ("cross-channel identity pivots",),
+            ("supported provider pagination", "supports pagination"),
+            ("unsupported-pagination", "unsupported pagination"),
+            ("provider-limit", "provider limits"),
+            ("completeness gate",),
+            ("required german/english tool/model architecture family",),
+        )
+        assert_sentence_concepts(
+            policy,
+            "README",
+            *synthetic_readme_signal,
+        )
+        assert_sentence_concepts(
+            policy,
+            "completeness gate",
+            ("provider page",),
+            ("metadata lead",),
+            ("follow-up",),
+            ("cross-channel identity pivot",),
+            ("architecture family",),
+        )
 
 
 def test_exact_query_progression_is_precision_first_and_provider_aware(

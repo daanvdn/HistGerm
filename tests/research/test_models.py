@@ -134,6 +134,15 @@ def test_complete_pass_requires_exact_bilingual_families_and_channels() -> None:
         SearchPass.model_validate(incomplete)
 
 
+def test_complete_tool_pass_requires_bilingual_architecture_families() -> None:
+    assert SearchPass.model_validate(pass_data(category="tool")).complete
+    missing_architecture = pass_data(category="tool")
+    for query in missing_architecture["queries"]:
+        query["query"] = query["query"].replace("BERT family", "")
+    with pytest.raises(ValidationError, match="tool architecture families"):
+        SearchPass.model_validate(missing_architecture)
+
+
 def test_candidate_and_result_dispositions_remain_strict() -> None:
     with pytest.raises(ValidationError, match="requires resource_id"):
         CandidateEntry.model_validate(

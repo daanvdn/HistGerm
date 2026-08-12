@@ -11,6 +11,7 @@ from histgerm.research.focused_queries import (
     apply_exclusion_group,
     bounded_exclusion_groups,
     generate_focused_queries,
+    normalize_metadata_lead_terms,
     render_query,
 )
 
@@ -49,6 +50,22 @@ def test_tool_families_are_expanded_and_tagsets_are_separate_qualifiers() -> Non
     assert {query.qualifier for query in tagsets} == {"STTS", "HiTS"}
     assert all(query.family == "tagging" for query in tagsets)
     assert all(query.text.count(query.qualifier or "") == 1 for query in tagsets)
+    assert {
+        "BERT",
+        "BERT architecture",
+        "BERT family",
+        "pretrained language model",
+        "masked language model",
+        "tokenizer",
+        "word embedding",
+        "word embeddings",
+        "BERT-Architektur",
+        "BERT-Modellfamilie",
+        "maskiertes Sprachmodell",
+        "vortrainiertes Sprachmodell",
+        "Worteinbettung",
+        "Worteinbettungen",
+    } <= {query.concept for query in queries}
 
 
 def test_exclusions_are_deduplicated_and_bounded() -> None:
@@ -186,3 +203,18 @@ def test_equivalent_rendered_query_variants_are_deduplicated() -> None:
     )
     rendered = [render_query(item).casefold() for item in queries]
     assert len(rendered) == len(set(rendered))
+
+
+def test_untrusted_metadata_leads_are_strictly_normalized_and_bounded() -> None:
+    assert normalize_metadata_lead_terms(
+        [
+            "  OtherBERT ",
+            "otherbert",
+            "other-owner other-model",
+            "safe OR unsafe",
+            'unsafe" OR site:example.org',
+            "https://example.org/model",
+            "too many words for one bounded metadata lead",
+        ],
+        max_terms=3,
+    ) == ("OtherBERT", "other-owner other-model")

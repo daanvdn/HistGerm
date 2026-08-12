@@ -3,11 +3,13 @@
 from __future__ import annotations
 
 import asyncio
+import re
 from collections.abc import Coroutine, Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 from typing import Any, Protocol, TypedDict, cast
+from urllib.parse import urlsplit
 
 from histgerm.catalog import Catalog
 from histgerm.models import BaseResource, LanguageStage
@@ -28,6 +30,7 @@ from .focused_queries import (
     apply_exclusion_group,
     bounded_exclusion_groups,
     generate_focused_queries,
+    normalize_metadata_lead_terms,
     render_query,
 )
 from .inventory_vocabulary import (
@@ -54,11 +57,14 @@ from .search_providers import (
     ResponseFormat,
     ResultInspector,
     SearchAssessmentRecord,
+    SearchPageResponse,
     SearchProvider,
     SearchRequest,
     SearchResult,
+    assess_paginated_search,
     assess_search_response,
     build_provider_request,
+    supports_pagination,
 )
 from .vocabulary_store import (
     DEFAULT_REFRESH_DAYS,
@@ -86,6 +92,8 @@ class ProviderResponse:
     http_status: int | None
     body: str = ""
     failure_stage: RetrievalFailureStage | None = None
+    next_cursor: str | None = None
+    exhausted: bool = False
 
 
 class ProviderFetch(Protocol):
@@ -160,6 +168,8 @@ class DiscoveryRunResult:
     assessments: tuple[SearchAssessmentRecord, ...]
     leads: tuple[SearchResult, ...]
     metrics: dict[str, object]
+    complete: bool
+    completion_gaps: tuple[str, ...]
     vocabulary_revision: int | None = None
 
     def as_json(self) -> dict[str, object]:
@@ -203,6 +213,9 @@ class DiscoveryRunResult:
                     "failure_stage": record.failure_stage,
                     "assessment": record.assessment,
                     "observation": record.observation,
+                    "page_number": record.page_number,
+                    "pagination_state": record.pagination_state,
+                    "pagination_stop_reason": record.pagination_stop_reason,
                     "results": [
                         {
                             "position": result.position,
@@ -225,6 +238,8 @@ class DiscoveryRunResult:
                 for record in self.assessments
             ],
             "metrics": self.metrics,
+            "complete": self.complete,
+            "completion_gaps": list(self.completion_gaps),
             "vocabulary_revision": self.vocabulary_revision,
         }
 
@@ -251,6 +266,25 @@ _GENERAL_WEB_CHANNELS = frozenset(
     {"general_web_google", "general_web_bing", "general_web_brave"}
 )
 _EXACT_STAGE_CHANNELS = _GENERAL_WEB_CHANNELS | {"institutional"}
+_CROSS_CHANNEL_HOSTS = {
+    "github.com": "github",
+    "www.github.com": "github",
+    "huggingface.co": "huggingface",
+    "www.huggingface.co": "huggingface",
+}
+_METADATA_LABEL = re.compile(
+    r"(?i)\b(?:alias(?:es)?|architecture(?:s)?|model[_ -]?type|"
+    r"project|author|person|owner|maintainer|institution|"
+    r"organi[sz]ation)\s*[:=]\s*([@\w.-]+)"
+)
+_BERT_NAME = re.compile(r"(?i)\b[\w.-]*bert[\w.-]*\b")
+_HANDLE = re.compile(r"(?<![\w.])@[\w.-]{2,40}\b")
+_URL = re.compile(r"https?://[^\s<>()\"']+")
+_TECHNICAL_LEAD = re.compile(
+    r"(?i)\b(?:bert(?: architecture| family| model)?|tokeni[sz](?:er|ation)|"
+    r"word embeddings?|worteinbettungen?|wort-embeddings?)\b"
+)
+_MAX_FOLLOW_UP_QUERIES = 16
 
 
 def run_discovery(
@@ -294,26 +328,66 @@ def run_discovery(
     assessments: list[SearchAssessmentRecord] = []
     leads: dict[str, SearchResult] = {}
     productive_requests: set[tuple[FocusedQuery, str]] = set()
+    executed_requests: set[tuple[str, str]] = set()
 
     for query in queries:
         for channel in _REQUIRED_CHANNELS:
             formulation = _first_round_formulation(channel)
-            record = _execute_query(
-                render_query(query, formulation),
+            text = render_query(query, formulation)
+            request_key = (channel.name, text.casefold())
+            if request_key in executed_requests:
+                continue
+            executed_requests.add(request_key)
+            records = _execute_query(
+                text,
                 query,
                 channel,
                 dependencies,
             )
-            assessments.append(record)
-            retained = _retain_leads(record, leads)
-            if _has_lead(record):
+            assessments.extend(records)
+            retained = _retain_execution_leads(records, leads)
+            if any(_has_lead(record) for record in records):
                 productive_requests.add((query, channel.name))
-            metrics.record_assessment(
-                record,
+            _record_execution_metrics(
+                metrics,
+                records,
                 family=query.family,
                 channel=channel.name,
                 new_candidates=retained,
             )
+
+    follow_up_queries = list(_untrusted_follow_up_queries(config, assessments))
+    included_follow_ups: list[FocusedQuery] = []
+    follow_up_limit_reached = False
+    while follow_up_queries:
+        query, channel_name = follow_up_queries.pop(0)
+        channel = next(item for item in _REQUIRED_CHANNELS if item.name == channel_name)
+        text = render_query(query, _first_round_formulation(channel))
+        request_key = (channel.name, text.casefold())
+        if request_key in executed_requests:
+            continue
+        if len(included_follow_ups) >= _MAX_FOLLOW_UP_QUERIES:
+            follow_up_limit_reached = True
+            break
+        executed_requests.add(request_key)
+        included_follow_ups.append(query)
+        records = _execute_query(
+            text,
+            query,
+            channel,
+            dependencies,
+        )
+        assessments.extend(records)
+        retained = _retain_execution_leads(records, leads)
+        _record_execution_metrics(
+            metrics,
+            records,
+            family=query.family,
+            channel=channel.name,
+            new_candidates=retained,
+        )
+        follow_up_queries.extend(_untrusted_follow_up_queries(config, records))
+    all_queries = tuple(dict.fromkeys([*queries, *included_follow_ups]))
 
     seen_names = [
         *(record.name for record in trusted_records),
@@ -336,30 +410,43 @@ def run_discovery(
                 exclusion_groups,
             )
             for excluded_text in rendered_variants:
-                record = _execute_query(
+                request_key = (channel.name, excluded_text.casefold())
+                if request_key in executed_requests:
+                    continue
+                executed_requests.add(request_key)
+                records = _execute_query(
                     excluded_text,
                     query,
                     channel,
                     dependencies,
                 )
-                assessments.append(record)
-                retained = _retain_leads(record, leads)
-                metrics.record_assessment(
-                    record,
+                assessments.extend(records)
+                retained = _retain_execution_leads(records, leads)
+                _record_execution_metrics(
+                    metrics,
+                    records,
                     family=query.family,
                     channel=channel.name,
                     new_candidates=retained,
                 )
 
+    completion_gaps = _completion_gaps(
+        config,
+        all_queries,
+        assessments,
+        follow_up_limit_reached=follow_up_limit_reached,
+    )
     return DiscoveryRunResult(
         category=config.category,
         stage=config.stage,
         elicitation=elicitation,
         vocabulary=vocabulary,
-        queries=queries,
+        queries=all_queries,
         assessments=tuple(assessments),
         leads=tuple(leads.values()),
         metrics=metrics.snapshot(),
+        complete=not completion_gaps,
+        completion_gaps=completion_gaps,
         vocabulary_revision=incremental.revision,
     )
 
@@ -1045,7 +1132,7 @@ def _execute_query(
     query: FocusedQuery,
     channel: _Channel,
     dependencies: DiscoveryDependencies,
-) -> SearchAssessmentRecord:
+) -> tuple[SearchAssessmentRecord, ...]:
     locale = "de-DE" if query.language == "de" else "en-US"
     request = build_provider_request(
         channel.provider,
@@ -1055,17 +1142,15 @@ def _execute_query(
         retrieval_mode="bounded_http",
         response_format=channel.response_format,
     )
-    try:
-        response = dependencies.provider_fetch(request)
-    except Exception as error:
-        response = ProviderResponse(
-            retrieval_mode="bounded_http",
-            observed_at=datetime.now(UTC),
-            http_status=None,
-            failure_stage="request",
-            body=str(error),
+    if supports_pagination(request.provider):
+        paginated = assess_paginated_search(
+            request,
+            fetch_page=lambda page_request: _fetch_page(page_request, dependencies),
+            inspector=dependencies.result_inspector,
         )
-    return assess_search_response(
+        return paginated.attempts
+    response = _fetch_provider_response(request, dependencies)
+    record = assess_search_response(
         provider=request.provider,
         channel=request.channel,
         query=request.query,
@@ -1078,6 +1163,49 @@ def _execute_query(
         body=response.body,
         inspector=dependencies.result_inspector,
     )
+    return (
+        replace(
+            record,
+            pagination_state="access_gap",
+            pagination_stop_reason="unsupported_pagination",
+            observation=(
+                f"{record.observation}; {request.provider.value} pagination is "
+                "unsupported, so provider exhaustion was not established"
+            ),
+        ),
+    )
+
+
+def _fetch_page(
+    request: SearchRequest,
+    dependencies: DiscoveryDependencies,
+) -> SearchPageResponse:
+    response = _fetch_provider_response(request, dependencies)
+    return SearchPageResponse(
+        retrieval_mode=response.retrieval_mode,
+        observed_at=response.observed_at,
+        http_status=response.http_status,
+        failure_stage=response.failure_stage,
+        body=response.body,
+        next_cursor=response.next_cursor,
+        exhausted=response.exhausted,
+    )
+
+
+def _fetch_provider_response(
+    request: SearchRequest,
+    dependencies: DiscoveryDependencies,
+) -> ProviderResponse:
+    try:
+        return dependencies.provider_fetch(request)
+    except Exception as error:
+        return ProviderResponse(
+            retrieval_mode="bounded_http",
+            observed_at=datetime.now(UTC),
+            http_status=None,
+            failure_stage="request",
+            body=str(error),
+        )
 
 
 def _first_round_formulation(channel: _Channel) -> QueryFormulation:
@@ -1109,7 +1237,10 @@ def _rendered_exclusion_variants(
         exclusion_groups if exclusion_groups else (None,)
     )
     for formulation in formulations:
-        for group in groups:
+        formulation_groups = (
+            (None, *groups) if formulation == "stage_abbreviation" else groups
+        )
+        for group in formulation_groups:
             text = (
                 render_query(query, formulation)
                 if group is None
@@ -1141,8 +1272,183 @@ def _retain_leads(
     return retained
 
 
+def _retain_execution_leads(
+    records: Sequence[SearchAssessmentRecord],
+    leads: dict[str, SearchResult],
+) -> int:
+    return sum(_retain_leads(record, leads) for record in records)
+
+
+def _record_execution_metrics(
+    metrics: DiscoveryCoverage,
+    records: Sequence[SearchAssessmentRecord],
+    *,
+    family: str,
+    channel: str,
+    new_candidates: int,
+) -> None:
+    for index, record in enumerate(records):
+        metrics.record_assessment(
+            record,
+            family=family,
+            channel=channel,
+            new_candidates=new_candidates if index == 0 else 0,
+        )
+
+
 def _has_lead(record: SearchAssessmentRecord) -> bool:
     return any(inspection.classification == "lead" for inspection in record.inspections)
+
+
+def _untrusted_follow_up_queries(
+    config: DiscoveryConfig,
+    assessments: Sequence[SearchAssessmentRecord],
+) -> tuple[tuple[FocusedQuery, str], ...]:
+    raw_leads: list[tuple[str, tuple[str, ...]]] = []
+    for record in assessments:
+        for result, inspection in zip(record.results, record.inspections, strict=True):
+            if inspection.classification != "lead":
+                continue
+            metadata = " ".join(
+                value for value in (result.title, result.snippet) if value
+            )
+            for match in _METADATA_LABEL.finditer(metadata):
+                label = match.group(0).split(":", 1)[0].split("=", 1)[0].casefold()
+                label_targets = (
+                    ("institutional", "general_web_google")
+                    if any(
+                        name in label
+                        for name in (
+                            "author",
+                            "person",
+                            "institution",
+                            "organisation",
+                            "organization",
+                        )
+                    )
+                    else ("github", "huggingface")
+                )
+                raw_leads.append((match.group(1), label_targets))
+            raw_leads.extend(
+                (match.group(0), ("github", "huggingface"))
+                for match in _BERT_NAME.finditer(metadata)
+            )
+            raw_leads.extend(
+                (match.group(0), ("github", "huggingface"))
+                for match in _HANDLE.finditer(metadata)
+            )
+            raw_leads.extend(
+                (match.group(0), ("github", "huggingface"))
+                for match in _TECHNICAL_LEAD.finditer(metadata)
+            )
+            for url in (result.url, *(_URL.findall(metadata))):
+                pivot = _cross_channel_pivot(url, record.channel)
+                if pivot is not None:
+                    raw_leads.append((pivot[0], (pivot[1],)))
+
+    normalized = normalize_metadata_lead_terms(
+        (term for term, _ in raw_leads),
+        max_terms=8,
+    )
+    targets_by_term: dict[str, tuple[str, ...]] = {}
+    for term, lead_targets in raw_leads:
+        safe = normalize_metadata_lead_terms((term,), max_terms=1)
+        if safe:
+            term_key = safe[0].casefold()
+            targets_by_term.setdefault(term_key, ())
+            targets_by_term[term_key] = tuple(
+                dict.fromkeys((*targets_by_term[term_key], *lead_targets))
+            )
+
+    queries: list[tuple[FocusedQuery, str]] = []
+    seen: set[tuple[str, str]] = set()
+    for term in normalized:
+        for target in targets_by_term[term.casefold()]:
+            query = FocusedQuery(
+                category=config.category,
+                stage=config.stage,
+                language="en",
+                family="untrusted_metadata_lead",
+                stage_term={
+                    LanguageStage.OHG: "Old High German",
+                    LanguageStage.MHG: "Middle High German",
+                    LanguageStage.ENHG: "Early New High German",
+                }[config.stage],
+                concept=term,
+            )
+            query_key = (query.text.casefold(), target)
+            if query_key not in seen:
+                seen.add(query_key)
+                queries.append((query, target))
+    return tuple(queries)
+
+
+def _completion_gaps(
+    config: DiscoveryConfig,
+    queries: Sequence[FocusedQuery],
+    assessments: Sequence[SearchAssessmentRecord],
+    *,
+    follow_up_limit_reached: bool,
+) -> tuple[str, ...]:
+    gaps: list[str] = []
+    incomplete = [record for record in assessments if not record.completed]
+    if incomplete:
+        reasons = sorted(
+            {
+                record.pagination_stop_reason or record.assessment
+                for record in incomplete
+            }
+        )
+        gaps.append(
+            "provider coverage incomplete: "
+            + ", ".join(str(reason) for reason in reasons)
+        )
+    if follow_up_limit_reached:
+        gaps.append(
+            f"untrusted metadata follow-up limit {_MAX_FOLLOW_UP_QUERIES} reached"
+        )
+    if config.category == "tool":
+        concepts = {
+            (query.language, query.concept.casefold())
+            for query in queries
+            if query.family != "untrusted_metadata_lead"
+        }
+        required = {
+            ("de", "tokenizer"),
+            ("de", "bert-architektur"),
+            ("de", "bert-modellfamilie"),
+            ("de", "vortrainiertes sprachmodell"),
+            ("de", "maskiertes sprachmodell"),
+            ("de", "worteinbettung"),
+            ("en", "tokenizer"),
+            ("en", "bert architecture"),
+            ("en", "bert family"),
+            ("en", "pretrained language model"),
+            ("en", "masked language model"),
+            ("en", "word embedding"),
+        }
+        missing = sorted(required - concepts)
+        if missing:
+            gaps.append(
+                "required bilingual architecture families unqueried: "
+                + ", ".join(f"{language}:{concept}" for language, concept in missing)
+            )
+    return tuple(gaps)
+
+
+def _cross_channel_pivot(url: str, source_channel: str) -> tuple[str, str] | None:
+    parsed = urlsplit(url.rstrip(".,;"))
+    target = _CROSS_CHANNEL_HOSTS.get(parsed.netloc.casefold())
+    if target is None or target == source_channel:
+        return None
+    parts = [part for part in parsed.path.split("/") if part]
+    if target == "huggingface" and parts[:1] == ["models"]:
+        parts = parts[1:]
+    if len(parts) < 2:
+        return None
+    term = " ".join(parts[:2])
+    safe = normalize_metadata_lead_terms((term,), max_terms=1)
+    return (safe[0], target) if safe else None
 
 
 def _queries(

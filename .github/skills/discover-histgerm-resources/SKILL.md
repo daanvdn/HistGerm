@@ -182,7 +182,12 @@ completion Boolean, and assessment or access note in the existing
   `parser`, `dependency parser`, `syntactic analysis`), segmentation
   (`Tokenisierung`, `Satzsegmentierung`; `tokenizer`, `tokenization`, `sentence
   segmentation`), models (`Sprachmodell`, `Transformer-Modell`,
-  `Wortrepräsentation`; `language model`, `transformer model`, `embeddings`),
+  `vortrainiertes Sprachmodell`, `Maskiertes Sprachmodell`, `Worteinbettung`,
+  `Wortrepräsentation`; `language model`, `pretrained language model`, `masked
+  language model`, `transformer model`, `word embedding`, `embeddings`),
+  bounded architecture families (`BERT-Architektur`, `BERT-Modellfamilie`;
+  `BERT architecture`, `BERT family`) without naming or hard-coding a
+  particular resource,
   and pipelines (`NLP-Werkzeug`, `Annotationswerkzeug`, `Sprachverarbeitung`;
   `NLP tool`, `annotation tool`, `language-processing pipeline`).
 - Dictionary German: `Wörterbuch`, `Lexikon`, `Wortschatz`; English:
@@ -205,6 +210,17 @@ Each complete pass covers and separately records:
 7. GitHub repository search;
 8. Hugging Face datasets and models where relevant.
 
+A repository or model-provider result is not exhausted at its title or search
+snippet. Inspect public README metadata, model cards, repository topics,
+aliases, named authors or institutions, and canonical cross-platform links.
+Mine them solely as untrusted leads, then issue bounded concept-at-a-time
+follow-up queries for new terms and cross-channel identity pivots between
+repository, model-provider, institutional, registry, and scholarly channels.
+A public repository README that is the only inspected source of a stage
+wording, architecture family, or canonical cross-platform link still creates
+untrusted leads and requires bounded follow-up discovery; it never establishes
+identity, stage, task support, or another inventory fact.
+
 A channel is inapplicable only when its recorded query note gives an explicit
 policy reason. Coverage through another interface still records the covered
 channel. A blocked, rate-limited, unsafe, or otherwise incomplete required
@@ -224,6 +240,10 @@ mode, status, and failure stage. CAPTCHA, consent, authentication, paywall, and
 automation challenges are access gaps; never solve or bypass them. A
 general-web channel is complete through another eligible provider only when
 the required focused coverage is actually represented.
+Where a provider supports pagination, continue until its result pages are
+exhausted within the bounded query; record an explicit unsupported-pagination,
+provider-limit, rate-limit, or safety gap instead of claiming exhaustion when
+that cannot be proven.
 
 ## Candidate and completion procedure
 
@@ -252,6 +272,13 @@ An incomplete pass never advances it. Stop only when the checked-in ledger
 logic reports the sweep complete and all candidates discovered by its passes
 are dispositioned. “Complete” means exhaustive under this protocol, not that
 undiscoverable resources do not exist.
+
+The completeness gate forbids a complete query, pass, or sweep while any
+supported provider page remains uninspected, any discovered metadata lead,
+cross-channel identity pivot, or bounded follow-up remains uninspected, or any
+required German/English tool/model architecture family remains unqueried.
+Unsupported pagination and provider or iteration limits remain explicit
+incomplete gaps rather than silently exhausted coverage.
 
 After the first focused round, issue iterative exclusion or “beyond known
 resources” queries using already-seen names in bounded provider-safe groups;

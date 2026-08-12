@@ -166,10 +166,15 @@ variant. Apply provider-specific operators or quoting only when that interface
 documents support; preserve plain syntax for registries, repositories, or
 other interfaces whose quote semantics are uncertain.
 Cover broader corpus, dictionary, and tool terminology and named tagsets such
-as STTS and HiTS when relevant. Treat discovery wording, tagset associations,
-model leads, snippets, mined vocabulary, and quoted search syntax as leads, not
-trusted evidence. Quotes constrain discovery syntax; they never establish a
-fact or satisfy evidence requirements.
+as STTS and HiTS when relevant. Tool/model discovery must separately cover
+tokenizer/`Tokenisierung`, word embedding/`Worteinbettung` or
+`Wortrepräsentation`, pretrained/`vortrainiertes` and masked/`maskiertes`
+language models, plus bounded architecture terms such as BERT architecture or
+BERT family/`BERT-Architektur` or `BERT-Modellfamilie`, without naming or
+hard-coding a particular resource. Treat discovery wording, architecture and
+tagset associations, model leads, snippets, mined vocabulary, and quoted
+search syntax as leads, not trusted evidence. Quotes constrain discovery
+syntax; they never establish a fact or satisfy evidence requirements.
 Deduplicate by evidenced identity against all current resources and ledger
 candidates, never by similar names or titles. Send a verified existing match
 immediately through `curate-histgerm-resource` in refresh mode. Block possible
@@ -184,6 +189,17 @@ claim that the URL or provider is globally unavailable; for example report
 `HTTP 429 through bounded_http` with request context. CAPTCHA, consent,
 authentication, paywall, and automation challenges are access gaps and must
 never be solved or bypassed.
+For inspected public repository and model-provider results, mine README
+metadata, model cards, topics, aliases, authors or institutions, and canonical
+cross-platform links solely as untrusted leads. Run bounded concept-at-a-time
+follow-up queries for new leads and cross-channel identity pivots among
+repository, model-provider, institutional, registry, and scholarly channels.
+A public repository README that is the only inspected source of a stage
+wording, architecture family, or canonical cross-platform link still creates
+untrusted leads and requires bounded follow-up discovery; it never establishes
+an inventory fact. Exhaust supported provider pagination for each bounded
+query; otherwise record the explicit unsupported-pagination, provider-limit,
+rate-limit, or safety gap.
 
 Treat a supplied seed as an accelerator, not as the sweep result. For a
 bounded structured list, preserve every distinct row as an untrusted lead and
@@ -226,6 +242,11 @@ an incomplete pass never advances it. Every required query must be represented
 and every encountered candidate must be `added`, `duplicate`, `out_of_scope`,
 or evidence-backed `blocked` before a pass or sweep is complete. Never leave a
 candidate pending or ask the user to research an unresolved candidate.
+The completeness gate also prohibits complete status while a supported
+provider page, discovered metadata lead, bounded follow-up, cross-channel
+identity pivot, or required German/English tool/model architecture family
+remains uninspected or unqueried. Unsupported pagination and provider or
+iteration limits are explicit incomplete gaps, never silent exhaustion.
 
 After the first focused round, issue bounded exclusion or “beyond known
 resources” queries partitioning already-seen names into provider-safe groups.
