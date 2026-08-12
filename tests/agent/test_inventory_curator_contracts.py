@@ -250,11 +250,30 @@ def test_url_payload_auth_terms_and_rate_safety(
             "authentication",
             "rate limit",
             "10 MiB",
+            "histgerm.research.fetching",
+            "missing `Content-Length`",
+            "Never generate a helper script",
             "Never download",
             "Never execute",
             "eval",
             "exec",
             "dynamic imports",
+        ),
+    )
+
+
+def test_agent_reports_bounded_progress(contracts: dict[str, str]) -> None:
+    agent = contracts["agent"]
+    assert_phrases(
+        agent,
+        (
+            "after preflight and sweep selection",
+            "after seed retrieval",
+            "group of at most two channels",
+            "candidate-worker batch of at most three",
+            "current ledger revision",
+            "never remain silent for more than ten minutes",
+            "never dump full evidence",
         ),
     )
 
