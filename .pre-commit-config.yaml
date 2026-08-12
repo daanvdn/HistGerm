@@ -1,0 +1,47 @@
+minimum_pre_commit_version: "4.6.2"
+
+repos:
+  - repo: local
+    hooks:
+      - id: validate-discovery-ledger
+        name: Validate discovery ledger
+        entry: uv run python -m histgerm.research validate --ledger research/discovery-ledger.yaml --format json
+        language: system
+        pass_filenames: false
+        always_run: true
+      - id: validate-inventory
+        name: Validate inventory
+        entry: uv run python -m histgerm.validation src/histgerm/data
+        language: system
+        pass_filenames: false
+        always_run: true
+      - id: test
+        name: Test
+        entry: uv run pytest
+        language: system
+        pass_filenames: false
+        always_run: true
+      - id: lint
+        name: Lint
+        entry: uv run ruff check .
+        language: system
+        pass_filenames: false
+        always_run: true
+      - id: check-formatting
+        name: Check formatting
+        entry: uv run ruff format --check .
+        language: system
+        pass_filenames: false
+        always_run: true
+      - id: type-check
+        name: Type check
+        entry: uv run mypy src tests
+        language: system
+        pass_filenames: false
+        always_run: true
+      - id: check-whitespace-errors
+        name: Check whitespace errors
+        entry: git diff --check --cached
+        language: system
+        pass_filenames: false
+        always_run: true
