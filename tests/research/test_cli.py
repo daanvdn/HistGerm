@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import subprocess
 from pathlib import Path
 from typing import Any
 
@@ -76,3 +77,11 @@ def test_cli_failure_codes_are_json(ledger_path: Path, tmp_path: Path) -> None:
     assert response["errors"][0]["code"] == "stale_revision"
     code, response = run_cli("unknown")
     assert code == 2 and response["errors"][0]["code"] == "invalid_arguments"
+
+
+def test_cli_stdout_is_utf8() -> None:
+    command = ["uv", "run", "python", "-m", "histgerm.research", "status"]
+    output = subprocess.check_output(
+        [*command, "--ledger", "research/discovery-ledger.yaml"]
+    )
+    assert "T\u00fcbingen" in output.decode("utf-8")

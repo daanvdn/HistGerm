@@ -136,6 +136,8 @@ def _run(arguments: argparse.Namespace) -> int:
 
 def main(argv: list[str] | None=None) -> int:
     """Run one CLI command and emit exactly one JSON response."""
+    if argv is None and hasattr(sys.stdout, 'reconfigure'):
+        sys.stdout.reconfigure(encoding='utf-8')
     raw_arguments = sys.argv[1:] if argv is None else argv
     command = raw_arguments[0] if raw_arguments else ''
     try:
