@@ -3,6 +3,12 @@ minimum_pre_commit_version: "4.6.2"
 repos:
   - repo: local
     hooks:
+      - id: generate-readme-catalog
+        name: Generate README catalog
+        entry: uv run python scripts/generate_readme.py
+        language: system
+        files: ^src/histgerm/data/
+        pass_filenames: false
       - id: validate-discovery-ledger
         name: Validate discovery ledger
         entry: uv run python -m histgerm.research validate --ledger research/discovery-ledger.yaml --format json
