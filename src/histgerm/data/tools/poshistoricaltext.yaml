@@ -1,0 +1,61 @@
+id: tool-poshistoricaltext
+name: POSHistoricalText
+aliases:
+  - Part-of-speech tagging for Middle High German text
+description: A public collection of experimental scripts for part-of-speech tagging a late Middle High German text using several methods and combinations of methods.
+reviewed_on: 2026-08-12
+links:
+  repository: https://github.com/sarschu/POSHistoricalText
+  readme: https://github.com/sarschu/POSHistoricalText/blob/master/README.md
+
+tasks: [pos_tagger]
+supported_stages: [mhg]
+
+access:
+  availability: [described, browsable]
+  model_training: unclear
+  original_data_redistribution: unclear
+  processed_data_redistribution: unclear
+  trained_weight_publication: unclear
+  note: The public repository and metadata manifest describe and expose the code for browsing. No direct quoted source establishes the four separately modeled legal permissions.
+  source_ids: [evidence-poshistoricaltext-repository, evidence-poshistoricaltext-manifest]
+
+note: This record represents the POSHistoricalText experimental script collection. It is distinct from tool-mhg-treetagger-pos-tagger, which represents an institutional Middle High German TreeTagger parameter file; similar POS-tagging scope and researcher context do not establish identical code or resource identity.
+
+sources:
+  - id: evidence-poshistoricaltext-repository
+    url: https://api.github.com/repos/sarschu/POSHistoricalText
+    accessed_on: 2026-08-12
+    supports:
+      - name
+      - description
+      - links.repository
+      - access.availability
+      - note
+    title: sarschu/POSHistoricalText repository metadata
+    quote: This code contains several different methods to POS tag a Middle High German Text and combinations thereof
+    note: The API identifies a public, non-fork repository with the canonical HTML URL.
+
+  - id: evidence-poshistoricaltext-readme
+    url: https://api.github.com/repos/sarschu/POSHistoricalText/readme
+    accessed_on: 2026-08-12
+    supports:
+      - aliases
+      - description
+      - links.readme
+      - tasks
+      - supported_stages
+      - note
+    title: POSHistoricalText README metadata
+    quote: To illustrate this, we investigate PoS tagging of a unique late Middle High German (MHG) text which can be located in the transition period between MHG and Early New High German (ENHG).
+    note: The README establishes the task and MHG subject and describes multiple experimental tagging approaches.
+
+  - id: evidence-poshistoricaltext-manifest
+    url: https://api.github.com/repos/sarschu/POSHistoricalText/contents
+    accessed_on: 2026-08-12
+    supports:
+      - access.availability
+      - note
+    title: POSHistoricalText repository contents metadata
+    quote:
+    note: Public manifest metadata lists the README and POS-tagging source files as browsable entries; no payload was retrieved.

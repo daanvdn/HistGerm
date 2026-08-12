@@ -1,0 +1,50 @@
+id: tool-mhd-pos-tagging-benchmark
+name: mhd-pos-tagging-benchmark
+description: Model-agnostic benchmark for POS tagging of Middle High German texts against ReM ground truth.
+reviewed_on: 2026-08-12
+links:
+  repository: https://github.com/DigitalHumanitiesCraft/mhd-pos-tagging-benchmark
+
+tasks: [pos_tagger]
+supported_stages: [mhg]
+
+access:
+  availability: [described, browsable]
+  model_training: unclear
+  original_data_redistribution: unclear
+  processed_data_redistribution: unclear
+  trained_weight_publication: unclear
+  note: Public repository metadata describes the benchmark and exposes its repository manifest for browsing. The GitHub license label is non-specific, and no direct quoted source establishes any of the four separately modeled legal permissions.
+  source_ids: [evidence-mhd-pos-tagging-benchmark-repository, evidence-mhd-pos-tagging-benchmark-manifest]
+
+evaluation_data:
+  - ReM ground truth
+
+note: This record represents the DigitalHumanitiesCraft model-agnostic POS-tagging benchmark against ReM ground truth. Its canonical repository identity is distinct from the trusted POSHistoricalText experimental script collection and the other inventoried MHG POS-tagging tools.
+
+sources:
+  - id: evidence-mhd-pos-tagging-benchmark-repository
+    url: https://api.github.com/repos/DigitalHumanitiesCraft/mhd-pos-tagging-benchmark
+    accessed_on: 2026-08-12
+    supports:
+      - name
+      - description
+      - links.repository
+      - tasks
+      - supported_stages
+      - evaluation_data
+      - access.availability
+      - note
+    title: DigitalHumanitiesCraft/mhd-pos-tagging-benchmark repository metadata
+    quote: Model-agnostic benchmark for POS tagging of Middle High German texts against ReM ground truth
+    note: The API identifies a public, non-fork repository with the canonical HTML URL.
+
+  - id: evidence-mhd-pos-tagging-benchmark-manifest
+    url: https://api.github.com/repos/DigitalHumanitiesCraft/mhd-pos-tagging-benchmark/contents
+    accessed_on: 2026-08-12
+    supports:
+      - access.availability
+      - note
+    title: mhd-pos-tagging-benchmark repository contents metadata
+    quote:
+    note: Public root-manifest metadata exposes browsable repository entries without retrieving their contents.

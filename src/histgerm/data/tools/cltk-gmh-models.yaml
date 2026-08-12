@@ -1,0 +1,56 @@
+id: tool-cltk-gmh-models
+name: gmh_models_cltk
+aliases:
+  - CLTK gmh_models_cltk
+description: A CLTK repository of pre-compiled taggers and tokenizers for tagging Middle High German, built with NLTK and CLTK data.
+reviewed_on: 2026-08-12
+links:
+  repository: https://github.com/cltk/gmh_models_cltk
+  metadata: https://api.github.com/repos/cltk/gmh_models_cltk
+
+tasks: [pos_tagger, lemmatizer]
+supported_stages: [mhg]
+
+access:
+  availability: [described, downloadable]
+  model_training: unclear
+  original_data_redistribution: unclear
+  processed_data_redistribution: unclear
+  trained_weight_publication: unclear
+  note: The repository is public and exposes repository retrieval links, but the reviewed metadata provides no exact permission wording for the four separately modeled legal permissions.
+  source_ids: [evidence-cltk-gmh-repository, evidence-cltk-gmh-readme]
+
+training_data:
+  - Reference Corpus of Middle High German (1050-1350), version 1.0
+
+note: This represents the repository's pre-compiled Middle High German tagging resources, not the CLTK runtime or the separately inventoried TreeTagger parameter resource.
+
+sources:
+  - id: evidence-cltk-gmh-repository
+    url: https://api.github.com/repos/cltk/gmh_models_cltk
+    accessed_on: 2026-08-12
+    supports:
+      - name
+      - aliases
+      - description
+      - links.repository
+      - links.metadata
+      - tasks
+      - supported_stages
+      - access.availability
+      - note
+    title: cltk/gmh_models_cltk repository metadata
+    quote: Stored data for tagging Middle High German
+    note: Official repository metadata identifies cltk/gmh_models_cltk as public and unarchived and lists lemmatizer, middle-high-german, and pos-tagger topics.
+
+  - id: evidence-cltk-gmh-readme
+    url: https://api.github.com/repos/cltk/gmh_models_cltk/readme
+    accessed_on: 2026-08-12
+    supports:
+      - description
+      - tasks
+      - training_data
+      - note
+    title: gmh_models_cltk README
+    quote: Pre-compiled taggers and tokenizers made with NLTK + CLTK data.
+    note: The README states that the underlying data come from Referenzkorpus Mittelhochdeutsch (1050-1350), version 1.0.

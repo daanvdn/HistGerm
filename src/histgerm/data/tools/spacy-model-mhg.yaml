@@ -1,0 +1,33 @@
+id: tool-spacy-model-mhg
+name: Spacy-Model-for-Middle-High-German
+description: A Middle High German part-of-speech tagger model for spaCy.
+reviewed_on: 2026-08-12
+links:
+  repository: https://github.com/Middle-High-German-Conceptual-Database/Spacy-Model-for-Middle-High-German
+
+tasks: [pos_tagger]
+supported_stages: [mhg]
+
+access:
+  availability: [described]
+  model_training: unclear
+  original_data_redistribution: unclear
+  processed_data_redistribution: unclear
+  trained_weight_publication: unclear
+  note: Public canonical repository metadata describes the model, but no direct quoted evidence establishes any of the four separately modeled legal permissions.
+  source_ids: [evidence-spacy-model-mhg-github]
+
+sources:
+  - id: evidence-spacy-model-mhg-github
+    url: https://api.github.com/repos/Middle-High-German-Conceptual-Database/Spacy-Model-for-Middle-High-German
+    accessed_on: 2026-08-12
+    supports:
+      - name
+      - description
+      - links.repository
+      - tasks
+      - supported_stages
+      - access.availability
+    title: Middle-High-German-Conceptual-Database/Spacy-Model-for-Middle-High-German repository metadata
+    quote: Middle High German pos tagger model for spacy.
+    note: Canonical GitHub API metadata identifies the public non-fork repository and directly states its Middle High German POS-tagger-model scope.

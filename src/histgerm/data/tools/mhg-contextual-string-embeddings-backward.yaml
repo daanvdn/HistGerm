@@ -1,0 +1,55 @@
+id: tool-mhg-contextual-string-embeddings-backward
+name: Middle High German Contextual String Embeddings (Backward)
+description: A backward contextual string embedding model for Middle High German, trained on literary and historical texts for downstream NLP tasks.
+reviewed_on: 2026-08-12
+links:
+  zenodo_record: https://zenodo.org/records/18659437
+  doi: https://doi.org/10.5281/zenodo.18659437
+
+tasks: [language_model]
+supported_stages: [mhg]
+
+access:
+  availability: [described, downloadable]
+  model_training: unclear
+  original_data_redistribution: unclear
+  processed_data_redistribution: unclear
+  trained_weight_publication: unclear
+  license: cc-by-4.0
+  note: Zenodo labels the record open and lists downloadable model weights. The license label alone is not treated as evidence for any specific permission.
+  source_ids: [source-zenodo-record, source-zenodo-files]
+
+training_data:
+  - Open data prepared by the Mittelhochdeutsche Begriffsdatenbank (MHDBDB)
+hugging_face_links:
+  - https://huggingface.co/mschonhardt/mhg-mhdbdb-backward
+note: Zenodo states that backward models are designed for use with their forward counterparts.
+
+sources:
+  - id: source-zenodo-record
+    url: https://zenodo.org/api/records/18659437
+    accessed_on: 2026-08-12
+    supports:
+      - name
+      - description
+      - supported_stages
+      - tasks
+      - training_data
+      - hugging_face_links
+      - access.availability
+      - access.license
+      - note
+      - links.zenodo_record
+      - links.doi
+    title: Middle High German Contextual String Embeddings (Backward)
+    citation: Schonhardt, Michael (2026). Middle High German Contextual String Embeddings (Backward). Zenodo. https://doi.org/10.5281/zenodo.18659437
+    quote: This model provides contextual string embeddings for Middle High German (MHG), trained on literary and historical texts
+    note: Creator-deposited record metadata identifies the model, states explicit MHG coverage and training context, labels access as open and the license as cc-by-4.0, and identifies the Hugging Face mirror.
+
+  - id: source-zenodo-files
+    url: https://zenodo.org/api/records/18659437/files
+    accessed_on: 2026-08-12
+    supports: [access.availability]
+    title: Zenodo file metadata for record 18659437
+    quote: mhd-backward.pt
+    note: The metadata endpoint lists the deposited model-weight file; no payload was fetched.
