@@ -22,6 +22,8 @@ from histgerm.research.discovery_orchestration import (
     ProviderResponse,
     _active_inventory_vocabulary,
     _completion_gaps,
+    _controlled_recall_queries,
+    _cross_channel_pivot,
     run_discovery,
 )
 from histgerm.research.focused_queries import FocusedQuery, ResourceCategory
@@ -135,6 +137,7 @@ def test_production_path_enforces_order_channels_inspection_and_exclusions() -> 
         "zenodo",
         "institutional",
         "github",
+        "gitlab",
         "huggingface",
     }
     assert any('-"' in request.query for request in requests)
@@ -143,6 +146,13 @@ def test_production_path_enforces_order_channels_inspection_and_exclusions() -> 
     assert result.leads[0].trusted_evidence is False
     assert result.metrics["focused_queries_attempted"] == len(requests)
     assert result.metrics["model_leads"] == 0
+    serialized_assessments = result.as_json()["assessments"]
+    assert isinstance(serialized_assessments, list)
+    assert "gitlab" in {
+        assessment["provider"]
+        for assessment in serialized_assessments
+        if isinstance(assessment, dict)
+    }
 
 
 def test_provider_failure_is_audited_without_stopping_required_channels() -> None:
@@ -180,6 +190,7 @@ def test_provider_failure_is_audited_without_stopping_required_channels() -> Non
         "zenodo",
         "institutional",
         "github",
+        "gitlab",
         "huggingface",
     }
     assert all(record.assessment == "transport_error" for record in result.assessments)
@@ -282,6 +293,7 @@ def test_model_terms_abbreviation_and_cross_channel_metadata_pivots() -> None:
                 "BERT tokenizer with word embeddings. Architecture: HistBERT; "
                 "alias: ArchiveEncoder; tokenizer and "
                 "word embeddings. Model card: "
+                "https://huggingface.co/different-handle/mhg-model and "
                 "https://huggingface.co/different-handle/mhg-model</a>"
             )
         else:
@@ -331,9 +343,320 @@ def test_model_terms_abbreviation_and_cross_channel_metadata_pivots() -> None:
         and request.query == "Middle High German HistBERT"
         for request in requests
     )
+    assert (
+        sum(
+            request.channel == "huggingface"
+            and request.query == "Middle High German different-handle mhg-model"
+            for request in requests
+        )
+        == 1
+    )
     assert all(query.trusted_evidence is False for query in result.queries)
     assert not result.complete
     assert any("next_page_unavailable" in gap for gap in result.completion_gaps)
+
+
+@pytest.mark.parametrize(
+    ("url", "source_channel", "expected"),
+    [
+        (
+            "https://gitlab.com/history-lab/mhg-model",
+            "github",
+            ("history-lab mhg-model", "gitlab"),
+        ),
+        (
+            "https://gitlab.com/history-lab/corpora/medieval/nlp/mhg-model",
+            "github",
+            ("history-lab corpora medieval mhg-model", "gitlab"),
+        ),
+        (
+            "https://github.com/different-owner/mhg-model",
+            "gitlab",
+            ("different-owner mhg-model", "github"),
+        ),
+        (
+            "https://huggingface.co/models/card-owner/mhg-model",
+            "github",
+            ("card-owner mhg-model", "huggingface"),
+        ),
+        (
+            "https://zenodo.org/records/123456",
+            "huggingface",
+            ("Zenodo 123456", "zenodo"),
+        ),
+        (
+            "https://doi.org/10.5281/zenodo.123456",
+            "huggingface",
+            ("10.5281 zenodo.123456", "general_web_google"),
+        ),
+        (
+            "https://institute.example.edu/research/projects/mhg",
+            "clarin",
+            ("mhg", "institutional"),
+        ),
+        (
+            "https://gitlab.com/research/mhg-model",
+            "zenodo",
+            ("research mhg-model", "gitlab"),
+        ),
+        (
+            "https://huggingface.co/paper-author/mhg-card",
+            "zenodo",
+            ("paper-author mhg-card", "huggingface"),
+        ),
+    ],
+)
+def test_generic_provenance_link_pivots(
+    url: str,
+    source_channel: str,
+    expected: tuple[str, str],
+) -> None:
+    assert _cross_channel_pivot(url, source_channel) == expected
+
+
+@pytest.mark.parametrize(
+    "url",
+    [
+        "http://gitlab.com/history-lab/mhg-model",
+        "https://localhost/history-lab/mhg-model",
+        "https://127.0.0.1/history-lab/mhg-model",
+        "https://10.0.0.4/history-lab/mhg-model",
+        "https://127-0-0-1.nip.io/history-lab/mhg-model",
+        "https://user:secret@gitlab.com/history-lab/mhg-model",
+        "file:///history-lab/mhg-model",
+        "https://gitlab.com/explore/projects",
+        "https://github.com/history-lab/mhg-model/issues",
+    ],
+)
+def test_provenance_pivots_reject_unsafe_or_noncanonical_urls(url: str) -> None:
+    assert _cross_channel_pivot(url, "zenodo") is None
+
+
+def test_follow_up_bound_exhaustion_remains_incomplete(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        "histgerm.research.discovery_orchestration._MAX_FOLLOW_UP_QUERIES", 1
+    )
+
+    def provider_fetch(request: SearchRequest) -> ProviderResponse:
+        body = (
+            '<a href="https://github.com/source-lab/historical-model">'
+            "alias: FirstHandle alias: SecondHandle</a>"
+            if request.channel == "github"
+            and request.query == "Middle High German BERT"
+            else (
+                "<rss><channel/></rss>"
+                if request.response_format is ResponseFormat.RSS
+                else "<main>No results</main>"
+            )
+        )
+        return ProviderResponse(
+            retrieval_mode="bounded_http",
+            observed_at=datetime(2026, 8, 12, tzinfo=UTC),
+            http_status=200,
+            body=body,
+            exhausted=True,
+        )
+
+    result = run_discovery(
+        DiscoveryConfig(
+            category="tool",
+            stage=LanguageStage.MHG,
+            max_mined_terms=0,
+            max_exclusion_groups=1,
+            vocabulary=VocabularyLimits(max_pages=1),
+        ),
+        DiscoveryDependencies(
+            catalog=load_catalog(),
+            model_call=EmptyModel([]),
+            vocabulary_transport=lambda url, *, max_bytes: FetchedDocument(
+                url, "text/plain", b""
+            ),
+            provider_fetch=provider_fetch,
+            result_inspector=lambda result: (
+                ("lead", "synthetic provenance metadata")
+                if result.url == "https://github.com/source-lab/historical-model"
+                else ("unrelated", "not the synthetic repository")
+            ),
+        ),
+    )
+
+    assert not result.complete
+    assert any("follow-up limit 1 reached" in gap for gap in result.completion_gaps)
+
+
+def test_gmh_recall_executes_last_and_is_bounded_by_query_family(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    queries = (
+        FocusedQuery(
+            category="tool",
+            stage=LanguageStage.MHG,
+            language="de",
+            family="tagging",
+            stage_term="Mittelhochdeutsch",
+            concept="Tagger",
+        ),
+        FocusedQuery(
+            category="tool",
+            stage=LanguageStage.MHG,
+            language="en",
+            family="tagging",
+            stage_term="Middle High German",
+            concept="POS tagger",
+        ),
+        FocusedQuery(
+            category="tool",
+            stage=LanguageStage.MHG,
+            language="en",
+            family="parsing",
+            stage_term="Middle High German",
+            concept="dependency parser",
+        ),
+    )
+    monkeypatch.setattr(
+        "histgerm.research.discovery_orchestration._queries",
+        lambda config, vocabulary: queries,
+    )
+    requests: list[SearchRequest] = []
+
+    def provider_fetch(request: SearchRequest) -> ProviderResponse:
+        requests.append(request)
+        return ProviderResponse(
+            retrieval_mode="bounded_http",
+            observed_at=datetime(2026, 8, 12, tzinfo=UTC),
+            http_status=200,
+            body=(
+                "<rss><channel/></rss>"
+                if request.response_format is ResponseFormat.RSS
+                else "<main>No results</main>"
+            ),
+            exhausted=True,
+        )
+
+    run_discovery(
+        DiscoveryConfig(
+            category="tool",
+            stage=LanguageStage.MHG,
+            max_mined_terms=0,
+            max_exclusion_groups=1,
+            vocabulary=VocabularyLimits(max_pages=1),
+        ),
+        DiscoveryDependencies(
+            catalog=load_catalog(),
+            model_call=EmptyModel([]),
+            vocabulary_transport=lambda url, *, max_bytes: FetchedDocument(
+                url, "text/plain", b""
+            ),
+            provider_fetch=provider_fetch,
+            result_inspector=lambda result: ("unrelated", "synthetic"),
+        ),
+    )
+
+    gmh = [request for request in requests if request.query.startswith("gmh ")]
+    assert [request.query for request in gmh] == [
+        "gmh Tagger",
+        "gmh Tagger",
+        "gmh Tagger",
+        "gmh dependency parser",
+        "gmh dependency parser",
+        "gmh dependency parser",
+    ]
+    assert {request.channel for request in gmh} == {
+        "general_web_google",
+        "general_web_bing",
+        "general_web_brave",
+    }
+    assert _controlled_recall_queries(queries) == (queries[0], queries[2])
+    last_mhg = max(
+        index
+        for index, request in enumerate(requests)
+        if request.query.startswith("MHG ")
+    )
+    first_gmh = min(
+        index
+        for index, request in enumerate(requests)
+        if request.query.startswith("gmh ")
+    )
+    assert last_mhg < first_gmh
+
+
+def test_negative_claim_enqueues_only_bounded_task_gap_queries(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    initial = FocusedQuery(
+        category="tool",
+        stage=LanguageStage.MHG,
+        language="en",
+        family="tagging",
+        stage_term="Middle High German",
+        concept="tagger",
+    )
+    monkeypatch.setattr(
+        "histgerm.research.discovery_orchestration._queries",
+        lambda config, vocabulary: (initial,),
+    )
+    requests: list[SearchRequest] = []
+
+    def provider_fetch(request: SearchRequest) -> ProviderResponse:
+        requests.append(request)
+        body = (
+            '<a href="https://example.org/gap" '
+            'data-snippet="No named-entity recognition model exists.">'
+            "Unverified gap claim</a>"
+            if request.channel == "github"
+            and request.query == "Middle High German tagger"
+            else (
+                "<rss><channel/></rss>"
+                if request.response_format is ResponseFormat.RSS
+                else "<main>No results</main>"
+            )
+        )
+        return ProviderResponse(
+            retrieval_mode="bounded_http",
+            observed_at=datetime(2026, 8, 12, tzinfo=UTC),
+            http_status=200,
+            body=body,
+            exhausted=True,
+        )
+
+    result = run_discovery(
+        DiscoveryConfig(
+            category="tool",
+            stage=LanguageStage.MHG,
+            max_mined_terms=0,
+            max_exclusion_groups=1,
+            vocabulary=VocabularyLimits(max_pages=1),
+        ),
+        DiscoveryDependencies(
+            catalog=load_catalog(),
+            model_call=EmptyModel([]),
+            vocabulary_transport=lambda url, *, max_bytes: FetchedDocument(
+                url, "text/plain", b""
+            ),
+            provider_fetch=provider_fetch,
+            result_inspector=lambda result: (
+                ("lead", "untrusted negative gap wording")
+                if result.url == "https://example.org/gap"
+                else ("unrelated", "synthetic")
+            ),
+        ),
+    )
+
+    gap_requests = [
+        request
+        for request in requests
+        if request.query == '"Middle High German" named-entity recognition'
+    ]
+    assert [request.channel for request in gap_requests] == [
+        "general_web_google",
+        "general_web_bing",
+        "general_web_brave",
+    ]
+    assert (
+        sum(query.family == "untrusted_metadata_lead" for query in result.queries) == 1
+    )
 
 
 def test_orchestration_inspects_and_deduplicates_multiple_provider_pages() -> None:

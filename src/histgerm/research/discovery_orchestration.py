@@ -3,13 +3,14 @@
 from __future__ import annotations
 
 import asyncio
+import ipaddress
 import re
 from collections.abc import Coroutine, Sequence
 from dataclasses import dataclass, replace
 from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 from typing import Any, Protocol, TypedDict, cast
-from urllib.parse import urlsplit
+from urllib.parse import SplitResult, unquote, urlsplit
 
 from histgerm.catalog import Catalog
 from histgerm.models import BaseResource, LanguageStage
@@ -29,6 +30,7 @@ from .focused_queries import (
     ResourceCategory,
     apply_exclusion_group,
     bounded_exclusion_groups,
+    controlled_recall_formulations,
     generate_focused_queries,
     normalize_metadata_lead_terms,
     render_query,
@@ -251,6 +253,12 @@ class _Channel:
     response_format: ResponseFormat
 
 
+@dataclass(frozen=True, slots=True)
+class _FollowUpPlan:
+    queries: tuple[tuple[FocusedQuery, str], ...]
+    truncated: bool = False
+
+
 _REQUIRED_CHANNELS: tuple[_Channel, ...] = (
     _Channel("general_web_google", SearchProvider.GOOGLE, ResponseFormat.HTML),
     _Channel("general_web_bing", SearchProvider.BING, ResponseFormat.RSS),
@@ -260,18 +268,42 @@ _REQUIRED_CHANNELS: tuple[_Channel, ...] = (
     _Channel("zenodo", SearchProvider.ZENODO, ResponseFormat.HTML),
     _Channel("institutional", SearchProvider.GOOGLE, ResponseFormat.HTML),
     _Channel("github", SearchProvider.GITHUB, ResponseFormat.HTML),
+    _Channel("gitlab", SearchProvider.GITLAB, ResponseFormat.HTML),
     _Channel("huggingface", SearchProvider.HUGGINGFACE, ResponseFormat.HTML),
 )
-_GENERAL_WEB_CHANNELS = frozenset(
-    {"general_web_google", "general_web_bing", "general_web_brave"}
+_GENERAL_WEB_CHANNEL_ORDER = (
+    "general_web_google",
+    "general_web_bing",
+    "general_web_brave",
 )
+_GENERAL_WEB_CHANNELS = frozenset(_GENERAL_WEB_CHANNEL_ORDER)
 _EXACT_STAGE_CHANNELS = _GENERAL_WEB_CHANNELS | {"institutional"}
 _CROSS_CHANNEL_HOSTS = {
     "github.com": "github",
     "www.github.com": "github",
+    "gitlab.com": "gitlab",
+    "www.gitlab.com": "gitlab",
     "huggingface.co": "huggingface",
     "www.huggingface.co": "huggingface",
+    "zenodo.org": "zenodo",
+    "www.zenodo.org": "zenodo",
+    "doi.org": "general_web_google",
+    "dx.doi.org": "general_web_google",
+    "figshare.com": "general_web_google",
+    "www.figshare.com": "general_web_google",
+    "osf.io": "general_web_google",
 }
+_REGISTRY_CHANNELS = frozenset({"clarin", "olac"})
+_REGISTRY_HOSTS = frozenset(
+    {
+        "vlo.clarin.eu",
+        "www.language-archives.org",
+        "language-archives.org",
+    }
+)
+_GITLAB_RESERVED_ROOTS = frozenset(
+    {"dashboard", "explore", "groups", "help", "search", "users"}
+)
 _METADATA_LABEL = re.compile(
     r"(?i)\b(?:alias(?:es)?|architecture(?:s)?|model[_ -]?type|"
     r"project|author|person|owner|maintainer|institution|"
@@ -285,6 +317,15 @@ _TECHNICAL_LEAD = re.compile(
     r"word embeddings?|worteinbettungen?|wort-embeddings?)\b"
 )
 _MAX_FOLLOW_UP_QUERIES = 16
+_MAX_METADATA_LEADS = 32
+_MAX_METADATA_URLS_PER_RESULT = 8
+_MAX_NEGATIVE_GAP_TERMS = 4
+_MAX_CONTROLLED_RECALL_QUERIES = 24
+_NEGATIVE_CLAIM = re.compile(
+    r"(?is)\b(?:no|none|not|kein(?:e[rsn]?)?|nicht)\b.{0,80}"
+    r"\b(?:available|exists?|found|verfügbar|existiert|vorhanden)\b"
+)
+_EMBEDDED_IPV4 = re.compile(r"(?<!\d)(?:\d{1,3}[.-]){3}\d{1,3}(?!\d)")
 
 
 def run_discovery(
@@ -356,9 +397,10 @@ def run_discovery(
                 new_candidates=retained,
             )
 
-    follow_up_queries = list(_untrusted_follow_up_queries(config, assessments))
+    initial_follow_ups = _untrusted_follow_up_queries(config, assessments)
+    follow_up_queries = list(initial_follow_ups.queries)
     included_follow_ups: list[FocusedQuery] = []
-    follow_up_limit_reached = False
+    follow_up_limit_reached = initial_follow_ups.truncated
     while follow_up_queries:
         query, channel_name = follow_up_queries.pop(0)
         channel = next(item for item in _REQUIRED_CHANNELS if item.name == channel_name)
@@ -386,7 +428,9 @@ def run_discovery(
             channel=channel.name,
             new_candidates=retained,
         )
-        follow_up_queries.extend(_untrusted_follow_up_queries(config, records))
+        new_follow_ups = _untrusted_follow_up_queries(config, records)
+        follow_up_queries.extend(new_follow_ups.queries)
+        follow_up_limit_reached = follow_up_limit_reached or new_follow_ups.truncated
     all_queries = tuple(dict.fromkeys([*queries, *included_follow_ups]))
 
     seen_names = [
@@ -429,6 +473,26 @@ def run_discovery(
                     channel=channel.name,
                     new_candidates=retained,
                 )
+
+    for query in _controlled_recall_queries(queries):
+        for channel in _REQUIRED_CHANNELS:
+            if channel.name not in _GENERAL_WEB_CHANNELS:
+                continue
+            text = render_query(query, "stage_iso_639_3")
+            request_key = (channel.name, text.casefold())
+            if request_key in executed_requests:
+                continue
+            executed_requests.add(request_key)
+            records = _execute_query(text, query, channel, dependencies)
+            assessments.extend(records)
+            retained = _retain_execution_leads(records, leads)
+            _record_execution_metrics(
+                metrics,
+                records,
+                family=query.family,
+                channel=channel.name,
+                new_candidates=retained,
+            )
 
     completion_gaps = _completion_gaps(
         config,
@@ -1219,11 +1283,11 @@ def _weak_coverage_formulations(
     base = _first_round_formulation(channel)
     if channel.name not in _GENERAL_WEB_CHANNELS:
         return (base,)
-    formulations: list[QueryFormulation] = [base]
-    if " " in " ".join(query.concept.split()):
-        formulations.append("exact_stage_and_concept")
-    formulations.append("stage_abbreviation")
-    return tuple(formulations)
+    return tuple(
+        formulation
+        for formulation in controlled_recall_formulations(query)
+        if formulation != "stage_iso_639_3"
+    )
 
 
 def _rendered_exclusion_variants(
@@ -1303,8 +1367,9 @@ def _has_lead(record: SearchAssessmentRecord) -> bool:
 def _untrusted_follow_up_queries(
     config: DiscoveryConfig,
     assessments: Sequence[SearchAssessmentRecord],
-) -> tuple[tuple[FocusedQuery, str], ...]:
+) -> _FollowUpPlan:
     raw_leads: list[tuple[str, tuple[str, ...]]] = []
+    truncated = False
     for record in assessments:
         for result, inspection in zip(record.results, record.inspections, strict=True):
             if inspection.classification != "lead":
@@ -1341,10 +1406,23 @@ def _untrusted_follow_up_queries(
                 (match.group(0), ("github", "huggingface"))
                 for match in _TECHNICAL_LEAD.finditer(metadata)
             )
-            for url in (result.url, *(_URL.findall(metadata))):
+            raw_leads.extend(
+                (term, _GENERAL_WEB_CHANNEL_ORDER)
+                for term in _negative_gap_terms(config, metadata)
+            )
+            urls = (result.url, *(_URL.findall(metadata)))[
+                :_MAX_METADATA_URLS_PER_RESULT
+            ]
+            for url in urls:
                 pivot = _cross_channel_pivot(url, record.channel)
                 if pivot is not None:
                     raw_leads.append((pivot[0], (pivot[1],)))
+            if len(raw_leads) >= _MAX_METADATA_LEADS:
+                truncated = True
+                raw_leads = raw_leads[:_MAX_METADATA_LEADS]
+                break
+        if len(raw_leads) >= _MAX_METADATA_LEADS:
+            break
 
     normalized = normalize_metadata_lead_terms(
         (term for term, _ in raw_leads),
@@ -1380,7 +1458,7 @@ def _untrusted_follow_up_queries(
             if query_key not in seen:
                 seen.add(query_key)
                 queries.append((query, target))
-    return tuple(queries)
+    return _FollowUpPlan(tuple(queries), truncated)
 
 
 def _completion_gaps(
@@ -1437,18 +1515,159 @@ def _completion_gaps(
 
 
 def _cross_channel_pivot(url: str, source_channel: str) -> tuple[str, str] | None:
-    parsed = urlsplit(url.rstrip(".,;"))
-    target = _CROSS_CHANNEL_HOSTS.get(parsed.netloc.casefold())
-    if target is None or target == source_channel:
+    parsed = _public_https_url(url)
+    if parsed is None:
         return None
-    parts = [part for part in parsed.path.split("/") if part]
+    host = parsed.hostname
+    assert host is not None
+    target = _CROSS_CHANNEL_HOSTS.get(host)
+    if target is None:
+        if source_channel not in _REGISTRY_CHANNELS:
+            return None
+        target = "institutional"
+    if target == source_channel or host in _REGISTRY_HOSTS:
+        return None
+
+    parts = [unquote(part) for part in parsed.path.split("/") if part]
     if target == "huggingface" and parts[:1] == ["models"]:
         parts = parts[1:]
-    if len(parts) < 2:
+    if target == "huggingface" and parts[:1] in (
+        ["datasets"],
+        ["docs"],
+        ["organizations"],
+        ["spaces"],
+    ):
         return None
-    term = " ".join(parts[:2])
+    if target == "github":
+        if len(parts) != 2:
+            return None
+        parts[1] = parts[1].removesuffix(".git")
+    elif target == "gitlab":
+        if "-" in parts:
+            parts = parts[: parts.index("-")]
+        if len(parts) < 2 or parts[0].casefold() in _GITLAB_RESERVED_ROOTS:
+            return None
+        parts[-1] = parts[-1].removesuffix(".git")
+        if len(parts) > 4:
+            parts = [*parts[:3], parts[-1]]
+    elif target == "huggingface":
+        if len(parts) < 2:
+            return None
+        parts = parts[:2]
+    elif target == "zenodo":
+        if len(parts) != 2 or parts[0].casefold() not in {"record", "records"}:
+            return None
+        parts = ["Zenodo", parts[1]]
+    elif target == "general_web_google":
+        if not parts:
+            return None
+        parts = parts[:2]
+    else:
+        meaningful = [
+            part
+            for part in parts
+            if part.casefold() not in {"en", "project", "projects", "research"}
+        ]
+        parts = meaningful[-2:] or [host.split(".")[0]]
+
+    term = " ".join(parts)
     safe = normalize_metadata_lead_terms((term,), max_terms=1)
     return (safe[0], target) if safe else None
+
+
+def _public_https_url(url: str) -> SplitResult | None:
+    candidate = url.rstrip(".,;")
+    try:
+        parsed = urlsplit(candidate)
+        port = parsed.port
+    except ValueError:
+        return None
+    host = parsed.hostname
+    if (
+        parsed.scheme.casefold() != "https"
+        or not host
+        or parsed.username is not None
+        or parsed.password is not None
+        or port not in {None, 443}
+    ):
+        return None
+    host = host.rstrip(".").casefold()
+    try:
+        host = host.encode("idna").decode("ascii")
+    except UnicodeError:
+        return None
+    if host == "localhost" or host.endswith(
+        (
+            ".local",
+            ".localhost",
+            ".internal",
+            ".home.arpa",
+            ".test",
+            ".invalid",
+            ".example",
+        )
+    ):
+        return None
+    for match in _EMBEDDED_IPV4.finditer(host):
+        try:
+            if not ipaddress.ip_address(match.group().replace("-", ".")).is_global:
+                return None
+        except ValueError:
+            continue
+    try:
+        if not ipaddress.ip_address(host).is_global:
+            return None
+    except ValueError:
+        if "." not in host:
+            return None
+    return parsed._replace(netloc=host)
+
+
+def _negative_gap_terms(
+    config: DiscoveryConfig,
+    metadata: str,
+) -> tuple[str, ...]:
+    claims = tuple(match.group(0) for match in _NEGATIVE_CLAIM.finditer(metadata))
+    if not claims:
+        return ()
+    concepts = dict.fromkeys(
+        query.concept
+        for query in generate_focused_queries(
+            config.category,
+            config.stage,
+            include_named_tagsets=False,
+        )
+    )
+    matching = [
+        concept
+        for concept in concepts
+        if any(
+            re.search(
+                rf"(?<!\w){re.escape(concept)}(?!\w)",
+                claim,
+                flags=re.IGNORECASE,
+            )
+            for claim in claims
+        )
+    ]
+    return tuple(matching[:_MAX_NEGATIVE_GAP_TERMS])
+
+
+def _controlled_recall_queries(
+    queries: Sequence[FocusedQuery],
+) -> tuple[FocusedQuery, ...]:
+    selected: list[FocusedQuery] = []
+    seen_families: set[str] = set()
+    for query in queries:
+        if (
+            "stage_iso_639_3" in controlled_recall_formulations(query)
+            and query.family not in seen_families
+        ):
+            seen_families.add(query.family)
+            selected.append(query)
+            if len(selected) == _MAX_CONTROLLED_RECALL_QUERIES:
+                return tuple(selected)
+    return tuple(selected)
 
 
 def _queries(

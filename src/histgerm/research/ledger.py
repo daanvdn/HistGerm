@@ -133,7 +133,7 @@ def _bootstrap_candidates(on: date) -> list[CandidateEntry]:
             if not discovery_urls:
                 raise LedgerPolicyError(f'trusted bootstrap resource {record.id!r} has no source URLs')
             stages = getattr(record, stage_field)
-            candidates.append(CandidateEntry(id=f'candidate-{record.id}', name=record.name, category=category, discovered_on=on, last_checked_on=record.reviewed_on, discovery_urls=discovery_urls, discovery_stage_claims=[stage.value for stage in stages] if stages else None, disposition='added', resource_id=record.id, disposition_reason=record.description, refreshed_existing=False))
+            candidates.append(CandidateEntry(id=f'candidate-{record.id}', name=record.name, aliases=list(record.aliases or []), source_wordings=[record.name], category=category, discovered_on=on, last_checked_on=record.reviewed_on, discovery_urls=discovery_urls, discovery_stage_claims=[stage.value for stage in stages] if stages else None, disposition='added', resource_id=record.id, disposition_reason=record.description, refreshed_existing=False))
     return candidates
 
 def select_next_sweep(ledger: DiscoveryLedger, *, category: ResourceCategory | None=None, stage: LanguageStage | None=None) -> SweepEntry | CandidateEntry:

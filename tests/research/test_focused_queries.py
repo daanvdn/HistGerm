@@ -10,6 +10,7 @@ from histgerm.research.focused_queries import (
     ResourceCategory,
     apply_exclusion_group,
     bounded_exclusion_groups,
+    controlled_recall_formulations,
     generate_focused_queries,
     normalize_metadata_lead_terms,
     render_query,
@@ -66,6 +67,84 @@ def test_tool_families_are_expanded_and_tagsets_are_separate_qualifiers() -> Non
         "Worteinbettung",
         "Worteinbettungen",
     } <= {query.concept for query in queries}
+
+
+def test_undercovered_tool_tasks_are_separate_bilingual_families() -> None:
+    queries = generate_focused_queries("tool", "mhg")
+    expected = {
+        "named_entity_recognition",
+        "machine_translation",
+        "coreference",
+        "semantic_role_labeling",
+        "relation_extraction",
+        "sentence_embeddings",
+        "sentiment_analysis",
+        "compound_splitting",
+        "finite_state_morphology",
+    }
+    for family in expected:
+        family_queries = [query for query in queries if query.family == family]
+        assert {query.language for query in family_queries} == {"de", "en"}
+        assert all(query.qualifier is None for query in family_queries)
+        assert 2 <= len(family_queries) <= 4
+
+    assert any(query.concept == "Named-Entity-Erkennung" for query in queries)
+    assert any(query.concept == "named-entity recognition" for query in queries)
+    assert any(query.concept == "maschinelle Übersetzung" for query in queries)
+    assert any(query.concept == "machine translation" for query in queries)
+
+
+def test_general_architecture_leads_remain_bounded_and_untrusted() -> None:
+    queries = generate_focused_queries("tool", "mhg")
+    leads = {
+        "contextual string embeddings",
+        "LSTM",
+        "RNN",
+        "constituency parser",
+        "cross-lingual transfer",
+        "generative language-model pipeline",
+    }
+    matching = [query for query in queries if query.concept in leads]
+    assert {query.concept for query in matching} == leads
+    assert all(query.trusted_evidence is False for query in matching)
+    assert all(query.qualifier is None for query in matching)
+    assert not {
+        "Stanza",
+        "Universal Dependencies",
+        "Flair",
+    } & {query.concept for query in queries}
+
+
+def test_gmh_is_last_controlled_mhg_recall_form_and_keeps_query_syntax() -> None:
+    focused = query(concept="dependency parser", qualifier="open source")
+    formulations = controlled_recall_formulations(focused)
+    assert formulations == (
+        "exact_stage",
+        "exact_stage_and_concept",
+        "stage_abbreviation",
+        "stage_iso_639_3",
+    )
+    assert (
+        render_query(focused, formulations[-1]) == 'gmh dependency parser "open source"'
+    )
+
+
+def test_gmh_recall_is_selected_by_stage_not_substring() -> None:
+    focused = query(
+        stage=LanguageStage.OHG,
+        stage_term="Old High German gmh notes",
+    )
+    assert "stage_iso_639_3" not in controlled_recall_formulations(focused)
+    with pytest.raises(ValueError, match="no controlled ISO 639-3 recall form"):
+        render_query(focused, "stage_iso_639_3")
+
+
+def test_tool_query_budget_and_order_are_deterministic() -> None:
+    first = generate_focused_queries("tool", "mhg")
+    second = generate_focused_queries("tool", "mhg")
+    assert first == second
+    assert len(first) <= 128
+    assert len({query.text.casefold() for query in first}) == len(first)
 
 
 def test_exclusions_are_deduplicated_and_bounded() -> None:
@@ -154,6 +233,7 @@ def test_exact_stage_and_concept_quotes_separate_multiword_phrases() -> None:
         "exact_stage",
         "exact_stage_and_concept",
         "stage_abbreviation",
+        "stage_iso_639_3",
     ],
 )
 def test_qualifier_stays_separate_and_task_family_is_preserved(

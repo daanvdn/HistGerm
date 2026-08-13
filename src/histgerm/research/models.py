@@ -17,6 +17,7 @@ from pydantic import (
     ConfigDict,
     Field,
     HttpUrl,
+    StringConstraints,
     field_validator,
     model_validator,
 )
@@ -71,6 +72,7 @@ def _public_http_url(value: HttpUrl) -> HttpUrl:
             raise ValueError('URL host must be a public address')
     return value
 type PublicHttpUrl = Annotated[HttpUrl, AfterValidator(_public_http_url)]
+type AuthoredSeedText = Annotated[str, StringConstraints(strip_whitespace=False)]
 type _ResolverResult = tuple[int, int, int, str, tuple[Any, ...]]
 type AddressResolver = Callable[..., Sequence[_ResolverResult]]
 
@@ -212,6 +214,8 @@ class CandidateEntry(_ResearchModel):
     """Represent one durable evaluated discovery candidate."""
     id: str = Field(pattern=_CANDIDATE_ID_PATTERN)
     name: str
+    aliases: list[AuthoredSeedText] = Field(default_factory=list)
+    source_wordings: list[AuthoredSeedText] = Field(default_factory=list)
     category: ResourceCategory
     discovered_on: date
     last_checked_on: date
@@ -228,6 +232,13 @@ class CandidateEntry(_ResearchModel):
     def validate_discovery_urls(cls, values: list[HttpUrl]) -> list[HttpUrl]:
         """Require unique HTTP(S) discovery URLs."""
         _require_unique([str(value) for value in values], 'discovery URLs')
+        return values
+
+    @field_validator('aliases', 'source_wordings')
+    @classmethod
+    def validate_seed_text(cls, values: list[str], info: Any) -> list[str]:
+        """Retain authored seed text in order without collapsing distinct values."""
+        _require_unique(values, info.field_name.replace('_', ' '))
         return values
 
     @model_validator(mode='after')

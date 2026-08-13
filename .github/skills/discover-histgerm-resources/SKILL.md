@@ -78,7 +78,13 @@ reconcile on a stale revision.
 2. Validate an optional seed URL under the public-source rules below. A seed is
    a lead, not trusted evidence and not permission to narrow the required
    sweep. Extract every distinct row from a bounded structured seed as a lead,
-   preserving its name, source wording, seed URL, and public resource URLs.
+   preserving every named lead, alias, exact source wording, seed URL, and
+   public resource URL losslessly in the `CandidateEntry` handoff. Do not
+   collapse distinct rows that share authors, tasks, corpora, or URLs.
+   Negative conversational or seed claims such as “no model exists” are
+   untrusted query-gap leads only. Convert them only into bounded follow-up
+   queries for the named task family; never treat them as evidence of absence,
+   `out_of_scope`, or permission to narrow or complete the sweep.
    If the seed body exceeds 10 MiB, is inaccessible, challenge protected, or
    has no parseable entries, record and return that exact seed gap through the
    incomplete-pass state; it must not be reported as zero candidates. Continue
@@ -91,6 +97,15 @@ reconcile on a stale revision.
    resource ID and is sent immediately through curation in refresh mode.
    Possible identity conflicts are blocked, not merged. Never delete a
    resource automatically.
+
+Keep a dedicated historical-language resource distinct from a generic or
+modern-language component used in a historical-language application, from
+its training/evaluation corpus, and from the downstream application or
+pipeline. Similar tasks, shared authors, shared corpora, or integration do not
+establish identity, duplication, or historical-stage support. A generic
+component applied to MHG is not itself MHG-supported without canonical
+component-level evidence; retain it as a lead or block exact scope/identity
+rather than add or merge it.
 
 Discovery wording and `discovery_stage_claims` are hints only. They cannot
 populate trusted stage fields. A resource is in scope only when canonical
@@ -248,8 +263,9 @@ that cannot be proven.
 ## Candidate and completion procedure
 
 For each encountered lead, upsert a unique `candidate-...` entry with source
-wording, category, dates, unique public discovery URLs, explicit discovery
-stage wording if any, and transient `pending` status. Return each exact
+wordings, all aliases, category, dates, the seed URL and every public resource
+URL, explicit discovery stage wording if any, and transient `pending` status.
+Return each exact
 upserted entry and the confirmed revision to the custom-agent coordinator for
 bounded curation. When discovery resumes after the coordinator has applied
 the model-valid results, the final candidate must be:

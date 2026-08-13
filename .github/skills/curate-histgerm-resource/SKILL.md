@@ -60,6 +60,13 @@ not merely a duplicate disposition or `refreshed_existing` flag.
 1. Establish identity without merging similarly named projects. Compare against
    the supplied trusted inventory and report a possible match as `duplicate`
    with the correctly prefixed `matched_resource_id`.
+   Keep separate a dedicated historical-language resource, a generic or
+   modern-language component used in a historical-language application, the
+   training/evaluation corpus, and the downstream application or pipeline.
+   Similar tasks, shared authors, shared corpora, or integration do not prove
+   identity or duplication. A generic component applied to MHG is not itself
+   MHG-supported without canonical component-level evidence; block exact
+   scope/identity rather than add or merge it.
 2. Establish OHG, MHG, or ENHG coverage only from an explicit canonical or
    primary statement. Discovery wording is a lead, not evidence. Silence about
    historical stage coverage means `blocked`, not `out_of_scope`.
@@ -99,6 +106,9 @@ legal metadata. In particular, do not turn:
 - repository presence into maintenance status;
 - a license label into legal permission;
 - source silence into a negative fact.
+- a conversational or seed claim such as “no model exists” into evidence of
+  absence or `out_of_scope`; it is only a query-gap lead for bounded
+  task-family follow-up discovery.
 
 Preserve `unclear`. The permission fields are exactly `model_training`,
 `original_data_redistribution`, `processed_data_redistribution`, and

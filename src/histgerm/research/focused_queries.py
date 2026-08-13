@@ -16,6 +16,7 @@ type QueryFormulation = Literal[
     "exact_stage",
     "exact_stage_and_concept",
     "stage_abbreviation",
+    "stage_iso_639_3",
 ]
 
 _STAGE_TERMS: dict[LanguageStage, dict[QueryLanguage, str]] = {
@@ -83,6 +84,42 @@ _CONCEPTS: dict[ResourceCategory, dict[str, dict[QueryLanguage, tuple[str, ...]]
             "de": ("Tokenizer", "Tokenisierung", "Satzsegmentierung"),
             "en": ("tokenizer", "tokenization", "sentence segmentation"),
         },
+        "named_entity_recognition": {
+            "de": ("Named-Entity-Erkennung", "Entitätenerkennung"),
+            "en": ("named-entity recognition", "NER"),
+        },
+        "machine_translation": {
+            "de": ("maschinelle Übersetzung", "NMT"),
+            "en": ("machine translation", "NMT"),
+        },
+        "coreference": {
+            "de": ("Koreferenzauflösung", "Koreferenzerkennung"),
+            "en": ("coreference resolution", "coreference detection"),
+        },
+        "semantic_role_labeling": {
+            "de": ("semantische Rollenannotation", "SRL"),
+            "en": ("semantic role labeling", "SRL"),
+        },
+        "relation_extraction": {
+            "de": ("Relationsextraktion", "Beziehungsextraktion"),
+            "en": ("relation extraction", "relationship extraction"),
+        },
+        "sentence_embeddings": {
+            "de": ("Satz-Embeddings", "Satzeinbettungen"),
+            "en": ("sentence embeddings", "sentence embedding"),
+        },
+        "sentiment_analysis": {
+            "de": ("Sentimentanalyse", "Stimmungsanalyse"),
+            "en": ("sentiment analysis", "opinion mining"),
+        },
+        "compound_splitting": {
+            "de": ("Kompositazerlegung", "Kompositum-Splitting"),
+            "en": ("compound splitting", "compound decomposition"),
+        },
+        "finite_state_morphology": {
+            "de": ("Finite-State-Morphologie", "Morphologie mit endlichen Automaten"),
+            "en": ("finite-state morphology", "finite-state morphological analysis"),
+        },
         "models": {
             "de": (
                 "BERT",
@@ -98,6 +135,10 @@ _CONCEPTS: dict[ResourceCategory, dict[str, dict[QueryLanguage, tuple[str, ...]]
                 "Wort-Embeddings",
                 "Worteinbettung",
                 "Worteinbettungen",
+                "kontextuelle String-Embeddings",
+                "LSTM",
+                "RNN",
+                "sprachübergreifender Transfer",
             ),
             "en": (
                 "BERT",
@@ -111,15 +152,29 @@ _CONCEPTS: dict[ResourceCategory, dict[str, dict[QueryLanguage, tuple[str, ...]]
                 "transformer architecture",
                 "word embedding",
                 "word embeddings",
+                "contextual string embeddings",
+                "LSTM",
+                "RNN",
+                "cross-lingual transfer",
             ),
         },
         "pipelines": {
-            "de": ("NLP-Werkzeug", "Annotationswerkzeug", "Sprachverarbeitung"),
+            "de": (
+                "NLP-Werkzeug",
+                "Annotationswerkzeug",
+                "Sprachverarbeitung",
+                "generative Sprachmodell-Pipeline",
+            ),
             "en": (
                 "NLP tool",
                 "annotation tool",
                 "language-processing pipeline",
+                "generative language-model pipeline",
             ),
+        },
+        "constituency_parsing": {
+            "de": ("Konstituentenparser",),
+            "en": ("constituency parser",),
         },
     },
     "dictionary": {
@@ -147,6 +202,9 @@ _STAGE_ABBREVIATIONS: dict[LanguageStage, str] = {
     LanguageStage.OHG: "OHG",
     LanguageStage.MHG: "MHG",
     LanguageStage.ENHG: "ENHG",
+}
+_STAGE_ISO_639_3: dict[LanguageStage, str] = {
+    LanguageStage.MHG: "gmh",
 }
 _DOUBLE_QUOTES = str.maketrans({character: " " for character in '"“”„‟'})
 _SAFE_LEAD_TERM = re.compile(r"^@?[^\W_][\w ._-]*$", re.UNICODE)
@@ -200,6 +258,15 @@ def render_query(
         rendered_stage = _STAGE_ABBREVIATIONS[query.stage]
         rendered_concept = concept
         rendered_qualifier = _quote_phrase(qualifier) if qualifier else None
+    elif formulation == "stage_iso_639_3":
+        try:
+            rendered_stage = _STAGE_ISO_639_3[query.stage]
+        except KeyError as error:
+            raise ValueError(
+                f"no controlled ISO 639-3 recall form for {query.stage.value!r}"
+            ) from error
+        rendered_concept = concept
+        rendered_qualifier = _quote_phrase(qualifier) if qualifier else None
     else:
         raise ValueError(f"unknown query formulation {formulation!r}")
     return " ".join(
@@ -207,6 +274,18 @@ def render_query(
         for part in (rendered_stage, rendered_concept, rendered_qualifier)
         if part is not None
     )
+
+
+def controlled_recall_formulations(query: FocusedQuery) -> tuple[QueryFormulation, ...]:
+    """Return bounded stage formulations from precision to controlled recall."""
+
+    formulations: list[QueryFormulation] = ["exact_stage"]
+    if len(query.concept.split()) > 1:
+        formulations.append("exact_stage_and_concept")
+    formulations.append("stage_abbreviation")
+    if query.stage in _STAGE_ISO_639_3:
+        formulations.append("stage_iso_639_3")
+    return tuple(formulations)
 
 
 def iter_focused_queries(
@@ -397,6 +476,7 @@ __all__ = [
     "ResourceCategory",
     "apply_exclusion_group",
     "bounded_exclusion_groups",
+    "controlled_recall_formulations",
     "generate_focused_queries",
     "iter_focused_queries",
     "normalize_metadata_lead_terms",

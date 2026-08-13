@@ -163,6 +163,15 @@ the validated discovery vocabulary. Both produce untrusted leads only and
 never satisfy evidence requirements. Follow-up elicitation excludes
 already-known names and stops at no-new-lead or iteration bounds.
 
+Supplied conversational or structured seeds do not narrow the sweep. Every
+distinct named lead, alias, exact source wording, seed URL, and public resource
+URL is retained losslessly through the `CandidateEntry` handoff, even when
+rows share tasks, authors, corpora, or links. Negative claims such as “no model
+exists” are untrusted query-gap leads, never evidence of absence or
+`out_of_scope`; they produce only bounded follow-up queries for the named task
+family. Reaching that follow-up bound leaves the run incomplete with an
+explicit gap.
+
 Crawl4AI renders and extracts exactly one canonical URL selected by inventory
 logic per invocation. It has no deep-crawl strategy, does not schedule links
 found in the page, and does not turn redirects or subresources into vocabulary
@@ -233,6 +242,15 @@ stage, dates, releases, overlap, derivation, shared work, training data, task
 support, machine readability, maintenance, availability, access, or legal
 permission. Corpora use only the latest directly evidenced release. Textless
 described releases use `texts: []`; placeholder texts are forbidden.
+
+Identity review keeps four things distinct: a dedicated historical-language
+resource; a generic or modern-language component merely used in a
+historical-language application; the training/evaluation corpus; and the
+downstream application or pipeline. A similar task, shared authors, a shared
+corpus, or integration does not establish identity, duplication, or stage
+support. A generic component applied to MHG is not itself MHG-supported absent
+canonical component-level evidence; it remains a lead or is blocked on exact
+scope/identity rather than added or merged.
 
 The legal fields remain `model_training`, `original_data_redistribution`,
 `processed_data_redistribution`, and `trained_weight_publication`. Any value

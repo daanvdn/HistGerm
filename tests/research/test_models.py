@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import date
+from pathlib import Path
 
 import pytest
 from conftest import candidate_data, pass_data
@@ -12,7 +13,9 @@ from histgerm.research import (
     EvidenceExcerpt,
     SearchPass,
     SearchQueryRecord,
+    load_ledger,
     resolve_request_destination,
+    upsert_candidate,
 )
 
 
@@ -159,3 +162,117 @@ def test_candidate_and_result_dispositions_remain_strict() -> None:
             risk_flags=[],
             summary="Blocked.",
         )
+
+
+def test_seed_rows_preserve_aliases_wordings_and_every_public_url() -> None:
+    first = CandidateEntry.model_validate(
+        candidate_data(
+            id="candidate-component",
+            name="Generic Tagger",
+            aliases=["GT", "GenericTagger"],
+            source_wordings=[
+                "Generic Tagger used by the MHG pipeline",
+                "modern German tagging component",
+            ],
+            discovery_urls=[
+                "https://example.org/seed",
+                "https://example.org/component",
+                "https://example.org/application",
+            ],
+        )
+    )
+    second = CandidateEntry.model_validate(
+        candidate_data(
+            id="candidate-application",
+            name="MHG Pipeline",
+            aliases=["Middle High German Pipeline"],
+            source_wordings=["MHG Pipeline (uses Generic Tagger)"],
+            discovery_urls=[
+                "https://example.org/seed",
+                "https://example.org/application",
+            ],
+        )
+    )
+
+    assert first.aliases == ["GT", "GenericTagger"]
+    assert first.source_wordings == [
+        "Generic Tagger used by the MHG pipeline",
+        "modern German tagging component",
+    ]
+    assert [str(url) for url in first.discovery_urls] == [
+        "https://example.org/seed",
+        "https://example.org/component",
+        "https://example.org/application",
+    ]
+    assert first.id != second.id
+    assert first.name != second.name
+
+
+def test_component_application_and_corpus_identity_remain_distinct() -> None:
+    shared = ["https://example.org/project"]
+    component = CandidateEntry.model_validate(
+        candidate_data(
+            id="candidate-generic-component",
+            name="Generic Modern German Tagger",
+            category="tool",
+            discovery_urls=shared,
+            disposition="blocked",
+            evidence_gaps=["Canonical component-level MHG support is unverified."],
+        )
+    )
+    application = CandidateEntry.model_validate(
+        candidate_data(
+            id="candidate-mhg-application",
+            name="MHG Annotation Pipeline",
+            category="tool",
+            discovery_urls=shared,
+        )
+    )
+    corpus = CandidateEntry.model_validate(
+        candidate_data(
+            id="candidate-training-corpus",
+            name="Pipeline Training Corpus",
+            category="corpus",
+            discovery_urls=shared,
+        )
+    )
+
+    assert len({component.id, application.id, corpus.id}) == 3
+    assert component.disposition == "blocked"
+    assert application.category == "tool"
+    assert corpus.category == "corpus"
+
+
+def test_revision_95_ledger_defaults_new_seed_fields_without_rewriting() -> None:
+    ledger = load_ledger(Path("research") / "discovery-ledger.yaml")
+    assert ledger.revision == 95
+    legacy = next(candidate for candidate in ledger.candidates if not candidate.aliases)
+    assert legacy.aliases == []
+    assert legacy.source_wordings == []
+
+
+def test_seed_handoff_round_trip_is_lossless_and_deterministic(
+    ledger_path: Path,
+) -> None:
+    candidate = CandidateEntry.model_validate(
+        candidate_data(
+            aliases=[" Exact Alias ", "Alias  with punctuation (v2)"],
+            source_wordings=[
+                " Exact authored  seed wording ",
+                "No named-entity recognition model exists.",
+            ],
+            discovery_urls=[
+                "https://example.org/seed",
+                "https://example.org/component",
+                "https://example.org/application",
+            ],
+        )
+    )
+    updated = upsert_candidate(ledger_path, candidate, expected_revision=0)
+    reloaded = load_ledger(ledger_path)
+    stored = next(item for item in reloaded.candidates if item.id == candidate.id)
+
+    assert stored.aliases == candidate.aliases
+    assert stored.source_wordings == candidate.source_wordings
+    assert stored.discovery_urls == candidate.discovery_urls
+    assert updated.model_dump(mode="json") == reloaded.model_dump(mode="json")

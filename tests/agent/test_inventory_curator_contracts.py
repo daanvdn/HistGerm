@@ -191,6 +191,75 @@ def test_lossless_discovery_curation_apply_handoff(
     )
 
 
+def test_seed_and_resource_identity_contracts_are_semantic(
+    contracts: dict[str, str],
+) -> None:
+    """Seeds remain lossless leads and related project artifacts stay distinct."""
+
+    documented = " ".join(CURATOR_DOC.read_text(encoding="utf-8").split())
+    for policy in (
+        contracts["agent"],
+        contracts[SKILLS[0]],
+        contracts[SKILLS[1]],
+        documented,
+    ):
+        assert_concepts(
+            policy,
+            ("dedicated historical-language resource",),
+            ("generic or modern-language component",),
+            ("training/evaluation corpus",),
+            ("downstream application or pipeline",),
+            ("shared authors",),
+            ("shared corpus", "shared corpora"),
+            ("integration",),
+            (
+                "does not prove identity",
+                "do not prove identity",
+                "does not establish identity",
+                "do not establish identity",
+            ),
+            ("generic component applied to mhg",),
+            ("canonical component-level evidence",),
+            ("retain it as a lead", "remains a lead", "block exact scope/identity"),
+        )
+
+    for policy in (contracts["agent"], contracts[SKILLS[0]], documented):
+        assert_concepts(
+            policy,
+            ("every distinct",),
+            ("named lead",),
+            ("alias",),
+            ("exact source wording",),
+            ("seed url",),
+            ("public resource url",),
+            ("losslessly",),
+            (
+                "does not narrow",
+                "do not narrow",
+                "never narrow",
+                "let the seed narrow",
+                "not permission to narrow",
+            ),
+            ("no model exists",),
+            ("query-gap lead",),
+            (
+                "never evidence of absence",
+                "not evidence of absence",
+                "never treat them as evidence of absence",
+            ),
+            ("bounded",),
+            ("task-family", "task family"),
+            ("follow-up",),
+        )
+
+    assert_concepts(
+        documented,
+        ("reaching that follow-up bound",),
+        ("incomplete",),
+        ("explicit gap",),
+    )
+
+
 def test_discovery_is_bilingual_complete_and_refreshes_matches(
     contracts: dict[str, str],
 ) -> None:

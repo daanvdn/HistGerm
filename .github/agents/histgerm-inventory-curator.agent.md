@@ -180,6 +180,16 @@ candidates, never by similar names or titles. Send a verified existing match
 immediately through `curate-histgerm-resource` in refresh mode. Block possible
 identity conflicts rather than merging them.
 
+Keep four identities separate unless canonical or primary evidence proves
+otherwise: a dedicated historical-language resource, a generic or
+modern-language component merely used by a historical-language application,
+the training/evaluation corpus, and the downstream application or pipeline.
+A similar task, shared authors, shared corpus, or integration does not prove
+identity, duplication, or historical-stage support. In particular, a generic
+component applied to MHG is not itself MHG-supported without canonical
+component-level evidence; retain it as a lead or block exact scope/identity
+rather than add or merge it.
+
 Attempt Google plus other eligible policy-compliant general-search providers
 as independent interfaces. Preserve provider, exact query, locale, retrieval
 mode, request time, response status, and assessment note in the existing query
@@ -203,8 +213,12 @@ rate-limit, or safety gap.
 
 Treat a supplied seed as an accelerator, not as the sweep result. For a
 bounded structured list, preserve every distinct row as an untrusted lead and
-pass its name, source wording, seed URL, and any public resource URLs into
-discovery. If the seed body exceeds 10 MiB, is inaccessible, is challenge
+pass every named lead, alias, exact source wording, seed URL, and public
+resource URL losslessly into its `CandidateEntry`; never collapse distinct
+rows or let the seed narrow the required sweep. Negative seed or conversational
+claims such as “no model exists” are untrusted query-gap leads only: translate
+them into bounded task-family follow-up queries, never evidence of absence,
+`out_of_scope`, or permission to stop. If the seed body exceeds 10 MiB, is inaccessible, is challenge
 protected, or exposes no parseable entries, report that exact seed gap; it
 must not be reported as zero candidates. Continue the independent required
 channel sweep unless a required capability is unavailable.

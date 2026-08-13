@@ -48,6 +48,12 @@ def test_google_bing_and_brave_have_independent_request_identities() -> None:
         is ResponseFormat.RSS
     )
     assert all(request.retrieval_mode == "bounded_http" for request in requests)
+    gitlab = next(
+        request for request in requests if request.provider is SearchProvider.GITLAB
+    )
+    assert urlsplit(gitlab.url).hostname == "gitlab.com"
+    assert "search=Middle+High+German+corpus" in gitlab.url
+    assert "scope=projects" in gitlab.url
 
 
 def test_relevant_bing_rss_results_are_parsed_and_all_inspected() -> None:
@@ -327,6 +333,48 @@ def test_paginated_search_inspects_duplicates_before_stable_url_dedupe() -> None
     assert inspected == ["Tool first", "Other", "Tool duplicate"]
     assert [result.title for result in record.results] == ["Tool first", "Other"]
     assert [result.position for result in record.results] == [1, 2]
+
+
+def test_gitlab_pagination_uses_only_explicit_numeric_page_cursor() -> None:
+    request = build_provider_request(
+        SearchProvider.GITLAB,
+        "Middle High German parser",
+        locale="en-US",
+    )
+    pages = iter(
+        (
+            SearchPageResponse(
+                retrieval_mode="bounded_http",
+                observed_at=NOW,
+                http_status=200,
+                body='<a href="https://gitlab.com/history-lab/parser">Parser</a>',
+                next_cursor="2",
+            ),
+            SearchPageResponse(
+                retrieval_mode="bounded_http",
+                observed_at=NOW,
+                http_status=200,
+                body='<a href="https://gitlab.com/history-lab/tagger">Tagger</a>',
+                exhausted=True,
+            ),
+        )
+    )
+    requested_urls: list[str] = []
+
+    def fetch(page_request: SearchRequest) -> SearchPageResponse:
+        requested_urls.append(page_request.url)
+        return next(pages)
+
+    record = assess_paginated_search(
+        request,
+        fetch_page=fetch,
+        inspector=lambda result: ("lead", result.url),
+    )
+
+    assert record.completed
+    assert record.provider is SearchProvider.GITLAB
+    assert record.stop_reason == "provider_exhausted"
+    assert "page=2" in requested_urls[1]
 
 
 def test_first_page_empty_is_an_explicit_incomplete_gap() -> None:

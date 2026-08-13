@@ -25,6 +25,7 @@ class SearchProvider(StrEnum):
     BRAVE = "brave"
     CLARIN = "clarin"
     GITHUB = "github"
+    GITLAB = "gitlab"
     GOOGLE = "google"
     HUGGINGFACE = "huggingface"
     OLAC = "olac"
@@ -167,6 +168,7 @@ _PAGINATION_PARAMETERS: dict[SearchProvider, str] = {
     SearchProvider.BING: "first",
     SearchProvider.BRAVE: "offset",
     SearchProvider.GITHUB: "p",
+    SearchProvider.GITLAB: "page",
     SearchProvider.GOOGLE: "start",
     SearchProvider.ZENODO: "page",
 }
@@ -215,6 +217,9 @@ def build_provider_request(
     elif provider is SearchProvider.GITHUB:
         base_url = "https://github.com/search"
         parameters = {"q": query, "type": "repositories"}
+    elif provider is SearchProvider.GITLAB:
+        base_url = "https://gitlab.com/search"
+        parameters = {"search": query, "scope": "projects"}
     else:
         base_url = "https://huggingface.co/search/full-text"
         parameters = {"q": query}
