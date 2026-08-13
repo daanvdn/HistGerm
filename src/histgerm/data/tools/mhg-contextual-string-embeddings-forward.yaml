@@ -1,0 +1,44 @@
+id: tool-mhg-contextual-string-embeddings-forward
+name: Middle High German Contextual String Embeddings (Forward)
+description: Contextual string embeddings for Middle High German, trained on literary and historical texts for downstream NLP tasks involving medieval German.
+reviewed_on: 2026-08-12
+links:
+  homepage: https://zenodo.org/records/18657493
+  doi: https://doi.org/10.5281/zenodo.18657493
+
+tasks: [language_model]
+supported_stages: [mhg]
+
+access:
+  availability: [described, downloadable]
+  model_training: unclear
+  original_data_redistribution: unclear
+  processed_data_redistribution: unclear
+  trained_weight_publication: unclear
+  license: cc-by-4.0
+  note: Zenodo labels the record cc-by-4.0, but the metadata does not directly establish any of the four separately modeled permissions, so all remain unclear. The record is published and lists downloadable model-related files.
+  source_ids: [evidence-mhg-contextual-string-embeddings-forward-zenodo]
+
+training_data:
+  - Open data prepared by the Mittelhochdeutsche Begriffsdatenbank (MHDBDB)
+hugging_face_links:
+  - https://huggingface.co/mschonhardt/mhg-mhdbdb-forward
+note: "Creator: Michael Schonhardt (Technische Universität Darmstadt). Published 2026-02-16. Zenodo describes this deposit as a mirror of the Hugging Face model."
+
+sources:
+  - id: evidence-mhg-contextual-string-embeddings-forward-zenodo
+    url: https://zenodo.org/api/records/18657493
+    accessed_on: 2026-08-12
+    supports:
+      - name
+      - description
+      - links
+      - tasks
+      - supported_stages
+      - access.availability
+      - training_data
+      - hugging_face_links
+      - note
+    title: Middle High German Contextual String Embeddings (Forward)
+    quote: This model provides contextual string embeddings for Middle High German (MHG), trained on literary and historical texts as part of the digital humanities research surrounding medieval Germanic languages.
+    note: The published Zenodo model record supplies the identity, MHG scope, purpose, creator, date, DOI, MHDBDB training-data statement, Hugging Face mirror, and file manifest.

@@ -6,8 +6,11 @@ from urllib.parse import urlsplit
 from histgerm.research.search_providers import (
     ResponseFormat,
     ResultClassification,
+    SearchPageResponse,
     SearchProvider,
+    SearchRequest,
     SearchResult,
+    assess_paginated_search,
     assess_search_response,
     build_provider_request,
     parse_bing_rss,
@@ -158,3 +161,191 @@ def test_unrelated_response_requires_inspection_of_every_item() -> None:
     assert record.assessment == "unrelated"
     assert positions == [1, 2]
     assert "all 2 result items were inspected" in record.observation
+
+
+def test_paginated_search_inspects_two_pages_until_explicit_exhaustion() -> None:
+    request = build_provider_request(
+        SearchProvider.GOOGLE,
+        "Middle High German corpus",
+        locale="en-US",
+    )
+    requested_urls: list[str] = []
+    pages = [
+        SearchPageResponse(
+            retrieval_mode="bounded_http",
+            observed_at=NOW,
+            http_status=200,
+            body='<a href="https://example.org/one">One</a>',
+            next_cursor="10",
+        ),
+        SearchPageResponse(
+            retrieval_mode="bounded_http",
+            observed_at=NOW,
+            http_status=200,
+            body='<a href="https://example.org/two">Two</a>',
+            exhausted=True,
+        ),
+    ]
+
+    def fetch(page_request: SearchRequest) -> SearchPageResponse:
+        requested_urls.append(page_request.url)
+        return pages[len(requested_urls) - 1]
+
+    record = assess_paginated_search(
+        request,
+        fetch_page=fetch,
+        inspector=lambda result: ("lead", f"inspected {result.title}"),
+    )
+
+    assert record.completed
+    assert record.stop_reason == "provider_exhausted"
+    assert len(record.attempts) == 2
+    assert [result.title for result in record.results] == ["One", "Two"]
+    assert "start=10" in requested_urls[1]
+
+
+def test_paginated_search_stops_on_repeated_cursor() -> None:
+    request = build_provider_request(
+        SearchProvider.BING,
+        "Althochdeutsch Wörterbuch",
+        locale="de-DE",
+    )
+    calls = 0
+
+    def fetch(_: SearchRequest) -> SearchPageResponse:
+        nonlocal calls
+        calls += 1
+        return SearchPageResponse(
+            retrieval_mode="bounded_http",
+            observed_at=NOW,
+            http_status=200,
+            body=(
+                "<rss><channel><item><title>Result</title>"
+                f"<link>https://example.org/{calls}</link></item></channel></rss>"
+            ),
+            next_cursor="11",
+        )
+
+    record = assess_paginated_search(
+        request,
+        fetch_page=fetch,
+        inspector=lambda result: ("lead", result.url),
+    )
+
+    assert not record.completed
+    assert record.stop_reason == "repeated_cursor"
+    assert len(record.attempts) == calls == 2
+
+
+def test_paginated_search_reports_max_page_truncation() -> None:
+    request = build_provider_request(
+        SearchProvider.ZENODO,
+        "Middle High German dataset",
+        locale="en-US",
+    )
+    record = assess_paginated_search(
+        request,
+        max_pages=1,
+        fetch_page=lambda _: SearchPageResponse(
+            retrieval_mode="bounded_http",
+            observed_at=NOW,
+            http_status=200,
+            body='<a href="https://example.org/one">One</a>',
+            next_cursor="2",
+        ),
+        inspector=lambda result: ("lead", result.url),
+    )
+
+    assert record.state == "access_gap"
+    assert record.stop_reason == "max_pages"
+    assert "strict 1-page limit" in record.observation
+
+
+def test_paginated_search_reports_unsupported_provider_without_fetching() -> None:
+    request = build_provider_request(
+        SearchProvider.OLAC,
+        "Old High German corpus",
+        locale="en-US",
+    )
+    called = False
+
+    def fetch(_: SearchRequest) -> SearchPageResponse:
+        nonlocal called
+        called = True
+        raise AssertionError("unsupported pagination must not issue a request")
+
+    record = assess_paginated_search(
+        request,
+        fetch_page=fetch,
+        inspector=lambda result: ("lead", result.url),
+    )
+
+    assert record.state == "access_gap"
+    assert record.stop_reason == "unsupported_pagination"
+    assert not record.attempts and not called
+
+
+def test_paginated_search_inspects_duplicates_before_stable_url_dedupe() -> None:
+    request = build_provider_request(
+        SearchProvider.GITHUB,
+        "Middle High German parser",
+        locale="en-US",
+    )
+    inspected: list[str] = []
+    pages = iter(
+        (
+            SearchPageResponse(
+                retrieval_mode="bounded_http",
+                observed_at=NOW,
+                http_status=200,
+                body=(
+                    '<a href="https://EXAMPLE.org/tool#first">Tool first</a>'
+                    '<a href="https://example.org/other">Other</a>'
+                ),
+                next_cursor="2",
+            ),
+            SearchPageResponse(
+                retrieval_mode="bounded_http",
+                observed_at=NOW,
+                http_status=200,
+                body='<a href="https://example.org/tool#second">Tool duplicate</a>',
+                exhausted=True,
+            ),
+        )
+    )
+
+    def inspect(result: SearchResult) -> tuple[ResultClassification, str]:
+        inspected.append(result.title)
+        return ("lead", "synthetic inspection")
+
+    record = assess_paginated_search(
+        request,
+        fetch_page=lambda _: next(pages),
+        inspector=inspect,
+    )
+
+    assert inspected == ["Tool first", "Other", "Tool duplicate"]
+    assert [result.title for result in record.results] == ["Tool first", "Other"]
+    assert [result.position for result in record.results] == [1, 2]
+
+
+def test_first_page_empty_is_an_explicit_incomplete_gap() -> None:
+    request = build_provider_request(
+        SearchProvider.BRAVE,
+        "Early New High German dictionary",
+        locale="en-US",
+    )
+    record = assess_paginated_search(
+        request,
+        fetch_page=lambda _: SearchPageResponse(
+            retrieval_mode="bounded_http",
+            observed_at=NOW,
+            http_status=200,
+            body="<main>No results</main>",
+            exhausted=True,
+        ),
+        inspector=lambda result: ("unrelated", result.url),
+    )
+
+    assert record.state == "access_gap"
+    assert record.stop_reason == "first_page_inconclusive"

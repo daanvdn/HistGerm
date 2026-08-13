@@ -1,0 +1,74 @@
+id: tool-mhg-treetagger-pos-tagger
+name: POS Tagger for Middle High German Texts
+aliases:
+  - POS Tagger für mittelhochdeutsche Texte
+  - Middle High German TreeTagger parameter file
+description: A Middle High German part-of-speech tagging resource provided as a TreeTagger parameter file trained on a POS-tagged version of the Middle High German Conceptual Database.
+reviewed_on: 2026-08-12
+links:
+  homepage: https://www.ims.uni-stuttgart.de/en/research/resources/tools/pos-tag-mhg/
+  download: https://www.cis.uni-muenchen.de/~schmid/tools/TreeTagger/data/middle-high-german.par.gz
+  web_application: http://clarin05.ims.uni-stuttgart.de/mhdtt/index.html
+  treetagger: https://cis.uni-muenchen.de/~schmid/tools/TreeTagger/
+  citation: https://doi.org/10.5281/zenodo.4646130
+
+tasks: [pos_tagger]
+supported_stages: [mhg]
+
+access:
+  availability: [described, downloadable]
+  model_training: unclear
+  original_data_redistribution: unclear
+  processed_data_redistribution: unclear
+  trained_weight_publication: unclear
+  note: The reviewed pages describe and link the MHG parameter file, but provide no exact direct legal wording for the four separately modeled permissions. The linked web application was not asserted as currently browsable.
+  source_ids: [evidence-mhg-pos-tagger-stuttgart, evidence-mhg-pos-tagger-treetagger]
+
+training_data:
+  - Middle High German Conceptual Database (Mittelhochdeutsche Begriffsdatenbank)
+
+note: This record represents the MHG TreeTagger parameter resource and associated institutional interface, not the TreeTagger runtime itself and not RNNTagger.
+
+sources:
+  - id: evidence-mhg-pos-tagger-stuttgart
+    url: https://www.ims.uni-stuttgart.de/en/research/resources/tools/pos-tag-mhg/
+    accessed_on: 2026-08-12
+    supports:
+      - name
+      - aliases
+      - description
+      - links.homepage
+      - links.web_application
+      - tasks
+      - supported_stages
+      - access.availability
+      - training_data
+      - note
+    title: POS Tagger for Middle High German Texts
+    quote: The parameter file for TreeTagger has been created by training on a POS tagged version of the Mittelhochdeutsche Begriffsdatenbank. This annotation has been achieved semi-automatically by an automatic mapping of the grammatical annotation included in the database to Universal Dependencies POS tags based on manually annotated parts of the texts.
+    note: The page links both a web application and an MHD-TreeTagger parameter file.
+
+  - id: evidence-mhg-pos-tagger-treetagger
+    url: https://cis.uni-muenchen.de/~schmid/tools/TreeTagger/
+    accessed_on: 2026-08-12
+    supports:
+      - description
+      - links.treetagger
+      - links.download
+      - tasks
+      - supported_stages
+      - access.availability
+      - training_data
+      - note
+    title: TreeTagger - a part-of-speech tagger for many languages
+    quote: Middle High German parameter file trained by Sarah Schulz on the Middle High German Conceptual Database
+    note: The canonical TreeTagger page lists this MHG parameter file and separately links RNNTagger as another tagger.
+
+  - id: evidence-mhg-pos-tagger-zenodo
+    url: https://zenodo.org/api/records/4646130
+    accessed_on: 2026-08-12
+    supports: [links.citation, sources]
+    title: Ein PoS-Tagger für das Mittelhochdeutsche
+    citation: Echelmeyer, Nora; Reiter, Nils; Schulz, Sarah. 2017. Ein PoS-Tagger für das Mittelhochdeutsche. DHd 2017. https://doi.org/10.5281/zenodo.4646130
+    quote: 'Ein PoS-Tagger für "das" Mittelhochdeutsche'
+    note: Zenodo metadata identifies the conference paper and DOI.

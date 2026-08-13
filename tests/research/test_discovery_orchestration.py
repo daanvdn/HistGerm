@@ -21,9 +21,10 @@ from histgerm.research.discovery_orchestration import (
     ProviderFetch,
     ProviderResponse,
     _active_inventory_vocabulary,
+    _completion_gaps,
     run_discovery,
 )
-from histgerm.research.focused_queries import ResourceCategory
+from histgerm.research.focused_queries import FocusedQuery, ResourceCategory
 from histgerm.research.inventory_vocabulary import (
     CandidateDecision,
     ClassifierCandidate,
@@ -267,6 +268,165 @@ def test_provider_aware_exact_variants_fallbacks_and_exclusions() -> None:
     assert [record.query for record in result.assessments] == [
         request.query for request in requests
     ]
+
+
+def test_model_terms_abbreviation_and_cross_channel_metadata_pivots() -> None:
+    requests: list[SearchRequest] = []
+
+    def provider_fetch(request: SearchRequest) -> ProviderResponse:
+        requests.append(request)
+        if request.channel == "github" and request.query == "Middle High German BERT":
+            body = (
+                '<a href="https://github.com/source-lab/historical-model">'
+                "Generic historical model. README: Middle High German "
+                "BERT tokenizer with word embeddings. Architecture: HistBERT; "
+                "alias: ArchiveEncoder; tokenizer and "
+                "word embeddings. Model card: "
+                "https://huggingface.co/different-handle/mhg-model</a>"
+            )
+        else:
+            body = (
+                "<rss><channel/></rss>"
+                if request.response_format is ResponseFormat.RSS
+                else "<main>No results</main>"
+            )
+        return ProviderResponse(
+            retrieval_mode="bounded_http",
+            observed_at=datetime(2026, 8, 12, tzinfo=UTC),
+            http_status=200,
+            body=body,
+        )
+
+    result = run_discovery(
+        DiscoveryConfig(
+            category="tool",
+            stage=LanguageStage.MHG,
+            max_mined_terms=0,
+            max_exclusion_groups=1,
+            vocabulary=VocabularyLimits(max_pages=1),
+        ),
+        DiscoveryDependencies(
+            catalog=load_catalog(),
+            model_call=EmptyModel([]),
+            vocabulary_transport=lambda url, *, max_bytes: FetchedDocument(
+                url, "text/plain", b""
+            ),
+            provider_fetch=provider_fetch,
+            result_inspector=lambda result: (
+                ("lead", "canonical metadata inspected")
+                if result.url == "https://github.com/source-lab/historical-model"
+                else ("unrelated", "not the synthetic repository")
+            ),
+        ),
+    )
+
+    assert any(request.query == "MHG BERT" for request in requests)
+    assert any(
+        request.channel == "huggingface"
+        and request.query == "Middle High German different-handle mhg-model"
+        for request in requests
+    )
+    assert any(
+        request.channel == "huggingface"
+        and request.query == "Middle High German HistBERT"
+        for request in requests
+    )
+    assert all(query.trusted_evidence is False for query in result.queries)
+    assert not result.complete
+    assert any("next_page_unavailable" in gap for gap in result.completion_gaps)
+
+
+def test_orchestration_inspects_and_deduplicates_multiple_provider_pages() -> None:
+    requests: list[SearchRequest] = []
+
+    def provider_fetch(request: SearchRequest) -> ProviderResponse:
+        requests.append(request)
+        if request.channel == "github" and request.query == "Middle High German BERT":
+            second_page = "p=2" in request.url
+            body = (
+                '<a href="https://example.org/model">Generic model</a>'
+                '<a href="https://example.org/second">Second model</a>'
+                if second_page
+                else '<a href="https://example.org/model">Generic model</a>'
+            )
+            return ProviderResponse(
+                retrieval_mode="bounded_http",
+                observed_at=datetime(2026, 8, 12, tzinfo=UTC),
+                http_status=200,
+                body=body,
+                next_cursor=None if second_page else "2",
+                exhausted=second_page,
+            )
+        body = (
+            "<rss><channel/></rss>"
+            if request.response_format is ResponseFormat.RSS
+            else "<main>No results</main>"
+        )
+        return ProviderResponse(
+            retrieval_mode="bounded_http",
+            observed_at=datetime(2026, 8, 12, tzinfo=UTC),
+            http_status=200,
+            body=body,
+            exhausted=True,
+        )
+
+    result = run_discovery(
+        DiscoveryConfig(
+            category="tool",
+            stage=LanguageStage.MHG,
+            max_mined_terms=0,
+            max_exclusion_groups=1,
+            vocabulary=VocabularyLimits(max_pages=1),
+        ),
+        DiscoveryDependencies(
+            catalog=load_catalog(),
+            model_call=EmptyModel([]),
+            vocabulary_transport=lambda url, *, max_bytes: FetchedDocument(
+                url, "text/plain", b""
+            ),
+            provider_fetch=provider_fetch,
+            result_inspector=lambda result: ("lead", "inspected synthetic page"),
+        ),
+    )
+
+    bert_requests = [
+        request
+        for request in requests
+        if request.channel == "github" and request.query == "Middle High German BERT"
+    ]
+    assert len(bert_requests) == 2
+    assert "p=2" in bert_requests[1].url
+    bert_attempts = [
+        record
+        for record in result.assessments
+        if record.channel == "github" and record.query == "Middle High German BERT"
+    ]
+    assert [record.page_number for record in bert_attempts] == [1, 2]
+    assert all(record.pagination_state == "complete" for record in bert_attempts)
+    assert sum(lead.url == "https://example.org/model" for lead in result.leads) == 1
+    assert any(lead.url == "https://example.org/second" for lead in result.leads)
+
+
+def test_completion_gaps_cover_pending_leads_and_architecture_families() -> None:
+    config = DiscoveryConfig(category="tool", stage=LanguageStage.MHG)
+    sparse_query = FocusedQuery(
+        category="tool",
+        stage=LanguageStage.MHG,
+        language="en",
+        family="models",
+        stage_term="Middle High German",
+        concept="language model",
+    )
+
+    gaps = _completion_gaps(
+        config,
+        (sparse_query,),
+        (),
+        follow_up_limit_reached=True,
+    )
+
+    assert any("follow-up limit" in gap for gap in gaps)
+    assert any("architecture families unqueried" in gap for gap in gaps)
 
 
 def _catalog(*urls: str) -> Catalog:

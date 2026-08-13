@@ -38,6 +38,7 @@ _CATEGORY_PREFIXES: dict[ResourceCategory, str] = {'corpus': 'corpus-', 'tool': 
 _FINAL_DISPOSITIONS = {'added', 'duplicate', 'out_of_scope', 'blocked'}
 _STAGE_TERMS: dict[str, dict[SearchLanguage, tuple[str, ...]]] = {'ohg': {'de': ('Althochdeutsch', 'OHG'), 'en': ('Old High German', 'OHG')}, 'mhg': {'de': ('Mittelhochdeutsch', 'MHG'), 'en': ('Middle High German', 'MHG')}, 'enhg': {'de': ('Frühneuhochdeutsch', 'ENHG'), 'en': ('Early New High German', 'ENHG')}}
 _CATEGORY_TERMS: dict[str, dict[SearchLanguage, tuple[str, ...]]] = {'corpus': {'de': ('Korpus', 'Textkorpus', 'Textsammlung', 'Sprachdaten'), 'en': ('corpus', 'text collection', 'dataset', 'language data')}, 'tool': {'de': ('Tagger', 'Lemmatisierer', 'Parser', 'Sprachmodell'), 'en': ('tagger', 'lemmatizer', 'parser', 'language model')}, 'dictionary': {'de': ('Wörterbuch', 'Lexikon', 'Wortschatz'), 'en': ('dictionary', 'lexicon', 'vocabulary')}}
+_TOOL_ARCHITECTURE_TERMS: dict[SearchLanguage, tuple[str, ...]] = {'de': ('Tokenizer', 'BERT-Architektur', 'BERT-Modellfamilie', 'vortrainiertes Sprachmodell', 'maskiertes Sprachmodell', 'Worteinbettung'), 'en': ('tokenizer', 'BERT architecture', 'BERT family', 'pretrained language model', 'masked language model', 'word embedding')}
 _CHANNELS = {'web_de': {'web_de', 'general_web_de', 'german_web'}, 'web_en': {'web_en', 'general_web_en', 'english_web'}, 'clarin': {'clarin', 'clarin_vlo'}, 'olac': {'olac'}, 'zenodo': {'zenodo', 'research_repositories'}, 'institutional': {'institutional', 'institutional_catalogs'}, 'github': {'github', 'github_search'}, 'huggingface': {'huggingface', 'hugging_face'}}
 _NON_PUBLIC_NAMES = ('.localhost', '.local', '.internal', '.home.arpa', '.test', '.invalid', '.example')
 _EMBEDDED_IPV4_RE = re.compile(r'(?<!\d)(?:\d{1,3}[.-]){3}\d{1,3}(?!\d)')
@@ -198,6 +199,10 @@ class SearchPass(_ResearchModel):
             missing_pairs = [f'{stage_term} + {category_term}' for stage_term in _STAGE_TERMS[stage][language] for category_term in _CATEGORY_TERMS[category][language] if not any(stage_term.casefold() in text and category_term.casefold() in text for text in texts)]
             if missing_pairs:
                 raise ValueError(f'complete pass is missing {language} query families {missing_pairs!r}')
+            if category == 'tool':
+                missing_architectures = [term for term in _TOOL_ARCHITECTURE_TERMS[language] if not any(term.casefold() in text for text in texts)]
+                if missing_architectures:
+                    raise ValueError(f'complete pass is missing {language} tool architecture families {missing_architectures!r}')
         german_web = any(query.language == 'de' and query.channel in _CHANNELS['web_de'] for query in self.queries)
         english_web = any(query.language == 'en' and query.channel in _CHANNELS['web_en'] for query in self.queries)
         if not german_web or not english_web:

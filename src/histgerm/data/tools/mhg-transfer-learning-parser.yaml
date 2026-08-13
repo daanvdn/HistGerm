@@ -1,0 +1,33 @@
+id: tool-mhg-transfer-learning-parser
+name: Middle High German Parser Using Transfer Learning
+description: A syntactic parser for Middle High German using transfer learning.
+reviewed_on: 2026-08-12
+links:
+  repository: https://github.com/tuerkerhan/thesis
+
+tasks: [syntactic_parser]
+supported_stages: [mhg]
+
+access:
+  availability: [described]
+  model_training: unclear
+  original_data_redistribution: unclear
+  processed_data_redistribution: unclear
+  trained_weight_publication: unclear
+  note: Public repository metadata describes the project, but it supplies no direct evidence for the four separately modeled legal permissions.
+  source_ids: [evidence-mhg-transfer-learning-parser-github]
+
+sources:
+  - id: evidence-mhg-transfer-learning-parser-github
+    url: https://api.github.com/repos/tuerkerhan/thesis
+    accessed_on: 2026-08-12
+    supports:
+      - name
+      - description
+      - links.repository
+      - tasks
+      - supported_stages
+      - access.availability
+    title: tuerkerhan/thesis repository metadata
+    quote: Middle High German Parser Using Transfer learning
+    note: Canonical public GitHub repository metadata identifies the project and its repository URL, states the MHG parser scope, reports Python as the primary language, and supports described availability without requiring repository payload retrieval.

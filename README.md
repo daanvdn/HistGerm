@@ -142,10 +142,18 @@ do not run the live pilot as part of setup or implementation validation.
 | [Mittelhochdeutsches Wörterbuch](https://mwb.adwmainz.net/exist/apps/mwb/pages/index.html) | `dictionary-mwb` | mhg | described, browsable, api | headwords, lemmas, spelling variants, part of speech, senses, machine readable: true | 2026-08-11 | An epoch dictionary documenting the vocabulary and usage of German-language texts from 1050–1350. |
 
 
-### Tools (1)
+### Tools (9)
 
 | Resource | ID | Language stages | Availability | Tasks | Reviewed | Description |
 | --- | --- | --- | --- | --- | --- | --- |
+| [gmh_models_cltk](https://api.github.com/repos/cltk/gmh_models_cltk) | `tool-cltk-gmh-models` | mhg | described, downloadable | pos_tagger, lemmatizer | 2026-08-12 | A CLTK repository of pre-compiled taggers and tokenizers for tagging Middle High German, built with NLTK and CLTK data. |
+| [mhd-pos-tagging-benchmark](https://github.com/DigitalHumanitiesCraft/mhd-pos-tagging-benchmark) | `tool-mhd-pos-tagging-benchmark` | mhg | described, browsable | pos_tagger | 2026-08-12 | Model-agnostic benchmark for POS tagging of Middle High German texts against ReM ground truth. |
+| [Middle High German Contextual String Embeddings (Backward)](https://doi.org/10.5281/zenodo.18659437) | `tool-mhg-contextual-string-embeddings-backward` | mhg | described, downloadable | language_model | 2026-08-12 | A backward contextual string embedding model for Middle High German, trained on literary and historical texts for downstream NLP tasks. |
+| [Middle High German Contextual String Embeddings (Forward)](https://zenodo.org/records/18657493) | `tool-mhg-contextual-string-embeddings-forward` | mhg | described, downloadable | language_model | 2026-08-12 | Contextual string embeddings for Middle High German, trained on literary and historical texts for downstream NLP tasks involving medieval German. |
+| [Middle High German Parser Using Transfer Learning](https://github.com/tuerkerhan/thesis) | `tool-mhg-transfer-learning-parser` | mhg | described | syntactic_parser | 2026-08-12 | A syntactic parser for Middle High German using transfer learning. |
+| [POS Tagger for Middle High German Texts](https://www.ims.uni-stuttgart.de/en/research/resources/tools/pos-tag-mhg/) | `tool-mhg-treetagger-pos-tagger` | mhg | described, downloadable | pos_tagger | 2026-08-12 | A Middle High German part-of-speech tagging resource provided as a TreeTagger parameter file trained on a POS-tagged version of the Middle High German Conceptual Database. |
+| [POSHistoricalText](https://github.com/sarschu/POSHistoricalText/blob/master/README.md) | `tool-poshistoricaltext` | mhg | described, browsable | pos_tagger | 2026-08-12 | A public collection of experimental scripts for part-of-speech tagging a late Middle High German text using several methods and combinations of methods. |
 | [RNNTagger](https://www.cis.uni-muenchen.de/~schmid/tools/RNNTagger/) | `tool-rnntagger` | enhg, mhg | described, downloadable | lemmatizer, pos_tagger | 2026-08-11 | Neural command-line tool for part-of-speech tagging and lemmatization with pretrained parameters for modern and historical languages. |
+| [Spacy-Model-for-Middle-High-German](https://github.com/Middle-High-German-Conceptual-Database/Spacy-Model-for-Middle-High-German) | `tool-spacy-model-mhg` | mhg | described | pos_tagger | 2026-08-12 | A Middle High German part-of-speech tagger model for spaCy. |
 
 <!-- histgerm-catalog:end -->

@@ -4,15 +4,18 @@ from __future__ import annotations
 
 import html
 from collections.abc import Callable
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import datetime
 from enum import StrEnum
 from html.parser import HTMLParser
 from typing import Literal
-from urllib.parse import parse_qs, urlencode, urlsplit
+from urllib.parse import parse_qs, urlencode, urlsplit, urlunsplit
 from xml.etree import ElementTree
 
 from .fetching import RetrievalFailureStage, RetrievalMode
+
+MAX_PROVIDER_PAGES = 5
+MAX_PROVIDER_RESULTS = 100
 
 
 class SearchProvider(StrEnum):
@@ -40,6 +43,20 @@ type Assessment = Literal[
     "results", "empty", "unrelated", "access_gap", "transport_error"
 ]
 type ResultClassification = Literal["lead", "unrelated"]
+type PaginationState = Literal["complete", "access_gap"]
+type PaginationStopReason = Literal[
+    "provider_exhausted",
+    "unsupported_pagination",
+    "repeated_page",
+    "repeated_cursor",
+    "max_pages",
+    "max_results",
+    "access_gap",
+    "transport_error",
+    "next_page_unavailable",
+    "unsafe_pagination_response",
+    "first_page_inconclusive",
+]
 
 
 @dataclass(frozen=True, slots=True)
@@ -92,15 +109,67 @@ class SearchAssessmentRecord:
     observation: str
     results: tuple[SearchResult, ...]
     inspections: tuple[ResultInspection, ...]
+    page_number: int = 1
+    pagination_state: PaginationState | None = None
+    pagination_stop_reason: PaginationStopReason | None = None
 
     @property
     def completed(self) -> bool:
         """Report whether this interface was inspectable to completion."""
 
-        return self.assessment in {"results", "empty", "unrelated"}
+        return (
+            self.assessment in {"results", "empty", "unrelated"}
+            and self.pagination_state != "access_gap"
+        )
 
 
 type ResultInspector = Callable[[SearchResult], tuple[ResultClassification, str]]
+
+
+@dataclass(frozen=True, slots=True)
+class SearchPageResponse:
+    """One provider response plus explicit, transport-derived page state."""
+
+    retrieval_mode: RetrievalMode
+    observed_at: datetime
+    http_status: int | None
+    body: str
+    failure_stage: RetrievalFailureStage | None = None
+    next_cursor: str | None = None
+    exhausted: bool = False
+
+
+@dataclass(frozen=True, slots=True)
+class PaginatedSearchAssessment:
+    """Aggregate bounded page attempts without losing per-request evidence."""
+
+    provider: SearchProvider
+    channel: str
+    query: str
+    locale: str
+    retrieval_mode: RetrievalMode
+    state: PaginationState
+    stop_reason: PaginationStopReason
+    observation: str
+    attempts: tuple[SearchAssessmentRecord, ...]
+    results: tuple[SearchResult, ...]
+
+    @property
+    def completed(self) -> bool:
+        """Report only explicit provider exhaustion as complete."""
+
+        return self.state == "complete"
+
+
+type SearchPageFetcher = Callable[[SearchRequest], SearchPageResponse]
+
+_PAGINATION_PARAMETERS: dict[SearchProvider, str] = {
+    SearchProvider.BING: "first",
+    SearchProvider.BRAVE: "offset",
+    SearchProvider.GITHUB: "p",
+    SearchProvider.GOOGLE: "start",
+    SearchProvider.ZENODO: "page",
+}
 
 
 def build_provider_request(
@@ -160,6 +229,217 @@ def build_provider_request(
     )
 
 
+def assess_paginated_search(
+    request: SearchRequest,
+    *,
+    fetch_page: SearchPageFetcher,
+    inspector: ResultInspector,
+    max_pages: int = MAX_PROVIDER_PAGES,
+    max_results: int = MAX_PROVIDER_RESULTS,
+) -> PaginatedSearchAssessment:
+    """Fetch documented provider pages within strict page and result ceilings.
+
+    ``fetch_page`` must derive ``next_cursor`` and ``exhausted`` from the
+    provider response. An absent cursor is never guessed or treated as
+    exhaustion.
+    """
+
+    _validate_pagination_limits(max_pages=max_pages, max_results=max_results)
+    if request.provider not in _PAGINATION_PARAMETERS:
+        return _pagination_record(
+            request,
+            state="access_gap",
+            stop_reason="unsupported_pagination",
+            detail=(
+                f"{request.provider.value} pagination is not supported by the "
+                "documented bounded interface"
+            ),
+        )
+
+    attempts: list[SearchAssessmentRecord] = []
+    unique_results: list[SearchResult] = []
+    seen_items: set[str] = set()
+    seen_cursors: set[str] = set()
+    seen_pages: set[tuple[str, ...]] = set()
+    page_request = request
+
+    while True:
+        response = fetch_page(page_request)
+        record = assess_search_response(
+            provider=page_request.provider,
+            channel=page_request.channel,
+            query=page_request.query,
+            retrieval_mode=response.retrieval_mode,
+            response_format=page_request.response_format,
+            locale=page_request.locale,
+            observed_at=response.observed_at,
+            http_status=response.http_status,
+            failure_stage=response.failure_stage,
+            body=response.body,
+            inspector=inspector,
+        )
+        attempts.append(record)
+        page_key = tuple(_stable_result_key(result) for result in record.results)
+        if record.completed and page_key in seen_pages:
+            return _pagination_record(
+                request,
+                state="access_gap",
+                stop_reason="repeated_page",
+                detail="provider repeated an already inspected result page",
+                attempts=attempts,
+                results=unique_results,
+            )
+        if record.completed:
+            seen_pages.add(page_key)
+        for result in record.results:
+            key = _stable_result_key(result)
+            if key in seen_items:
+                continue
+            seen_items.add(key)
+            if len(unique_results) < max_results:
+                unique_results.append(
+                    SearchResult(
+                        position=len(unique_results) + 1,
+                        url=result.url,
+                        title=result.title,
+                        snippet=result.snippet,
+                    )
+                )
+
+        if len(seen_items) > max_results:
+            return _pagination_record(
+                request,
+                state="access_gap",
+                stop_reason="max_results",
+                detail=f"strict {max_results}-result limit reached",
+                attempts=attempts,
+                results=unique_results,
+            )
+        if record.assessment == "access_gap":
+            return _pagination_record(
+                request,
+                state="access_gap",
+                stop_reason="access_gap",
+                detail="provider challenge, refusal, or rate limit stopped pagination",
+                attempts=attempts,
+                results=unique_results,
+            )
+        if record.assessment == "transport_error":
+            return _pagination_record(
+                request,
+                state="access_gap",
+                stop_reason="transport_error",
+                detail="unsafe or unavailable response stopped pagination",
+                attempts=attempts,
+                results=unique_results,
+            )
+        if response.exhausted and response.next_cursor is not None:
+            return _pagination_record(
+                request,
+                state="access_gap",
+                stop_reason="unsafe_pagination_response",
+                detail="response claimed exhaustion and also supplied a next cursor",
+                attempts=attempts,
+                results=unique_results,
+            )
+        if response.exhausted:
+            if len(attempts) == 1 and record.assessment in {"empty", "unrelated"}:
+                return _pagination_record(
+                    request,
+                    state="access_gap",
+                    stop_reason="first_page_inconclusive",
+                    detail=(
+                        f"first page was {record.assessment}; this is not sufficient "
+                        "evidence of complete provider coverage"
+                    ),
+                    attempts=attempts,
+                    results=unique_results,
+                )
+            return _pagination_record(
+                request,
+                state="complete",
+                stop_reason="provider_exhausted",
+                detail=f"provider exhaustion observed after {len(attempts)} pages",
+                attempts=attempts,
+                results=unique_results,
+            )
+        cursor = (response.next_cursor or "").strip()
+        if not cursor:
+            return _pagination_record(
+                request,
+                state="access_gap",
+                stop_reason="next_page_unavailable",
+                detail="provider did not expose a safely retrievable next page",
+                attempts=attempts,
+                results=unique_results,
+            )
+        normalized_cursor = (
+            str(int(cursor)) if cursor.isascii() and cursor.isdecimal() else cursor
+        )
+        if normalized_cursor in seen_cursors:
+            return _pagination_record(
+                request,
+                state="access_gap",
+                stop_reason="repeated_cursor",
+                detail=f"provider repeated pagination cursor {cursor!r}",
+                attempts=attempts,
+                results=unique_results,
+            )
+        seen_cursors.add(normalized_cursor)
+        if len(attempts) >= max_pages:
+            return _pagination_record(
+                request,
+                state="access_gap",
+                stop_reason="max_pages",
+                detail=f"strict {max_pages}-page limit reached before exhaustion",
+                attempts=attempts,
+                results=unique_results,
+            )
+        try:
+            page_request = build_provider_page_request(request, cursor)
+        except ValueError as error:
+            return _pagination_record(
+                request,
+                state="access_gap",
+                stop_reason="unsafe_pagination_response",
+                detail=f"next page could not be safely constructed: {error}",
+                attempts=attempts,
+                results=unique_results,
+            )
+
+
+def supports_pagination(provider: SearchProvider) -> bool:
+    """Return whether bounded pagination is implemented for a provider."""
+
+    return provider in _PAGINATION_PARAMETERS
+
+
+def build_provider_page_request(
+    request: SearchRequest,
+    cursor: str,
+) -> SearchRequest:
+    """Build one same-interface page request from a documented numeric cursor."""
+
+    parameter = _PAGINATION_PARAMETERS.get(request.provider)
+    if parameter is None:
+        raise ValueError(f"{request.provider.value} pagination is unsupported")
+    if not cursor.isascii() or not cursor.isdecimal() or int(cursor) < 1:
+        raise ValueError("pagination cursor must be a positive ASCII integer")
+    parsed = urlsplit(request.url)
+    parameters = parse_qs(parsed.query, keep_blank_values=True)
+    parameters[parameter] = [cursor]
+    query = urlencode(parameters, doseq=True)
+    return SearchRequest(
+        provider=request.provider,
+        channel=request.channel,
+        query=request.query,
+        retrieval_mode=request.retrieval_mode,
+        response_format=request.response_format,
+        locale=request.locale,
+        url=urlunsplit((parsed.scheme, parsed.netloc, parsed.path, query, "")),
+    )
+
+
 def assess_search_response(
     *,
     provider: SearchProvider,
@@ -180,6 +460,9 @@ def assess_search_response(
         raise ValueError("observed_at must be timezone-aware")
     challenge = _access_gap(provider, http_status, body)
     if challenge is not None:
+        access_stage: RetrievalFailureStage = failure_stage or (
+            "rate_limit" if http_status == 429 else "challenge"
+        )
         return SearchAssessmentRecord(
             provider=provider,
             channel=channel,
@@ -189,14 +472,14 @@ def assess_search_response(
             locale=locale,
             observed_at=observed_at,
             http_status=http_status,
-            failure_stage=failure_stage or "challenge",
+            failure_stage=access_stage,
             assessment="access_gap",
             observation=transport_observation(
                 provider=provider,
                 retrieval_mode=retrieval_mode,
                 observed_at=observed_at,
                 http_status=http_status,
-                failure_stage=failure_stage or "challenge",
+                failure_stage=access_stage,
                 detail=challenge,
             ),
             results=(),
@@ -403,9 +686,75 @@ def _access_gap(
     marker = next((value for value in markers if value in folded), None)
     if marker is not None:
         return f"access gap encountered ({marker}); no challenge was bypassed"
+    if http_status == 429:
+        return (
+            "provider rate limit encountered; "
+            "no retry or challenge bypass was attempted"
+        )
     if provider is SearchProvider.GOOGLE and http_status in {403, 429}:
         return "Google access gap encountered; no challenge was bypassed"
     return None
+
+
+def _validate_pagination_limits(*, max_pages: int, max_results: int) -> None:
+    if not 1 <= max_pages <= MAX_PROVIDER_PAGES:
+        raise ValueError(f"max_pages must be between 1 and {MAX_PROVIDER_PAGES}")
+    if not 1 <= max_results <= MAX_PROVIDER_RESULTS:
+        raise ValueError(f"max_results must be between 1 and {MAX_PROVIDER_RESULTS}")
+
+
+def _stable_result_key(result: SearchResult) -> str:
+    parsed = urlsplit(result.url)
+    host = (parsed.hostname or "").casefold()
+    port = parsed.port
+    default_port = (parsed.scheme == "https" and port == 443) or (
+        parsed.scheme == "http" and port == 80
+    )
+    authority = host if port is None or default_port else f"{host}:{port}"
+    path = parsed.path or "/"
+    return urlunsplit(
+        (parsed.scheme.casefold(), authority, path, parsed.query, "")
+    ).casefold()
+
+
+def _pagination_record(
+    request: SearchRequest,
+    *,
+    state: PaginationState,
+    stop_reason: PaginationStopReason,
+    detail: str,
+    attempts: list[SearchAssessmentRecord] | None = None,
+    results: list[SearchResult] | None = None,
+) -> PaginatedSearchAssessment:
+    attempt_records = tuple(
+        replace(
+            attempt,
+            page_number=index,
+            pagination_state=state,
+            pagination_stop_reason=stop_reason,
+        )
+        for index, attempt in enumerate(attempts or (), start=1)
+    )
+    statuses = ", ".join(
+        "none" if attempt.http_status is None else str(attempt.http_status)
+        for attempt in attempt_records
+    )
+    status_detail = statuses or "no attempts"
+    return PaginatedSearchAssessment(
+        provider=request.provider,
+        channel=request.channel,
+        query=request.query,
+        locale=request.locale,
+        retrieval_mode=request.retrieval_mode,
+        state=state,
+        stop_reason=stop_reason,
+        observation=(
+            f"{detail}; {len(attempt_records)} attempt(s), HTTP statuses "
+            f"[{status_detail}]"
+        ),
+        attempts=attempt_records,
+        results=tuple(results or ()),
+    )
 
 
 def _element_text(element: ElementTree.Element | None) -> str:
@@ -440,17 +789,27 @@ def _is_public_result_url(url: str) -> bool:
 
 __all__ = [
     "Assessment",
+    "MAX_PROVIDER_PAGES",
+    "MAX_PROVIDER_RESULTS",
+    "PaginatedSearchAssessment",
+    "PaginationState",
+    "PaginationStopReason",
     "ResultClassification",
     "ResultInspection",
     "ResponseFormat",
     "RetrievalMode",
     "SearchAssessmentRecord",
+    "SearchPageFetcher",
+    "SearchPageResponse",
     "SearchProvider",
     "SearchRequest",
     "SearchResult",
+    "assess_paginated_search",
     "assess_search_response",
+    "build_provider_page_request",
     "build_provider_request",
     "parse_bing_rss",
     "parse_search_html",
+    "supports_pagination",
     "transport_observation",
 ]

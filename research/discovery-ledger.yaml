@@ -1,5 +1,5 @@
 schema_version: 1
-revision: 71
+revision: 95
 initialized_on: '2026-08-12'
 updated_on: '2026-08-12'
 sweeps:
@@ -470,10 +470,917 @@ sweeps:
 - id: tool-mhg
   category: tool
   stage: mhg
-  state: not_started
-  pass_count: 0
+  state: in_progress
+  pass_count: 4
   consecutive_empty_passes: 0
-  passes: []
+  last_run_on: '2026-08-12'
+  passes:
+  - id: pass-tool-mhg-2026-08-12-web-pilot
+    run_on: '2026-08-12'
+    queries:
+    - query: Mittelhochdeutsch Tagger
+      language: de
+      channel: web_de
+      source_urls:
+      - https://www.bing.com/search?q=Mittelhochdeutsch%20Tagger&format=rss&setlang=de-DE
+      - https://kino20.gr/
+      - https://kino-20.gr/
+      - https://www.kinox.gr/kliroseis-kino-oles
+      - http://www.live-kino.gr/
+      - https://stores.allwyn.gr/zwntanh-klhrwsh-kino
+      - https://numbers.gr/kino-kliroseis/
+      - https://www.live-kino.gr/
+      - https://kino20.com/
+      - https://www.kinox.gr/kliroseis-kino
+      completed: false
+      note: Bing RSS via bounded_http returned ten inspected results unrelated to
+        the exact Middle High German tagging concept; provider failure, not an empty
+        result.
+    - query: Mittelhochdeutsch POS-Tagger
+      language: de
+      channel: web_de
+      source_urls: []
+      completed: false
+      note: Brave Search via bounded_http failed during the metadata request with
+        WinError 10054 (connection forcibly closed by the remote host); no retry around
+        the refusal.
+    - query: Mittelhochdeutsch POS-Tagger
+      language: de
+      channel: web_de
+      source_urls:
+      - https://www.google.com/search?q=Mittelhochdeutsch%20POS-Tagger&hl=de
+      completed: false
+      note: Google via bounded_http returned a JavaScript/redirect challenge rather
+        than inspectable search results; controlled-browser challenge interaction
+        was not attempted.
+    - query: '"Middle High German" tagger'
+      language: en
+      channel: web_en
+      source_urls:
+      - https://www.bing.com/search?q=%22Middle%20High%20German%22%20tagger&format=rss&setlang=en-US
+      - https://dictionary.cambridge.org/dictionary/english/middle
+      - https://en.wikipedia.org/wiki/Middle
+      - https://www.merriam-webster.com/dictionary/middle
+      - https://www.imdb.com/title/tt1442464/
+      - https://www.netflix.com/gb/title/70143859
+      - https://en.wiktionary.org/wiki/middle
+      - https://www.wordreference.com/enfr/middle
+      - https://en.wikipedia.org/wiki/Middle_school
+      - https://www.youtube.com/watch?v=IvPT2QuCIOA
+      - https://www.dictionary.com/browse/middle
+      completed: false
+      note: Bing RSS via bounded_http returned ten inspected results unrelated to
+        the exact Middle High German tagging concept; provider failure, not an empty
+        result.
+    - query: '"Middle High German" "POS tagger"'
+      language: en
+      channel: web_en
+      source_urls: []
+      completed: false
+      note: Brave Search via bounded_http failed during the metadata request with
+        WinError 10054 (connection forcibly closed by the remote host); no retry around
+        the refusal.
+    - query: '"Middle High German" "POS tagger"'
+      language: en
+      channel: web_en
+      source_urls:
+      - https://www.google.com/search?q=%22Middle%20High%20German%22%20%22POS%20tagger%22&hl=en
+      completed: false
+      note: Google via bounded_http returned a JavaScript/redirect challenge rather
+        than inspectable search results; controlled-browser challenge interaction
+        was not attempted.
+    candidate_ids: []
+    new_candidate_ids: []
+    complete: false
+    note: Bounded coordinator handoff after the two named required general-web channels.
+      Model-led name elicitation preceded retrieval; trusted RNNTagger was excluded.
+      Tagging coverage remains incomplete and the sweep must resume with remaining
+      concepts and channels.
+  - id: pass-tool-mhg-2026-08-12-clarin-olac-pilot
+    run_on: '2026-08-12'
+    queries:
+    - query: Mittelhochdeutsch Tagger
+      language: de
+      channel: clarin
+      source_urls:
+      - https://vlo.clarin.eu/search?query=Mittelhochdeutsch%20Tagger
+      - https://www.clarin.si/repository/xmlui/discover?query=Mittelhochdeutsch%20Tagger
+      completed: true
+      note: VLO returned the same ten unrelated BAS/speech records for the exact query,
+        a provider-level semantic failure. The CLARIN.SI alternate public interface
+        returned inspectable metadata; MHG hits were the two known dictionary records
+        and tool-like hits lacked MHG scope, so no tool lead was preserved.
+    - query: Mittelhochdeutsch Tagger
+      language: de
+      channel: olac
+      source_urls:
+      - https://web.archive.org/web/20250224055045id_/http://www.language-archives.org/language/gmh
+      completed: true
+      note: The public archived OLAC gmh catalog was inspected concept-at-a-time.
+        It contained two known MHG dictionary records and language-description records,
+        but no tool listing for this concept. The live OLAC search endpoint timed
+        out at its public destination on the representative tagging request; no retry
+        or bypass was attempted.
+    - query: '"Middle High German" tagger'
+      language: en
+      channel: clarin
+      source_urls:
+      - https://vlo.clarin.eu/search?query=%22Middle%20High%20German%22%20tagger
+      - https://www.clarin.si/repository/xmlui/discover?query=%22Middle%20High%20German%22%20tagger
+      completed: true
+      note: VLO returned the same ten unrelated BAS/speech records for the exact query,
+        a provider-level semantic failure. The CLARIN.SI alternate public interface
+        returned inspectable metadata; MHG hits were the two known dictionary records
+        and tool-like hits lacked MHG scope, so no tool lead was preserved.
+    - query: '"Middle High German" tagger'
+      language: en
+      channel: olac
+      source_urls:
+      - https://web.archive.org/web/20250224055045id_/http://www.language-archives.org/language/gmh
+      completed: true
+      note: The public archived OLAC gmh catalog was inspected concept-at-a-time.
+        It contained two known MHG dictionary records and language-description records,
+        but no tool listing for this concept. The live OLAC search endpoint timed
+        out at its public destination on the representative tagging request; no retry
+        or bypass was attempted.
+    - query: Mittelhochdeutsch morphologische Annotation
+      language: de
+      channel: clarin
+      source_urls:
+      - https://vlo.clarin.eu/search?query=Mittelhochdeutsch%20morphologische%20Annotation
+      - https://www.clarin.si/repository/xmlui/discover?query=Mittelhochdeutsch%20morphologische%20Annotation
+      completed: true
+      note: VLO returned the same ten unrelated BAS/speech records for the exact query,
+        a provider-level semantic failure. The CLARIN.SI alternate public interface
+        returned inspectable metadata; MHG hits were the two known dictionary records
+        and tool-like hits lacked MHG scope, so no tool lead was preserved.
+    - query: Mittelhochdeutsch morphologische Annotation
+      language: de
+      channel: olac
+      source_urls:
+      - https://web.archive.org/web/20250224055045id_/http://www.language-archives.org/language/gmh
+      completed: true
+      note: The public archived OLAC gmh catalog was inspected concept-at-a-time.
+        It contained two known MHG dictionary records and language-description records,
+        but no tool listing for this concept. The live OLAC search endpoint timed
+        out at its public destination on the representative tagging request; no retry
+        or bypass was attempted.
+    - query: '"Middle High German" morphological annotation'
+      language: en
+      channel: clarin
+      source_urls:
+      - https://vlo.clarin.eu/search?query=%22Middle%20High%20German%22%20morphological%20annotation
+      - https://www.clarin.si/repository/xmlui/discover?query=%22Middle%20High%20German%22%20morphological%20annotation
+      completed: true
+      note: VLO returned the same ten unrelated BAS/speech records for the exact query,
+        a provider-level semantic failure. The CLARIN.SI alternate public interface
+        returned inspectable metadata; MHG hits were the two known dictionary records
+        and tool-like hits lacked MHG scope, so no tool lead was preserved.
+    - query: '"Middle High German" morphological annotation'
+      language: en
+      channel: olac
+      source_urls:
+      - https://web.archive.org/web/20250224055045id_/http://www.language-archives.org/language/gmh
+      completed: true
+      note: The public archived OLAC gmh catalog was inspected concept-at-a-time.
+        It contained two known MHG dictionary records and language-description records,
+        but no tool listing for this concept. The live OLAC search endpoint timed
+        out at its public destination on the representative tagging request; no retry
+        or bypass was attempted.
+    - query: Mittelhochdeutsch Lemmatisierer
+      language: de
+      channel: clarin
+      source_urls:
+      - https://vlo.clarin.eu/search?query=Mittelhochdeutsch%20Lemmatisierer
+      - https://www.clarin.si/repository/xmlui/discover?query=Mittelhochdeutsch%20Lemmatisierer
+      completed: true
+      note: VLO returned the same ten unrelated BAS/speech records for the exact query,
+        a provider-level semantic failure. The CLARIN.SI alternate public interface
+        returned inspectable metadata; MHG hits were the two known dictionary records
+        and tool-like hits lacked MHG scope, so no tool lead was preserved.
+    - query: Mittelhochdeutsch Lemmatisierer
+      language: de
+      channel: olac
+      source_urls:
+      - https://web.archive.org/web/20250224055045id_/http://www.language-archives.org/language/gmh
+      completed: true
+      note: The public archived OLAC gmh catalog was inspected concept-at-a-time.
+        It contained two known MHG dictionary records and language-description records,
+        but no tool listing for this concept. The live OLAC search endpoint timed
+        out at its public destination on the representative tagging request; no retry
+        or bypass was attempted.
+    - query: '"Middle High German" lemmatizer'
+      language: en
+      channel: clarin
+      source_urls:
+      - https://vlo.clarin.eu/search?query=%22Middle%20High%20German%22%20lemmatizer
+      - https://www.clarin.si/repository/xmlui/discover?query=%22Middle%20High%20German%22%20lemmatizer
+      completed: true
+      note: VLO returned the same ten unrelated BAS/speech records for the exact query,
+        a provider-level semantic failure. The CLARIN.SI alternate public interface
+        returned inspectable metadata; MHG hits were the two known dictionary records
+        and tool-like hits lacked MHG scope, so no tool lead was preserved.
+    - query: '"Middle High German" lemmatizer'
+      language: en
+      channel: olac
+      source_urls:
+      - https://web.archive.org/web/20250224055045id_/http://www.language-archives.org/language/gmh
+      completed: true
+      note: The public archived OLAC gmh catalog was inspected concept-at-a-time.
+        It contained two known MHG dictionary records and language-description records,
+        but no tool listing for this concept. The live OLAC search endpoint timed
+        out at its public destination on the representative tagging request; no retry
+        or bypass was attempted.
+    - query: Mittelhochdeutsch Normalisierung
+      language: de
+      channel: clarin
+      source_urls:
+      - https://vlo.clarin.eu/search?query=Mittelhochdeutsch%20Normalisierung
+      - https://www.clarin.si/repository/xmlui/discover?query=Mittelhochdeutsch%20Normalisierung
+      completed: true
+      note: VLO returned the same ten unrelated BAS/speech records for the exact query,
+        a provider-level semantic failure. The CLARIN.SI alternate public interface
+        returned inspectable metadata; MHG hits were the two known dictionary records
+        and tool-like hits lacked MHG scope, so no tool lead was preserved.
+    - query: Mittelhochdeutsch Normalisierung
+      language: de
+      channel: olac
+      source_urls:
+      - https://web.archive.org/web/20250224055045id_/http://www.language-archives.org/language/gmh
+      completed: true
+      note: The public archived OLAC gmh catalog was inspected concept-at-a-time.
+        It contained two known MHG dictionary records and language-description records,
+        but no tool listing for this concept. The live OLAC search endpoint timed
+        out at its public destination on the representative tagging request; no retry
+        or bypass was attempted.
+    - query: '"Middle High German" normalization'
+      language: en
+      channel: clarin
+      source_urls:
+      - https://vlo.clarin.eu/search?query=%22Middle%20High%20German%22%20normalization
+      - https://www.clarin.si/repository/xmlui/discover?query=%22Middle%20High%20German%22%20normalization
+      completed: true
+      note: VLO returned the same ten unrelated BAS/speech records for the exact query,
+        a provider-level semantic failure. The CLARIN.SI alternate public interface
+        returned inspectable metadata; MHG hits were the two known dictionary records
+        and tool-like hits lacked MHG scope, so no tool lead was preserved.
+    - query: '"Middle High German" normalization'
+      language: en
+      channel: olac
+      source_urls:
+      - https://web.archive.org/web/20250224055045id_/http://www.language-archives.org/language/gmh
+      completed: true
+      note: The public archived OLAC gmh catalog was inspected concept-at-a-time.
+        It contained two known MHG dictionary records and language-description records,
+        but no tool listing for this concept. The live OLAC search endpoint timed
+        out at its public destination on the representative tagging request; no retry
+        or bypass was attempted.
+    - query: Mittelhochdeutsch Parser
+      language: de
+      channel: clarin
+      source_urls:
+      - https://vlo.clarin.eu/search?query=Mittelhochdeutsch%20Parser
+      - https://www.clarin.si/repository/xmlui/discover?query=Mittelhochdeutsch%20Parser
+      completed: true
+      note: VLO returned the same ten unrelated BAS/speech records for the exact query,
+        a provider-level semantic failure. The CLARIN.SI alternate public interface
+        returned inspectable metadata; MHG hits were the two known dictionary records
+        and tool-like hits lacked MHG scope, so no tool lead was preserved.
+    - query: Mittelhochdeutsch Parser
+      language: de
+      channel: olac
+      source_urls:
+      - https://web.archive.org/web/20250224055045id_/http://www.language-archives.org/language/gmh
+      completed: true
+      note: The public archived OLAC gmh catalog was inspected concept-at-a-time.
+        It contained two known MHG dictionary records and language-description records,
+        but no tool listing for this concept. The live OLAC search endpoint timed
+        out at its public destination on the representative tagging request; no retry
+        or bypass was attempted.
+    - query: '"Middle High German" parser'
+      language: en
+      channel: clarin
+      source_urls:
+      - https://vlo.clarin.eu/search?query=%22Middle%20High%20German%22%20parser
+      - https://www.clarin.si/repository/xmlui/discover?query=%22Middle%20High%20German%22%20parser
+      completed: true
+      note: VLO returned the same ten unrelated BAS/speech records for the exact query,
+        a provider-level semantic failure. The CLARIN.SI alternate public interface
+        returned inspectable metadata; MHG hits were the two known dictionary records
+        and tool-like hits lacked MHG scope, so no tool lead was preserved.
+    - query: '"Middle High German" parser'
+      language: en
+      channel: olac
+      source_urls:
+      - https://web.archive.org/web/20250224055045id_/http://www.language-archives.org/language/gmh
+      completed: true
+      note: The public archived OLAC gmh catalog was inspected concept-at-a-time.
+        It contained two known MHG dictionary records and language-description records,
+        but no tool listing for this concept. The live OLAC search endpoint timed
+        out at its public destination on the representative tagging request; no retry
+        or bypass was attempted.
+    - query: Mittelhochdeutsch Tokenisierung
+      language: de
+      channel: clarin
+      source_urls:
+      - https://vlo.clarin.eu/search?query=Mittelhochdeutsch%20Tokenisierung
+      - https://www.clarin.si/repository/xmlui/discover?query=Mittelhochdeutsch%20Tokenisierung
+      completed: true
+      note: VLO returned the same ten unrelated BAS/speech records for the exact query,
+        a provider-level semantic failure. The CLARIN.SI alternate public interface
+        returned inspectable metadata; MHG hits were the two known dictionary records
+        and tool-like hits lacked MHG scope, so no tool lead was preserved.
+    - query: Mittelhochdeutsch Tokenisierung
+      language: de
+      channel: olac
+      source_urls:
+      - https://web.archive.org/web/20250224055045id_/http://www.language-archives.org/language/gmh
+      completed: true
+      note: The public archived OLAC gmh catalog was inspected concept-at-a-time.
+        It contained two known MHG dictionary records and language-description records,
+        but no tool listing for this concept. The live OLAC search endpoint timed
+        out at its public destination on the representative tagging request; no retry
+        or bypass was attempted.
+    - query: '"Middle High German" tokenization'
+      language: en
+      channel: clarin
+      source_urls:
+      - https://vlo.clarin.eu/search?query=%22Middle%20High%20German%22%20tokenization
+      - https://www.clarin.si/repository/xmlui/discover?query=%22Middle%20High%20German%22%20tokenization
+      completed: true
+      note: VLO returned the same ten unrelated BAS/speech records for the exact query,
+        a provider-level semantic failure. The CLARIN.SI alternate public interface
+        returned inspectable metadata; MHG hits were the two known dictionary records
+        and tool-like hits lacked MHG scope, so no tool lead was preserved.
+    - query: '"Middle High German" tokenization'
+      language: en
+      channel: olac
+      source_urls:
+      - https://web.archive.org/web/20250224055045id_/http://www.language-archives.org/language/gmh
+      completed: true
+      note: The public archived OLAC gmh catalog was inspected concept-at-a-time.
+        It contained two known MHG dictionary records and language-description records,
+        but no tool listing for this concept. The live OLAC search endpoint timed
+        out at its public destination on the representative tagging request; no retry
+        or bypass was attempted.
+    - query: Mittelhochdeutsch Sprachmodell
+      language: de
+      channel: clarin
+      source_urls:
+      - https://vlo.clarin.eu/search?query=Mittelhochdeutsch%20Sprachmodell
+      - https://www.clarin.si/repository/xmlui/discover?query=Mittelhochdeutsch%20Sprachmodell
+      completed: true
+      note: VLO returned the same ten unrelated BAS/speech records for the exact query,
+        a provider-level semantic failure. The CLARIN.SI alternate public interface
+        returned inspectable metadata; MHG hits were the two known dictionary records
+        and tool-like hits lacked MHG scope, so no tool lead was preserved.
+    - query: Mittelhochdeutsch Sprachmodell
+      language: de
+      channel: olac
+      source_urls:
+      - https://web.archive.org/web/20250224055045id_/http://www.language-archives.org/language/gmh
+      completed: true
+      note: The public archived OLAC gmh catalog was inspected concept-at-a-time.
+        It contained two known MHG dictionary records and language-description records,
+        but no tool listing for this concept. The live OLAC search endpoint timed
+        out at its public destination on the representative tagging request; no retry
+        or bypass was attempted.
+    - query: '"Middle High German" language model'
+      language: en
+      channel: clarin
+      source_urls:
+      - https://vlo.clarin.eu/search?query=%22Middle%20High%20German%22%20language%20model
+      - https://www.clarin.si/repository/xmlui/discover?query=%22Middle%20High%20German%22%20language%20model
+      completed: true
+      note: VLO returned the same ten unrelated BAS/speech records for the exact query,
+        a provider-level semantic failure. The CLARIN.SI alternate public interface
+        returned inspectable metadata; MHG hits were the two known dictionary records
+        and tool-like hits lacked MHG scope, so no tool lead was preserved.
+    - query: '"Middle High German" language model'
+      language: en
+      channel: olac
+      source_urls:
+      - https://web.archive.org/web/20250224055045id_/http://www.language-archives.org/language/gmh
+      completed: true
+      note: The public archived OLAC gmh catalog was inspected concept-at-a-time.
+        It contained two known MHG dictionary records and language-description records,
+        but no tool listing for this concept. The live OLAC search endpoint timed
+        out at its public destination on the representative tagging request; no retry
+        or bypass was attempted.
+    - query: Mittelhochdeutsch NLP-Werkzeug
+      language: de
+      channel: clarin
+      source_urls:
+      - https://vlo.clarin.eu/search?query=Mittelhochdeutsch%20NLP-Werkzeug
+      - https://www.clarin.si/repository/xmlui/discover?query=Mittelhochdeutsch%20NLP-Werkzeug
+      completed: true
+      note: VLO returned the same ten unrelated BAS/speech records for the exact query,
+        a provider-level semantic failure. The CLARIN.SI alternate public interface
+        returned inspectable metadata; MHG hits were the two known dictionary records
+        and tool-like hits lacked MHG scope, so no tool lead was preserved.
+    - query: Mittelhochdeutsch NLP-Werkzeug
+      language: de
+      channel: olac
+      source_urls:
+      - https://web.archive.org/web/20250224055045id_/http://www.language-archives.org/language/gmh
+      completed: true
+      note: The public archived OLAC gmh catalog was inspected concept-at-a-time.
+        It contained two known MHG dictionary records and language-description records,
+        but no tool listing for this concept. The live OLAC search endpoint timed
+        out at its public destination on the representative tagging request; no retry
+        or bypass was attempted.
+    - query: '"Middle High German" NLP tool'
+      language: en
+      channel: clarin
+      source_urls:
+      - https://vlo.clarin.eu/search?query=%22Middle%20High%20German%22%20NLP%20tool
+      - https://www.clarin.si/repository/xmlui/discover?query=%22Middle%20High%20German%22%20NLP%20tool
+      completed: true
+      note: VLO returned the same ten unrelated BAS/speech records for the exact query,
+        a provider-level semantic failure. The CLARIN.SI alternate public interface
+        returned inspectable metadata; MHG hits were the two known dictionary records
+        and tool-like hits lacked MHG scope, so no tool lead was preserved.
+    - query: '"Middle High German" NLP tool'
+      language: en
+      channel: olac
+      source_urls:
+      - https://web.archive.org/web/20250224055045id_/http://www.language-archives.org/language/gmh
+      completed: true
+      note: The public archived OLAC gmh catalog was inspected concept-at-a-time.
+        It contained two known MHG dictionary records and language-description records,
+        but no tool listing for this concept. The live OLAC search endpoint timed
+        out at its public destination on the representative tagging request; no retry
+        or bypass was attempted.
+    - query: Mittelhochdeutsch HiTS
+      language: de
+      channel: clarin
+      source_urls:
+      - https://vlo.clarin.eu/search?query=Mittelhochdeutsch%20HiTS
+      - https://www.clarin.si/repository/xmlui/discover?query=Mittelhochdeutsch%20HiTS
+      completed: true
+      note: VLO returned the same ten unrelated BAS/speech records for the exact query,
+        a provider-level semantic failure. The CLARIN.SI alternate public interface
+        returned inspectable metadata; MHG hits were the two known dictionary records
+        and tool-like hits lacked MHG scope, so no tool lead was preserved.
+    - query: Mittelhochdeutsch HiTS
+      language: de
+      channel: olac
+      source_urls:
+      - https://web.archive.org/web/20250224055045id_/http://www.language-archives.org/language/gmh
+      completed: true
+      note: The public archived OLAC gmh catalog was inspected concept-at-a-time.
+        It contained two known MHG dictionary records and language-description records,
+        but no tool listing for this concept. The live OLAC search endpoint timed
+        out at its public destination on the representative tagging request; no retry
+        or bypass was attempted.
+    - query: '"Middle High German" HiTS'
+      language: en
+      channel: clarin
+      source_urls:
+      - https://vlo.clarin.eu/search?query=%22Middle%20High%20German%22%20HiTS
+      - https://www.clarin.si/repository/xmlui/discover?query=%22Middle%20High%20German%22%20HiTS
+      completed: true
+      note: VLO returned the same ten unrelated BAS/speech records for the exact query,
+        a provider-level semantic failure. The CLARIN.SI alternate public interface
+        returned inspectable metadata; MHG hits were the two known dictionary records
+        and tool-like hits lacked MHG scope, so no tool lead was preserved.
+    - query: '"Middle High German" HiTS'
+      language: en
+      channel: olac
+      source_urls:
+      - https://web.archive.org/web/20250224055045id_/http://www.language-archives.org/language/gmh
+      completed: true
+      note: The public archived OLAC gmh catalog was inspected concept-at-a-time.
+        It contained two known MHG dictionary records and language-description records,
+        but no tool listing for this concept. The live OLAC search endpoint timed
+        out at its public destination on the representative tagging request; no retry
+        or bypass was attempted.
+    - query: Mittelhochdeutsch STTS
+      language: de
+      channel: clarin
+      source_urls:
+      - https://vlo.clarin.eu/search?query=Mittelhochdeutsch%20STTS
+      - https://www.clarin.si/repository/xmlui/discover?query=Mittelhochdeutsch%20STTS
+      completed: true
+      note: VLO returned the same ten unrelated BAS/speech records for the exact query,
+        a provider-level semantic failure. The CLARIN.SI alternate public interface
+        returned inspectable metadata; MHG hits were the two known dictionary records
+        and tool-like hits lacked MHG scope, so no tool lead was preserved.
+    - query: Mittelhochdeutsch STTS
+      language: de
+      channel: olac
+      source_urls:
+      - https://web.archive.org/web/20250224055045id_/http://www.language-archives.org/language/gmh
+      completed: true
+      note: The public archived OLAC gmh catalog was inspected concept-at-a-time.
+        It contained two known MHG dictionary records and language-description records,
+        but no tool listing for this concept. The live OLAC search endpoint timed
+        out at its public destination on the representative tagging request; no retry
+        or bypass was attempted.
+    - query: '"Middle High German" STTS'
+      language: en
+      channel: clarin
+      source_urls:
+      - https://vlo.clarin.eu/search?query=%22Middle%20High%20German%22%20STTS
+      - https://www.clarin.si/repository/xmlui/discover?query=%22Middle%20High%20German%22%20STTS
+      completed: true
+      note: VLO returned the same ten unrelated BAS/speech records for the exact query,
+        a provider-level semantic failure. The CLARIN.SI alternate public interface
+        returned inspectable metadata; MHG hits were the two known dictionary records
+        and tool-like hits lacked MHG scope, so no tool lead was preserved.
+    - query: '"Middle High German" STTS'
+      language: en
+      channel: olac
+      source_urls:
+      - https://web.archive.org/web/20250224055045id_/http://www.language-archives.org/language/gmh
+      completed: true
+      note: The public archived OLAC gmh catalog was inspected concept-at-a-time.
+        It contained two known MHG dictionary records and language-description records,
+        but no tool listing for this concept. The live OLAC search endpoint timed
+        out at its public destination on the representative tagging request; no retry
+        or bypass was attempted.
+    candidate_ids: []
+    new_candidate_ids: []
+    complete: false
+    note: Bounded coordinator handoff after CLARIN VLO/relevant-center and OLAC coverage.
+      Model-led elicitation named RNNTagger (trusted inventory), ReM-related annotation,
+      Norma, CorA, GermaLemma, HiTS, and STTS only as untrusted leads; trusted/new
+      names were excluded from follow-up planning. Twenty bilingual concept-at-a-time
+      queries covered all eight tool families plus HiTS and STTS. No new MHG tool
+      candidate was established. Remaining Zenodo/repositories, institutional/project,
+      GitHub, and Hugging Face channels require resumption.
+  - id: pass-tool-mhg-2026-08-12-huggingface-pilot
+    run_on: '2026-08-12'
+    queries:
+    - query: Mittelhochdeutsch Tagger
+      language: de
+      channel: huggingface
+      source_urls:
+      - https://huggingface.co/api/models?search=Mittelhochdeutsch%20Tagger&limit=50&full=false
+      completed: true
+      note: Hugging Face models public metadata API returned an empty JSON result
+        list; the complete response was inspected and no MHG tool lead was present.
+    - query: Mittelhochdeutsch Tagger
+      language: de
+      channel: huggingface
+      source_urls:
+      - https://huggingface.co/api/datasets?search=Mittelhochdeutsch%20Tagger&limit=50&full=false
+      completed: false
+      note: Hugging Face datasets public metadata API request failed during bounded_http
+        metadata retrieval with WinError 10054 (connection forcibly closed by the
+        remote host); no retry around the refusal, so this required query is incomplete.
+    - query: Middle High German tagger
+      language: en
+      channel: huggingface
+      source_urls:
+      - https://huggingface.co/api/models?search=Middle%20High%20German%20tagger&limit=50&full=false
+      completed: true
+      note: Hugging Face models public metadata API returned an empty JSON result
+        list; the complete response was inspected and no MHG tool lead was present.
+    - query: Middle High German tagger
+      language: en
+      channel: huggingface
+      source_urls:
+      - https://huggingface.co/api/datasets?search=Middle%20High%20German%20tagger&limit=50&full=false
+      completed: false
+      note: Hugging Face datasets public metadata API request failed during bounded_http
+        metadata retrieval with WinError 10054 (connection forcibly closed by the
+        remote host); no retry around the refusal, so this required query is incomplete.
+    - query: Mittelhochdeutsch morphologische Annotation
+      language: de
+      channel: huggingface
+      source_urls:
+      - https://huggingface.co/api/models?search=Mittelhochdeutsch%20morphologische%20Annotation&limit=50&full=false
+      completed: true
+      note: Hugging Face models public metadata API returned an empty JSON result
+        list; the complete response was inspected and no MHG tool lead was present.
+    - query: Mittelhochdeutsch morphologische Annotation
+      language: de
+      channel: huggingface
+      source_urls:
+      - https://huggingface.co/api/datasets?search=Mittelhochdeutsch%20morphologische%20Annotation&limit=50&full=false
+      completed: true
+      note: Hugging Face datasets public metadata API returned an empty JSON result
+        list; the complete response was inspected and no MHG tool lead was present.
+    - query: Middle High German morphological annotation
+      language: en
+      channel: huggingface
+      source_urls:
+      - https://huggingface.co/api/models?search=Middle%20High%20German%20morphological%20annotation&limit=50&full=false
+      completed: false
+      note: Hugging Face models public metadata API request failed during bounded_http
+        metadata retrieval with WinError 10054 (connection forcibly closed by the
+        remote host); no retry around the refusal, so this required query is incomplete.
+    - query: Middle High German morphological annotation
+      language: en
+      channel: huggingface
+      source_urls:
+      - https://huggingface.co/api/datasets?search=Middle%20High%20German%20morphological%20annotation&limit=50&full=false
+      completed: false
+      note: Hugging Face datasets public metadata API request failed during bounded_http
+        metadata retrieval with WinError 10054 (connection forcibly closed by the
+        remote host); no retry around the refusal, so this required query is incomplete.
+    - query: Mittelhochdeutsch Lemmatisierer
+      language: de
+      channel: huggingface
+      source_urls:
+      - https://huggingface.co/api/models?search=Mittelhochdeutsch%20Lemmatisierer&limit=50&full=false
+      completed: false
+      note: Hugging Face models public metadata API request failed during bounded_http
+        metadata retrieval with WinError 10054 (connection forcibly closed by the
+        remote host); no retry around the refusal, so this required query is incomplete.
+    - query: Mittelhochdeutsch Lemmatisierer
+      language: de
+      channel: huggingface
+      source_urls:
+      - https://huggingface.co/api/datasets?search=Mittelhochdeutsch%20Lemmatisierer&limit=50&full=false
+      completed: true
+      note: Hugging Face datasets public metadata API returned an empty JSON result
+        list; the complete response was inspected and no MHG tool lead was present.
+    - query: Middle High German lemmatizer
+      language: en
+      channel: huggingface
+      source_urls:
+      - https://huggingface.co/api/models?search=Middle%20High%20German%20lemmatizer&limit=50&full=false
+      completed: true
+      note: Hugging Face models public metadata API returned an empty JSON result
+        list; the complete response was inspected and no MHG tool lead was present.
+    - query: Middle High German lemmatizer
+      language: en
+      channel: huggingface
+      source_urls:
+      - https://huggingface.co/api/datasets?search=Middle%20High%20German%20lemmatizer&limit=50&full=false
+      completed: true
+      note: Hugging Face datasets public metadata API returned an empty JSON result
+        list; the complete response was inspected and no MHG tool lead was present.
+    - query: Mittelhochdeutsch Normalisierung
+      language: de
+      channel: huggingface
+      source_urls:
+      - https://huggingface.co/api/models?search=Mittelhochdeutsch%20Normalisierung&limit=50&full=false
+      completed: true
+      note: Hugging Face models public metadata API returned an empty JSON result
+        list; the complete response was inspected and no MHG tool lead was present.
+    - query: Mittelhochdeutsch Normalisierung
+      language: de
+      channel: huggingface
+      source_urls:
+      - https://huggingface.co/api/datasets?search=Mittelhochdeutsch%20Normalisierung&limit=50&full=false
+      completed: true
+      note: Hugging Face datasets public metadata API returned an empty JSON result
+        list; the complete response was inspected and no MHG tool lead was present.
+    - query: Middle High German normalization
+      language: en
+      channel: huggingface
+      source_urls:
+      - https://huggingface.co/api/models?search=Middle%20High%20German%20normalization&limit=50&full=false
+      completed: false
+      note: Hugging Face models public metadata API request failed during bounded_http
+        metadata retrieval with WinError 10054 (connection forcibly closed by the
+        remote host); no retry around the refusal, so this required query is incomplete.
+    - query: Middle High German normalization
+      language: en
+      channel: huggingface
+      source_urls:
+      - https://huggingface.co/api/datasets?search=Middle%20High%20German%20normalization&limit=50&full=false
+      completed: false
+      note: Hugging Face datasets public metadata API request failed during bounded_http
+        metadata retrieval with WinError 10054 (connection forcibly closed by the
+        remote host); no retry around the refusal, so this required query is incomplete.
+    - query: Mittelhochdeutsch Parser
+      language: de
+      channel: huggingface
+      source_urls:
+      - https://huggingface.co/api/models?search=Mittelhochdeutsch%20Parser&limit=50&full=false
+      completed: true
+      note: Hugging Face models public metadata API returned an empty JSON result
+        list; the complete response was inspected and no MHG tool lead was present.
+    - query: Mittelhochdeutsch Parser
+      language: de
+      channel: huggingface
+      source_urls:
+      - https://huggingface.co/api/datasets?search=Mittelhochdeutsch%20Parser&limit=50&full=false
+      completed: true
+      note: Hugging Face datasets public metadata API returned an empty JSON result
+        list; the complete response was inspected and no MHG tool lead was present.
+    - query: Middle High German parser
+      language: en
+      channel: huggingface
+      source_urls:
+      - https://huggingface.co/api/models?search=Middle%20High%20German%20parser&limit=50&full=false
+      completed: true
+      note: Hugging Face models public metadata API returned an empty JSON result
+        list; the complete response was inspected and no MHG tool lead was present.
+    - query: Middle High German parser
+      language: en
+      channel: huggingface
+      source_urls:
+      - https://huggingface.co/api/datasets?search=Middle%20High%20German%20parser&limit=50&full=false
+      completed: true
+      note: Hugging Face datasets public metadata API returned an empty JSON result
+        list; the complete response was inspected and no MHG tool lead was present.
+    - query: Mittelhochdeutsch Tokenisierung
+      language: de
+      channel: huggingface
+      source_urls:
+      - https://huggingface.co/api/models?search=Mittelhochdeutsch%20Tokenisierung&limit=50&full=false
+      completed: true
+      note: Hugging Face models public metadata API returned an empty JSON result
+        list; the complete response was inspected and no MHG tool lead was present.
+    - query: Mittelhochdeutsch Tokenisierung
+      language: de
+      channel: huggingface
+      source_urls:
+      - https://huggingface.co/api/datasets?search=Mittelhochdeutsch%20Tokenisierung&limit=50&full=false
+      completed: false
+      note: Hugging Face datasets public metadata API request failed during bounded_http
+        metadata retrieval with WinError 10054 (connection forcibly closed by the
+        remote host); no retry around the refusal, so this required query is incomplete.
+    - query: Middle High German tokenization
+      language: en
+      channel: huggingface
+      source_urls:
+      - https://huggingface.co/api/models?search=Middle%20High%20German%20tokenization&limit=50&full=false
+      completed: true
+      note: Hugging Face models public metadata API returned an empty JSON result
+        list; the complete response was inspected and no MHG tool lead was present.
+    - query: Middle High German tokenization
+      language: en
+      channel: huggingface
+      source_urls:
+      - https://huggingface.co/api/datasets?search=Middle%20High%20German%20tokenization&limit=50&full=false
+      completed: true
+      note: Hugging Face datasets public metadata API returned an empty JSON result
+        list; the complete response was inspected and no MHG tool lead was present.
+    - query: Mittelhochdeutsch Sprachmodell
+      language: de
+      channel: huggingface
+      source_urls:
+      - https://huggingface.co/api/models?search=Mittelhochdeutsch%20Sprachmodell&limit=50&full=false
+      completed: true
+      note: Hugging Face models public metadata API returned an empty JSON result
+        list; the complete response was inspected and no MHG tool lead was present.
+    - query: Mittelhochdeutsch Sprachmodell
+      language: de
+      channel: huggingface
+      source_urls:
+      - https://huggingface.co/api/datasets?search=Mittelhochdeutsch%20Sprachmodell&limit=50&full=false
+      completed: false
+      note: Hugging Face datasets public metadata API request failed during bounded_http
+        metadata retrieval with WinError 10054 (connection forcibly closed by the
+        remote host); no retry around the refusal, so this required query is incomplete.
+    - query: Middle High German language model
+      language: en
+      channel: huggingface
+      source_urls:
+      - https://huggingface.co/api/models?search=Middle%20High%20German%20language%20model&limit=50&full=false
+      completed: false
+      note: Hugging Face models public metadata API request failed during bounded_http
+        metadata retrieval with WinError 10054 (connection forcibly closed by the
+        remote host); no retry around the refusal, so this required query is incomplete.
+    - query: Middle High German language model
+      language: en
+      channel: huggingface
+      source_urls:
+      - https://huggingface.co/api/datasets?search=Middle%20High%20German%20language%20model&limit=50&full=false
+      completed: true
+      note: Hugging Face datasets public metadata API returned an empty JSON result
+        list; the complete response was inspected and no MHG tool lead was present.
+    - query: Mittelhochdeutsch NLP-Werkzeug
+      language: de
+      channel: huggingface
+      source_urls:
+      - https://huggingface.co/api/models?search=Mittelhochdeutsch%20NLP-Werkzeug&limit=50&full=false
+      completed: false
+      note: Hugging Face models public metadata API request failed during bounded_http
+        metadata retrieval with WinError 10054 (connection forcibly closed by the
+        remote host); no retry around the refusal, so this required query is incomplete.
+    - query: Mittelhochdeutsch NLP-Werkzeug
+      language: de
+      channel: huggingface
+      source_urls:
+      - https://huggingface.co/api/datasets?search=Mittelhochdeutsch%20NLP-Werkzeug&limit=50&full=false
+      completed: false
+      note: Hugging Face datasets public metadata API request failed during bounded_http
+        metadata retrieval with WinError 10054 (connection forcibly closed by the
+        remote host); no retry around the refusal, so this required query is incomplete.
+    - query: Middle High German NLP tool
+      language: en
+      channel: huggingface
+      source_urls:
+      - https://huggingface.co/api/models?search=Middle%20High%20German%20NLP%20tool&limit=50&full=false
+      completed: true
+      note: Hugging Face models public metadata API returned an empty JSON result
+        list; the complete response was inspected and no MHG tool lead was present.
+    - query: Middle High German NLP tool
+      language: en
+      channel: huggingface
+      source_urls:
+      - https://huggingface.co/api/datasets?search=Middle%20High%20German%20NLP%20tool&limit=50&full=false
+      completed: false
+      note: Hugging Face datasets public metadata API request failed during bounded_http
+        metadata retrieval with WinError 10054 (connection forcibly closed by the
+        remote host); no retry around the refusal, so this required query is incomplete.
+    - query: Mittelhochdeutsch HiTS
+      language: de
+      channel: huggingface
+      source_urls:
+      - https://huggingface.co/api/models?search=Mittelhochdeutsch%20HiTS&limit=50&full=false
+      completed: true
+      note: Hugging Face models public metadata API returned an empty JSON result
+        list; the complete response was inspected and no MHG tool lead was present.
+    - query: Mittelhochdeutsch HiTS
+      language: de
+      channel: huggingface
+      source_urls:
+      - https://huggingface.co/api/datasets?search=Mittelhochdeutsch%20HiTS&limit=50&full=false
+      completed: true
+      note: Hugging Face datasets public metadata API returned an empty JSON result
+        list; the complete response was inspected and no MHG tool lead was present.
+    - query: Middle High German HiTS
+      language: en
+      channel: huggingface
+      source_urls:
+      - https://huggingface.co/api/models?search=Middle%20High%20German%20HiTS&limit=50&full=false
+      completed: false
+      note: Hugging Face models public metadata API request failed during bounded_http
+        metadata retrieval with WinError 10054 (connection forcibly closed by the
+        remote host); no retry around the refusal, so this required query is incomplete.
+    - query: Middle High German HiTS
+      language: en
+      channel: huggingface
+      source_urls:
+      - https://huggingface.co/api/datasets?search=Middle%20High%20German%20HiTS&limit=50&full=false
+      completed: false
+      note: Hugging Face datasets public metadata API request failed during bounded_http
+        metadata retrieval with WinError 10054 (connection forcibly closed by the
+        remote host); no retry around the refusal, so this required query is incomplete.
+    - query: Mittelhochdeutsch STTS
+      language: de
+      channel: huggingface
+      source_urls:
+      - https://huggingface.co/api/models?search=Mittelhochdeutsch%20STTS&limit=50&full=false
+      completed: true
+      note: Hugging Face models public metadata API returned an empty JSON result
+        list; the complete response was inspected and no MHG tool lead was present.
+    - query: Mittelhochdeutsch STTS
+      language: de
+      channel: huggingface
+      source_urls:
+      - https://huggingface.co/api/datasets?search=Mittelhochdeutsch%20STTS&limit=50&full=false
+      completed: true
+      note: Hugging Face datasets public metadata API returned an empty JSON result
+        list; the complete response was inspected and no MHG tool lead was present.
+    - query: Middle High German STTS
+      language: en
+      channel: huggingface
+      source_urls:
+      - https://huggingface.co/api/models?search=Middle%20High%20German%20STTS&limit=50&full=false
+      completed: true
+      note: Hugging Face models public metadata API returned an empty JSON result
+        list; the complete response was inspected and no MHG tool lead was present.
+    - query: Middle High German STTS
+      language: en
+      channel: huggingface
+      source_urls:
+      - https://huggingface.co/api/datasets?search=Middle%20High%20German%20STTS&limit=50&full=false
+      completed: true
+      note: Hugging Face datasets public metadata API returned an empty JSON result
+        list; the complete response was inspected and no MHG tool lead was present.
+    candidate_ids: []
+    new_candidate_ids: []
+    complete: false
+    note: Bilingual concept-at-a-time Hugging Face models/datasets coverage executed
+      for all eight MHG tool families plus HiTS and STTS using only resolver-pinned
+      bounded public metadata retrieval. Twenty-five of forty endpoint queries completed
+      with inspected empty result lists; fifteen were incomplete after transport-specific
+      WinError 10054 refusals. No candidate was encountered. This pass cannot advance
+      the two-empty-pass completion sequence.
+  - id: pass-tool-mhg-2026-08-12-complete-empty-1b
+    run_on: '2026-08-12'
+    queries:
+    - query: discover --category tool --stage mhg --qualifier STTS --qualifier HiTS
+        --max-mined-terms 8 --max-exclusion-groups 2
+      language: en
+      channel: orchestration
+      source_urls: []
+      completed: false
+      note: 'The approved checked-in discovery command stopped before model elicitation
+        or any external request with capability_unavailable: discover requires injected
+        model, retrieval, provider, and inspection capabilities. Therefore general_web_google,
+        general_web_bing, general_web_brave, clarin, olac, zenodo, institutional,
+        github, and huggingface were not queried. No resolver-pinned fallback capability
+        was available, so no ad hoc transport or hostname-resolving interface was
+        used.'
+    candidate_ids: []
+    new_candidate_ids: []
+    complete: false
+    note: Fresh beyond-known-resources MHG tool pass requested at ledger revision
+      94, covering all tool families plus weak-family HiTS/STTS variants and two bounded
+      exclusion groups. The approved discover command failed atomically before external
+      querying because injected model, resolver-pinned retrieval, provider, and inspection
+      capabilities were absent. No candidate was encountered or upserted. This incomplete
+      pass does not advance the consecutive-empty sequence, which remains 0.
 - id: tool-enhg
   category: tool
   stage: enhg
@@ -1314,6 +2221,184 @@ candidates:
   disposition_reason: An epoch dictionary documenting the vocabulary and usage of
     German-language texts from 1050–1350.
   refreshed_existing: false
+- id: candidate-tool-cltk-gmh-models
+  name: gmh_models_cltk
+  category: tool
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-12'
+  discovery_urls:
+  - https://api.github.com/repos/cltk/gmh_models_cltk
+  - https://github.com/cltk/gmh_models_cltk
+  discovery_stage_claims:
+  - Stored data for tagging Middle High German
+  disposition: added
+  resource_id: tool-cltk-gmh-models
+  disposition_reason: Add the distinct public CLTK gmh_models_cltk repository as a
+    Middle High German tool resource containing pre-compiled tagging assets. Canonical
+    metadata supports MHG scope and POS-tagging and lemmatization tasks; no trusted-inventory
+    identity match was found. Legal permissions remain unclear.
+  evidence_gaps:
+  - The metadata lacks exact wording separately establishing model-training, original-data
+    redistribution, processed-data redistribution, or trained-weight publication permission,
+    so all four permissions remain unclear.
+  - The metadata does not document input or output formats, resource versions, evaluation
+    data, or reported metrics.
+  refreshed_existing: false
+- id: candidate-tool-mhd-pos-tagging-benchmark
+  name: mhd-pos-tagging-benchmark
+  category: tool
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-12'
+  discovery_urls:
+  - https://github.com/DigitalHumanitiesCraft/mhd-pos-tagging-benchmark
+  - https://raw.githubusercontent.com/DigitalHumanitiesCraft/mhd-pos-tagging-benchmark/master/README.md
+  discovery_stage_claims:
+  - Model-agnostic benchmark for Part-of-Speech tagging of Middle High German texts
+    against ReM ground truth.
+  disposition: added
+  resource_id: tool-mhd-pos-tagging-benchmark
+  disposition_reason: 'Add the distinct public DigitalHumanitiesCraft benchmark as
+    a tool: repository metadata directly establishes its canonical identity, POS-tagging
+    benchmark task, Middle High German scope, ReM ground truth, and browsable availability;
+    all four legal permissions remain unclear.'
+  refreshed_existing: false
+- id: candidate-tool-mhg-contextual-string-embeddings-backward
+  name: Middle High German Contextual String Embeddings (Backward)
+  category: tool
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-12'
+  discovery_urls:
+  - https://zenodo.org/api/records/18659437
+  - https://doi.org/10.5281/zenodo.18659437
+  discovery_stage_claims:
+  - Middle High German Contextual String Embeddings (Backward)
+  - This model provides contextual string embeddings for Middle High German (MHG).
+  disposition: added
+  resource_id: tool-mhg-contextual-string-embeddings-backward
+  disposition_reason: 'Curation completed: creator-deposited Zenodo metadata verifies
+    a distinct backward contextual string embedding model for Middle High German;
+    no trusted-inventory duplicate was found. Added with downloadable availability,
+    all specific legal permissions left unclear, and no payload fetched.'
+  refreshed_existing: false
+- id: candidate-tool-mhg-contextual-string-embeddings-forward
+  name: Middle High German Contextual String Embeddings (Forward)
+  category: tool
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-12'
+  discovery_urls:
+  - https://zenodo.org/api/records/18657493
+  - https://doi.org/10.5281/zenodo.18657493
+  discovery_stage_claims:
+  - Middle High German Contextual String Embeddings (Forward)
+  - This model provides contextual string embeddings for Middle High German (MHG).
+  disposition: added
+  resource_id: tool-mhg-contextual-string-embeddings-forward
+  disposition_reason: 'Research completed: canonical Zenodo metadata directly verifies
+    the distinct forward model and Middle High German scope, supporting addition as
+    a language-model tool. No inventory duplicate was found. The README endpoint was
+    blocked by payload-type policy, but this did not block the required identity,
+    stage, task, provenance, or availability evidence; legal permissions remain unclear.'
+  evidence_gaps:
+  - The Zenodo README.md metadata-only endpoint was refused by bounded_http at response_headers
+    because it returned the payload-like content type application/octet-stream; no
+    README claims were used.
+  refreshed_existing: false
+- id: candidate-tool-mhg-pos-tagger
+  name: POS Tagger for Middle High German Texts
+  category: tool
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-12'
+  discovery_urls:
+  - https://zenodo.org/api/records/4646130
+  - https://doi.org/10.5281/zenodo.4646130
+  - https://www.ims.uni-stuttgart.de/en/research/resources/tools/pos-tag-mhg/
+  - https://www.ims.uni-stuttgart.de/forschung/ressourcen/werkzeuge/pos-tag-mhg/
+  - https://linguisticsweb.org/doku.php?id=linguisticsweb:tutorials:automaticannotation:treetagger:tagging_mhg
+  - https://cis.uni-muenchen.de/~schmid/tools/TreeTagger/
+  discovery_stage_claims:
+  - POS Tagger for Middle High German Texts
+  - The parameter file for TreeTagger has been created by training on a POS tagged
+    version of the Mittelhochdeutsche Begriffsdatenbank
+  - POS Tagger für mittelhochdeutsche Texte
+  - The model for tagging Middle High German was trained on the Middle High German
+    Conceptual Database
+  disposition: added
+  resource_id: tool-mhg-treetagger-pos-tagger
+  disposition_reason: Add the explicitly MHG-scoped POS-tagging resource as a distinct
+    TreeTagger parameter record. Canonical TreeTagger evidence lists the MHG parameter
+    file and separately identifies RNNTagger, so no duplicate match with tool-rnntagger
+    is supported. Availability is evidenced as described and downloadable; legal permissions
+    remain unclear.
+  evidence_gaps:
+  - No source reviewed provides exact direct legal wording for model training, original-data
+    redistribution, processed-data redistribution, or trained-weight publication;
+    all four permissions remain unclear.
+  - The institutional page links a web application, but its current operational status
+    was not required to establish described and downloadable availability and was
+    not asserted as browsable.
+  refreshed_existing: false
+- id: candidate-tool-mhg-transfer-learning-parser
+  name: Middle High German Parser Using Transfer Learning
+  category: tool
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-12'
+  discovery_urls:
+  - https://github.com/tuerkerhan/thesis
+  discovery_stage_claims:
+  - Middle High German Parser Using Transfer learning
+  disposition: added
+  resource_id: tool-mhg-transfer-learning-parser
+  disposition_reason: Research completed with no blockers. Canonical public GitHub
+    repository metadata establishes a distinct Python project described as a Middle
+    High German parser using transfer learning; no trusted inventory tool matches
+    this identity. The evidence supports addition as an MHG syntactic parser with
+    described availability, while all modeled legal permissions remain unclear.
+  refreshed_existing: false
+- id: candidate-tool-nielklug-mhg-parser
+  name: nielklug/mhg_parser
+  category: tool
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-12'
+  discovery_urls:
+  - https://huggingface.co/api/models?search=MHG%20Parser&limit=50&full=false
+  discovery_stage_claims:
+  - mhg
+  disposition: blocked
+  disposition_reason: Blocked by an actual Hugging Face metadata API transport failure.
+    The supplied discovery name and MHG tag were not treated as evidence, and no identity
+    match with tool-mhg-transfer-learning-parser was assumed.
+  evidence_gaps:
+  - Bounded resolver-pinned requests to the Hugging Face search API and exact model
+    metadata API both failed during metadata retrieval with WinError 10054 (connection
+    forcibly closed by the remote host).
+  - Canonical identity, explicit Middle High German coverage, parser task, public
+    availability, provenance, and required Tool fields could not be independently
+    established; the candidate therefore cannot be identified as the existing tool-mhg-transfer-learning-parser
+    or added as a distinct resource.
+  refreshed_existing: false
+- id: candidate-tool-poshistoricaltext
+  name: POSHistoricalText
+  category: tool
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-12'
+  discovery_urls:
+  - https://api.github.com/repos/sarschu/POSHistoricalText
+  - https://github.com/sarschu/POSHistoricalText
+  discovery_stage_claims:
+  - This code contains several different methods to POS tag a Middle High German Text
+    and combinations thereof
+  disposition: added
+  resource_id: tool-poshistoricaltext
+  disposition_reason: Add POSHistoricalText as a distinct MHG POS-tagging tool record.
+    Canonical repository metadata and README evidence establish identity, task, MHG
+    scope, and public browsability. It must not be merged with the MHG TreeTagger
+    parameter resource because this repository is a separate experimental script collection
+    covering multiple methods; legal permissions remain unclear.
+  evidence_gaps:
+  - No direct quoted source establishes any of the four modeled legal permissions;
+    model training, original-data redistribution, processed-data redistribution, and
+    trained-weight publication therefore remain unclear.
+  refreshed_existing: false
 - id: candidate-tool-rnntagger
   name: RNNTagger
   category: tool
@@ -1330,4 +2415,27 @@ candidates:
   resource_id: tool-rnntagger
   disposition_reason: Neural command-line tool for part-of-speech tagging and lemmatization
     with pretrained parameters for modern and historical languages.
+  refreshed_existing: false
+- id: candidate-tool-spacy-model-mhg
+  name: Spacy-Model-for-Middle-High-German
+  category: tool
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-12'
+  discovery_urls:
+  - https://api.github.com/repos/Middle-High-German-Conceptual-Database/Spacy-Model-for-Middle-High-German
+  - https://github.com/Middle-High-German-Conceptual-Database/Spacy-Model-for-Middle-High-German
+  discovery_stage_claims:
+  - Middle High German pos tagger model for spacy.
+  disposition: added
+  resource_id: tool-spacy-model-mhg
+  disposition_reason: Add as a distinct spaCy POS-tagger model for Middle High German.
+    Resolver-pinned canonical GitHub metadata verifies identity, MHG coverage, POS-tagging
+    task, repository link, and described availability; the trusted inventory has no
+    matching spaCy model. Legal permissions remain unclear because no qualifying direct
+    quotations were available.
+  evidence_gaps:
+  - Canonical repository metadata reports an MIT license label but supplies no direct
+    quotation establishing model training, original-data redistribution, processed-data
+    redistribution, or trained-weight publication permission; all four permissions
+    remain unclear.
   refreshed_existing: false

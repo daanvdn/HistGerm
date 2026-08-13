@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from collections.abc import Iterable, Iterator, Sequence
 from dataclasses import dataclass
 from typing import Literal
@@ -79,12 +80,38 @@ _CONCEPTS: dict[ResourceCategory, dict[str, dict[QueryLanguage, tuple[str, ...]]
             "en": ("parser", "dependency parser", "syntactic analysis"),
         },
         "segmentation": {
-            "de": ("Tokenisierung", "Satzsegmentierung"),
+            "de": ("Tokenizer", "Tokenisierung", "Satzsegmentierung"),
             "en": ("tokenizer", "tokenization", "sentence segmentation"),
         },
         "models": {
-            "de": ("Sprachmodell", "Transformer-Modell", "Wortrepräsentation"),
-            "en": ("language model", "transformer model", "embeddings"),
+            "de": (
+                "BERT",
+                "BERT-Modell",
+                "BERT-Architektur",
+                "BERT-Modellfamilie",
+                "Sprachmodell",
+                "vortrainiertes Sprachmodell",
+                "maskiertes Sprachmodell",
+                "Transformer-Modell",
+                "Transformer-Architektur",
+                "Wort-Embedding",
+                "Wort-Embeddings",
+                "Worteinbettung",
+                "Worteinbettungen",
+            ),
+            "en": (
+                "BERT",
+                "BERT model",
+                "BERT architecture",
+                "BERT family",
+                "language model",
+                "pretrained language model",
+                "masked language model",
+                "transformer model",
+                "transformer architecture",
+                "word embedding",
+                "word embeddings",
+            ),
         },
         "pipelines": {
             "de": ("NLP-Werkzeug", "Annotationswerkzeug", "Sprachverarbeitung"),
@@ -122,6 +149,8 @@ _STAGE_ABBREVIATIONS: dict[LanguageStage, str] = {
     LanguageStage.ENHG: "ENHG",
 }
 _DOUBLE_QUOTES = str.maketrans({character: " " for character in '"“”„‟'})
+_SAFE_LEAD_TERM = re.compile(r"^@?[^\W_][\w ._-]*$", re.UNICODE)
+_QUERY_OPERATORS = frozenset({"and", "not", "or"})
 
 
 @dataclass(frozen=True, slots=True)
@@ -297,6 +326,41 @@ def apply_exclusion_group(
     return f"{base} {exclusions}" if exclusions else base
 
 
+def normalize_metadata_lead_terms(
+    values: Iterable[str],
+    *,
+    max_terms: int = 8,
+    max_words: int = 4,
+    max_characters: int = 48,
+) -> tuple[str, ...]:
+    """Normalize untrusted metadata into bounded, query-safe lead terms."""
+
+    if max_terms < 0 or max_words < 1 or max_characters < 1:
+        raise ValueError("metadata lead bounds must be non-negative")
+    result: list[str] = []
+    seen: set[str] = set()
+    for value in values:
+        cleaned = _clean_term(value)
+        if (
+            not cleaned
+            or len(cleaned) > max_characters
+            or len(cleaned.split()) > max_words
+            or not _SAFE_LEAD_TERM.fullmatch(cleaned)
+            or not _QUERY_OPERATORS.isdisjoint(
+                word.casefold() for word in cleaned.split()
+            )
+        ):
+            continue
+        key = cleaned.casefold()
+        if key in seen:
+            continue
+        seen.add(key)
+        result.append(cleaned)
+        if len(result) == max_terms:
+            break
+    return tuple(result)
+
+
 def _clean_qualifiers(values: Iterable[str]) -> tuple[str, ...]:
     cleaned = _unique_clean_terms(values)
     if any(len(value) > 80 for value in cleaned):
@@ -335,5 +399,6 @@ __all__ = [
     "bounded_exclusion_groups",
     "generate_focused_queries",
     "iter_focused_queries",
+    "normalize_metadata_lead_terms",
     "render_query",
 ]
