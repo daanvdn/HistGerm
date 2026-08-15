@@ -172,7 +172,13 @@ def _discover(arguments: argparse.Namespace, discovery_dependencies: DiscoveryDe
             raise _ArgumentError('--resume requires --input')
         checkpoint_path = validate_operational_path(arguments.resume, option='--resume')
         response_path = validate_operational_path(response_path, option='--input')
-        checkpoint = apply_exchange(read_checkpoint(checkpoint_path), read_exchange(response_path))
+        try:
+            checkpoint = apply_exchange(
+                read_checkpoint(checkpoint_path), read_exchange(response_path)
+            )
+        except BaseException:
+            remove_operational_file(response_path)
+            raise
         return _advance_discovery(checkpoint, checkpoint_path, response_path)
     if response_path is not None:
         raise _ArgumentError('--input requires --resume')
@@ -201,8 +207,9 @@ def _advance_discovery(checkpoint: DiscoveryCheckpoint, checkpoint_path: Path, r
     try:
         step = advance(checkpoint, load_runtime_capabilities())
     except BaseException:
-        remove_operational_file(checkpoint_path)
         remove_operational_file(response_path)
+        if response_path is None:
+            remove_operational_file(checkpoint_path)
         raise
     remove_operational_file(response_path)
     if isinstance(step, Completed):

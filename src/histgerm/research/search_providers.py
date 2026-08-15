@@ -582,6 +582,8 @@ def replace_result_inspections(
 
     if len(record.results) != len(inspections):
         raise ValueError("inspection count must match the result count")
+    if not record.results:
+        return record
     previous_detail = _inspection_outcome(record.results, record.inspections)[1]
     if previous_detail not in record.observation:
         raise ValueError("record observation does not describe its inspections")

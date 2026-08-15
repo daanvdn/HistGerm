@@ -6,6 +6,7 @@ from urllib.parse import urlsplit
 from histgerm.research.search_providers import (
     ResponseFormat,
     ResultClassification,
+    ResultInspection,
     SearchPageResponse,
     SearchProvider,
     SearchRequest,
@@ -15,6 +16,7 @@ from histgerm.research.search_providers import (
     build_provider_request,
     parse_bing_rss,
     parse_search_html,
+    replace_result_inspections,
 )
 
 NOW = datetime(2026, 8, 12, 13, 24, tzinfo=UTC)
@@ -167,6 +169,87 @@ def test_unrelated_response_requires_inspection_of_every_item() -> None:
     assert record.assessment == "unrelated"
     assert positions == [1, 2]
     assert "all 2 result items were inspected" in record.observation
+
+
+def test_replacing_inspections_can_remove_all_retained_leads() -> None:
+    record = assess_search_response(
+        provider=SearchProvider.CLARIN,
+        channel="clarin",
+        query="Althochdeutsch Korpus",
+        retrieval_mode="bounded_http",
+        locale="de-DE",
+        observed_at=NOW,
+        http_status=200,
+        body=(
+            '<a href="https://example.org/one">One</a>'
+            '<a href="https://example.org/two">Two</a>'
+        ),
+        inspector=lambda result: (
+            ("lead", "previously retained")
+            if result.position == 1
+            else ("unrelated", "inspection pending")
+        ),
+    )
+
+    replaced = replace_result_inspections(
+        record,
+        (
+            ResultInspection(1, "unrelated", "not an OHG corpus"),
+            ResultInspection(2, "unrelated", "not an OHG corpus"),
+        ),
+    )
+
+    assert replaced.assessment == "unrelated"
+    assert "all 2 result items were inspected as unrelated" in replaced.observation
+    assert [inspection.position for inspection in replaced.inspections] == [1, 2]
+
+
+def test_replacing_inspections_preserves_remaining_leads() -> None:
+    record = assess_search_response(
+        provider=SearchProvider.CLARIN,
+        channel="clarin",
+        query="Althochdeutsch Korpus",
+        retrieval_mode="bounded_http",
+        locale="de-DE",
+        observed_at=NOW,
+        http_status=200,
+        body=(
+            '<a href="https://example.org/one">One</a>'
+            '<a href="https://example.org/two">Two</a>'
+        ),
+        inspector=lambda result: ("unrelated", "inspection pending"),
+    )
+
+    replaced = replace_result_inspections(
+        record,
+        (
+            ResultInspection(1, "lead", "candidate OHG corpus"),
+            ResultInspection(2, "unrelated", "not an OHG corpus"),
+        ),
+    )
+
+    assert replaced.assessment == "results"
+    assert "retained untrusted leads" in replaced.observation
+    assert replaced.observation.startswith("HTTP 200 through bounded_http transport")
+    assert [inspection.reason for inspection in replaced.inspections] == [
+        "candidate OHG corpus",
+        "not an OHG corpus",
+    ]
+
+
+def test_replacing_empty_inspections_preserves_transport_observation() -> None:
+    record = assess_search_response(
+        provider=SearchProvider.BRAVE,
+        query="Old High German corpus",
+        retrieval_mode="bounded_http",
+        locale="en-US",
+        observed_at=NOW,
+        http_status=503,
+        body="temporarily unavailable",
+        inspector=lambda result: ("unrelated", "unused"),
+    )
+
+    assert replace_result_inspections(record, ()) == record
 
 
 def test_paginated_search_inspects_two_pages_until_explicit_exhaustion() -> None:
