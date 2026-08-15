@@ -17,9 +17,24 @@ from pydantic import BaseModel, ValidationError
 from histgerm.models import LanguageStage
 
 from .discovery_orchestration import (
-    DiscoveryConfig,
     DiscoveryDependencies,
-    run_discovery,
+)
+from .discovery_protocol import (
+    CHECKPOINT_SCHEMA_VERSION,
+    DiscoveryCheckpoint,
+    DiscoveryProtocolError,
+    read_checkpoint,
+    read_exchange,
+    remove_operational_file,
+    validate_operational_path,
+    write_checkpoint,
+)
+from .discovery_runtime import load_runtime_capabilities
+from .discovery_session import (
+    Completed,
+    advance,
+    apply_exchange,
+    new_checkpoint,
 )
 from .ledger import (
     LedgerPolicyError,
@@ -71,11 +86,14 @@ def _parser() -> _Parser:
     next_parser.add_argument('--category', choices=('corpus', 'tool', 'dictionary'))
     next_parser.add_argument('--stage', choices=tuple(stage.value for stage in LanguageStage))
     discover = subparsers.add_parser('discover')
-    discover.add_argument('--category', required=True, choices=('corpus', 'tool', 'dictionary'))
-    discover.add_argument('--stage', required=True, choices=tuple(stage.value for stage in LanguageStage))
+    discover.add_argument('--category', choices=('corpus', 'tool', 'dictionary'))
+    discover.add_argument('--stage', choices=tuple(stage.value for stage in LanguageStage))
     discover.add_argument('--qualifier', action='append', default=[])
     discover.add_argument('--max-mined-terms', type=int, default=8)
     discover.add_argument('--max-exclusion-groups', type=int, default=2)
+    discover.add_argument('--checkpoint', type=Path)
+    discover.add_argument('--resume', type=Path)
+    discover.add_argument('--input', type=Path)
     discover.add_argument('--format', choices=('json',), default='json')
     for command in ('vocabulary-validate', 'vocabulary-status'):
         child = subparsers.add_parser(command)
@@ -144,23 +162,61 @@ def _status(ledger: DiscoveryLedger) -> dict[str, Any]:
     stale_resources = [{'candidate_id': candidate.id, 'resource_id': candidate.resource_id, 'name': candidate.name, 'last_checked_on': candidate.last_checked_on.isoformat()} for candidate in ledger.candidates if candidate.resource_id is not None and candidate.last_checked_on <= stale_cutoff]
     return {'matrix': [{'id': sweep.id, 'state': sweep.state, 'pass_count': sweep.pass_count, 'consecutive_empty_passes': sweep.consecutive_empty_passes, 'last_run_on': sweep.last_run_on.isoformat() if sweep.last_run_on is not None else None} for sweep in ledger.sweeps], 'candidates': {'total': len(ledger.candidates), **dispositions}, 'blocked': blocked, 'stale_resources': stale_resources}
 
+def _discover(arguments: argparse.Namespace, discovery_dependencies: DiscoveryDependencies | None) -> int:
+    """Start or resume one discovery run through the resumable state machine."""
+    response_path: Path | None = arguments.input
+    if arguments.resume is not None:
+        if arguments.checkpoint is not None or arguments.category is not None or arguments.stage is not None:
+            raise _ArgumentError('--resume must not be combined with --checkpoint, --category, or --stage')
+        if response_path is None:
+            raise _ArgumentError('--resume requires --input')
+        checkpoint_path = validate_operational_path(arguments.resume, option='--resume')
+        response_path = validate_operational_path(response_path, option='--input')
+        checkpoint = apply_exchange(read_checkpoint(checkpoint_path), read_exchange(response_path))
+        return _advance_discovery(checkpoint, checkpoint_path, response_path)
+    if response_path is not None:
+        raise _ArgumentError('--input requires --resume')
+    if arguments.category is None or arguments.stage is None:
+        raise _ArgumentError('discover requires --category and --stage')
+    checkpoint = new_checkpoint(
+        category=arguments.category,
+        stage=LanguageStage(arguments.stage),
+        qualifiers=tuple(arguments.qualifier),
+        max_mined_terms=arguments.max_mined_terms,
+        max_exclusion_groups=arguments.max_exclusion_groups,
+    )
+    if arguments.checkpoint is None:
+        if discovery_dependencies is None:
+            raise _CapabilityError('discover requires --checkpoint for the resumable capability exchange, or injected model, retrieval, provider, and inspection capabilities')
+        step = advance(checkpoint, dependencies=discovery_dependencies)
+        assert isinstance(step, Completed)
+        _emit({'ok': True, 'command': 'discover', 'state': 'complete', 'run_id': checkpoint.run_id, 'result': step.result.as_json()})
+        return 0
+    checkpoint_path = validate_operational_path(arguments.checkpoint, option='--checkpoint')
+    if checkpoint_path.exists():
+        raise DiscoveryProtocolError('--checkpoint already exists; resume that run or choose a new path')
+    return _advance_discovery(checkpoint, checkpoint_path, None)
+
+def _advance_discovery(checkpoint: DiscoveryCheckpoint, checkpoint_path: Path, response_path: Path | None) -> int:
+    try:
+        step = advance(checkpoint, load_runtime_capabilities())
+    except BaseException:
+        remove_operational_file(checkpoint_path)
+        remove_operational_file(response_path)
+        raise
+    remove_operational_file(response_path)
+    if isinstance(step, Completed):
+        remove_operational_file(checkpoint_path)
+        _emit({'ok': True, 'command': 'discover', 'state': 'complete', 'run_id': checkpoint.run_id, 'result': step.result.as_json()})
+        return 0
+    write_checkpoint(checkpoint_path, step.checkpoint)
+    _emit({'ok': True, 'command': 'discover', 'state': 'needs_input', 'schema_version': CHECKPOINT_SCHEMA_VERSION, 'run_id': step.checkpoint.run_id, 'checkpoint': str(checkpoint_path), 'checkpoint_revision': step.checkpoint.revision, 'requests': [request.model_dump(mode='json') for request in step.requests]})
+    return 0
+
 def _run(arguments: argparse.Namespace, discovery_dependencies: DiscoveryDependencies | None) -> int:
     command: str = arguments.command
     if command == 'discover':
-        if discovery_dependencies is None:
-            raise _CapabilityError('discover requires injected model, retrieval, provider, and inspection capabilities')
-        discovery_result = run_discovery(
-            DiscoveryConfig(
-                category=arguments.category,
-                stage=LanguageStage(arguments.stage),
-                qualifiers=tuple(arguments.qualifier),
-                max_mined_terms=arguments.max_mined_terms,
-                max_exclusion_groups=arguments.max_exclusion_groups,
-            ),
-            discovery_dependencies,
-        )
-        _emit({'ok': True, 'command': command, 'result': discovery_result.as_json()})
-        return 0
+        return _discover(arguments, discovery_dependencies)
     if command.startswith('vocabulary-'):
         vocabulary_path: Path = arguments.vocabulary
         if command == 'vocabulary-apply':
@@ -222,6 +278,8 @@ def main(
         return _run(arguments, discovery_dependencies)
     except _ArgumentError as error:
         return _failure(command, 'invalid_arguments', 'arguments', str(error), 2)
+    except DiscoveryProtocolError as error:
+        return _failure(command, 'invalid_exchange', 'discovery', str(error), 2)
     except VocabularyRevisionError as error:
         return _failure(command, 'stale_revision', 'revision', str(error), 3)
     except LedgerRevisionError as error:

@@ -112,6 +112,26 @@ class SingleURLCrawler(Protocol):
     ) -> Coroutine[Any, Any, Crawl4AIResult]: ...
 
 
+class DiscoveryMemo(Protocol):
+    """Reuse confirmed deterministic phase outcomes across resumed runs.
+
+    ``store_vocabulary`` and ``store_execution`` may raise to pause a run at a
+    capability boundary, so callers must not swallow their exceptions.
+    """
+
+    def cached_vocabulary(self) -> IncrementalVocabulary | None: ...
+
+    def store_vocabulary(self, value: IncrementalVocabulary, /) -> None: ...
+
+    def cached_execution(
+        self, key: str, /
+    ) -> tuple[SearchAssessmentRecord, ...] | None: ...
+
+    def store_execution(
+        self, key: str, records: tuple[SearchAssessmentRecord, ...], /
+    ) -> None: ...
+
+
 @dataclass(frozen=True, slots=True)
 class DiscoveryDependencies:
     """All external and trusted inputs required by one discovery run."""
@@ -125,6 +145,7 @@ class DiscoveryDependencies:
     vocabulary_transport: BoundedTransport | None = None
     ledger_candidates: Sequence[CandidateEntry] = ()
     vocabulary_classifier: BoundedClassifier | IncrementalClassifier | None = None
+    memo: DiscoveryMemo | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -343,7 +364,7 @@ def run_discovery(
         ledger_candidates=dependencies.ledger_candidates,
         config=config.elicitation,
     )
-    incremental = _incremental_vocabulary(config, dependencies)
+    incremental = _memoized_vocabulary(config, dependencies)
     vocabulary = incremental.vocabulary
     queries = _queries(config, vocabulary)
     metrics = DiscoveryCoverage(
@@ -516,7 +537,9 @@ def run_discovery(
 
 
 @dataclass(frozen=True, slots=True)
-class _IncrementalResult:
+class IncrementalVocabulary:
+    """One completed vocabulary phase and its incremental counters."""
+
     vocabulary: InventoryVocabulary
     revision: int | None = None
     refreshed_sources: int = 0
@@ -527,10 +550,25 @@ class _IncrementalResult:
     access_gaps: int = 0
 
 
+def _memoized_vocabulary(
+    config: DiscoveryConfig,
+    dependencies: DiscoveryDependencies,
+) -> IncrementalVocabulary:
+    memo = dependencies.memo
+    if memo is not None:
+        cached = memo.cached_vocabulary()
+        if cached is not None:
+            return cached
+    incremental = _incremental_vocabulary(config, dependencies)
+    if memo is not None:
+        memo.store_vocabulary(incremental)
+    return incremental
+
+
 def _incremental_vocabulary(
     config: DiscoveryConfig,
     dependencies: DiscoveryDependencies,
-) -> _IncrementalResult:
+) -> IncrementalVocabulary:
     if dependencies.vocabulary_path is None:
         if dependencies.vocabulary_transport is None:
             raise ValueError(
@@ -547,7 +585,7 @@ def _incremental_vocabulary(
             ),
             limits=config.vocabulary,
         )
-        return _IncrementalResult(vocabulary=legacy)
+        return IncrementalVocabulary(vocabulary=legacy)
     if dependencies.vocabulary_crawler is None:
         raise ValueError("vocabulary_crawler is required with vocabulary_path")
 
@@ -663,7 +701,7 @@ def _incremental_vocabulary(
         config.stage,
     )
     current_keys = {(term.normalized, term.kind) for term in confirmed.terms}
-    return _IncrementalResult(
+    return IncrementalVocabulary(
         vocabulary=active,
         revision=confirmed.revision,
         refreshed_sources=refreshed,
@@ -1192,6 +1230,24 @@ def _inactive_association_count(vocabulary: DiscoveryVocabulary) -> int:
 
 
 def _execute_query(
+    text: str,
+    query: FocusedQuery,
+    channel: _Channel,
+    dependencies: DiscoveryDependencies,
+) -> tuple[SearchAssessmentRecord, ...]:
+    memo = dependencies.memo
+    key = f"{channel.name}\x1f{text}"
+    if memo is not None:
+        cached = memo.cached_execution(key)
+        if cached is not None:
+            return cached
+    records = _fetch_and_assess(text, query, channel, dependencies)
+    if memo is not None:
+        memo.store_execution(key, records)
+    return records
+
+
+def _fetch_and_assess(
     text: str,
     query: FocusedQuery,
     channel: _Channel,
