@@ -52,6 +52,41 @@ each candidate batch of at most three so it can report concise counts and the
 current ledger revision. Do not combine an entire sweep into one opaque tool
 call or worker batch.
 
+### Resumable discovery capability loop
+
+Before candidate and pass processing, the calling custom-agent coordinator
+must execute `discover` through its capability-exchange protocol:
+
+1. Create unique checkpoint and response paths in the OS temporary directory;
+   neither path may be inside the repository.
+2. Start `discover` with the selected category and stage plus
+   `--checkpoint <checkpoint-path> --format json`.
+3. If the returned state is `needs_input`, dispatch every emitted
+   `model_elicitation` and `result_inspection` request with the coordinator's
+   configured pinned model. Preserve each request unchanged. For result
+   inspection, preserve every item and position exactly and classify every
+   requested position exactly once.
+4. Write one schema-valid response JSON object to the response path. Copy the
+   emitted schema version, run ID, and latest checkpoint revision exactly; add
+   one response for every request and no others. Refuse to resume an incomplete,
+   reordered, reconstructed, stale, or otherwise invalid response sequence.
+5. Resume only with
+   `discover --resume <checkpoint-path> --input <response-path> --format json`,
+   then repeat from step 3 while the state remains `needs_input`.
+6. Preserve existing user-visible progress reporting throughout the loop.
+   After `complete`, retain the final `DiscoveryRunResult` unchanged for the
+   subsequent candidate/pass workflow; do not reconstruct, summarize, or
+   discard it.
+7. Delete both operational files on completion, refusal, or failure. The CLI
+   deletes consumed response files and its checkpoint on completion, but the
+   coordinator must verify cleanup and remove any remainder.
+
+Responses contain bounded model judgments, not evidence. Never alter a request,
+invent a provider response, reconstruct checkpoint state, treat a model
+elicitation or inspection as evidence, or bypass the checked-in state machine.
+On a stale revision or any invalid exchange, stop rather than retrying with
+modified identifiers or checkpoint content.
+
 Only the coordinator may mutate the ledger. Use
 `uv run python -m histgerm.research` commands for `validate`, `status`, `next`,
 `upsert-candidate`, `apply-result`, and `record-search`; do not duplicate

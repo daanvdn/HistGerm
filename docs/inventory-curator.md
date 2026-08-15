@@ -131,9 +131,23 @@ Commands:
 | `validate` | Validate without mutation. |
 | `status` | Report sweep matrix, dispositions, blocked candidates, and stale resources. |
 | `next` | Select the deterministic unfinished sweep, optionally filtered by category/stage. |
+| `discover` | Run or resume the bounded discovery capability exchange. |
 | `record-search` | Apply one `SearchPass` JSON file. |
 | `upsert-candidate` | Add or replace one `CandidateEntry` JSON file. |
 | `apply-result` | Apply one `CandidateResearchResult` JSON file. |
+
+`discover` starts with `--category`, `--stage`, and a unique OS-temporary
+`--checkpoint`; it also accepts repeatable `--qualifier`,
+`--max-mined-terms`, and `--max-exclusion-groups`. A successful invocation
+returns state `needs_input` or `complete` with exit code `0`. For
+`needs_input`, the coordinator answers every emitted `model_elicitation` and
+`result_inspection` request in one schema-valid OS-temporary JSON file, using
+the unchanged run ID and latest checkpoint revision, then invokes `discover`
+with `--resume <checkpoint> --input <response>`. It repeats until `complete`,
+preserves the final `DiscoveryRunResult` unchanged, and verifies deletion of
+both temporary files. Missing or stale responses, altered requests, incomplete
+item/position sequences, and reconstructed checkpoint state are refused.
+Model judgments are untrusted leads or classifications, never evidence.
 
 Vocabulary commands are separate:
 

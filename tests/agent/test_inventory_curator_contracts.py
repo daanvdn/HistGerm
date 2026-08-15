@@ -191,6 +191,45 @@ def test_lossless_discovery_curation_apply_handoff(
     )
 
 
+def test_resumable_discovery_capability_loop_is_complete(
+    contracts: dict[str, str],
+) -> None:
+    """The skill and guide preserve the executable capability-exchange contract."""
+
+    documented = " ".join(CURATOR_DOC.read_text(encoding="utf-8").split())
+    discover = contracts[SKILLS[0]]
+    for policy in (discover, documented):
+        assert_concepts(
+            policy,
+            ("os temporary",),
+            ("checkpoint",),
+            ("model_elicitation",),
+            ("result_inspection",),
+            ("needs_input",),
+            ("--resume",),
+            ("--input",),
+            ("latest checkpoint revision",),
+            ("schema-valid",),
+            ("every emitted", "every request"),
+            ("item",),
+            ("position",),
+            ("exactly once", "incomplete"),
+            ("final `discoveryrunresult` unchanged",),
+            ("delete", "deletion"),
+            ("never evidence",),
+        )
+    assert_concepts(
+        discover,
+        ("configured pinned model",),
+        ("preserve existing user-visible progress",),
+        ("never alter a request",),
+        ("invent a provider response",),
+        ("reconstruct checkpoint state",),
+        ("stale revision",),
+        ("stop",),
+    )
+
+
 def test_seed_and_resource_identity_contracts_are_semantic(
     contracts: dict[str, str],
 ) -> None:
