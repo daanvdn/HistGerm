@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import stat
 from datetime import date
 from pathlib import Path
@@ -99,7 +100,8 @@ def test_checkpoint_round_trip_is_atomic_bounded_and_user_only(
     path = tmp_path / "run.json"
     original = checkpoint(tmp_path)
     write_checkpoint(path, original)
-    assert stat.S_IMODE(path.stat().st_mode) == 0o600
+    if os.name == "posix":
+        assert stat.S_IMODE(path.stat().st_mode) == 0o600
     assert not [item for item in tmp_path.iterdir() if item.name.startswith(".")]
     assert read_checkpoint(path) == original
     assert checkpoint_config(original).stage is LanguageStage.MHG

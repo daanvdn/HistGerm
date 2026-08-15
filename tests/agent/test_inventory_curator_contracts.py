@@ -230,6 +230,41 @@ def test_resumable_discovery_capability_loop_is_complete(
     )
 
 
+def test_discovery_exchange_failures_are_actionable(
+    contracts: dict[str, str],
+) -> None:
+    """Malformed exchanges preserve inspectable diagnostics and bounded recovery."""
+
+    documented = " ".join(CURATOR_DOC.read_text(encoding="utf-8").split())
+    for policy in (contracts["agent"], contracts[SKILLS[0]], documented):
+        assert_concepts(
+            policy,
+            ("same pinned model",),
+            ("once more", "one correction attempt", "single correction attempt"),
+            ("validation error",),
+            ("without commentary", "schema-only"),
+            ("never extract", "may not extract"),
+            ("locally",),
+            ("diagnostic directory",),
+            ("os temporary", "os-temporary"),
+            ("byte for byte",),
+            ("failing cli json",),
+            ("malformed",),
+            ("exact path",),
+            ("delete", "deleting"),
+            ("operational",),
+            ("actionable", "stop report"),
+            ("run id",),
+            ("checkpoint revision",),
+            ("validator",),
+            ("expected",),
+            ("received",),
+            ("mutation status",),
+            ("smallest", "resume"),
+            ("never commit", "never committed"),
+        )
+
+
 def test_seed_and_resource_identity_contracts_are_semantic(
     contracts: dict[str, str],
 ) -> None:

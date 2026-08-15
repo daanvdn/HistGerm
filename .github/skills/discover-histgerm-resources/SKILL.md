@@ -77,15 +77,38 @@ must execute `discover` through its capability-exchange protocol:
    After `complete`, retain the final `DiscoveryRunResult` unchanged for the
    subsequent candidate/pass workflow; do not reconstruct, summarize, or
    discard it.
-7. Delete both operational files on completion, refusal, or failure. The CLI
-   deletes consumed response files and its checkpoint on completion, but the
-   coordinator must verify cleanup and remove any remainder.
+7. If a capability response does not validate for its emitted request, send
+   that exact unchanged request to the same pinned model once more with only
+   the validation error and an instruction to return the required schema
+   without commentary. Never extract embedded JSON, rewrite, normalize, or
+   complete the response locally. This one correction attempt is available
+   only before a valid exchange is accepted. A stale revision, changed
+   identifier, missing or reordered request, or incomplete inspection
+   position sequence stops immediately.
+8. Before cleanup after refusal or failure, create a uniquely named diagnostic
+   directory in the OS temporary directory. Copy every existing checkpoint and
+   response there byte for byte, and save the failing CLI JSON output plus any
+   malformed and corrected model output. Keep these untrusted diagnostic
+   copies outside the repository, never commit or publish them, report every
+   exact path, and do not delete them during the failed run. Then delete both
+   original operational files and verify their removal. On success, retain no
+   diagnostic copies and verify cleanup of both operational files.
 
 Responses contain bounded model judgments, not evidence. Never alter a request,
 invent a provider response, reconstruct checkpoint state, treat a model
 elicitation or inspection as evidence, or bypass the checked-in state machine.
-On a stale revision or any invalid exchange, stop rather than retrying with
-modified identifiers or checkpoint content.
+After the single model-generated format correction allowed above, stop on any
+invalid exchange rather than retrying with modified identifiers or checkpoint
+content.
+
+On refusal or failure, the calling coordinator must give the project owner an
+actionable prose stop report containing the failed phase, run ID and checkpoint
+revision, exact validator code and message, expected response shape, concise
+description of the received shape, whether the correction attempt was used,
+the rule preventing further recovery, ledger and repository mutation status,
+every diagnostic-copy path, and the smallest protocol or input change needed
+before resuming. The report must not expose secrets, full external payloads,
+chain-of-thought, or unsupported conclusions.
 
 Only the coordinator may mutate the ledger. Use
 `uv run python -m histgerm.research` commands for `validate`, `status`, `next`,

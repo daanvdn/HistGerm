@@ -145,9 +145,23 @@ returns state `needs_input` or `complete` with exit code `0`. For
 the unchanged run ID and latest checkpoint revision, then invokes `discover`
 with `--resume <checkpoint> --input <response>`. It repeats until `complete`,
 preserves the final `DiscoveryRunResult` unchanged, and verifies deletion of
-both temporary files. Missing or stale responses, altered requests, incomplete
-item/position sequences, and reconstructed checkpoint state are refused.
-Model judgments are untrusted leads or classifications, never evidence.
+both operational files. If model output does not match an emitted request's
+schema, the coordinator may send the exact request to the same pinned model
+once more with the validation error and a schema-only instruction. It may not
+extract embedded JSON or repair the output locally. Missing or stale
+responses, altered requests, incomplete item/position sequences, reconstructed
+checkpoint state, and a second malformed output are refused.
+
+Before failure cleanup, the coordinator copies the checkpoint, response,
+failing CLI JSON, and malformed/corrected model outputs byte for byte into a
+unique OS-temporary diagnostic directory. It reports the exact paths and
+retains those untrusted copies for owner inspection while deleting the
+operational originals; successful runs retain no diagnostics. The stop report
+also identifies the phase, run ID, checkpoint revision, validator error,
+expected and received shapes, correction-attempt status, recovery rule,
+mutation status, and smallest change needed to resume. Model judgments and
+diagnostics are untrusted leads or classifications, never evidence, and are
+never committed or published.
 
 Vocabulary commands are separate:
 

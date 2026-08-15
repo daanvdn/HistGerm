@@ -103,6 +103,36 @@ the current trusted-resource list, and repository policy. Workers are
 read-only and may not write the ledger, trusted YAML, models, Git state,
 branches, commits, or pull requests.
 
+### Discovery exchange failures
+
+For each discovery capability exchange, keep the checkpoint and response as
+operational files in the OS temporary directory. If a capability response is
+not valid for its emitted request, send the exact unchanged request to the
+same pinned model once more with only the validation error and an instruction
+to return the required schema without commentary. Never extract embedded JSON,
+rewrite, normalize, or complete the response locally. This single correction
+attempt applies only before a valid exchange is accepted; stale revisions,
+changed identifiers, missing or reordered requests, and incomplete inspection
+positions are not correctable and stop the run.
+
+Before deleting operational files after any refusal or failure, create a
+uniquely named diagnostic directory in the OS temporary directory and copy
+every existing checkpoint and response there byte for byte. Also save the
+failing CLI JSON output and, when applicable, each malformed and corrected
+model output. Diagnostic copies are untrusted run artifacts for owner
+inspection: keep them outside the repository, never commit or publish them,
+report their exact paths, and do not delete them during that failed run.
+Continue to delete the original operational files. Do not create diagnostic
+copies after a successful exchange or completed run.
+
+Every discovery stop report must be actionable prose and state the failed
+phase, run ID and checkpoint revision, exact validator code and message,
+expected response shape, concise description of the received shape, whether
+the one correction attempt was used, the rule preventing further recovery,
+ledger and repository mutation status, every diagnostic-copy path, and the
+smallest protocol or input change needed before resuming. Never include
+secrets, full external payloads, chain-of-thought, or unsupported conclusions.
+
 Before external search in every pass, run bounded model-led elicitation for the
 selected category and stage. Start with known names, aliases, former names,
 projects, and responsible institutions; then ask focused category-specific
