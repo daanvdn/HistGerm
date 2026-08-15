@@ -7,6 +7,7 @@ from typing import Any
 import pytest
 from conftest import candidate_data, pass_data
 from pydantic import ValidationError
+from test_query_intents import structured_pass_data, term_stuffed_pass_data
 
 from histgerm.models import (
     Access,
@@ -28,6 +29,7 @@ from histgerm.research import (
     resolve_request_destination,
     upsert_candidate,
 )
+from histgerm.research.query_intents import required_intent_ids
 
 
 @pytest.mark.parametrize(
@@ -155,6 +157,67 @@ def test_complete_tool_pass_requires_bilingual_architecture_families() -> None:
         query["query"] = query["query"].replace("BERT family", "")
     with pytest.raises(ValidationError, match="tool architecture families"):
         SearchPass.model_validate(missing_architecture)
+
+
+@pytest.mark.parametrize("category", ["corpus", "tool", "dictionary"])
+def test_structured_intent_coverage_completes_a_pass(category: str) -> None:
+    search_pass = SearchPass.model_validate(structured_pass_data(category=category))
+    assert search_pass.complete
+    declared = {
+        query.intent_id for query in search_pass.queries if query.intent_id is not None
+    }
+    assert declared == required_intent_ids(category, "mhg")
+
+
+def test_incomplete_intent_coverage_is_rejected() -> None:
+    data = structured_pass_data(category="tool")
+    dropped = sorted(required_intent_ids("tool", "mhg"))[-1]
+    for query in data["queries"]:
+        if query["intent_id"] == dropped:
+            query["intent_id"] = None
+    with pytest.raises(ValidationError, match="missing required query intents"):
+        SearchPass.model_validate(data)
+
+
+def test_term_stuffed_query_cannot_satisfy_multiple_intents() -> None:
+    # The identical term-stuffed text still satisfies the legacy substring gate.
+    assert SearchPass.model_validate(pass_data(category="tool")).complete
+    # Once a single intent is declared the pass uses structured coverage, and one
+    # term-stuffed query can only ever claim its single declared intent.
+    stuffed = term_stuffed_pass_data(category="tool")
+    declared = {
+        query.get("intent_id")
+        for query in stuffed["queries"]
+        if query.get("intent_id") is not None
+    }
+    assert len(declared) < len(required_intent_ids("tool", "mhg"))
+    with pytest.raises(ValidationError, match="missing required query intents"):
+        SearchPass.model_validate(stuffed)
+
+
+def test_intent_id_must_match_pass_cell_and_query_language() -> None:
+    foreign = structured_pass_data(category="tool")
+    target_language = foreign["queries"][0]["language"]
+    foreign_intent = next(
+        intent_id
+        for intent_id in sorted(required_intent_ids("corpus", "mhg"))
+        if intent_id.rsplit("-", 1)[-1] == target_language
+    )
+    foreign["queries"][0]["intent_id"] = foreign_intent
+    with pytest.raises(ValidationError, match="does not target pass"):
+        SearchPass.model_validate(foreign)
+
+
+def test_search_query_record_rejects_language_mismatched_intent() -> None:
+    with pytest.raises(ValidationError, match="does not match query language"):
+        SearchQueryRecord(
+            query="x",
+            language="en",
+            channel="olac",
+            source_urls=["https://catalog.clarin.eu/ds/ComponentRegistry"],
+            completed=True,
+            intent_id="intent-tool-mhg-tagging-de",
+        )
 
 
 def test_candidate_and_result_dispositions_remain_strict() -> None:

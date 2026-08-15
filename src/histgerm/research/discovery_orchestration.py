@@ -219,6 +219,7 @@ class DiscoveryRunResult:
                     "text": query.text,
                     "language": query.language,
                     "family": query.family,
+                    "intent_id": query.intent_id,
                     "qualifier": query.qualifier,
                 }
                 for query in self.queries

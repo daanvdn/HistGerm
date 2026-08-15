@@ -3,11 +3,11 @@
   "plan_version": 1,
   "run_id": "plan-20260815T175900Z",
   "branch": "copilot/histgerm-curator-migration-plan-20260815T175900Z",
-  "current_task": "TASK-MIG-003",
+  "current_task": "TASK-MIG-004",
   "tasks": {
     "TASK-MIG-001": "complete",
     "TASK-MIG-002": "complete",
-    "TASK-MIG-003": "pending",
+    "TASK-MIG-003": "complete",
     "TASK-MIG-004": "pending",
     "TASK-MIG-005": "pending",
     "TASK-MIG-006": "pending",
@@ -66,14 +66,25 @@
       }
     },
     "TASK-MIG-002": {
-      "hash": "pending",
-      "hash_rule": "rolling: migration-state.json is tracked in Git, so this task's own commit cannot embed its own hash. TASK-MIG-002 records its predecessor TASK-MIG-001's real retry-commit hash (41f2354014d2cd15093dee45e8a688725c96dbb0) and leaves its own hash 'pending'; its successor TASK-MIG-003 finalizes this field. No false or self-referential hash is ever recorded.",
+      "hash": "e9a16d258ceab0b910caf80dc14af9afae177840",
+      "hash_rule": "rolling: migration-state.json is tracked in Git, so this task's own commit cannot embed its own hash. TASK-MIG-002 records its predecessor TASK-MIG-001's real retry-commit hash (41f2354014d2cd15093dee45e8a688725c96dbb0) and left its own hash 'pending'; its successor TASK-MIG-003 finalizes this field with TASK-MIG-002's real commit hash (e9a16d258ceab0b910caf80dc14af9afae177840). No false or self-referential hash is ever recorded.",
       "message_subject_contains": "TASK-MIG-002",
       "parent": "41f2354014d2cd15093dee45e8a688725c96dbb0",
       "predecessor": {
         "task": "TASK-MIG-001",
         "hash": "41f2354014d2cd15093dee45e8a688725c96dbb0",
         "message_subject_contains": "TASK-MIG-001"
+      }
+    },
+    "TASK-MIG-003": {
+      "hash": "pending",
+      "hash_rule": "rolling: migration-state.json is tracked in Git, so this task's own commit cannot embed its own hash. TASK-MIG-003 records its predecessor TASK-MIG-002's real commit hash (e9a16d258ceab0b910caf80dc14af9afae177840) and leaves its own hash 'pending'; its successor TASK-MIG-004 finalizes this field. No false or self-referential hash is ever recorded.",
+      "message_subject_contains": "TASK-MIG-003",
+      "parent": "e9a16d258ceab0b910caf80dc14af9afae177840",
+      "predecessor": {
+        "task": "TASK-MIG-002",
+        "hash": "e9a16d258ceab0b910caf80dc14af9afae177840",
+        "message_subject_contains": "TASK-MIG-002"
       }
     }
   },
@@ -136,6 +147,34 @@
         {"command": "git diff --check", "exit_code": 0}
       ],
       "notes": "Validators-only change: added stage-evidence grounding for 'added' via the EvidenceExcerpt.supports dotted-support convention, identity-ambiguity semantics (matched_resource_id outside a duplicate requires identity_conflict; identity_conflict cannot produce 'added'), and regression coverage that source silence yields 'blocked' not 'out_of_scope' plus malformed-sibling candidate-local retention. No new required constructor fields; the legal-evidence validator is unchanged. No live ledger/vocabulary/inventory YAML changed."
+    },
+    "TASK-MIG-003": {
+      "recorded_at": "2026-08-15T22:20:00+02:00",
+      "all_passed": true,
+      "enforced_by_pre_commit": true,
+      "scope": [
+        "src/histgerm/research/query_intents.py",
+        "src/histgerm/research/models.py",
+        "src/histgerm/research/focused_queries.py",
+        "src/histgerm/research/discovery_orchestration.py",
+        "tests/research/test_query_intents.py",
+        "tests/research/test_focused_queries.py",
+        "tests/research/test_models.py"
+      ],
+      "targeted": [
+        {"command": "uv run pytest tests/research/test_query_intents.py tests/research/test_models.py tests/research/test_focused_queries.py tests/research/test_discovery_orchestration.py", "exit_code": 0}
+      ],
+      "repository_validation": [
+        {"command": "uv run python -m histgerm.research validate --ledger research/discovery-ledger.yaml --format json", "exit_code": 0},
+        {"command": "uv run python -m histgerm.research vocabulary-validate --vocabulary research/discovery-vocabulary.yaml --format json", "exit_code": 0},
+        {"command": "uv run python -m histgerm.validation src/histgerm/data", "exit_code": 0},
+        {"command": "uv run pytest", "exit_code": 0},
+        {"command": "uv run ruff check .", "exit_code": 0},
+        {"command": "uv run ruff format --check .", "exit_code": 0},
+        {"command": "uv run mypy src tests", "exit_code": 0},
+        {"command": "git diff --check", "exit_code": 0}
+      ],
+      "notes": "Introduced the canonical query-intent registry (src/histgerm/research/query_intents.py) as the single source of stage/category/architecture terms, channel classes, and typed QueryIntent records. SearchQueryRecord gains an optional intent_id (str | None, default null) referencing one registry intent while retaining authored query text; SearchPass completion now validates structured intent coverage when any record declares an intent (each record contributes exactly one intent, so a term-stuffed query cannot satisfy multiple intents) and falls back to the identical legacy substring gate only for records without an intent_id, preserving read compatibility for the existing ledger (revision 95 validates without mutation). focused_queries.FocusedQuery.intent_id emits canonical intents without changing generation behavior or constructors, and DiscoveryRunResult.as_json carries the intent_id downstream for native orchestration. No new required constructor fields, no exported-constructor changes, and no live ledger/vocabulary/inventory YAML changed."
     }
   },
   "artifacts": {
@@ -151,6 +190,18 @@
       "tests/research/fixtures/vocabulary.yaml": "6b43f15e20f87087d08315a074ef51aabba6f1f96554a691ec424bb6accbb58b",
       "tests/research/fixtures/model_output.txt": "f101a5f6a32fb0235e1c060a30807ea0a245c608ced48829144ca43e66c9209b",
       "tests/research/fixtures/provider_response.html": "1269bda58f78bf814570c44b947a5526c4dd904a84a3bce8a31651b424349035"
+    },
+    "query_intents": {
+      "module": "src/histgerm/research/query_intents.py",
+      "method": "sha256 of canonical json.dumps(payload, sort_keys=True, ensure_ascii=False, separators=(',', ':')) reproduced by tests/research/test_query_intents.py::test_recorded_artifact_hashes_match",
+      "registry_schema_source": "histgerm.research.query_intents.registry_snapshot()",
+      "coverage_matrix_source": "histgerm.research.query_intents.coverage_matrix()",
+      "compatibility_result_source": "tests.research.test_query_intents.compatibility_artifact()",
+      "term_stuffing_outcome_source": "tests.research.test_query_intents.term_stuffing_artifact()",
+      "registry_schema_sha256": "c9808f9c8636f7672d6e8493b5d7923122fe909f6f481252e6f5f9dc1c4d70b4",
+      "coverage_matrix_sha256": "1259853d215ca96cd7c79aa9ab2bd057448d6cb2f79a5f106392efbd5917a1ec",
+      "compatibility_result_sha256": "92581a013e178b5dc9a49a21af686a6532420467a16213686a57f180a1da435f",
+      "term_stuffing_outcome_sha256": "b64b8e43d9d28f97f9f36c154b56d428dc9840c10c2b79a22c1e3d6cd3defc03"
     },
     "baselines": {
       "code_reduction_denominator": {
@@ -198,7 +249,7 @@
       "operational_notes": {
         "state_tracking": "migration-state.json is tracked in Git (no .gitignore entry) as the single durable source of truth. It is excluded from the wheel and sdist via pyproject [tool.uv.build-backend] source-exclude, and tests/test_wheel.py permits only this exact root file under the repository payload rule while still rejecting every other JSON payload and asserting the file's absence from both distributions.",
         "fixture_naming": "JSON-content fixtures use the .txt extension (checkpoint.txt, exchange.txt, model_output.txt), matching the repository convention (tests/fixtures/controlled_browser/*.txt) and avoiding the .json payload suffix that archive safety forbids. They still parse via the current checked-in JSON models.",
-        "next": "TASK-MIG-002 (evidence-grounded stage, identity, and out_of_scope dispositions) is complete; current_task is TASK-MIG-003 (pending). TASK-MIG-001's real retry-commit hash (41f2354014d2cd15093dee45e8a688725c96dbb0) is now recorded; TASK-MIG-002's own hash stays 'pending' for its successor TASK-MIG-003. No gate blocks TASK-MIG-003; GATE-RECOVERY is the next machine gate and is only evaluated after TASK-MIG-006."
+        "next": "TASK-MIG-003 (canonical structured query intents) is complete; current_task is TASK-MIG-004 (shared durable persistence primitives, pending). TASK-MIG-002's real commit hash (e9a16d258ceab0b910caf80dc14af9afae177840) is now recorded; TASK-MIG-003's own hash stays 'pending' for its successor TASK-MIG-004. No gate blocks TASK-MIG-004; GATE-RECOVERY is the next machine gate and is only evaluated after TASK-MIG-006."
       }
     }
   },

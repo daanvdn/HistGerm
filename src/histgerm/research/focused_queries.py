@@ -9,6 +9,8 @@ from typing import Literal
 
 from histgerm.models import LanguageStage
 
+from .query_intents import classify_intent
+
 type ResourceCategory = Literal["corpus", "tool", "dictionary"]
 type QueryLanguage = Literal["de", "en"]
 type QueryFormulation = Literal[
@@ -229,6 +231,18 @@ class FocusedQuery:
         """Return the exact query text."""
 
         return render_query(self)
+
+    @property
+    def intent_id(self) -> str:
+        """Return the canonical structured query intent for this query."""
+
+        return classify_intent(
+            self.category,
+            self.stage.value,
+            self.language,
+            self.concept,
+            self.family,
+        )
 
 
 def render_query(
