@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "run_id": "mig001-baseline",
+  "checkpoint_revision": 1,
+  "responses": [
+    {
+      "kind": "model_elicitation",
+      "request_id": "req-model_elicitation-1",
+      "output": "{\"candidates\": [{\"name\": \"MhgBERT\", \"aliases\": [\"MHG BERT\"]}]}"
+    }
+  ]
+}

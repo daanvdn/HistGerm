@@ -366,15 +366,28 @@ appends its recorded checks to `migration-state.json`.
 
 **Scope**
 
+- `migration-state.json` (root, **tracked in Git**; the single durable source of
+  truth is committed and pushed on the integration branch so runs resume across
+  sessions and via the draft PR)
 - `pyproject.toml` (add `migration-state.json`, run-journal, and checkpoint globs
   to `[tool.uv.build-backend]` `source-exclude`)
+- `tests/test_wheel.py` (narrowly permit only the exact root
+  `migration-state.json` under the repository payload rule; keep archive safety
+  rejecting JSON and add distribution assertions confirming the file is absent
+  from the wheel and sdist)
 - `tests/research/fixtures/`
 - `tests/research/test_migration_baseline.py`
+- `plans/histgerm-curator-architecture-migration.md` (this scope/acceptance
+  correction, recorded during the non-destructive rollback/retry of this task so
+  no coupled edit stays hidden)
 
 **Work**
 
-1. Confirm `migration-state.json` exists (created with branch bootstrap) and add
-   it plus the journal/checkpoint artifact globs to the build source exclusions.
+1. Confirm `migration-state.json` exists (created with branch bootstrap), **track
+   it in Git**, and add it plus the journal/checkpoint artifact globs to the build
+   source exclusions so the tracked state never enters a wheel or sdist. Narrowly
+   update `tests/test_wheel.py` so the repository payload rule permits only the
+   exact root `migration-state.json` while all other JSON payloads stay rejected.
 2. Add minimal synthetic checkpoint, exchange, ledger, vocabulary, model-output,
    and provider-response fixtures that parse with the current checked-in models.
 3. Record precise baselines into `migration-state.json` `artifacts`/`checks`:
@@ -393,8 +406,15 @@ appends its recorded checks to `migration-state.json`.
 **Acceptance**
 
 - All new fixtures parse using current models.
-- No production behavior changes; the only non-test edit is the `pyproject.toml`
-  exclusion additions.
+- `migration-state.json` is tracked in Git as the single durable source of truth,
+  committed and pushed on the integration branch, yet remains excluded from the
+  wheel and sdist and is verified absent from both.
+- `tests/test_wheel.py` permits only the exact root `migration-state.json` as a
+  repository payload, still rejects every other JSON payload for archive safety,
+  and its distribution tests confirm `migration-state.json` is absent from the
+  wheel and sdist.
+- No production behavior changes; the only non-test edits are the `pyproject.toml`
+  exclusion additions and the tracked `migration-state.json` machine state.
 - Baseline denominators are recorded in `migration-state.json`.
 
 **Stop conditions**

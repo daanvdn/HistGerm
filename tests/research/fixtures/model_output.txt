@@ -1,0 +1,10 @@
+{
+  "candidates": [
+    {
+      "name": "MhgBERT",
+      "aliases": [
+        "MHG BERT"
+      ]
+    }
+  ]
+}

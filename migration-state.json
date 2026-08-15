@@ -1,0 +1,175 @@
+{
+  "schema_version": 1,
+  "plan_version": 1,
+  "run_id": "plan-20260815T175900Z",
+  "branch": "copilot/histgerm-curator-migration-plan-20260815T175900Z",
+  "current_task": "TASK-MIG-002",
+  "tasks": {
+    "TASK-MIG-001": "complete",
+    "TASK-MIG-002": "pending",
+    "TASK-MIG-003": "pending",
+    "TASK-MIG-004": "pending",
+    "TASK-MIG-005": "pending",
+    "TASK-MIG-006": "pending",
+    "TASK-MIG-007": "pending",
+    "TASK-MIG-008": "pending",
+    "TASK-MIG-009": "pending",
+    "TASK-MIG-010": "pending",
+    "TASK-MIG-011": "pending",
+    "TASK-MIG-012": "pending",
+    "TASK-MIG-013": "pending"
+  },
+  "gates": {
+    "GATE-PLAN": {
+      "status": "pass",
+      "blocks": "TASK-MIG-001",
+      "evaluated_at": "2026-08-15T21:46:00+02:00",
+      "evidence": {
+        "plan_tracked_in_git": true,
+        "plan_path": "plans/histgerm-curator-architecture-migration.md",
+        "contains_literals": ["GATE-PLAN", "TASK-MIG-001", "TASK-MIG-013"],
+        "migration_state_present_and_parses_initial_schema": true,
+        "migration_state_tracked_in_git": true,
+        "integration_branch_non_default": true,
+        "default_branch": "main",
+        "based_on_default_branch_head": "e3e08cadd1e0fa996ad4616935a98e372c819922"
+      }
+    },
+    "GATE-RECOVERY": {"status": "pending", "blocks": "TASK-MIG-007", "evaluated_at": null, "evidence": null},
+    "GATE-JOURNAL-PARITY": {"status": "pending", "blocks": "TASK-MIG-009", "evaluated_at": null, "evidence": null},
+    "GATE-CUTOVER": {"status": "pending", "blocks": "TASK-MIG-010", "evaluated_at": null, "evidence": null},
+    "GATE-PILOT": {"status": "pending", "blocks": "TASK-MIG-013", "evaluated_at": null, "evidence": null}
+  },
+  "commits": {
+    "TASK-MIG-001": {
+      "hash": "pending",
+      "hash_rule": "rolling: migration-state.json is tracked in Git, so a task's own commit cannot embed its own hash. Each task records its predecessor's real hash and leaves its own hash 'pending'; the successor finalizes it. TASK-MIG-002's commit records TASK-MIG-001's real retry-commit hash in this field. TASK-MIG-013's hash is finalized by the final draft-PR-update commit. No false or self-referential hash is ever recorded.",
+      "message_subject_contains": "TASK-MIG-001",
+      "parent": "de83e6a311108c903544839b8e94e981c9fcf4cb",
+      "predecessor": {
+        "task": "GATE-PLAN/rollback-boundary",
+        "hash": "de83e6a311108c903544839b8e94e981c9fcf4cb",
+        "message_subject_contains": "revert(migration): revert untracked-state TASK-MIG-001 baseline"
+      },
+      "history": {
+        "attempt_1": {
+          "commit": "4c8add1eb8926a423e1336b0e3dd695c0ab06d71",
+          "status": "rolled_back",
+          "reason": "migration-state.json was gitignored/untracked, contradicting the plan contract that it is the single durable source of truth committed and pushed on the integration branch for cross-session and PR-based resume; .gitignore was modified outside the declared TASK-MIG-001 scope; the draft PR body reintroduced reviewer/merge-mandatory wording contrary to the machine-only workflow.",
+          "reverted_by": "de83e6a311108c903544839b8e94e981c9fcf4cb"
+        },
+        "attempt_2": {
+          "commit": "pending",
+          "status": "complete",
+          "note": "Non-destructive retry on the same branch and draft PR #5: migration-state.json is tracked in Git and pushed (still excluded from wheel/sdist and verified absent from both); .gitignore restored to its pre-TASK-MIG-001 content (no migration/journal/checkpoint ignores); tests/test_wheel.py narrowed so the repository payload rule permits only the exact root migration-state.json while archive safety still rejects JSON and distribution tests assert its absence; fixtures, baseline test, and pyproject source-exclude additions recreated; plan TASK-MIG-001 scope/acceptance updated to declare migration-state.json and tests/test_wheel.py."
+        }
+      }
+    }
+  },
+  "checks": {
+    "TASK-MIG-001": {
+      "recorded_at": "2026-08-15T21:46:00+02:00",
+      "all_passed": true,
+      "enforced_by_pre_commit": true,
+      "targeted": [
+        {"command": "uv run pytest tests/research/test_migration_baseline.py", "exit_code": 0},
+        {"command": "uv run pytest tests/test_wheel.py", "exit_code": 0},
+        {"command": "uv run ruff check .", "exit_code": 0},
+        {"command": "uv run ruff format --check .", "exit_code": 0},
+        {"command": "uv run mypy src tests", "exit_code": 0}
+      ],
+      "gate_plan": [
+        {"command": "git ls-files --error-unmatch plans/histgerm-curator-architecture-migration.md", "exit_code": 0},
+        {"command": "git ls-files --error-unmatch migration-state.json", "exit_code": 0},
+        {"command": "plan-contains-literals GATE-PLAN TASK-MIG-001 TASK-MIG-013", "exit_code": 0},
+        {"command": "python -c parse migration-state.json against initial schema", "exit_code": 0}
+      ],
+      "repository_validation": [
+        {"command": "uv run python -m histgerm.research validate --ledger research/discovery-ledger.yaml --format json", "exit_code": 0},
+        {"command": "uv run python -m histgerm.research vocabulary-validate --vocabulary research/discovery-vocabulary.yaml --format json", "exit_code": 0},
+        {"command": "uv run python -m histgerm.validation src/histgerm/data", "exit_code": 0},
+        {"command": "uv run pytest", "exit_code": 0},
+        {"command": "git diff --check", "exit_code": 0}
+      ],
+      "packaging": [
+        {"command": "uv build --no-sources", "exit_code": 0},
+        {
+          "command": "verify-migration-state-tracked-but-excluded + journal/checkpoint globs excluded",
+          "exit_code": 0,
+          "sdist": "dist/histgerm-0.1.0.tar.gz",
+          "wheel": "dist/histgerm-0.1.0-py3-none-any.whl",
+          "migration_state_tracked_in_git": true,
+          "migration_state_in_sdist": false,
+          "migration_state_in_wheel": false,
+          "journal_or_checkpoint_in_sdist": false,
+          "journal_or_checkpoint_in_wheel": false
+        }
+      ]
+    }
+  },
+  "artifacts": {
+    "plan": {
+      "path": "plans/histgerm-curator-architecture-migration.md",
+      "sha256": "34531fb8db7b82d8126208113bba94221cea80c0220058f02e0d7bce272bc61d"
+    },
+    "fixtures": {
+      "method": "sha256 of the checked-in fixture file as written to the working tree",
+      "tests/research/fixtures/checkpoint.txt": "0b904b35a1d11e59f6593594832aa3e8332630d01a01d7c25d020a68ce2b59c4",
+      "tests/research/fixtures/exchange.txt": "5ec46a0872d5462bcdbe3aece97634b3b9a6a288cb5e838221a0e667dedad960",
+      "tests/research/fixtures/ledger.yaml": "c6c23459580583fd494f0fd694da4475e91e809e0956e8d07aaa1f8ff8b45f66",
+      "tests/research/fixtures/vocabulary.yaml": "6b43f15e20f87087d08315a074ef51aabba6f1f96554a691ec424bb6accbb58b",
+      "tests/research/fixtures/model_output.txt": "f101a5f6a32fb0235e1c060a30807ea0a245c608ced48829144ca43e66c9209b",
+      "tests/research/fixtures/provider_response.html": "1269bda58f78bf814570c44b947a5526c4dd904a84a3bce8a31651b424349035"
+    },
+    "baselines": {
+      "code_reduction_denominator": {
+        "description": "Sole denominator for the TASK-MIG-010 >=25% combined code-reduction target.",
+        "files": [
+          "src/histgerm/research/discovery_protocol.py",
+          "src/histgerm/research/discovery_session.py"
+        ],
+        "method": "sum(len(Path(f).read_text(encoding='utf-8').splitlines()) for f in files)",
+        "discovery_protocol_py_lines": 542,
+        "discovery_session_py_lines": 456,
+        "combined_lines": 998
+      },
+      "research_total_lines": {
+        "description": "Informational only; not a target denominator.",
+        "method": "sum(len(Path(f).read_text(encoding='utf-8').splitlines()) for f in sorted(Path('src/histgerm/research').glob('*.py')))",
+        "lines": 10394
+      },
+      "phrase_test_reduction_denominator": {
+        "description": "Sole denominator for the TASK-MIG-011 >=50% behavioral phrase-presence reduction target.",
+        "scope": "tests/agent/test_*.py",
+        "method": "AST count of exact string-literal presence checks against agent/skill/doc contract text: every phrase argument of assert_phrases(); every `assert \"literal\" in <text>`; every `for v in (literals): assert v in <text>`. Structural `in` checks against packaging containers (source-exclude 'exclusions') are excluded.",
+        "assert_phrases_phrases": 138,
+        "direct_in_policy_asserts": 7,
+        "loop_in_policy_phrases": 4,
+        "structural_in_phrases_excluded": 5,
+        "behavioral_phrase_presence_assertions": 149
+      },
+      "targeted_research_test_duration": {
+        "description": "Informational targeted research-test wall-clock baseline; environment-dependent, not a target denominator.",
+        "command": "uv run pytest tests/research",
+        "pytest_reported_seconds": 109.96,
+        "tests_passed": 292
+      },
+      "synthetic_whole_run_abort_count": {
+        "description": "Current synthetic whole-run abort assertions (fatal DiscoveryProtocolError paths) under tests/research/.",
+        "method": "AST count of pytest.raises(DiscoveryProtocolError, ...) calls across tests/research/test_*.py",
+        "count": 19
+      },
+      "synthetic_recovery_count": {
+        "description": "Current synthetic resume/recovery test functions under tests/research/.",
+        "method": "AST count of `def test_*` functions whose name matches (resume|recover) case-insensitively across tests/research/test_*.py",
+        "count": 2
+      },
+      "operational_notes": {
+        "state_tracking": "migration-state.json is tracked in Git (no .gitignore entry) as the single durable source of truth. It is excluded from the wheel and sdist via pyproject [tool.uv.build-backend] source-exclude, and tests/test_wheel.py permits only this exact root file under the repository payload rule while still rejecting every other JSON payload and asserting the file's absence from both distributions.",
+        "fixture_naming": "JSON-content fixtures use the .txt extension (checkpoint.txt, exchange.txt, model_output.txt), matching the repository convention (tests/fixtures/controlled_browser/*.txt) and avoiding the .json payload suffix that archive safety forbids. They still parse via the current checked-in JSON models.",
+        "next": "current_task is TASK-MIG-002 (pending). Its only dependency, TASK-MIG-001, is complete, so no gate blocks TASK-MIG-002; GATE-RECOVERY is the next machine gate and is only evaluated after TASK-MIG-006. TASK-MIG-002 has not been started."
+      }
+    }
+  },
+  "pilot_target": null
+}

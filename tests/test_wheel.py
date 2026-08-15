@@ -18,6 +18,7 @@ DATA_ROOT = ROOT / "src" / "histgerm" / "data"
 RESOURCE_CATEGORIES = ("corpora", "dictionaries", "tools")
 RESEARCH_LEDGER = "research/discovery-ledger.yaml"
 RESEARCH_VOCABULARY = "research/discovery-vocabulary.yaml"
+MIGRATION_STATE = "migration-state.json"
 FORBIDDEN_STATE_PARTS = {
     ".crawl4ai",
     ".playwright",
@@ -228,6 +229,8 @@ def test_distributions_contain_every_authored_yaml_once(
     forbidden_names = {"manifest.json", "snapshot.json", "inventory.json"}
     assert not any(PurePosixPath(name).name in forbidden_names for name in wheel_names)
     assert not any(PurePosixPath(name).name in forbidden_names for name in sdist_names)
+    assert not any(PurePosixPath(name).name == MIGRATION_STATE for name in wheel_names)
+    assert not any(PurePosixPath(name).name == MIGRATION_STATE for name in sdist_names)
     assert not any(name.endswith(RESEARCH_VOCABULARY) for name in wheel_names)
     assert not any(name.endswith(RESEARCH_VOCABULARY) for name in sdist_names)
 
@@ -363,7 +366,11 @@ def test_repository_has_no_duplicate_inventory_or_third_party_payloads() -> None
         size = path.stat().st_size
         with path.open("rb") as source:
             leading_bytes = source.read(MAGIC_READ_SIZE)
-        assert relative.suffix.casefold() not in PAYLOAD_SUFFIXES
+        # The exact root migration-state.json is the durable, Git-tracked machine
+        # state for the curator migration; it is excluded from every distribution
+        # (verified above) but is the sole permitted repository JSON payload.
+        if relative.as_posix() != MIGRATION_STATE:
+            assert relative.suffix.casefold() not in PAYLOAD_SUFFIXES
         assert not leading_bytes.startswith(FORBIDDEN_MAGIC)
         assert size < MAX_MEMBER_SIZE
         if relative.suffix.casefold() in {".json", ".yaml", ".yml"} or (
