@@ -171,6 +171,23 @@ def test_resume_never_repeats_confirmed_retrieval() -> None:
     assert sum(resumed.values()) - sum(injected.values()) <= 5
 
 
+def test_result_inspection_request_ids_are_unique_across_pages() -> None:
+    runtime = capabilities()
+    checkpoint = start()
+    inspection_ids: list[str] = []
+    while True:
+        step = advance(checkpoint, runtime)
+        if isinstance(step, Completed):
+            break
+        inspection_ids.extend(
+            request.request_id
+            for request in step.requests
+            if isinstance(request, ResultInspectionRequest)
+        )
+        checkpoint = apply_exchange(step.checkpoint, answer(step))
+    assert len(inspection_ids) == len(set(inspection_ids))
+
+
 def test_checkpoint_only_retains_normalized_state() -> None:
     _, rounds, last = drive(capabilities())
     payload = json.dumps(last.model_dump(mode="json"))

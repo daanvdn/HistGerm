@@ -357,8 +357,17 @@ class _Memo:
         records: tuple[SearchAssessmentRecord, ...],
     ) -> ResultInspectionRequest:
         first = records[0]
+        page_key = "\x1f".join(
+            (
+                key,
+                *(
+                    item_digest(result.url, result.title, result.snippet)
+                    for result in self._deferred
+                ),
+            )
+        )
         return ResultInspectionRequest(
-            request_id=request_id(self._checkpoint.run_id, "inspection", key),
+            request_id=request_id(self._checkpoint.run_id, "inspection", page_key),
             category=self._config.category,
             stage=self._config.stage.value,
             query=first.query,
