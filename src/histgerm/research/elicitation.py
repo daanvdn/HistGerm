@@ -6,7 +6,7 @@ import json
 import re
 import unicodedata
 from collections.abc import Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, Literal, Protocol
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationError, field_validator
@@ -97,8 +97,37 @@ class ElicitationPrompt:
     """One transient prompt and its deterministic position."""
 
     iteration: int
-    kind: Literal["broad", "follow_up"]
+    kind: Literal["broad", "follow_up", "retry"]
     text: str
+
+
+@dataclass(frozen=True, slots=True)
+class ElicitationQuarantine:
+    """One candidate-local blocked finding kept instead of discarding siblings.
+
+    A ``candidate`` scope reports one malformed entry inside an otherwise usable
+    response; a ``response`` scope reports a whole response that stayed invalid
+    after its single schema-feedback retry. Neither is a success-shaped result:
+    quarantined output never becomes a trusted lead.
+    """
+
+    iteration: int
+    scope: Literal["candidate", "response"]
+    position: int | None
+    reason: str
+    name: str | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class ElicitationMetrics:
+    """Deterministic retry and quarantine counters for one elicitation run."""
+
+    retries_attempted: int = 0
+    retries_recovered: int = 0
+    responses_blocked: int = 0
+    candidates_quarantined: int = 0
+    candidates_truncated: int = 0
+    aliases_truncated: int = 0
 
 
 @dataclass(frozen=True, slots=True)
@@ -107,6 +136,9 @@ class ElicitationResult:
 
     leads: tuple[ElicitedLead, ...]
     prompts: tuple[ElicitationPrompt, ...]
+    quarantines: tuple[ElicitationQuarantine, ...] = ()
+    warnings: tuple[str, ...] = ()
+    metrics: ElicitationMetrics = ElicitationMetrics()
     requires_external_search: Literal[True] = True
 
 
@@ -127,10 +159,15 @@ class _CandidateOutput(BaseModel):
         return [_validate_name(value) for value in values]
 
 
-class _ResponseOutput(BaseModel):
+class _ResponseEnvelope(BaseModel):
     model_config = ConfigDict(extra="forbid", strict=True)
 
-    candidates: list[_CandidateOutput]
+    candidates: list[Any]
+
+
+@dataclass(frozen=True, slots=True)
+class _EnvelopeError:
+    reason: str
 
 
 @dataclass(slots=True)
@@ -140,6 +177,31 @@ class _LeadAccumulator:
 
     def normalized_values(self) -> set[str]:
         return {_normalize_name(self.name), *(_normalize_name(a) for a in self.aliases)}
+
+
+@dataclass(slots=True)
+class _RecoveryAccumulator:
+    """Mutable, run-local recovery state converted to the frozen result fields."""
+
+    prompts: list[ElicitationPrompt] = field(default_factory=list)
+    quarantines: list[ElicitationQuarantine] = field(default_factory=list)
+    warnings: list[str] = field(default_factory=list)
+    retries_attempted: int = 0
+    retries_recovered: int = 0
+    responses_blocked: int = 0
+    candidates_quarantined: int = 0
+    candidates_truncated: int = 0
+    aliases_truncated: int = 0
+
+    def as_metrics(self) -> ElicitationMetrics:
+        return ElicitationMetrics(
+            retries_attempted=self.retries_attempted,
+            retries_recovered=self.retries_recovered,
+            responses_blocked=self.responses_blocked,
+            candidates_quarantined=self.candidates_quarantined,
+            candidates_truncated=self.candidates_truncated,
+            aliases_truncated=self.aliases_truncated,
+        )
 
 
 def elicit_candidates(
@@ -153,8 +215,12 @@ def elicit_candidates(
 ) -> ElicitationResult:
     """Elicit deduplicated, name-only leads before required external searching.
 
-    Model responses are transient and untrusted. The result deliberately has no
-    URL, evidence, rationale, or persistence field.
+    Model responses are transient and untrusted. Malformed output is recovered
+    candidate-locally: valid siblings are always retained, invalid response
+    formatting is retried once with schema feedback, count-limit excess is
+    truncated with a warning, and output that stays invalid becomes a scoped,
+    quarantined finding instead of discarding the run. The result deliberately
+    has no URL, evidence, rationale, or persistence field.
     """
 
     if config is None:
@@ -162,11 +228,12 @@ def elicit_candidates(
     known_names = _known_names(trusted_records, ledger_candidates)
     known_normalized = {_normalize_name(name) for name in known_names}
     leads: list[_LeadAccumulator] = []
-    prompts: list[ElicitationPrompt] = []
+    acc = _RecoveryAccumulator()
 
     for iteration in range(config.max_iterations):
+        position = iteration + 1
         if iteration == 0:
-            kind: Literal["broad", "follow_up"] = "broad"
+            kind: Literal["broad", "follow_up", "retry"] = "broad"
             prompt_text = _broad_prompt(category, stage)
         else:
             kind = "follow_up"
@@ -184,25 +251,35 @@ def elicit_candidates(
                 config,
             )
         _check_prompt_bound(prompt_text, config)
-        prompts.append(
-            ElicitationPrompt(
-                iteration=iteration + 1,
-                kind=kind,
-                text=prompt_text,
-            )
+        acc.prompts.append(
+            ElicitationPrompt(iteration=position, kind=kind, text=prompt_text)
         )
-        output = _parse_output(model_call(prompt_text), config)
+        candidates = _elicit_response(
+            model_call,
+            prompt_text=prompt_text,
+            iteration=position,
+            category=category,
+            stage=stage,
+            config=config,
+            acc=acc,
+        )
         new_distinct = _add_output_leads(
-            output,
+            candidates,
+            iteration=position,
             known_normalized=known_normalized,
             leads=leads,
+            config=config,
+            acc=acc,
         )
         if iteration > 0 and new_distinct == 0:
             break
 
     return ElicitationResult(
         leads=tuple(ElicitedLead(lead.name, tuple(lead.aliases)) for lead in leads),
-        prompts=tuple(prompts),
+        prompts=tuple(acc.prompts),
+        quarantines=tuple(acc.quarantines),
+        warnings=tuple(acc.warnings),
+        metrics=acc.as_metrics(),
     )
 
 
@@ -302,41 +379,170 @@ def _check_prompt_bound(prompt: str, config: ElicitationConfig) -> None:
         )
 
 
-def _parse_output(raw: str, config: ElicitationConfig) -> _ResponseOutput:
+def _call_model(model_call: ModelCall, prompt: str) -> str:
+    raw = model_call(prompt)
     if not isinstance(raw, str):
         raise ElicitationOutputError("model output must be JSON text")
+    return raw
+
+
+def _load_envelope(raw: str, config: ElicitationConfig) -> list[Any] | _EnvelopeError:
+    """Extract the raw candidate list without validating individual candidates.
+
+    Individual candidates are validated later so one malformed sibling never
+    discards the valid ones; only whole-response formatting failures land here.
+    """
+
     if len(raw) > config.max_output_chars:
-        raise ElicitationOutputError(
-            f"model output exceeds configured limit {config.max_output_chars}"
+        return _EnvelopeError(
+            f"model output exceeds the configured limit {config.max_output_chars}"
         )
     try:
         value: Any = json.loads(raw)
-        output = _ResponseOutput.model_validate(value)
-    except (json.JSONDecodeError, ValidationError) as error:
-        raise ElicitationOutputError(
-            "model output is not valid name-only JSON"
-        ) from error
-    if len(output.candidates) > config.max_candidates_per_response:
-        raise ElicitationOutputError(
-            "model output exceeds the configured candidate count"
+    except json.JSONDecodeError:
+        return _EnvelopeError("model output is not valid JSON")
+    try:
+        envelope = _ResponseEnvelope.model_validate(value)
+    except ValidationError:
+        return _EnvelopeError("model output is not a name-only candidates object")
+    return envelope.candidates
+
+
+def _retry_prompt(
+    category: ResourceCategory,
+    stage: LanguageStage,
+    reason: str,
+    config: ElicitationConfig,
+) -> str:
+    prompt = (
+        "The previous response was rejected and must be corrected.\n"
+        f"Reason: {reason}\n"
+        f"Category: {category}\n"
+        f"Historical German stage: {stage.value}\n"
+        "Return only JSON matching "
+        '{"candidates":[{"name":"canonical or project name","aliases":["alias"]}]}.\n'
+        "Include names and aliases only. Do not include rationale, URLs, evidence, "
+        "dates, versions, licenses, or stage claims. An empty candidates list is valid."
+    )
+    _check_prompt_bound(prompt, config)
+    return prompt
+
+
+def _elicit_response(
+    model_call: ModelCall,
+    *,
+    prompt_text: str,
+    iteration: int,
+    category: ResourceCategory,
+    stage: LanguageStage,
+    config: ElicitationConfig,
+    acc: _RecoveryAccumulator,
+) -> list[Any]:
+    """Return the raw candidate list, retrying invalid formatting once.
+
+    A response whose formatting is still invalid after one schema-feedback retry
+    is recorded as a scoped ``response`` quarantine and contributes no leads.
+    """
+
+    parsed = _load_envelope(_call_model(model_call, prompt_text), config)
+    if not isinstance(parsed, _EnvelopeError):
+        return parsed
+    acc.retries_attempted += 1
+    retry_prompt = _retry_prompt(category, stage, parsed.reason, config)
+    acc.prompts.append(
+        ElicitationPrompt(iteration=iteration, kind="retry", text=retry_prompt)
+    )
+    retried = _load_envelope(_call_model(model_call, retry_prompt), config)
+    if not isinstance(retried, _EnvelopeError):
+        acc.retries_recovered += 1
+        return retried
+    acc.responses_blocked += 1
+    acc.quarantines.append(
+        ElicitationQuarantine(
+            iteration=iteration,
+            scope="response",
+            position=None,
+            reason=retried.reason,
+            name=None,
         )
-    if any(
-        len(candidate.aliases) > config.max_aliases_per_candidate
-        for candidate in output.candidates
-    ):
-        raise ElicitationOutputError("model output exceeds the configured alias count")
-    return output
+    )
+    return []
+
+
+def _candidate_error_reason(error: ValidationError) -> str:
+    details = error.errors()
+    if not details:
+        return "candidate is not a valid name-only object"
+    first = details[0]
+    location = first["loc"]
+    error_type = first["type"]
+    if not location:
+        return "candidate entry is not a name-only object"
+    field_name = str(location[0])
+    if error_type == "extra_forbidden":
+        return "candidate contains fields beyond name and aliases"
+    if field_name == "name":
+        return "candidate name is missing or not a valid name-only string"
+    if field_name == "aliases":
+        return "candidate aliases are not a list of valid name-only strings"
+    return "candidate is not a valid name-only object"
+
+
+def _entry_name(entry: Any) -> str | None:
+    if isinstance(entry, dict):
+        name = entry.get("name")
+        if isinstance(name, str):
+            stripped = name.strip()
+            if stripped:
+                return stripped
+    return None
 
 
 def _add_output_leads(
-    output: _ResponseOutput,
+    candidates: list[Any],
     *,
+    iteration: int,
     known_normalized: set[str],
     leads: list[_LeadAccumulator],
+    config: ElicitationConfig,
+    acc: _RecoveryAccumulator,
 ) -> int:
+    entries = candidates
+    if len(entries) > config.max_candidates_per_response:
+        dropped = len(entries) - config.max_candidates_per_response
+        acc.candidates_truncated += dropped
+        acc.warnings.append(
+            f"iteration {iteration}: response returned {len(entries)} candidates; "
+            f"kept the first {config.max_candidates_per_response} and dropped {dropped}"
+        )
+        entries = entries[: config.max_candidates_per_response]
     new_distinct = 0
-    for candidate in output.candidates:
-        values = _unique_names([candidate.name, *candidate.aliases])
+    for position, entry in enumerate(entries, start=1):
+        try:
+            candidate = _CandidateOutput.model_validate(entry)
+        except ValidationError as error:
+            acc.candidates_quarantined += 1
+            acc.quarantines.append(
+                ElicitationQuarantine(
+                    iteration=iteration,
+                    scope="candidate",
+                    position=position,
+                    reason=_candidate_error_reason(error),
+                    name=_entry_name(entry),
+                )
+            )
+            continue
+        aliases = candidate.aliases
+        if len(aliases) > config.max_aliases_per_candidate:
+            dropped = len(aliases) - config.max_aliases_per_candidate
+            acc.aliases_truncated += dropped
+            acc.warnings.append(
+                f"iteration {iteration}: candidate {position} returned "
+                f"{len(aliases)} aliases; kept the first "
+                f"{config.max_aliases_per_candidate}"
+            )
+            aliases = aliases[: config.max_aliases_per_candidate]
+        values = _unique_names([candidate.name, *aliases])
         normalized = {_normalize_name(value) for value in values}
         if not normalized or normalized & known_normalized:
             continue
@@ -370,8 +576,10 @@ __all__ = [
     "ElicitationConfig",
     "ElicitationError",
     "ElicitationLimitError",
+    "ElicitationMetrics",
     "ElicitationOutputError",
     "ElicitationPrompt",
+    "ElicitationQuarantine",
     "ElicitationResult",
     "ElicitedLead",
     "ModelCall",

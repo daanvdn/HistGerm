@@ -3,13 +3,13 @@
   "plan_version": 1,
   "run_id": "plan-20260815T175900Z",
   "branch": "copilot/histgerm-curator-migration-plan-20260815T175900Z",
-  "current_task": "TASK-MIG-005",
+  "current_task": "TASK-MIG-006",
   "tasks": {
     "TASK-MIG-001": "complete",
     "TASK-MIG-002": "complete",
     "TASK-MIG-003": "complete",
     "TASK-MIG-004": "complete",
-    "TASK-MIG-005": "pending",
+    "TASK-MIG-005": "complete",
     "TASK-MIG-006": "pending",
     "TASK-MIG-007": "pending",
     "TASK-MIG-008": "pending",
@@ -88,14 +88,25 @@
       }
     },
     "TASK-MIG-004": {
-      "hash": "pending",
-      "hash_rule": "rolling: migration-state.json is tracked in Git, so this task's own commit cannot embed its own hash. TASK-MIG-004 records its predecessor TASK-MIG-003's real commit hash (c2b50eb593cf54575ecc15248c4fe4a06516d2eb) and leaves its own hash 'pending'; its successor TASK-MIG-005 finalizes this field. No false or self-referential hash is ever recorded.",
+      "hash": "7516bad2d643afe5c5b0f79535ce1895026f558d",
+      "hash_rule": "rolling: migration-state.json is tracked in Git, so this task's own commit cannot embed its own hash. TASK-MIG-004 recorded its predecessor TASK-MIG-003's real commit hash (c2b50eb593cf54575ecc15248c4fe4a06516d2eb) and left its own hash 'pending'; its successor TASK-MIG-005 finalizes this field with TASK-MIG-004's real commit hash (7516bad2d643afe5c5b0f79535ce1895026f558d). No false or self-referential hash is ever recorded.",
       "message_subject_contains": "TASK-MIG-004",
       "parent": "c2b50eb593cf54575ecc15248c4fe4a06516d2eb",
       "predecessor": {
         "task": "TASK-MIG-003",
         "hash": "c2b50eb593cf54575ecc15248c4fe4a06516d2eb",
         "message_subject_contains": "TASK-MIG-003"
+      }
+    },
+    "TASK-MIG-005": {
+      "hash": "pending",
+      "hash_rule": "rolling: migration-state.json is tracked in Git, so this task's own commit cannot embed its own hash. TASK-MIG-005 records its predecessor TASK-MIG-004's real commit hash (7516bad2d643afe5c5b0f79535ce1895026f558d) and leaves its own hash 'pending'; its successor TASK-MIG-006 finalizes this field. No false or self-referential hash is ever recorded.",
+      "message_subject_contains": "TASK-MIG-005",
+      "parent": "7516bad2d643afe5c5b0f79535ce1895026f558d",
+      "predecessor": {
+        "task": "TASK-MIG-004",
+        "hash": "7516bad2d643afe5c5b0f79535ce1895026f558d",
+        "message_subject_contains": "TASK-MIG-004"
       }
     }
   },
@@ -215,6 +226,33 @@
         {"command": "git diff --check", "exit_code": 0}
       ],
       "notes": "Extracted one private durable-persistence utility (src/histgerm/research/_persistence.py) providing same-directory temporary write + flush + fsync + optional chmod (write_durable_temporary), atomic replace with prior-content-preserving cleanup (replace_atomically), temporary removal (remove_temporary), a deterministic external lock path (stable_lock_path), and a bounded OS-backed exclusive advisory lock (bounded_file_lock). ledger.py now delegates _lock_path_for_ledger/_ledger_file_lock/_write_temporary/_commit to the shared utility while preserving the ledger's OS lock (namespace 'ledger-locks-v1'), revision guards, LedgerWriteError/LedgerRevisionError/LedgerPolicyError types, and byte-stable canonical YAML. vocabulary_store.py replaces the fragile O_CREAT|O_EXCL next-to-file lock with the same OS advisory lock (namespace 'vocabulary-locks-v1'): a crashed owner leaves no stale lock because the kernel releases the advisory lock on process exit, giving explicit stale-owner handling without unsafe automatic deletion, and no next-to-file .lock is ever created. discovery_protocol.write_checkpoint now flushes and fsyncs the checkpoint through the shared utility while keeping the 0o600 permissions, '.histgerm-' temp prefix, MAX_CHECKPOINT_BYTES bound, DiscoveryProtocolError size error, and original-exception re-raise on OS failure. No serialized ledger/vocabulary/checkpoint format, public exception type, or CLI exit code changed. New robust tests cover fsync durability, atomic-replace prior-content preservation, cross-process ledger and vocabulary revision contention without lost updates, bounded-lock timeout against a live owner, and stale-owner lock reclaim after an owner crash with no lock-file deletion. No live ledger/vocabulary/inventory YAML changed."
+    },
+    "TASK-MIG-005": {
+      "recorded_at": "2026-08-15T23:31:00+02:00",
+      "all_passed": true,
+      "enforced_by_pre_commit": true,
+      "scope": [
+        "src/histgerm/research/elicitation.py",
+        "src/histgerm/research/discovery_metrics.py",
+        "src/histgerm/research/discovery_orchestration.py",
+        "tests/research/test_elicitation.py",
+        "tests/research/test_discovery_metrics.py",
+        "tests/research/test_discovery_orchestration.py"
+      ],
+      "targeted": [
+        {"command": "uv run pytest tests/research/test_elicitation.py tests/research/test_discovery_metrics.py tests/research/test_discovery_orchestration.py tests/research/test_migration_baseline.py", "exit_code": 0}
+      ],
+      "repository_validation": [
+        {"command": "uv run python -m histgerm.research validate --ledger research/discovery-ledger.yaml --format json", "exit_code": 0},
+        {"command": "uv run python -m histgerm.research vocabulary-validate --vocabulary research/discovery-vocabulary.yaml --format json", "exit_code": 0},
+        {"command": "uv run python -m histgerm.validation src/histgerm/data", "exit_code": 0},
+        {"command": "uv run pytest", "exit_code": 0},
+        {"command": "uv run ruff check .", "exit_code": 0},
+        {"command": "uv run ruff format --check .", "exit_code": 0},
+        {"command": "uv run mypy src tests", "exit_code": 0},
+        {"command": "git diff --check", "exit_code": 0}
+      ],
+      "notes": "Reworked bounded, transient model-led elicitation (src/histgerm/research/elicitation.py) so malformed model output is recovered candidate-locally instead of discarding valid work. The whole-response candidate list is now parsed independently of the candidates it contains (_ResponseEnvelope validates only the {\"candidates\": [...]} envelope with extra='forbid'/strict), and each candidate is validated on its own via _CandidateOutput: one malformed sibling (extra field, URL/control-char name, wrong type, non-object entry) becomes a scoped ElicitationQuarantine (scope='candidate', deterministic 1-based position, stable reason, best-effort raw name) while every valid sibling is retained. Invalid response formatting (non-JSON, wrong envelope shape, a non-list candidates value, or oversize output) is retried exactly once with a schema-feedback prompt that echoes the exact rejection reason and re-states the name-only contract; a recovered retry yields leads and after retry exhaustion the response becomes a scope='response' quarantine that contributes no leads (no success-shaped fallback). Safe count-limit excess is truncated with an explicit warning: max_candidates_per_response drops surplus entries and max_aliases_per_candidate trims surplus aliases while keeping the lead. Deterministic ElicitationMetrics (retries_attempted/recovered, responses_blocked, candidates_quarantined, candidates_truncated, aliases_truncated) and warnings/quarantines are exposed on ElicitationResult as additive, default-valued fields (existing leads/prompts/requires_external_search unchanged), ElicitationPrompt.kind widens to include 'retry', and ElicitationOutputError stays exported and is still raised loudly when the injected model returns a non-string (a dependency-contract violation, never a recoverable model formatting error). DiscoveryCoverage gains elicitation_retries/recovered_retries/blocked_responses/quarantined_candidates counters surfaced through snapshot() and DiscoveryRunResult.as_json, wired from ElicitationResult.metrics in run_discovery. Provider-gap and trusted-evidence semantics are untouched (elicitation still produces only untrusted name-only leads requiring external search). New/updated tests cover malformed arrays, malformed objects/siblings, URL/wrong-type names, invalid-JSON-then-valid retry recovery, repeated-invalid scoped blocking, candidate- and alias-count truncation warnings, oversize retry recovery, non-string loud rejection, the surviving exclusion-name bound, the new metrics snapshot keys, and an end-to-end run_discovery worker-result path that keeps a valid lead beside a quarantined sibling and surfaces the metrics. No serialized ledger/vocabulary/checkpoint format, public exception type, or CLI exit code changed; no live ledger/vocabulary/inventory YAML changed."
     }
   },
   "artifacts": {
@@ -259,6 +297,25 @@
         "checkpoint": "adds flush + os.fsync while keeping 0o600 permissions, the '.histgerm-' temp prefix, the size bound, and original-exception re-raise on OS failure."
       },
       "serialization_diff": "none: no ledger, vocabulary, or checkpoint serialized format, public exception type, or CLI exit code changed, so no artifact hash is required for this task."
+    },
+    "elicitation_recovery": {
+      "module": "src/histgerm/research/elicitation.py",
+      "description": "Candidate-local model-output recovery for TASK-MIG-005: malformed sibling output never discards valid candidate leads, and unrecoverable output becomes an explicit, deterministic quarantine instead of an exception or a success-shaped fallback.",
+      "primitives": [
+        "_ResponseEnvelope: validates only the {\"candidates\": [...]} envelope (extra='forbid', strict) so individual candidates are parsed independently; a non-JSON body, wrong envelope shape, non-list candidates value, or oversize output is returned as a soft _EnvelopeError, never a raise.",
+        "_elicit_response: retries invalid response formatting exactly once with a schema-feedback prompt (ElicitationPrompt kind='retry') that echoes the exact rejection reason; a recovered retry yields leads, and after retry exhaustion the response becomes a scope='response' ElicitationQuarantine contributing no leads.",
+        "_add_output_leads: validates each candidate via _CandidateOutput; a malformed sibling becomes a scope='candidate' ElicitationQuarantine (deterministic 1-based position, stable reason, best-effort raw name) while valid siblings are retained; max_candidates_per_response and max_aliases_per_candidate excess is truncated with an explicit warning.",
+        "_call_model: raises the still-exported ElicitationOutputError only when the injected model returns a non-string (a dependency-contract violation, never a recoverable model formatting error)."
+      ],
+      "result_additions": {
+        "ElicitationResult": "additive default-valued fields quarantines: tuple[ElicitationQuarantine, ...] = (), warnings: tuple[str, ...] = (), metrics: ElicitationMetrics = ElicitationMetrics(); existing leads/prompts/requires_external_search are unchanged and still keyword-constructed.",
+        "ElicitationMetrics": "retries_attempted, retries_recovered, responses_blocked, candidates_quarantined, candidates_truncated, aliases_truncated.",
+        "ElicitationQuarantine": "iteration, scope ('candidate'|'response'), position (int|None), reason (stable), name (str|None).",
+        "ElicitationPrompt.kind": "widened from ('broad','follow_up') to ('broad','follow_up','retry')."
+      },
+      "metrics_integration": "DiscoveryCoverage gains elicitation_retries/elicitation_recovered_retries/elicitation_blocked_responses/elicitation_quarantined_candidates, surfaced through snapshot() and DiscoveryRunResult.as_json and wired from ElicitationResult.metrics in run_discovery.",
+      "invariants_preserved": "Elicitation still yields only untrusted, name-only leads requiring external search; provider-gap and trusted-evidence semantics are untouched; no partially validated trusted record is ever accepted; no serialized format, public exception type, or CLI exit code changed.",
+      "serialization_diff": "none: elicitation output is transient and unpersisted, so no artifact hash is required for this task."
     },
     "baselines": {
       "code_reduction_denominator": {
@@ -306,7 +363,7 @@
       "operational_notes": {
         "state_tracking": "migration-state.json is tracked in Git (no .gitignore entry) as the single durable source of truth. It is excluded from the wheel and sdist via pyproject [tool.uv.build-backend] source-exclude, and tests/test_wheel.py permits only this exact root file under the repository payload rule while still rejecting every other JSON payload and asserting the file's absence from both distributions.",
         "fixture_naming": "JSON-content fixtures use the .txt extension (checkpoint.txt, exchange.txt, model_output.txt), matching the repository convention (tests/fixtures/controlled_browser/*.txt) and avoiding the .json payload suffix that archive safety forbids. They still parse via the current checked-in JSON models.",
-        "next": "TASK-MIG-004 (shared durable persistence primitives) is complete; current_task is TASK-MIG-005 (candidate-local model-output recovery, pending). TASK-MIG-003's real commit hash (c2b50eb593cf54575ecc15248c4fe4a06516d2eb) is now recorded; TASK-MIG-004's own hash stays 'pending' for its successor TASK-MIG-005. No gate blocks TASK-MIG-005; GATE-RECOVERY is the next machine gate and is only evaluated after TASK-MIG-006."
+        "next": "TASK-MIG-005 (candidate-local model-output recovery) is complete; current_task is TASK-MIG-006 (resumable protocol failures, pending). TASK-MIG-004's real commit hash (7516bad2d643afe5c5b0f79535ce1895026f558d) is now recorded; TASK-MIG-005's own hash stays 'pending' for its successor TASK-MIG-006. No gate blocks TASK-MIG-006; GATE-RECOVERY is the next machine gate and is only evaluated after TASK-MIG-006. TASK-MIG-006 must not be started under the strict serialization contract of this run."
       }
     }
   },

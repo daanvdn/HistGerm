@@ -387,6 +387,10 @@ def run_discovery(
         vocabulary_reused_decisions=incremental.reused_decisions,
         vocabulary_inactive_associations=incremental.inactive_associations,
         vocabulary_access_gaps=incremental.access_gaps,
+        elicitation_retries=elicitation.metrics.retries_attempted,
+        elicitation_recovered_retries=elicitation.metrics.retries_recovered,
+        elicitation_blocked_responses=elicitation.metrics.responses_blocked,
+        elicitation_quarantined_candidates=elicitation.metrics.candidates_quarantined,
     )
     assessments: list[SearchAssessmentRecord] = []
     leads: dict[str, SearchResult] = {}

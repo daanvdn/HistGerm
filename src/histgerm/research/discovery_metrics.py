@@ -34,6 +34,10 @@ class DiscoveryCoverage:
     dispositions: Counter[str] = field(default_factory=Counter)
     unrelated_reasons: Counter[str] = field(default_factory=Counter)
     yield_by_family_channel: Counter[str] = field(default_factory=Counter)
+    elicitation_retries: int = 0
+    elicitation_recovered_retries: int = 0
+    elicitation_blocked_responses: int = 0
+    elicitation_quarantined_candidates: int = 0
 
     def record_assessment(
         self,
@@ -81,6 +85,12 @@ class DiscoveryCoverage:
             "model_leads": self.model_leads,
             "inventory_terms": self.inventory_terms,
             "inventory_leads": self.inventory_leads,
+            "elicitation_retries": self.elicitation_retries,
+            "elicitation_recovered_retries": self.elicitation_recovered_retries,
+            "elicitation_blocked_responses": self.elicitation_blocked_responses,
+            "elicitation_quarantined_candidates": (
+                self.elicitation_quarantined_candidates
+            ),
             "vocabulary_revision": self.vocabulary_revision,
             "vocabulary_sources_refreshed": self.vocabulary_sources_refreshed,
             "vocabulary_sources_reused": self.vocabulary_sources_reused,
