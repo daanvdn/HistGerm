@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+import os
 import subprocess
 import sys
 import time
 from pathlib import Path
 
 import pytest
+import yaml  # type: ignore[import-untyped]
 from conftest import candidate_data, pass_data, write_json
 
 from histgerm.models import LanguageStage
@@ -13,12 +15,17 @@ from histgerm.research import (
     CandidateEntry,
     LedgerPolicyError,
     LedgerRevisionError,
+    LedgerWriteError,
     SearchPass,
     load_ledger,
     record_search_pass,
     select_next_sweep,
     upsert_candidate,
 )
+
+
+def _raise_os_error(*_: object) -> None:
+    raise OSError("synthetic")
 
 
 def test_mutations_increment_once_and_reject_stale_revision(
@@ -177,3 +184,36 @@ def test_complete_pass_rejects_pending_candidate(ledger_path: Path) -> None:
             ),
             expected_revision=1,
         )
+
+
+def test_atomic_replace_failure_leaves_prior_ledger_intact(
+    ledger_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    before = ledger_path.read_bytes()
+    monkeypatch.setattr(os, "replace", _raise_os_error)
+    with pytest.raises(LedgerWriteError, match="atomically replace ledger"):
+        upsert_candidate(
+            ledger_path,
+            CandidateEntry.model_validate(candidate_data()),
+            expected_revision=0,
+        )
+    assert ledger_path.read_bytes() == before
+    assert load_ledger(ledger_path).revision == 0
+    assert not list(ledger_path.parent.glob(f".{ledger_path.name}.*.tmp"))
+
+
+def test_committed_ledger_is_durable_lf_canonical_yaml(ledger_path: Path) -> None:
+    updated = upsert_candidate(
+        ledger_path,
+        CandidateEntry.model_validate(candidate_data()),
+        expected_revision=0,
+    )
+    raw = ledger_path.read_bytes()
+    assert b"\r\n" not in raw
+    assert raw.endswith(b"\n")
+    expected = yaml.safe_dump(
+        updated.model_dump(mode="json", exclude_none=True),
+        sort_keys=False,
+        allow_unicode=True,
+    ).encode("utf-8")
+    assert raw == expected

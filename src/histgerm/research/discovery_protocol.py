@@ -11,13 +11,13 @@ from __future__ import annotations
 import hashlib
 import json
 import os
-import tempfile
 from datetime import datetime
 from pathlib import Path
 from typing import Annotated, Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from ._persistence import replace_atomically, write_durable_temporary
 from .fetching import RetrievalFailureStage, RetrievalMode
 from .inventory_vocabulary import (
     InventoryURL,
@@ -444,22 +444,15 @@ def validate_operational_path(path: Path, *, option: str) -> Path:
 
 
 def write_checkpoint(path: Path, checkpoint: DiscoveryCheckpoint) -> None:
-    """Write the checkpoint atomically with user-only permissions."""
+    """Write the checkpoint atomically and durably with user-only permissions."""
 
     payload = json.dumps(
         checkpoint.model_dump(mode="json"), ensure_ascii=False, separators=(",", ":")
     ).encode("utf-8")
     if len(payload) > MAX_CHECKPOINT_BYTES:
         raise DiscoveryProtocolError("discovery checkpoint exceeds the size limit")
-    descriptor, temporary = tempfile.mkstemp(dir=path.parent, prefix=".histgerm-")
-    try:
-        with os.fdopen(descriptor, "wb") as stream:
-            stream.write(payload)
-        os.chmod(temporary, 0o600)
-        os.replace(temporary, path)
-    except BaseException:
-        Path(temporary).unlink(missing_ok=True)
-        raise
+    temporary = write_durable_temporary(path, payload, prefix=".histgerm-", mode=0o600)
+    replace_atomically(temporary, path)
 
 
 def read_checkpoint(path: Path) -> DiscoveryCheckpoint:

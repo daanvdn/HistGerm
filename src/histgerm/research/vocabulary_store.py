@@ -5,8 +5,6 @@ from __future__ import annotations
 import hashlib
 import os
 import re
-import tempfile
-import time
 from collections.abc import Iterator, Mapping, Sequence
 from contextlib import contextmanager
 from datetime import date, timedelta
@@ -28,6 +26,12 @@ from pydantic import (
 from histgerm.loading import HistGermLoadingError, load_yaml_mapping_bytes
 from histgerm.models import LanguageStage
 
+from ._persistence import (
+    bounded_file_lock,
+    replace_atomically,
+    stable_lock_path,
+    write_durable_temporary,
+)
 from .inventory_vocabulary import InventoryURL, VocabularyKind, normalize_term
 from .models import ResourceCategory
 
@@ -753,77 +757,42 @@ def apply_vocabulary(
         )
         temporary = _write_temporary(vocabulary_path, updated)
         try:
-            os.replace(temporary, vocabulary_path)
+            replace_atomically(temporary, vocabulary_path)
         except OSError as error:
-            _remove_temporary(temporary)
             raise VocabularyWriteError(
                 f"could not atomically replace vocabulary {vocabulary_path}"
             ) from error
         return load_vocabulary(vocabulary_path)
 
 
+def _vocabulary_lock_path(path: Path) -> Path:
+    """Return stable external lock state unique to this vocabulary path."""
+
+    return stable_lock_path(path, namespace="vocabulary-locks-v1")
+
+
 @contextmanager
 def _vocabulary_lock(path: Path) -> Iterator[None]:
-    lock = path.with_name(f".{path.name}.lock")
-    deadline = time.monotonic() + _LOCK_TIMEOUT_SECONDS
-    descriptor = -1
-    while True:
-        try:
-            descriptor = os.open(lock, os.O_CREAT | os.O_EXCL | os.O_RDWR, 0o600)
-            break
-        except FileExistsError:
-            if time.monotonic() >= deadline:
-                raise VocabularyWriteError(
-                    f"timed out waiting for vocabulary lock {lock}"
-                ) from None
-            time.sleep(0.02)
-    try:
+    """Hold an OS-backed exclusive lock; a crashed owner never leaves it stale."""
+
+    with bounded_file_lock(
+        _vocabulary_lock_path(path),
+        label="vocabulary",
+        timeout=_LOCK_TIMEOUT_SECONDS,
+        on_timeout=VocabularyWriteError,
+    ):
         yield
-    finally:
-        os.close(descriptor)
-        try:
-            lock.unlink()
-        except FileNotFoundError:
-            pass
-        except OSError as error:
-            raise VocabularyWriteError(
-                f"could not remove vocabulary lock {lock}"
-            ) from error
 
 
 def _write_temporary(path: Path, vocabulary: DiscoveryVocabulary) -> Path:
-    descriptor = -1
-    temporary: Path | None = None
     try:
-        descriptor, raw_path = tempfile.mkstemp(
-            dir=path.parent, prefix=f".{path.name}.", suffix=".tmp"
-        )
-        temporary = Path(raw_path)
         payload = serialize_vocabulary(vocabulary)
-        with os.fdopen(descriptor, "wb") as stream:
-            descriptor = -1
-            stream.write(payload)
-            stream.flush()
-            os.fsync(stream.fileno())
-        return temporary
+        return write_durable_temporary(
+            path, payload, prefix=f".{path.name}.", suffix=".tmp"
+        )
     except (OSError, yaml.YAMLError, ValueError) as error:
-        if descriptor != -1:
-            os.close(descriptor)
-        if temporary is not None:
-            _remove_temporary(temporary)
         raise VocabularyWriteError(
             f"could not write temporary vocabulary for {path}"
-        ) from error
-
-
-def _remove_temporary(path: Path) -> None:
-    try:
-        path.unlink()
-    except FileNotFoundError:
-        pass
-    except OSError as error:
-        raise VocabularyWriteError(
-            f"could not remove temporary vocabulary {path}"
         ) from error
 
 

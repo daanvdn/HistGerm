@@ -120,6 +120,33 @@ def test_checkpoint_round_trip_is_atomic_bounded_and_user_only(
         read_checkpoint(path)
 
 
+def test_checkpoint_write_is_durable_and_cleans_up_on_failure(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    path = tmp_path / "run.json"
+    original = checkpoint(tmp_path)
+    fsynced: list[int] = []
+    real_fsync = os.fsync
+
+    def counting_fsync(descriptor: int) -> None:
+        fsynced.append(descriptor)
+        real_fsync(descriptor)
+
+    monkeypatch.setattr(os, "fsync", counting_fsync)
+    write_checkpoint(path, original)
+    assert fsynced
+    assert read_checkpoint(path) == original
+
+    def failing_replace(source: object, destination: object) -> None:
+        raise OSError("synthetic replace failure")
+
+    monkeypatch.setattr(os, "replace", failing_replace)
+    with pytest.raises(OSError, match="synthetic replace failure"):
+        write_checkpoint(path, original)
+    assert read_checkpoint(path) == original
+    assert not [item for item in tmp_path.iterdir() if item.name.startswith(".")]
+
+
 def test_response_file_is_bounded_strict_json(tmp_path: Path) -> None:
     value = checkpoint(tmp_path)
     path = tmp_path / "response.json"
