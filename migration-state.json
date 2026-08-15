@@ -3,14 +3,14 @@
   "plan_version": 1,
   "run_id": "plan-20260815T175900Z",
   "branch": "copilot/histgerm-curator-migration-plan-20260815T175900Z",
-  "current_task": "TASK-MIG-006",
+  "current_task": "TASK-MIG-007",
   "tasks": {
     "TASK-MIG-001": "complete",
     "TASK-MIG-002": "complete",
     "TASK-MIG-003": "complete",
     "TASK-MIG-004": "complete",
     "TASK-MIG-005": "complete",
-    "TASK-MIG-006": "pending",
+    "TASK-MIG-006": "complete",
     "TASK-MIG-007": "pending",
     "TASK-MIG-008": "pending",
     "TASK-MIG-009": "pending",
@@ -35,7 +35,47 @@
         "based_on_default_branch_head": "e3e08cadd1e0fa996ad4616935a98e372c819922"
       }
     },
-    "GATE-RECOVERY": {"status": "pending", "blocks": "TASK-MIG-007", "evaluated_at": null, "evidence": null},
+    "GATE-RECOVERY": {
+      "status": "pass",
+      "blocks": "TASK-MIG-007",
+      "evaluated_at": "2026-08-16T00:21:00+02:00",
+      "evidence": {
+        "predecessor_tasks_complete": {
+          "TASK-MIG-001": "complete",
+          "TASK-MIG-002": "complete",
+          "TASK-MIG-003": "complete",
+          "TASK-MIG-004": "complete",
+          "TASK-MIG-005": "complete",
+          "TASK-MIG-006": "complete"
+        },
+        "explicitly_asserted": ["TASK-MIG-002", "TASK-MIG-003", "TASK-MIG-005", "TASK-MIG-006"],
+        "serialization_required": ["TASK-MIG-001", "TASK-MIG-004"],
+        "evidence_grounding_tests_pass": {
+          "unsupported_stage": "tests/research/test_models.py::test_added_result_requires_matching_stage_evidence",
+          "source_silence_out_of_scope": "tests/research/test_models.py::test_source_silence_becomes_blocked_never_out_of_scope",
+          "identity_ambiguity": "tests/research/test_models.py::test_identity_ambiguity_carries_conflict_and_cannot_be_added",
+          "colocated_recovery_guard": "tests/research/test_discovery_recovery.py::test_evidence_grounded_dispositions_stay_strict",
+          "structured_query_intents": "tests/research/test_discovery_recovery.py::test_structured_query_intent_registry_stays_canonical"
+        },
+        "malformed_sibling_retained_not_discarded": "tests/research/test_discovery_recovery.py::test_malformed_sibling_is_quarantined_without_discarding_valid_lead",
+        "malformed_formatting_single_retry_recovers": "tests/research/test_discovery_recovery.py::test_malformed_response_formatting_is_recovered_by_one_retry",
+        "missing_positions_smaller_batch_retry": "tests/research/test_discovery_recovery.py::test_missing_inspection_positions_recover_via_smaller_batch_retry",
+        "large_page_split_into_bounded_batches": "tests/research/test_discovery_recovery.py::test_large_inspection_page_is_split_into_bounded_batches",
+        "provider_transport_gap_structured_not_aborting": [
+          "tests/research/test_discovery_recovery.py::test_provider_transport_gap_does_not_abort_other_channels",
+          "tests/research/test_discovery_runtime.py::test_provider_adapter_maps_transport_oserror_to_a_structured_gap",
+          "tests/research/test_discovery_runtime.py::test_provider_adapter_reports_exact_access_gaps_without_bodies"
+        ],
+        "stale_or_future_revision_actionable_not_discarded": "tests/research/test_discovery_recovery.py::test_stale_or_future_revision_returns_actionable_state",
+        "wrong_run_identity_remains_fatal": "tests/research/test_discovery_recovery.py::test_wrong_run_identity_remains_fatal_and_is_not_stale",
+        "resume_no_repeated_confirmed_retrieval": [
+          "tests/research/test_discovery_session.py::test_resume_never_repeats_confirmed_retrieval",
+          "tests/research/test_discovery_recovery.py::test_missing_inspection_positions_recover_via_smaller_batch_retry"
+        ],
+        "pytest": {"command": "uv run pytest", "exit_code": 0, "passed": 531, "skipped": 1},
+        "mypy": {"command": "uv run mypy src tests", "exit_code": 0}
+      }
+    },
     "GATE-JOURNAL-PARITY": {"status": "pending", "blocks": "TASK-MIG-009", "evaluated_at": null, "evidence": null},
     "GATE-CUTOVER": {"status": "pending", "blocks": "TASK-MIG-010", "evaluated_at": null, "evidence": null},
     "GATE-PILOT": {"status": "pending", "blocks": "TASK-MIG-013", "evaluated_at": null, "evidence": null}
@@ -99,14 +139,25 @@
       }
     },
     "TASK-MIG-005": {
-      "hash": "pending",
-      "hash_rule": "rolling: migration-state.json is tracked in Git, so this task's own commit cannot embed its own hash. TASK-MIG-005 records its predecessor TASK-MIG-004's real commit hash (7516bad2d643afe5c5b0f79535ce1895026f558d) and leaves its own hash 'pending'; its successor TASK-MIG-006 finalizes this field. No false or self-referential hash is ever recorded.",
+      "hash": "47ee03b5d2480ead23649121f9a74393883ca4de",
+      "hash_rule": "rolling: migration-state.json is tracked in Git, so this task's own commit cannot embed its own hash. TASK-MIG-005 records its predecessor TASK-MIG-004's real commit hash (7516bad2d643afe5c5b0f79535ce1895026f558d) and leaves its own hash 'pending'; its successor TASK-MIG-006 finalizes this field with TASK-MIG-005's real commit hash (47ee03b5d2480ead23649121f9a74393883ca4de). No false or self-referential hash is ever recorded.",
       "message_subject_contains": "TASK-MIG-005",
       "parent": "7516bad2d643afe5c5b0f79535ce1895026f558d",
       "predecessor": {
         "task": "TASK-MIG-004",
         "hash": "7516bad2d643afe5c5b0f79535ce1895026f558d",
         "message_subject_contains": "TASK-MIG-004"
+      }
+    },
+    "TASK-MIG-006": {
+      "hash": "pending",
+      "hash_rule": "rolling: migration-state.json is tracked in Git, so this task's own commit cannot embed its own hash. TASK-MIG-006 records its predecessor TASK-MIG-005's real commit hash (47ee03b5d2480ead23649121f9a74393883ca4de) and leaves its own hash 'pending'; its successor TASK-MIG-007 finalizes this field. No false or self-referential hash is ever recorded.",
+      "message_subject_contains": "TASK-MIG-006",
+      "parent": "47ee03b5d2480ead23649121f9a74393883ca4de",
+      "predecessor": {
+        "task": "TASK-MIG-005",
+        "hash": "47ee03b5d2480ead23649121f9a74393883ca4de",
+        "message_subject_contains": "TASK-MIG-005"
       }
     }
   },
@@ -253,6 +304,32 @@
         {"command": "git diff --check", "exit_code": 0}
       ],
       "notes": "Reworked bounded, transient model-led elicitation (src/histgerm/research/elicitation.py) so malformed model output is recovered candidate-locally instead of discarding valid work. The whole-response candidate list is now parsed independently of the candidates it contains (_ResponseEnvelope validates only the {\"candidates\": [...]} envelope with extra='forbid'/strict), and each candidate is validated on its own via _CandidateOutput: one malformed sibling (extra field, URL/control-char name, wrong type, non-object entry) becomes a scoped ElicitationQuarantine (scope='candidate', deterministic 1-based position, stable reason, best-effort raw name) while every valid sibling is retained. Invalid response formatting (non-JSON, wrong envelope shape, a non-list candidates value, or oversize output) is retried exactly once with a schema-feedback prompt that echoes the exact rejection reason and re-states the name-only contract; a recovered retry yields leads and after retry exhaustion the response becomes a scope='response' quarantine that contributes no leads (no success-shaped fallback). Safe count-limit excess is truncated with an explicit warning: max_candidates_per_response drops surplus entries and max_aliases_per_candidate trims surplus aliases while keeping the lead. Deterministic ElicitationMetrics (retries_attempted/recovered, responses_blocked, candidates_quarantined, candidates_truncated, aliases_truncated) and warnings/quarantines are exposed on ElicitationResult as additive, default-valued fields (existing leads/prompts/requires_external_search unchanged), ElicitationPrompt.kind widens to include 'retry', and ElicitationOutputError stays exported and is still raised loudly when the injected model returns a non-string (a dependency-contract violation, never a recoverable model formatting error). DiscoveryCoverage gains elicitation_retries/recovered_retries/blocked_responses/quarantined_candidates counters surfaced through snapshot() and DiscoveryRunResult.as_json, wired from ElicitationResult.metrics in run_discovery. Provider-gap and trusted-evidence semantics are untouched (elicitation still produces only untrusted name-only leads requiring external search). New/updated tests cover malformed arrays, malformed objects/siblings, URL/wrong-type names, invalid-JSON-then-valid retry recovery, repeated-invalid scoped blocking, candidate- and alias-count truncation warnings, oversize retry recovery, non-string loud rejection, the surviving exclusion-name bound, the new metrics snapshot keys, and an end-to-end run_discovery worker-result path that keeps a valid lead beside a quarantined sibling and surfaces the metrics. No serialized ledger/vocabulary/checkpoint format, public exception type, or CLI exit code changed; no live ledger/vocabulary/inventory YAML changed."
+    },
+    "TASK-MIG-006": {
+      "recorded_at": "2026-08-16T00:21:00+02:00",
+      "all_passed": true,
+      "enforced_by_pre_commit": true,
+      "scope": [
+        "src/histgerm/research/discovery_session.py",
+        "src/histgerm/research/discovery_protocol.py",
+        "src/histgerm/research/discovery_runtime.py",
+        "tests/research/test_discovery_recovery.py",
+        "tests/research/test_discovery_runtime.py"
+      ],
+      "targeted": [
+        {"command": "uv run pytest tests/research/test_discovery_session.py tests/research/test_discovery_protocol.py tests/research/test_discovery_runtime.py tests/research/test_discovery_recovery.py", "exit_code": 0}
+      ],
+      "repository_validation": [
+        {"command": "uv run python -m histgerm.research validate --ledger research/discovery-ledger.yaml --format json", "exit_code": 0},
+        {"command": "uv run python -m histgerm.research vocabulary-validate --vocabulary research/discovery-vocabulary.yaml --format json", "exit_code": 0},
+        {"command": "uv run python -m histgerm.validation src/histgerm/data", "exit_code": 0},
+        {"command": "uv run pytest", "exit_code": 0},
+        {"command": "uv run ruff check .", "exit_code": 0},
+        {"command": "uv run ruff format --check .", "exit_code": 0},
+        {"command": "uv run mypy src tests", "exit_code": 0},
+        {"command": "git diff --check", "exit_code": 0}
+      ],
+      "notes": "Made discovery protocol failures resumable without discarding confirmed work. discovery_session.apply_exchange keeps fatal handling for a wrong run identifier, an unknown or replayed request, a mismatched capability type, and duplicate or unrequested inspection positions, so no response can ever apply to the wrong item or run. A revision mismatch (stale or future) now raises the new StaleCheckpointError, a DiscoveryProtocolError subclass carrying run_id, expected_revision, and the current outstanding requests, so the coordinator receives actionable current-state output instead of a discarded run. An inspection response that classifies only some requested positions is accepted: answered positions are recorded by item digest and the unanswered positions re-defer, so the memo re-offers exactly the missing items as a strictly smaller batch on the next advance; an entirely unanswered request stays a fatal missing response. The memo splits deferred inspection pages into successive bounded batches no larger than INSPECTION_BATCH_LIMIT (default 20) via itertools.batched, which also removes the latent >MAX_INSPECTION_ITEMS request-construction crash. discovery_runtime._provider_fetch now turns lower-level OSError/TimeoutError transport failures (alongside the existing MetadataFetchError path) into structured, body-less provider-gap ProviderResponses so one channel's transport gap never aborts the others, while a wrong argument type still raises TypeError. New tests/research/test_discovery_recovery.py drives all GATE-RECOVERY requirements end to end through the resumable state machine (evidence-grounded dispositions, canonical query intents, malformed-sibling retention, single-retry formatting recovery, missing-position smaller-batch retry, bounded batch splitting, provider-gap continuation, stale/future actionable output, wrong-run fatality, and resume without repeating confirmed retrieval); test_discovery_runtime.py adds the OSError provider-gap adapter case. No serialized checkpoint/exchange format field was removed, no public export dropped, no CLI exit code changed, and no live ledger/vocabulary/inventory YAML changed."
     }
   },
   "artifacts": {
@@ -317,6 +394,22 @@
       "invariants_preserved": "Elicitation still yields only untrusted, name-only leads requiring external search; provider-gap and trusted-evidence semantics are untouched; no partially validated trusted record is ever accepted; no serialized format, public exception type, or CLI exit code changed.",
       "serialization_diff": "none: elicitation output is transient and unpersisted, so no artifact hash is required for this task."
     },
+    "protocol_recovery": {
+      "modules": [
+        "src/histgerm/research/discovery_session.py",
+        "src/histgerm/research/discovery_protocol.py",
+        "src/histgerm/research/discovery_runtime.py"
+      ],
+      "description": "Resumable protocol failures for TASK-MIG-006: every recoverable failure preserves confirmed positions and retrievals and resumes without repeating confirmed work, while any recovery that could apply a response to the wrong item or run stays fatal.",
+      "primitives": [
+        "StaleCheckpointError(DiscoveryProtocolError): raised by apply_exchange on any revision mismatch (stale or future); carries run_id, expected_revision, and the current outstanding requests so the coordinator receives actionable current-state output instead of a discarded run. No response is applied, so no confirmed item or run is mutated by a mismatched exchange.",
+        "apply_exchange missing-position recovery: an inspection response that classifies only some requested positions records the answered positions by item digest and leaves the rest unconfirmed; the memo re-offers exactly the missing items as a strictly smaller batch on the next advance. Duplicate positions, unrequested positions, an unknown or replayed request, a mismatched capability type, and a wrong run identifier stay fatal, and an entirely unanswered pending request stays a fatal missing response.",
+        "INSPECTION_BATCH_LIMIT (default 20) + itertools.batched: the memo splits large deferred inspection pages and smaller retry sets into successive bounded batches, giving smaller-batch retries and removing the latent >MAX_INSPECTION_ITEMS request-construction crash.",
+        "discovery_runtime._provider_fetch provider gaps: lower-level OSError/TimeoutError transport failures (alongside the existing MetadataFetchError path) become structured, body-less provider-gap ProviderResponses so one channel's transport gap never aborts the others; a wrong argument type still raises TypeError."
+      ],
+      "invariants_preserved": "The checkpoint and exchange schema_version stays 1 with no field removed; DiscoveryProtocolError, apply_exchange, advance, new_checkpoint, and the request/response models keep their public shapes; the durable checkpoint format and CLI exit codes are unchanged; no live ledger/vocabulary/inventory YAML changed.",
+      "serialization_diff": "none: no serialized checkpoint or exchange format changed and no new persisted structure was added (StaleCheckpointError attributes are transient), so no artifact hash is required for this task."
+    },
     "baselines": {
       "code_reduction_denominator": {
         "description": "Sole denominator for the TASK-MIG-010 >=25% combined code-reduction target.",
@@ -363,7 +456,7 @@
       "operational_notes": {
         "state_tracking": "migration-state.json is tracked in Git (no .gitignore entry) as the single durable source of truth. It is excluded from the wheel and sdist via pyproject [tool.uv.build-backend] source-exclude, and tests/test_wheel.py permits only this exact root file under the repository payload rule while still rejecting every other JSON payload and asserting the file's absence from both distributions.",
         "fixture_naming": "JSON-content fixtures use the .txt extension (checkpoint.txt, exchange.txt, model_output.txt), matching the repository convention (tests/fixtures/controlled_browser/*.txt) and avoiding the .json payload suffix that archive safety forbids. They still parse via the current checked-in JSON models.",
-        "next": "TASK-MIG-005 (candidate-local model-output recovery) is complete; current_task is TASK-MIG-006 (resumable protocol failures, pending). TASK-MIG-004's real commit hash (7516bad2d643afe5c5b0f79535ce1895026f558d) is now recorded; TASK-MIG-005's own hash stays 'pending' for its successor TASK-MIG-006. No gate blocks TASK-MIG-006; GATE-RECOVERY is the next machine gate and is only evaluated after TASK-MIG-006. TASK-MIG-006 must not be started under the strict serialization contract of this run."
+        "next": "TASK-MIG-006 (resumable protocol failures) is complete and GATE-RECOVERY passed (machine-verified), so current_task is TASK-MIG-007 (typed run journal and CLI, pending). TASK-MIG-005's real commit hash (47ee03b5d2480ead23649121f9a74393883ca4de) is now recorded; TASK-MIG-006's own hash stays 'pending' for its successor TASK-MIG-007 to finalize. GATE-RECOVERY blocks TASK-MIG-007 and is now pass; TASK-MIG-007 also depends directly on TASK-MIG-004. The frozen TASK-MIG-010 code-reduction denominator (998 combined lines) and the TASK-MIG-011 phrase denominator stay unchanged historical baselines even though discovery_session.py and discovery_protocol.py grew for this task; the synthetic_recovery_count (2) and synthetic_whole_run_abort_count (19) baselines are likewise frozen and are not re-measured here. TASK-MIG-007 must not be started until it is scheduled under the strict serialization contract of this run."
       }
     }
   },

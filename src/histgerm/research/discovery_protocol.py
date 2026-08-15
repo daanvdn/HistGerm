@@ -50,6 +50,30 @@ class DiscoveryProtocolError(ValueError):
     """Report an unsafe, stale, or malformed capability exchange."""
 
 
+class StaleCheckpointError(DiscoveryProtocolError):
+    """Report a response that does not target the current checkpoint revision.
+
+    The run is never discarded on a stale or future response: the error carries
+    the current expected revision and the checkpoint's outstanding capability
+    requests so the coordinator can re-answer the current checkpoint without
+    repeating any confirmed work. No response is applied, so no confirmed item
+    or run is ever mutated by a mismatched exchange.
+    """
+
+    def __init__(
+        self,
+        message: str,
+        *,
+        run_id: str,
+        expected_revision: int,
+        requests: tuple[CapabilityRequest, ...],
+    ) -> None:
+        super().__init__(message)
+        self.run_id = run_id
+        self.expected_revision = expected_revision
+        self.requests = requests
+
+
 class _Strict(BaseModel):
     model_config = ConfigDict(extra="forbid", strict=True)
 
@@ -526,6 +550,7 @@ __all__ = [
     "ResultInspectionRequest",
     "ResultInspectionResponse",
     "RunParameters",
+    "StaleCheckpointError",
     "VocabularyState",
     "read_checkpoint",
     "read_exchange",

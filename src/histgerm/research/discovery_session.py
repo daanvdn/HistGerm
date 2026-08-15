@@ -13,6 +13,7 @@ import secrets
 from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import date
+from itertools import batched
 
 from histgerm.models import LanguageStage
 
@@ -38,6 +39,7 @@ from .discovery_protocol import (
     ResultInspectionRequest,
     ResultInspectionResponse,
     RunParameters,
+    StaleCheckpointError,
     decode_records,
     decode_vocabulary,
     encode_records,
@@ -57,6 +59,15 @@ from .search_providers import (
 )
 
 _DEFERRED_REASON = "inspection pending"
+
+INSPECTION_BATCH_LIMIT = 20
+"""Maximum items offered in one inspection request.
+
+Larger deferred pages, and the smaller retry sets left by a partially answered
+inspection, are split into successive batches no larger than this bound so a
+single oversized request can neither exceed the schema item limit nor force the
+coordinator to classify an unbounded page at once.
+"""
 
 
 class _Pause(BaseException):
@@ -174,14 +185,30 @@ def apply_exchange(
     checkpoint: DiscoveryCheckpoint,
     exchange: DiscoveryExchange,
 ) -> DiscoveryCheckpoint:
-    """Validate and consume every pending response exactly once."""
+    """Validate and consume every pending response, recording confirmed work.
+
+    Failures stay resumable rather than discarding the run. A wrong run
+    identifier, an unknown or replayed request, a mismatched capability type, and
+    a duplicate or unrequested inspection position remain fatal so no response is
+    ever applied to the wrong item or run. A revision mismatch raises
+    :class:`StaleCheckpointError`, which carries the current expected revision and
+    outstanding requests instead of destroying the checkpoint. An inspection
+    response that classifies only some of its requested positions is accepted:
+    the answered positions are recorded by item digest and the unanswered
+    positions are re-offered as a smaller batch on the next advance. Every
+    pending request must still be answered at least in part, so an entirely
+    unanswered request remains a fatal missing response.
+    """
 
     if exchange.run_id != checkpoint.run_id:
         raise DiscoveryProtocolError("response run identifier does not match")
     if exchange.checkpoint_revision != checkpoint.revision:
-        raise DiscoveryProtocolError(
+        raise StaleCheckpointError(
             f"response targets checkpoint revision {exchange.checkpoint_revision} "
-            f"but the checkpoint is at revision {checkpoint.revision}"
+            f"but the checkpoint is at revision {checkpoint.revision}",
+            run_id=checkpoint.run_id,
+            expected_revision=checkpoint.revision,
+            requests=tuple(checkpoint.pending),
         )
     if not checkpoint.pending:
         raise DiscoveryProtocolError("checkpoint has no pending capability request")
@@ -243,9 +270,11 @@ def _inspection_records(
     positions = [verdict.position for verdict in response.verdicts]
     if len(set(positions)) != len(positions):
         raise DiscoveryProtocolError("inspection positions must be unique")
-    if set(positions) != set(items):
+    unrequested = sorted(set(positions) - set(items))
+    if unrequested:
         raise DiscoveryProtocolError(
-            "inspection response must classify every requested position exactly once"
+            "inspection response classifies positions that were not requested: "
+            + ", ".join(str(position) for position in unrequested)
         )
     return [
         InspectionRecord(
@@ -367,7 +396,7 @@ class _Memo:
         value = tuple(resolved)
         self._executions[key] = value
         if self._deferred:
-            raise _Pause((self._inspection_request(key, value),))
+            raise _Pause(self._inspection_requests(key, value))
         return value
 
     def store_execution(
@@ -377,41 +406,48 @@ class _Memo:
         if key not in self._order:
             self._order.append(key)
         if self._deferred:
-            raise _Pause((self._inspection_request(key, records),))
+            raise _Pause(self._inspection_requests(key, records))
 
-    def _inspection_request(
+    def _inspection_requests(
         self,
         key: str,
         records: tuple[SearchAssessmentRecord, ...],
-    ) -> ResultInspectionRequest:
+    ) -> tuple[CapabilityRequest, ...]:
         first = records[0]
-        page_key = "\x1f".join(
-            (
-                key,
-                *(
-                    item_digest(result.url, result.title, result.snippet)
-                    for result in self._deferred
-                ),
-            )
-        )
-        return ResultInspectionRequest(
-            request_id=request_id(self._checkpoint.run_id, "inspection", page_key),
-            category=self._config.category,
-            stage=self._config.stage.value,
-            query=first.query,
-            provider=first.provider.value,
-            channel=first.channel,
-            locale=first.locale,
-            items=[
-                InspectionItem(
-                    position=position,
-                    url=result.url,
-                    title=result.title,
-                    snippet=result.snippet,
+        requests: list[CapabilityRequest] = []
+        for batch in batched(self._deferred, INSPECTION_BATCH_LIMIT, strict=False):
+            page_key = "\x1f".join(
+                (
+                    key,
+                    *(
+                        item_digest(result.url, result.title, result.snippet)
+                        for result in batch
+                    ),
                 )
-                for position, result in enumerate(self._deferred, start=1)
-            ],
-        )
+            )
+            requests.append(
+                ResultInspectionRequest(
+                    request_id=request_id(
+                        self._checkpoint.run_id, "inspection", page_key
+                    ),
+                    category=self._config.category,
+                    stage=self._config.stage.value,
+                    query=first.query,
+                    provider=first.provider.value,
+                    channel=first.channel,
+                    locale=first.locale,
+                    items=[
+                        InspectionItem(
+                            position=position,
+                            url=result.url,
+                            title=result.title,
+                            snippet=result.snippet,
+                        )
+                        for position, result in enumerate(batch, start=1)
+                    ],
+                )
+            )
+        return tuple(requests)
 
     def paused(self, requests: tuple[CapabilityRequest, ...]) -> DiscoveryCheckpoint:
         """Return the next checkpoint revision holding confirmed phase state."""
