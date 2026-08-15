@@ -75,6 +75,11 @@ source-exclude = [
     "**/crawler-cache/**",
     "research/discovery-ledger.yaml",
     "research/discovery-vocabulary.yaml",
+    "migration-state.json",
+    "**/run-journal/**",
+    "**/*.journal.jsonl",
+    "**/checkpoints/**",
+    "**/*.checkpoint.json",
     "uv.lock",
 ]
 source-include = [

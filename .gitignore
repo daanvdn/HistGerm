@@ -220,3 +220,10 @@ __marimo__/
 /.idea/
 /plans/
 /temp/
+
+# Autonomous curator migration operational state (never tracked or distributed)
+/migration-state.json
+**/run-journal/
+*.journal.jsonl
+**/checkpoints/
+*.checkpoint.json
