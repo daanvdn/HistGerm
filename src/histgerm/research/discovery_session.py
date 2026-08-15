@@ -50,8 +50,10 @@ from .discovery_runtime import RuntimeCapabilities
 from .models import CandidateEntry, ResourceCategory
 from .search_providers import (
     ResultClassification,
+    ResultInspection,
     SearchAssessmentRecord,
     SearchResult,
+    replace_result_inspections,
 )
 
 _DEFERRED_REASON = "inspection pending"
@@ -341,15 +343,41 @@ class _Memo:
         self, key: str, /
     ) -> tuple[SearchAssessmentRecord, ...] | None:
         self._deferred.clear()
-        return self._executions.get(key)
+        records = self._executions.get(key)
+        if records is None:
+            return None
+        resolved: list[SearchAssessmentRecord] = []
+        for record in records:
+            inspections: list[ResultInspection] = []
+            for result, inspection in zip(
+                record.results, record.inspections, strict=True
+            ):
+                verdict = self._inspections.get(
+                    item_digest(result.url, result.title, result.snippet)
+                )
+                if verdict is not None:
+                    inspections.append(
+                        ResultInspection(result.position, verdict[0], verdict[1])
+                    )
+                    continue
+                inspections.append(inspection)
+                if inspection.reason == _DEFERRED_REASON:
+                    self._deferred.append(result)
+            resolved.append(replace_result_inspections(record, tuple(inspections)))
+        value = tuple(resolved)
+        self._executions[key] = value
+        if self._deferred:
+            raise _Pause((self._inspection_request(key, value),))
+        return value
 
     def store_execution(
         self, key: str, records: tuple[SearchAssessmentRecord, ...], /
     ) -> None:
+        self._executions[key] = records
+        if key not in self._order:
+            self._order.append(key)
         if self._deferred:
             raise _Pause((self._inspection_request(key, records),))
-        self._executions[key] = records
-        self._order.append(key)
 
     def _inspection_request(
         self,

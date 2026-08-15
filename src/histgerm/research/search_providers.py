@@ -549,15 +549,7 @@ def assess_search_response(
     inspections = tuple(
         ResultInspection(result.position, *inspector(result)) for result in results
     )
-    if not results:
-        assessment: Assessment = "empty"
-        detail = "provider returned no parseable result items"
-    elif all(item.classification == "unrelated" for item in inspections):
-        assessment = "unrelated"
-        detail = f"all {len(results)} result items were inspected as unrelated"
-    else:
-        assessment = "results"
-        detail = f"inspected all {len(results)} result items; retained untrusted leads"
+    assessment, detail = _inspection_outcome(results, inspections)
     return SearchAssessmentRecord(
         provider=provider,
         channel=channel,
@@ -579,6 +571,43 @@ def assess_search_response(
         ),
         results=results,
         inspections=inspections,
+    )
+
+
+def replace_result_inspections(
+    record: SearchAssessmentRecord,
+    inspections: tuple[ResultInspection, ...],
+) -> SearchAssessmentRecord:
+    """Replace verdicts and refresh the assessment fields derived from them."""
+
+    if len(record.results) != len(inspections):
+        raise ValueError("inspection count must match the result count")
+    previous_detail = _inspection_outcome(record.results, record.inspections)[1]
+    if previous_detail not in record.observation:
+        raise ValueError("record observation does not describe its inspections")
+    assessment, detail = _inspection_outcome(record.results, inspections)
+    return replace(
+        record,
+        assessment=assessment,
+        observation=record.observation.replace(previous_detail, detail, 1),
+        inspections=inspections,
+    )
+
+
+def _inspection_outcome(
+    results: tuple[SearchResult, ...],
+    inspections: tuple[ResultInspection, ...],
+) -> tuple[Assessment, str]:
+    if not results:
+        return "empty", "provider returned no parseable result items"
+    if all(item.classification == "unrelated" for item in inspections):
+        return (
+            "unrelated",
+            f"all {len(results)} result items were inspected as unrelated",
+        )
+    return (
+        "results",
+        f"inspected all {len(results)} result items; retained untrusted leads",
     )
 
 

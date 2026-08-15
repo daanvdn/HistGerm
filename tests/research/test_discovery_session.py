@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import subprocess
@@ -135,8 +136,11 @@ def test_resumable_loop_matches_the_injected_in_process_run() -> None:
     )
     assert isinstance(injected, Completed)
     assert rounds >= 3
-    assert json.dumps(resumed, sort_keys=True) == json.dumps(
-        injected.result.as_json(), sort_keys=True
+    resumed_json = json.dumps(resumed, sort_keys=True)
+    injected_json = json.dumps(injected.result.as_json(), sort_keys=True)
+    assert (
+        hashlib.sha256(resumed_json.encode()).digest()
+        == hashlib.sha256(injected_json.encode()).digest()
     )
     model_leads = cast(list[dict[str, Any]], resumed["model_leads"])
     assessments = cast(list[dict[str, Any]], resumed["assessments"])
@@ -167,8 +171,7 @@ def test_resume_never_repeats_confirmed_retrieval() -> None:
     injected = Counter(injected_calls)
     catalog_urls = [url for url in resumed if "?" not in url]
     assert catalog_urls and all(resumed[url] == 1 for url in catalog_urls)
-    assert all(resumed[url] <= injected[url] + 1 for url in resumed)
-    assert sum(resumed.values()) - sum(injected.values()) <= 5
+    assert resumed == injected
 
 
 def test_result_inspection_request_ids_are_unique_across_pages() -> None:
