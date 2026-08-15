@@ -1,3 +1,28 @@
+# Autonomous curator architecture migration
+
+Launch this once to execute the corrected migration plan at
+`plans/histgerm-curator-architecture-migration.md`.
+
+- [ ] Feed this launch entry to GitHub Copilot:
+
+> Execute `plans/histgerm-curator-architecture-migration.md` autonomously.
+> On startup, resume from `migration-state.json`: if it records an in-progress
+> run, verify the recorded branch and HEAD and continue from `current_task`
+> rather than restarting at `TASK-MIG-001`; otherwise create one integration
+> branch `copilot/histgerm-curator-migration-<run-id>`, bootstrap
+> `migration-state.json`, and open one continuously updated draft migration
+> pull request. Run `TASK-MIG-001` through `TASK-MIG-013` strictly in order with
+> no parallelism: one branch, one draft PR, and one conventional commit per task,
+> updating `migration-state.json` after each task. Evaluate every gate solely
+> through its machine-verifiable criteria and proceed automatically without
+> pausing for approval or sign-off. Do not mutate live ledger or vocabulary
+> content before `GATE-PILOT`. After `GATE-PILOT`, select exactly one incomplete
+> pilot target with the checked-in next-sweep selection command, record it once
+> in `migration-state.json`, run the pilot on a unique inventory branch, and open
+> a separate inventory pull request. Never merge or auto-merge either pull
+> request. Stop only on a failed machine gate, a rollback trigger, or an
+> unresolved contradiction that prevents a correct implementation.
+
 # HistGerm collection runs
 
 Run these tasks **sequentially in the listed order** with the
