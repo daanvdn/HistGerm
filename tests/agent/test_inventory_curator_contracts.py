@@ -201,7 +201,7 @@ def test_resumable_discovery_capability_loop_is_complete(
     for policy in (discover, documented):
         assert_concepts(
             policy,
-            ("os temporary",),
+            ("os temporary", "os-temporary"),
             ("checkpoint",),
             ("model_elicitation",),
             ("result_inspection",),

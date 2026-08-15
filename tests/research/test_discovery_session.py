@@ -7,7 +7,7 @@ import sys
 from collections import Counter
 from datetime import UTC, date, datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 from synthetic_transport import LEAD_URL, inspect_result, model_answer, synthetic_fetch
 
@@ -138,10 +138,12 @@ def test_resumable_loop_matches_the_injected_in_process_run() -> None:
     assert json.dumps(resumed, sort_keys=True) == json.dumps(
         injected.result.as_json(), sort_keys=True
     )
-    assert {lead["name"] for lead in resumed["model_leads"]} == {"MhgBERT"}
+    model_leads = cast(list[dict[str, Any]], resumed["model_leads"])
+    assessments = cast(list[dict[str, Any]], resumed["assessments"])
+    assert {lead["name"] for lead in model_leads} == {"MhgBERT"}
     assert any(
         inspection["classification"] == "lead"
-        for assessment in resumed["assessments"]
+        for assessment in assessments
         for inspection in assessment["inspections"]
     )
 
@@ -205,7 +207,7 @@ def test_subprocess_cli_completes_discovery_without_injected_callbacks(
             check=False,
         )
         assert completed.returncode == 0, completed.stdout + completed.stderr
-        return json.loads(completed.stdout)
+        return cast(dict[str, Any], json.loads(completed.stdout))
 
     payload = run(
         "discover",
