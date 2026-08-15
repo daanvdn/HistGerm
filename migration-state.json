@@ -3,10 +3,10 @@
   "plan_version": 1,
   "run_id": "plan-20260815T175900Z",
   "branch": "copilot/histgerm-curator-migration-plan-20260815T175900Z",
-  "current_task": "TASK-MIG-002",
+  "current_task": "TASK-MIG-003",
   "tasks": {
     "TASK-MIG-001": "complete",
-    "TASK-MIG-002": "pending",
+    "TASK-MIG-002": "complete",
     "TASK-MIG-003": "pending",
     "TASK-MIG-004": "pending",
     "TASK-MIG-005": "pending",
@@ -42,7 +42,7 @@
   },
   "commits": {
     "TASK-MIG-001": {
-      "hash": "pending",
+      "hash": "41f2354014d2cd15093dee45e8a688725c96dbb0",
       "hash_rule": "rolling: migration-state.json is tracked in Git, so a task's own commit cannot embed its own hash. Each task records its predecessor's real hash and leaves its own hash 'pending'; the successor finalizes it. TASK-MIG-002's commit records TASK-MIG-001's real retry-commit hash in this field. TASK-MIG-013's hash is finalized by the final draft-PR-update commit. No false or self-referential hash is ever recorded.",
       "message_subject_contains": "TASK-MIG-001",
       "parent": "de83e6a311108c903544839b8e94e981c9fcf4cb",
@@ -59,10 +59,21 @@
           "reverted_by": "de83e6a311108c903544839b8e94e981c9fcf4cb"
         },
         "attempt_2": {
-          "commit": "pending",
+          "commit": "41f2354014d2cd15093dee45e8a688725c96dbb0",
           "status": "complete",
           "note": "Non-destructive retry on the same branch and draft PR #5: migration-state.json is tracked in Git and pushed (still excluded from wheel/sdist and verified absent from both); .gitignore restored to its pre-TASK-MIG-001 content (no migration/journal/checkpoint ignores); tests/test_wheel.py narrowed so the repository payload rule permits only the exact root migration-state.json while archive safety still rejects JSON and distribution tests assert its absence; fixtures, baseline test, and pyproject source-exclude additions recreated; plan TASK-MIG-001 scope/acceptance updated to declare migration-state.json and tests/test_wheel.py."
         }
+      }
+    },
+    "TASK-MIG-002": {
+      "hash": "pending",
+      "hash_rule": "rolling: migration-state.json is tracked in Git, so this task's own commit cannot embed its own hash. TASK-MIG-002 records its predecessor TASK-MIG-001's real retry-commit hash (41f2354014d2cd15093dee45e8a688725c96dbb0) and leaves its own hash 'pending'; its successor TASK-MIG-003 finalizes this field. No false or self-referential hash is ever recorded.",
+      "message_subject_contains": "TASK-MIG-002",
+      "parent": "41f2354014d2cd15093dee45e8a688725c96dbb0",
+      "predecessor": {
+        "task": "TASK-MIG-001",
+        "hash": "41f2354014d2cd15093dee45e8a688725c96dbb0",
+        "message_subject_contains": "TASK-MIG-001"
       }
     }
   },
@@ -105,6 +116,26 @@
           "journal_or_checkpoint_in_wheel": false
         }
       ]
+    },
+    "TASK-MIG-002": {
+      "recorded_at": "2026-08-15T21:46:24+02:00",
+      "all_passed": true,
+      "enforced_by_pre_commit": true,
+      "scope": ["src/histgerm/research/models.py", "tests/research/test_models.py"],
+      "targeted": [
+        {"command": "uv run pytest tests/research/test_models.py", "exit_code": 0}
+      ],
+      "repository_validation": [
+        {"command": "uv run python -m histgerm.research validate --ledger research/discovery-ledger.yaml --format json", "exit_code": 0},
+        {"command": "uv run python -m histgerm.research vocabulary-validate --vocabulary research/discovery-vocabulary.yaml --format json", "exit_code": 0},
+        {"command": "uv run python -m histgerm.validation src/histgerm/data", "exit_code": 0},
+        {"command": "uv run pytest", "exit_code": 0},
+        {"command": "uv run ruff check .", "exit_code": 0},
+        {"command": "uv run ruff format --check .", "exit_code": 0},
+        {"command": "uv run mypy src tests", "exit_code": 0},
+        {"command": "git diff --check", "exit_code": 0}
+      ],
+      "notes": "Validators-only change: added stage-evidence grounding for 'added' via the EvidenceExcerpt.supports dotted-support convention, identity-ambiguity semantics (matched_resource_id outside a duplicate requires identity_conflict; identity_conflict cannot produce 'added'), and regression coverage that source silence yields 'blocked' not 'out_of_scope' plus malformed-sibling candidate-local retention. No new required constructor fields; the legal-evidence validator is unchanged. No live ledger/vocabulary/inventory YAML changed."
     }
   },
   "artifacts": {
@@ -167,7 +198,7 @@
       "operational_notes": {
         "state_tracking": "migration-state.json is tracked in Git (no .gitignore entry) as the single durable source of truth. It is excluded from the wheel and sdist via pyproject [tool.uv.build-backend] source-exclude, and tests/test_wheel.py permits only this exact root file under the repository payload rule while still rejecting every other JSON payload and asserting the file's absence from both distributions.",
         "fixture_naming": "JSON-content fixtures use the .txt extension (checkpoint.txt, exchange.txt, model_output.txt), matching the repository convention (tests/fixtures/controlled_browser/*.txt) and avoiding the .json payload suffix that archive safety forbids. They still parse via the current checked-in JSON models.",
-        "next": "current_task is TASK-MIG-002 (pending). Its only dependency, TASK-MIG-001, is complete, so no gate blocks TASK-MIG-002; GATE-RECOVERY is the next machine gate and is only evaluated after TASK-MIG-006. TASK-MIG-002 has not been started."
+        "next": "TASK-MIG-002 (evidence-grounded stage, identity, and out_of_scope dispositions) is complete; current_task is TASK-MIG-003 (pending). TASK-MIG-001's real retry-commit hash (41f2354014d2cd15093dee45e8a688725c96dbb0) is now recorded; TASK-MIG-002's own hash stays 'pending' for its successor TASK-MIG-003. No gate blocks TASK-MIG-003; GATE-RECOVERY is the next machine gate and is only evaluated after TASK-MIG-006."
       }
     }
   },

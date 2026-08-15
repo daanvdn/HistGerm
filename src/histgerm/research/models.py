@@ -36,6 +36,7 @@ _CANDIDATE_ID_PATTERN = '^candidate-[a-z0-9]+(?:-[a-z0-9]+)*$'
 _CHANNEL_PATTERN = '^[a-z][a-z0-9]*(?:[-_][a-z0-9]+)*$'
 _SUPPORT_RE = re.compile('^[a-z][a-z0-9_]*(?:\\.[a-z0-9]+(?:[-_][a-z0-9]+)*)*$')
 _CATEGORY_PREFIXES: dict[ResourceCategory, str] = {'corpus': 'corpus-', 'tool': 'tool-', 'dictionary': 'dictionary-'}
+_STAGE_SUPPORT_FIELDS: dict[ResourceCategory, str] = {'corpus': 'covered_stages', 'tool': 'supported_stages', 'dictionary': 'covered_stages'}
 _FINAL_DISPOSITIONS = {'added', 'duplicate', 'out_of_scope', 'blocked'}
 _STAGE_TERMS: dict[str, dict[SearchLanguage, tuple[str, ...]]] = {'ohg': {'de': ('Althochdeutsch', 'OHG'), 'en': ('Old High German', 'OHG')}, 'mhg': {'de': ('Mittelhochdeutsch', 'MHG'), 'en': ('Middle High German', 'MHG')}, 'enhg': {'de': ('Frühneuhochdeutsch', 'ENHG'), 'en': ('Early New High German', 'ENHG')}}
 _CATEGORY_TERMS: dict[str, dict[SearchLanguage, tuple[str, ...]]] = {'corpus': {'de': ('Korpus', 'Textkorpus', 'Textsammlung', 'Sprachdaten'), 'en': ('corpus', 'text collection', 'dataset', 'language data')}, 'tool': {'de': ('Tagger', 'Lemmatisierer', 'Parser', 'Sprachmodell'), 'en': ('tagger', 'lemmatizer', 'parser', 'language model')}, 'dictionary': {'de': ('Wörterbuch', 'Lexikon', 'Wortschatz'), 'en': ('dictionary', 'lexicon', 'vocabulary')}}
@@ -381,12 +382,16 @@ class CandidateResearchResult(_ResearchModel):
 
     @model_validator(mode='after')
     def validate_result(self) -> CandidateResearchResult:
-        """Validate disposition, category, and direct legal evidence."""
+        """Validate disposition, identity, stage, category, and direct legal evidence."""
         expected_type = {'corpus': Corpus, 'tool': Tool, 'dictionary': Dictionary}[self.category]
         if self.proposed_record is not None and (not isinstance(self.proposed_record, expected_type)):
             raise ValueError('proposed_record type must match category')
         if self.matched_resource_id is not None:
             _require_category_prefix(self.matched_resource_id, self.category, 'matched_resource_id')
+            if self.disposition != 'duplicate' and 'identity_conflict' not in self.risk_flags:
+                raise ValueError('a matched_resource_id outside a duplicate is identity ambiguity requiring the identity_conflict risk flag')
+        if 'identity_conflict' in self.risk_flags and self.disposition == 'added':
+            raise ValueError('identity ambiguity flagged identity_conflict cannot produce an added result')
         if self.disposition == 'added':
             if not self.verified_stages:
                 raise ValueError('added requires an in-scope verified stage')
@@ -395,6 +400,7 @@ class CandidateResearchResult(_ResearchModel):
             if self.proposed_record is None:
                 raise ValueError('added requires a proposed_record')
             _require_category_prefix(self.proposed_record.id, self.category, 'proposed record ID')
+            self._validate_stage_evidence()
         if self.disposition == 'duplicate' and self.matched_resource_id is None:
             raise ValueError('duplicate requires matched_resource_id')
         if self.disposition == 'out_of_scope':
@@ -407,6 +413,15 @@ class CandidateResearchResult(_ResearchModel):
         if self.proposed_record is not None:
             self._validate_legal_evidence()
         return self
+
+    def _validate_stage_evidence(self) -> None:
+        """Require canonical excerpt evidence grounding every added verified stage."""
+        support_field = _STAGE_SUPPORT_FIELDS[self.category]
+        grounded = {support for excerpt in self.evidence for support in excerpt.supports}
+        for stage in self.verified_stages:
+            support = f'{support_field}.{stage.value}'
+            if support not in grounded:
+                raise ValueError(f'added verified stage {stage.value!r} requires canonical evidence with supports={support!r}')
 
     def _validate_legal_evidence(self) -> None:
         """Require matching quoted worker evidence for direct legal claims."""

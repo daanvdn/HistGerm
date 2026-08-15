@@ -2,11 +2,22 @@ from __future__ import annotations
 
 from datetime import date
 from pathlib import Path
+from typing import Any
 
 import pytest
 from conftest import candidate_data, pass_data
 from pydantic import ValidationError
 
+from histgerm.models import (
+    Access,
+    AnnotationLayer,
+    Availability,
+    Corpus,
+    CorpusVersion,
+    LanguageStage,
+    LegalPermission,
+    Source,
+)
 from histgerm.research import (
     CandidateEntry,
     CandidateResearchResult,
@@ -276,3 +287,201 @@ def test_seed_handoff_round_trip_is_lossless_and_deterministic(
     assert stored.source_wordings == candidate.source_wordings
     assert stored.discovery_urls == candidate.discovery_urls
     assert updated.model_dump(mode="json") == reloaded.model_dump(mode="json")
+
+
+def _corpus_record(
+    *, covered_stages: tuple[LanguageStage, ...] = (LanguageStage.MHG,)
+) -> Corpus:
+    """Build a minimal valid corpus proposed record with unclear access."""
+    return Corpus(
+        id="corpus-reference",
+        name="Reference Corpus of Middle High German",
+        reviewed_on=date(2026, 8, 12),
+        covered_stages=list(covered_stages),
+        links={"homepage": "https://example.org/project/"},
+        sources=[
+            Source(
+                id="corpus-page",
+                url="https://example.org/project/",
+                accessed_on=date(2026, 8, 12),
+                supports=["name", "covered_stages", "access", "versions"],
+            )
+        ],
+        access=Access(
+            availability=[Availability.DESCRIBED],
+            model_training=LegalPermission.UNCLEAR,
+            original_data_redistribution=LegalPermission.UNCLEAR,
+            processed_data_redistribution=LegalPermission.UNCLEAR,
+            trained_weight_publication=LegalPermission.UNCLEAR,
+            source_ids=["corpus-page"],
+        ),
+        versions=[
+            CorpusVersion(
+                id="v1",
+                availability=[Availability.DESCRIBED],
+                annotations=[
+                    AnnotationLayer(
+                        id="pos",
+                        type="pos",
+                        tagset_name="HiTS",
+                        source_ids=["corpus-page"],
+                    )
+                ],
+                texts=[],
+            )
+        ],
+    )
+
+
+def _stage_excerpt(*supports: str) -> EvidenceExcerpt:
+    """Build one canonical-project evidence excerpt with the given supports."""
+    return EvidenceExcerpt(
+        url="https://example.org/project/",
+        accessed_on=date(2026, 8, 12),
+        kind="canonical_project",
+        supports=list(supports),
+    )
+
+
+def _added_result(**updates: Any) -> CandidateResearchResult:
+    """Build an otherwise valid ``added`` corpus research result."""
+    data: dict[str, Any] = {
+        "candidate_id": "candidate-example",
+        "category": "corpus",
+        "disposition": "added",
+        "canonical_name": "Reference Corpus of Middle High German",
+        "verified_stages": [LanguageStage.MHG],
+        "evidence": [_stage_excerpt("identity", "covered_stages.mhg")],
+        "evidence_gaps": [],
+        "matched_resource_id": None,
+        "risk_flags": [],
+        "summary": "Canonical Middle High German corpus added.",
+        "proposed_record": _corpus_record(),
+    }
+    data.update(updates)
+    return CandidateResearchResult(**data)
+
+
+def test_added_result_requires_matching_stage_evidence() -> None:
+    result = _added_result()
+    assert result.disposition == "added"
+    assert result.verified_stages == [LanguageStage.MHG]
+
+    # A verified stage without a matching dotted-support excerpt fails.
+    with pytest.raises(ValidationError, match="requires canonical evidence"):
+        _added_result(verified_stages=[LanguageStage.MHG, LanguageStage.OHG])
+
+    # Evidence whose supports do not ground the stage is insufficient; the
+    # grounding uses the excerpt supports, not the trusted proposed record.
+    with pytest.raises(ValidationError, match="requires canonical evidence"):
+        _added_result(evidence=[_stage_excerpt("identity")])
+
+
+def test_identity_ambiguity_carries_conflict_and_cannot_be_added() -> None:
+    # An identity_conflict risk flag prevents an added disposition.
+    with pytest.raises(
+        ValidationError, match="identity_conflict cannot produce an added"
+    ):
+        _added_result(risk_flags=["identity_conflict"])
+
+    # A competing matched_resource_id outside a duplicate is identity ambiguity
+    # and must carry the identity_conflict risk flag.
+    with pytest.raises(ValidationError, match="identity_conflict risk flag"):
+        _added_result(matched_resource_id="corpus-reference", risk_flags=[])
+
+    # A duplicate legitimately carries matched_resource_id without the flag.
+    duplicate = CandidateResearchResult(
+        candidate_id="candidate-example",
+        category="corpus",
+        disposition="duplicate",
+        verified_stages=[],
+        evidence=[],
+        evidence_gaps=[],
+        matched_resource_id="corpus-reference",
+        risk_flags=[],
+        summary="Duplicate of an existing corpus.",
+    )
+    assert duplicate.matched_resource_id == "corpus-reference"
+
+
+def test_source_silence_becomes_blocked_never_out_of_scope() -> None:
+    # Source silence (no stage evidence) cannot yield an out_of_scope result.
+    with pytest.raises(ValidationError, match="out_of_scope requires direct evidence"):
+        CandidateResearchResult(
+            candidate_id="candidate-example",
+            category="corpus",
+            disposition="out_of_scope",
+            verified_stages=[],
+            evidence=[],
+            evidence_gaps=[],
+            risk_flags=[],
+            summary="No canonical stage evidence was found.",
+        )
+
+    # The correct disposition for absent evidence is a candidate-local block.
+    blocked = CandidateResearchResult(
+        candidate_id="candidate-example",
+        category="corpus",
+        disposition="blocked",
+        verified_stages=[],
+        evidence=[],
+        evidence_gaps=["No canonical stage evidence was found."],
+        risk_flags=[],
+        summary="Blocked pending canonical stage evidence.",
+    )
+    assert blocked.disposition == "blocked"
+
+
+def test_one_malformed_result_retains_valid_sibling_dispositions() -> None:
+    valid_first: dict[str, Any] = {
+        "candidate_id": "candidate-alpha",
+        "category": "corpus",
+        "disposition": "blocked",
+        "verified_stages": [],
+        "evidence": [],
+        "evidence_gaps": ["Canonical stage evidence unavailable."],
+        "risk_flags": [],
+        "summary": "Blocked pending evidence.",
+    }
+    malformed_sibling: dict[str, Any] = {
+        "candidate_id": "candidate-beta",
+        "category": "corpus",
+        # Added without verified stages, evidence, or a proposed record.
+        "disposition": "added",
+        "verified_stages": [],
+        "evidence": [],
+        "evidence_gaps": [],
+        "risk_flags": [],
+        "summary": "Malformed added result.",
+    }
+    valid_second: dict[str, Any] = {
+        "candidate_id": "candidate-gamma",
+        "category": "tool",
+        "disposition": "out_of_scope",
+        "verified_stages": [],
+        "evidence": [
+            {
+                "url": "https://example.org/tool",
+                "accessed_on": "2026-08-12",
+                "kind": "institutional",
+                "supports": ["identity"],
+            }
+        ],
+        "evidence_gaps": [],
+        "risk_flags": [],
+        "summary": "Modern-only tool, out of historical scope.",
+    }
+
+    validated: list[CandidateResearchResult] = []
+    quarantined: list[int] = []
+    for index, payload in enumerate((valid_first, malformed_sibling, valid_second)):
+        try:
+            validated.append(CandidateResearchResult.model_validate(payload))
+        except ValidationError:
+            quarantined.append(index)
+
+    assert [result.candidate_id for result in validated] == [
+        "candidate-alpha",
+        "candidate-gamma",
+    ]
+    assert quarantined == [1]
