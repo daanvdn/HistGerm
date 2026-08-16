@@ -701,7 +701,15 @@ with no stage evidence becomes `blocked`, never `out_of_scope`.
 - `.github/skills/curate-histgerm-resource/SKILL.md`
 - `.github/skills/validate-histgerm-inventory/SKILL.md`
 - `.github/skills/publish-histgerm-batch/SKILL.md`
-- `src/histgerm/research/__main__.py` (minimal CLI adapters required by skills)
+- `src/histgerm/research/__main__.py` (minimal CLI adapters required by skills;
+  the `TASK-MIG-007` journal subcommands already satisfy the migrated skills, so
+  no new adapter was required and the legacy `discover` exchange branch is
+  retained unchanged for `TASK-MIG-010`)
+- `docs/inventory-curator.md` (the operator guide is a contract surface enforced
+  by `tests/agent/`, and `GATE-CUTOVER` requires that no docs surface still
+  requires an old-exchange symbol; its required old-exchange operator flow is
+  migrated to the journal here while the broader documentation restructuring
+  stays with `TASK-MIG-011`)
 - `tests/agent/` (executable workflow simulations)
 
 **Work**

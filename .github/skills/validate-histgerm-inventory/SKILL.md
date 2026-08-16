@@ -19,6 +19,7 @@ Return only one JSON object, without Markdown or commentary, in this shape:
   "results": {
     "ledger": {},
     "vocabulary": {},
+    "journal": {},
     "inventory": {},
     "tests": {},
     "lint": {},
@@ -105,6 +106,29 @@ associations, and classifications are untrusted discovery leads and cannot
 satisfy trusted inventory evidence. Vocabulary and ledger revision/mutation
 checks are independent; validating one never bootstraps, mutates, or completes
 the other.
+
+## Run-journal derived results
+
+Publication validation consumes journal-derived results. Whenever the batch
+supplies a discovery run journal (`<run.journal.jsonl>`), integrity-check it and
+derive the run outcome from it deterministically rather than from prose:
+
+```powershell
+uv run python -m histgerm.research journal-validate --journal <run.journal.jsonl> --format json
+uv run python -m histgerm.research journal-status --journal <run.journal.jsonl> --format json
+```
+
+Record the result under `journal`. Require `journal-validate` to pass, recovering
+only a single torn trailing line from an interrupted append and rejecting
+mid-file corruption, a wrong run identifier, or a sequence gap. Require the
+`journal-status` replay to be deterministic and use its journal-derived counts
+(leads, provider gaps, blocked and researched candidates, last ledger revision,
+and completion) as the authoritative run report facts. Confirm that the
+journal-derived dispositions agree with the ledger and batch, that the run
+journal is a `*.journal.jsonl` file outside the repository, and that it is absent
+from the wheel, source distribution, commit, and review payload. A journal that
+fails integrity, replays non-deterministically, or disagrees with the ledger is
+`failed`, never `draft`.
 
 Require the trusted inventory validator and generic tests to load every
 authored YAML record through the checked-in safe loader and exact `Corpus`,

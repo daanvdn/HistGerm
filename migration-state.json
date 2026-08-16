@@ -3,7 +3,7 @@
   "plan_version": 1,
   "run_id": "plan-20260815T175900Z",
   "branch": "copilot/histgerm-curator-migration-plan-20260815T175900Z",
-  "current_task": "TASK-MIG-009",
+  "current_task": "TASK-MIG-010",
   "tasks": {
     "TASK-MIG-001": "complete",
     "TASK-MIG-002": "complete",
@@ -13,7 +13,7 @@
     "TASK-MIG-006": "complete",
     "TASK-MIG-007": "complete",
     "TASK-MIG-008": "complete",
-    "TASK-MIG-009": "pending",
+    "TASK-MIG-009": "complete",
     "TASK-MIG-010": "pending",
     "TASK-MIG-011": "pending",
     "TASK-MIG-012": "pending",
@@ -121,7 +121,56 @@
         "ruff_format": {"command": "uv run ruff format --check .", "exit_code": 0}
       }
     },
-    "GATE-CUTOVER": {"status": "pending", "blocks": "TASK-MIG-010", "evaluated_at": null, "evidence": null},
+    "GATE-CUTOVER": {
+      "status": "pass",
+      "blocks": "TASK-MIG-010",
+      "evaluated_at": "2026-08-16T04:37:43+02:00",
+      "evidence": {
+        "predecessor_tasks_complete": {
+          "TASK-MIG-001": "complete",
+          "TASK-MIG-002": "complete",
+          "TASK-MIG-003": "complete",
+          "TASK-MIG-004": "complete",
+          "TASK-MIG-005": "complete",
+          "TASK-MIG-006": "complete",
+          "TASK-MIG-007": "complete",
+          "TASK-MIG-008": "complete",
+          "TASK-MIG-009": "complete"
+        },
+        "explicitly_asserted": ["TASK-MIG-009"],
+        "serialization_required": ["TASK-MIG-001", "TASK-MIG-002", "TASK-MIG-003", "TASK-MIG-004", "TASK-MIG-005", "TASK-MIG-006", "TASK-MIG-007", "TASK-MIG-008"],
+        "native_bilingual_and_multi_channel_simulations_pass": [
+          "tests/agent/test_native_orchestration_simulations.py::test_bilingual_multichannel_run_journal_shape",
+          "tests/agent/test_native_orchestration_simulations.py::test_interruption_resume_never_repeats_confirmed_retrieval"
+        ],
+        "publication_validation_consumes_journal_derived_results": [
+          "tests/agent/test_native_orchestration_simulations.py::test_publication_consumes_journal_derived_results",
+          ".github/skills/validate-histgerm-inventory/SKILL.md '## Run-journal derived results' consumes journal-validate + journal-status and records a journal result",
+          ".github/skills/publish-histgerm-batch/SKILL.md 'Consume journal-derived results' derives PR-report facts from the journal-status replay"
+        ],
+        "no_contract_surface_requires_an_old_exchange_symbol": {
+          "check": "tests/agent/test_native_orchestration_simulations.py::test_no_surface_requires_an_old_exchange_symbol",
+          "surfaces_scanned": [".github/agents/histgerm-inventory-curator.agent.md", ".github/skills/discover-histgerm-resources/SKILL.md", ".github/skills/curate-histgerm-resource/SKILL.md", ".github/skills/validate-histgerm-inventory/SKILL.md", ".github/skills/publish-histgerm-batch/SKILL.md", "docs/inventory-curator.md"],
+          "forbidden_tokens_absent": ["--checkpoint", "--resume", "model_elicitation", "result_inspection", "needs_input", "read_exchange", "apply_exchange", "DiscoveryCheckpoint", "capability exchange", "capability-exchange", "discover --"],
+          "ci_clean": [".github/workflows/ci.yml", ".github/workflows/copilot-setup-steps.yml"]
+        },
+        "retained_legacy_awaiting_TASK-MIG-010_not_required_contract_references": {
+          "note": "The only non-test callers of old-exchange interfaces are the intentionally retained legacy implementation cluster (discovery_protocol.py request/response/checkpoint symbols, discovery_session.py advance/apply_exchange, and the __main__.py `discover --checkpoint/--resume/--input` branch). Per the plan, TASK-MIG-010 removes these; they are legacy implementation, not required contract references. No agent, skill, CLI-required, docs, or CI surface requires an old-exchange symbol.",
+          "files": ["src/histgerm/research/discovery_protocol.py", "src/histgerm/research/discovery_session.py", "src/histgerm/research/__main__.py"]
+        },
+        "disable_model_invocation_review": "disable-model-invocation: true is retained unchanged; the executable native-orchestration simulations complete without it being lifted, so it does not block target native orchestration. Its platform meaning (no auto-invocation from a model turn; does not block the agent's own native orchestration/worker delegation/journal writes) is documented in the agent frontmatter note and docs/inventory-curator.md.",
+        "query_intent_behavior_preserved_end_to_end": "query_planned journal events carry intent_id; asserted by tests/agent/test_native_orchestration_simulations.py::test_bilingual_multichannel_run_journal_shape and the unchanged TASK-MIG-003 query-intent suite.",
+        "pytest": {"command": "uv run pytest", "exit_code": 0, "passed": 591, "skipped": 1},
+        "mypy": {"command": "uv run mypy src tests", "exit_code": 0},
+        "ruff_check": {"command": "uv run ruff check .", "exit_code": 0},
+        "ruff_format": {"command": "uv run ruff format --check .", "exit_code": 0},
+        "ledger_validate": {"command": "uv run python -m histgerm.research validate --ledger research/discovery-ledger.yaml --format json", "exit_code": 0, "revision": 95},
+        "vocabulary_validate": {"command": "uv run python -m histgerm.research vocabulary-validate --vocabulary research/discovery-vocabulary.yaml --format json", "exit_code": 0, "revision": 0},
+        "inventory_validate": {"command": "uv run python -m histgerm.validation src/histgerm/data", "exit_code": 0},
+        "build": {"command": "uv build --no-sources", "exit_code": 0},
+        "git_diff_check": {"command": "git diff --check", "exit_code": 0}
+      }
+    },
     "GATE-PILOT": {"status": "pending", "blocks": "TASK-MIG-013", "evaluated_at": null, "evidence": null}
   },
   "commits": {
@@ -216,14 +265,25 @@
       }
     },
     "TASK-MIG-008": {
-      "hash": "pending",
-      "hash_rule": "rolling: migration-state.json is tracked in Git, so this task's own commit cannot embed its own hash. TASK-MIG-008 records its predecessor TASK-MIG-007's real commit hash (cf19f7fffee51e825604e9bbb085f3ef5e6ca4ab) and leaves its own hash 'pending'; its successor TASK-MIG-009 finalizes this field with TASK-MIG-008's real commit hash. No false or self-referential hash is ever recorded.",
+      "hash": "a6715211d17c4963caca9f6fe8aabb15d85df0b0",
+      "hash_rule": "rolling: migration-state.json is tracked in Git, so this task's own commit cannot embed its own hash. TASK-MIG-008 recorded its predecessor TASK-MIG-007's real commit hash (cf19f7fffee51e825604e9bbb085f3ef5e6ca4ab) and left its own hash 'pending'; its successor TASK-MIG-009 finalizes this field with TASK-MIG-008's real commit hash (a6715211d17c4963caca9f6fe8aabb15d85df0b0). No false or self-referential hash is ever recorded.",
       "message_subject_contains": "TASK-MIG-008",
       "parent": "cf19f7fffee51e825604e9bbb085f3ef5e6ca4ab",
       "predecessor": {
         "task": "TASK-MIG-007",
         "hash": "cf19f7fffee51e825604e9bbb085f3ef5e6ca4ab",
         "message_subject_contains": "TASK-MIG-007"
+      }
+    },
+    "TASK-MIG-009": {
+      "hash": "pending",
+      "hash_rule": "rolling: migration-state.json is tracked in Git, so this task's own commit cannot embed its own hash. TASK-MIG-009 records its predecessor TASK-MIG-008's real commit hash (a6715211d17c4963caca9f6fe8aabb15d85df0b0) and leaves its own hash 'pending'; its successor TASK-MIG-010 finalizes this field with TASK-MIG-009's real commit hash. No false or self-referential hash is ever recorded.",
+      "message_subject_contains": "TASK-MIG-009",
+      "parent": "a6715211d17c4963caca9f6fe8aabb15d85df0b0",
+      "predecessor": {
+        "task": "TASK-MIG-008",
+        "hash": "a6715211d17c4963caca9f6fe8aabb15d85df0b0",
+        "message_subject_contains": "TASK-MIG-008"
       }
     }
   },
@@ -479,6 +539,41 @@
         }
       ],
       "notes": "Added the deterministic journal dual-write and parity path without changing any live result. A new src/histgerm/research/journal_adapters.py maps one authoritative DiscoveryRunResult to an ordered, append-only run-journal event stream (discovery_run_events: run_started, then elicitation retries and quarantines, one query_planned plus a query_executed or provider_gap per assessment, one lead_found per retained lead, and a terminal run_completed with gap-free sequences) and provides two symmetric reductions, synthetic_from_result and synthetic_from_events, into one SyntheticDiscoveryResult projection so the old path and the journal replay are equal by construction; a mismatch is a hard test failure, never a runtime fallback. append_discovery_journal durably writes the stream through the TASK-MIG-007 store, inheriting atomic interruption-safe append, optimistic-concurrency sequencing, and idempotent restart-resume, and can append a verifiable compaction checkpoint that the projection ignores. discovery_orchestration.py gains the additive pure DiscoveryRunResult.leads_with_context(), which projects retained leads with their originating channel by the exact case-folded-URL first-seen dedup the run already uses, so the journal records the identical lead set without repeating any retrieval. discovery_session.py gains the additive completed_journal_events(checkpoint, completed), which builds the stream under the confirmed checkpoint.run_id and configuration. tests/research/test_journal_parity.py proves in-memory and durable old-path/replay parity, deterministic order-sensitive replay, a compacted-journal round trip, an interrupted-append that leaves the prior journal valid then resumes idempotently, optimistic-concurrency and conflicting-duplicate handling of the dual-write, provider-gap and model-quarantine parity, and resumable-session-vs-injected-run parity with each executed query recorded exactly once and each catalog URL fetched exactly once. No serialized ledger/vocabulary/checkpoint/journal format, public exception type, CLI command, or exit code changed; DiscoveryRunResult.as_json is unchanged; no live ledger/vocabulary/inventory YAML changed (ledger revision 95, vocabulary revision 0 unchanged)."
+    },
+    "TASK-MIG-009": {
+      "recorded_at": "2026-08-16T04:37:43+02:00",
+      "all_passed": true,
+      "enforced_by_pre_commit": true,
+      "scope": [
+        ".github/agents/histgerm-inventory-curator.agent.md",
+        ".github/skills/discover-histgerm-resources/SKILL.md",
+        ".github/skills/curate-histgerm-resource/SKILL.md",
+        ".github/skills/validate-histgerm-inventory/SKILL.md",
+        ".github/skills/publish-histgerm-batch/SKILL.md",
+        "src/histgerm/research/__main__.py",
+        "docs/inventory-curator.md",
+        "tests/agent/test_inventory_curator_contracts.py",
+        "tests/agent/test_native_orchestration_simulations.py",
+        "plans/histgerm-curator-architecture-migration.md"
+      ],
+      "targeted": [
+        {"command": "uv run pytest tests/agent", "exit_code": 0, "passed": 41},
+        {"command": "uv run ruff check .", "exit_code": 0},
+        {"command": "uv run ruff format --check .", "exit_code": 0},
+        {"command": "uv run mypy src tests", "exit_code": 0}
+      ],
+      "repository_validation": [
+        {"command": "uv run python -m histgerm.research validate --ledger research/discovery-ledger.yaml --format json", "exit_code": 0},
+        {"command": "uv run python -m histgerm.research vocabulary-validate --vocabulary research/discovery-vocabulary.yaml --format json", "exit_code": 0},
+        {"command": "uv run python -m histgerm.validation src/histgerm/data", "exit_code": 0},
+        {"command": "uv run pytest", "exit_code": 0, "passed": 591, "skipped": 1},
+        {"command": "uv run ruff check .", "exit_code": 0},
+        {"command": "uv run ruff format --check .", "exit_code": 0},
+        {"command": "uv run mypy src tests", "exit_code": 0},
+        {"command": "uv build --no-sources", "exit_code": 0},
+        {"command": "git diff --check", "exit_code": 0}
+      ],
+      "notes": "Migrated the agent and four skills from the scripted request/response capability exchange to native Copilot orchestration recorded in the TASK-MIG-007 append-only run journal. The agent 'Discovery run journal and recovery' and the discover skill 'Native discovery run journal' sections replace checkpoint/response operational files with journal-append/journal-status/journal-validate/journal-compact: every external result becomes exactly one typed journal event (query_planned/query_executed/provider_gap/lead_found/retry_scheduled/model_response_invalid/candidate_researched/candidate_blocked/ledger_revision_observed/ledger_mutation_proposed/run_completed); resume and recovery are machine-driven (idempotent (run_id, sequence) append, --expected-last-sequence optimistic concurrency, deterministic journal-status replay, torn-trailing-line recovery), and a candidate_blocked gap never stops unrelated work. Native orchestration owns query order, provider fallback, retries, worker batches, and quarantine; deterministic Python still owns typed records, evidence validation, optimistic concurrency, atomic writes, inventory validation, and publication gates. Worker outputs stay validated as CandidateResearchResult and coordinator-only trusted writes are preserved; TASK-MIG-003 structured query intents are carried end to end via query_planned.intent_id. The exact-model hard-stop was removed in favor of recording the model identifier native orchestration used; frontmatter model: gpt-5.6-sol and disable-model-invocation: true are retained unchanged (the executable simulations complete without lifting disable-model-invocation, so it does not block the target orchestration) and its platform meaning is documented. validate-histgerm-inventory consumes journal-derived results (journal-validate + journal-status, journal result key), and publish-histgerm-batch derives its PR-report facts from the journal replay. No new CLI adapter was required: the TASK-MIG-007 journal-* subcommands already satisfy the migrated skills, and the legacy discover --checkpoint/--resume/--input branch plus discovery_protocol.py/discovery_session.py old-exchange symbols are retained unchanged as legacy implementation for TASK-MIG-010. tests/agent adds four executable simulations (bilingual/multi-channel journal shape, interruption/resume without repeating confirmed retrieval, publication path consuming journal-derived results, and no-surface-requires-an-old-exchange-symbol across agent/skills/docs), and the two former capability-exchange contract tests were rewritten to the journal contract. docs/inventory-curator.md operator flow was migrated to the journal (added to TASK-MIG-009 scope in the plan because GATE-CUTOVER requires no docs surface to require an old-exchange symbol). No live ledger/vocabulary/inventory YAML changed (ledger revision 95, vocabulary revision 0 unchanged)."
     }
   },
   "artifacts": {
@@ -671,7 +766,7 @@
       "operational_notes": {
         "state_tracking": "migration-state.json is tracked in Git (no .gitignore entry) as the single durable source of truth. It is excluded from the wheel and sdist via pyproject [tool.uv.build-backend] source-exclude, and tests/test_wheel.py permits only this exact root file under the repository payload rule while still rejecting every other JSON payload and asserting the file's absence from both distributions.",
         "fixture_naming": "JSON-content fixtures use the .txt extension (checkpoint.txt, exchange.txt, model_output.txt, journal_event_schema.txt), matching the repository convention (tests/fixtures/controlled_browser/*.txt) and avoiding the .json payload suffix that archive safety forbids. They still parse via the current checked-in JSON models or, for journal_event_schema.txt, reproduce the generated event JSON Schema.",
-        "next": "TASK-MIG-008 (journal dual-write and parity) is complete, so current_task is TASK-MIG-009 (native Copilot orchestration, pending), blocked by GATE-JOURNAL-PARITY (now pass). TASK-MIG-007's real commit hash (cf19f7fffee51e825604e9bbb085f3ef5e6ca4ab) is now recorded; TASK-MIG-008's own hash stays 'pending' for its successor TASK-MIG-009 to finalize. GATE-JOURNAL-PARITY explicitly asserted TASK-MIG-004, TASK-MIG-007, and TASK-MIG-008 and by serialization required TASK-MIG-001..003, 005, 006; all predecessors TASK-MIG-001..008 are complete. Parity is a deterministic projection: journal_adapters.discovery_run_events maps the authoritative DiscoveryRunResult to an append-only event stream, and synthetic_from_result/synthetic_from_events reduce to one SyntheticDiscoveryResult that is equal by construction (see artifacts.journal_parity); a mismatch is a hard test failure, never a runtime fallback. No live result, serialized ledger/vocabulary/checkpoint/journal format, public exception type, CLI command, or exit code changed (ledger revision 95, vocabulary revision 0 unchanged). The frozen TASK-MIG-010 code-reduction denominator (998 combined lines) and the TASK-MIG-011 phrase denominator stay unchanged historical baselines; the synthetic_recovery_count (2) and synthetic_whole_run_abort_count (19) baselines are likewise frozen and are not re-measured here. TASK-MIG-009 must not be started until it is scheduled under the strict serialization contract of this run; do not begin it as part of TASK-MIG-008."
+        "next": "TASK-MIG-009 (native Copilot orchestration) is complete and GATE-CUTOVER passes, so current_task is TASK-MIG-010 (retire the old exchange, pending). TASK-MIG-008's real commit hash (a6715211d17c4963caca9f6fe8aabb15d85df0b0) is now recorded; TASK-MIG-009's own hash stays 'pending' for its successor TASK-MIG-010 to finalize. The agent and four skills now use native orchestration recorded in the TASK-MIG-007 append-only run journal (journal-append/journal-status/journal-validate/journal-compact) with machine-driven idempotent resume; every external result becomes one typed journal event, TASK-MIG-003 query intents ride on query_planned.intent_id, workers stay validated as CandidateResearchResult, coordinator-only trusted writes and optimistic concurrency are preserved, the exact-model hard-stop is replaced by recording the model identifier used, and frontmatter model: gpt-5.6-sol / disable-model-invocation: true are retained unchanged (simulations complete without lifting disable-model-invocation). validate-histgerm-inventory and publish-histgerm-batch consume journal-derived results. No new CLI adapter was required; the legacy discover --checkpoint/--resume/--input branch and discovery_protocol.py/discovery_session.py old-exchange symbols are intentionally retained for TASK-MIG-010 and are the only remaining non-test callers of the old exchange (no agent/skill/CLI-required/docs/CI surface requires an old-exchange symbol; test_no_surface_requires_an_old_exchange_symbol enforces this across agent, four skills, and docs). GATE-CUTOVER evidence records native bilingual/multi-channel simulations, interruption/resume, publication consuming journal-derived results, the retained-legacy distinction, and full validation (uv run pytest 591 passed/1 skipped, mypy/ruff clean, ledger revision 95 and vocabulary revision 0 unchanged, uv build and git diff --check clean). The frozen TASK-MIG-010 code-reduction denominator (998 combined lines) and the TASK-MIG-011 phrase denominator stay unchanged historical baselines; synthetic_recovery_count (2) and synthetic_whole_run_abort_count (19) are likewise frozen and are not re-measured here. TASK-MIG-010 must not be started until scheduled under the strict serialization contract of this run; do not begin it as part of TASK-MIG-009."
       }
     }
   },

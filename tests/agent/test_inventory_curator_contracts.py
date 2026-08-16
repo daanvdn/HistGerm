@@ -191,76 +191,75 @@ def test_lossless_discovery_curation_apply_handoff(
     )
 
 
-def test_resumable_discovery_capability_loop_is_complete(
+def test_native_discovery_run_journal_is_complete(
     contracts: dict[str, str],
 ) -> None:
-    """The skill and guide preserve the executable capability-exchange contract."""
+    """The skill and guide describe native orchestration recorded in a journal."""
 
     documented = " ".join(CURATOR_DOC.read_text(encoding="utf-8").split())
     discover = contracts[SKILLS[0]]
     for policy in (discover, documented):
         assert_concepts(
             policy,
-            ("os temporary", "os-temporary"),
-            ("checkpoint",),
-            ("model_elicitation",),
-            ("result_inspection",),
-            ("needs_input",),
-            ("--resume",),
-            ("--input",),
-            ("latest checkpoint revision",),
-            ("schema-valid",),
-            ("every emitted", "every request"),
-            ("item",),
-            ("position",),
-            ("exactly once", "incomplete"),
-            ("final `discoveryrunresult` unchanged",),
-            ("delete", "deletion"),
+            ("run journal",),
+            ("*.journal.jsonl",),
+            ("outside the repository",),
+            ("journal-append",),
+            ("journal-status",),
+            ("journal-validate",),
+            ("journal-compact",),
+            ("--expected-last-sequence",),
+            ("idempotent",),
+            ("(run_id, sequence)",),
+            ("never repeats a confirmed retrieval",),
+            ("machine-driven",),
+            ("query_planned",),
+            ("query_executed",),
+            ("provider_gap",),
+            ("lead_found",),
+            ("candidate_researched",),
+            ("candidate_blocked",),
+            ("run_completed",),
             ("never evidence",),
         )
     assert_concepts(
         discover,
-        ("configured pinned model",),
-        ("preserve existing user-visible progress",),
-        ("never alter a request",),
-        ("invent a provider response",),
-        ("reconstruct checkpoint state",),
-        ("stale revision",),
+        ("native copilot orchestration", "native orchestration"),
+        ("intent_id",),
+        ("user-visible progress",),
+        ("stale ledger revision", "stale revision"),
         ("stop",),
     )
 
 
-def test_discovery_exchange_failures_are_actionable(
+def test_discovery_journal_recovery_is_actionable(
     contracts: dict[str, str],
 ) -> None:
-    """Malformed exchanges preserve inspectable diagnostics and bounded recovery."""
+    """Journal-driven recovery is machine-driven with an actionable stop report."""
 
     documented = " ".join(CURATOR_DOC.read_text(encoding="utf-8").split())
     for policy in (contracts["agent"], contracts[SKILLS[0]], documented):
         assert_concepts(
             policy,
-            ("same pinned model",),
-            ("once more", "one correction attempt", "single correction attempt"),
-            ("validation error",),
-            ("without commentary", "schema-only"),
-            ("never extract", "may not extract"),
-            ("locally",),
-            ("diagnostic directory",),
-            ("os temporary", "os-temporary"),
-            ("byte for byte",),
-            ("failing cli json",),
-            ("malformed",),
-            ("exact path",),
-            ("delete", "deleting"),
-            ("operational",),
-            ("actionable", "stop report"),
-            ("run id",),
-            ("checkpoint revision",),
+            ("journal-append",),
+            ("journal-status",),
+            ("journal-validate",),
+            ("idempotent",),
+            ("(run_id, sequence)",),
+            ("--expected-last-sequence",),
+            ("torn trailing line",),
+            ("mid-file corruption",),
+            ("retried once",),
+            ("model_response_invalid",),
+            ("candidate_blocked",),
+            ("machine-driven",),
+            ("stop report",),
+            ("run identifier",),
+            ("content hash",),
             ("validator",),
-            ("expected",),
-            ("received",),
+            ("expected versus received", "expected and received"),
             ("mutation status",),
-            ("smallest", "resume"),
+            ("resume", "resuming"),
             ("never commit", "never committed"),
         )
 

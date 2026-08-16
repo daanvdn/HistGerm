@@ -99,6 +99,15 @@ packaged. Never download or inspect corpus text, dictionary content,
 annotations, model weights, binaries, archives, database dumps, software
 packages, or other third-party payloads during publication.
 
+Consume journal-derived results. The validation summary must include the
+`journal-validate` integrity result and the deterministic `journal-status`
+replay for the discovery run journal, and the pull-request report facts
+(passes, dispositions, added/refreshed/duplicate/out-of-scope/blocked counts,
+leads, provider gaps, and completion) must be derived from that journal replay
+rather than reconstructed from prose. Never stage, commit, or package the
+`*.journal.jsonl` run journal; it stays outside the repository and out of every
+distribution and review payload.
+
 Open `ready` only when every required validation passes and all schema and
 representation decisions are resolved. Open `draft` only when a schema or
 representation decision remains unresolved, or the branch intentionally
