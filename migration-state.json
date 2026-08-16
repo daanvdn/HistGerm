@@ -370,7 +370,7 @@
       }
     },
     "TASK-MIG-013": {
-      "hash": "pending",
+      "hash": "7e2fbdf212dcdc2537e3a87f22959ddb2d61e390",
       "hash_rule": "rolling: migration-state.json is tracked in Git, so this final task commit cannot embed its own hash. TASK-MIG-013 finalizes its predecessor TASK-MIG-012's real commit hash (c5b032b36b9a846a228997cbdc5e25378dce7a2c) and leaves its own hash 'pending'. Because TASK-MIG-013 is the last task, the follow-up update-migration-pr commit that refreshes draft PR #5 finalizes this field with TASK-MIG-013's real commit hash. No false or self-referential hash is ever recorded.",
       "message_subject_contains": "TASK-MIG-013",
       "parent": "c5b032b36b9a846a228997cbdc5e25378dce7a2c",
