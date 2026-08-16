@@ -25,7 +25,6 @@ from typing import Any
 import pytest
 
 from histgerm.models.common import LanguageStage
-from histgerm.research.discovery_protocol import read_checkpoint, read_exchange
 from histgerm.research.elicitation import ElicitationConfig, elicit_candidates
 from histgerm.research.ledger import load_ledger
 from histgerm.research.search_providers import parse_search_html
@@ -230,18 +229,6 @@ def state() -> dict[str, Any]:
 # --------------------------------------------------------------------------- #
 # Fixture-parse acceptance: every synthetic fixture parses with current models #
 # --------------------------------------------------------------------------- #
-def test_checkpoint_fixture_parses() -> None:
-    checkpoint = read_checkpoint(FIXTURES / "checkpoint.txt")
-    assert checkpoint.run_id == "mig001-baseline"
-    assert checkpoint.parameters.digest() == checkpoint.parameters_digest
-
-
-def test_exchange_fixture_parses() -> None:
-    exchange = read_exchange(FIXTURES / "exchange.txt")
-    assert exchange.run_id == "mig001-baseline"
-    assert exchange.responses[0].kind == "model_elicitation"
-
-
 def test_ledger_fixture_parses() -> None:
     ledger = load_ledger(FIXTURES / "ledger.yaml")
     assert ledger.schema_version == 1
@@ -303,16 +290,34 @@ def test_measurement_functions_execute() -> None:
     """The reusable measurement helpers stay importable and non-degenerate.
 
     TASK-MIG-010 and TASK-MIG-011 import these helpers to compute reduction
-    ratios against :data:`EXPECTED`. They must never raise and must return
-    positive counts; exact-value checks are guarded by the state file so they do
-    not break as later tasks deliberately change the measured files.
+    ratios against :data:`EXPECTED`. They must never raise. The reduction-target
+    line and phrase counts stay positive; ``synthetic_whole_run_abort_count`` is
+    now zero because TASK-MIG-010 retired the old-exchange whole-run abort
+    taxonomy, so its helper must merely evaluate without raising.
     """
 
     assert combined_target_line_count() > 0
     assert research_total_line_count() >= combined_target_line_count()
     assert behavioral_phrase_presence_count() > 0
-    assert synthetic_whole_run_abort_count() > 0
+    assert synthetic_whole_run_abort_count() == 0
     assert synthetic_recovery_count() > 0
+
+
+def test_task_mig_010_combined_reduction_meets_target() -> None:
+    """TASK-MIG-010 retired the old exchange; the two target modules shrank >=25%.
+
+    The denominator is the frozen TASK-MIG-001 combined baseline (998). "At least
+    25% lower" means the current combined line count must be no greater than
+    ``floor(998 * 0.75) == 748``; a count of 749 would be only ~24.9% lower and
+    must fail. ``combined_target_line_count`` is the single reproducible measure.
+    """
+
+    baseline = EXPECTED["combined_lines"]
+    threshold = baseline * 3 // 4  # 748: the largest count that is still >=25% lower
+    assert threshold == 748
+    combined = combined_target_line_count()
+    assert combined <= threshold
+    assert (baseline - combined) / baseline >= 0.25
 
 
 # --------------------------------------------------------------------------- #

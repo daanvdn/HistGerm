@@ -1,17 +1,16 @@
-"""TASK-MIG-008: journal dual-write and parity.
+"""TASK-MIG-008/010: journal projection and parity.
 
-These tests prove the journal-derived execution path is equivalent to the
-authoritative old exchange without changing any live result:
+These tests prove the journal event stream captures the authoritative discovery
+run result exactly, now that ``TASK-MIG-010`` has retired the old capability
+exchange and native orchestration owns execution:
 
-* the old-path projection and the journal-replayed projection are semantically
+* the run-result projection and the journal-replayed projection are semantically
   identical, and journal replay is deterministic and order-sensitive,
 * the projection survives a durable round trip through the ``TASK-MIG-007``
   store, including a compacted journal,
-* a resumable session and a fully injected in-process run produce the same
-  projection, and the journal records each retrieval exactly once,
-* an interrupted append leaves the prior journal valid and the dual-write
-  resumes idempotently, and
-* the dual-write path inherits optimistic-concurrency and conflicting-duplicate
+* an interrupted append leaves the prior journal valid and the append resumes
+  idempotently, and
+* the append path inherits optimistic-concurrency and conflicting-duplicate
   handling from the store.
 
 Every mismatch is asserted as a hard failure; there is no runtime fallback.
@@ -19,14 +18,12 @@ Every mismatch is asserted as a hard failure; there is no runtime fallback.
 
 from __future__ import annotations
 
-from collections import Counter
 from dataclasses import replace
 from datetime import UTC, date, datetime
 from pathlib import Path
 from typing import Any
 
 import pytest
-from synthetic_transport import inspect_result, model_answer, synthetic_fetch
 
 from histgerm.catalog import load_catalog
 from histgerm.models import LanguageStage
@@ -39,26 +36,6 @@ from histgerm.research.discovery_orchestration import (
     ProviderResponse,
     run_discovery,
 )
-from histgerm.research.discovery_protocol import (
-    CHECKPOINT_SCHEMA_VERSION,
-    DiscoveryCheckpoint,
-    DiscoveryExchange,
-    ModelElicitationRequest,
-    ResultInspectionRequest,
-)
-from histgerm.research.discovery_runtime import (
-    RuntimeCapabilities,
-    load_runtime_capabilities,
-)
-from histgerm.research.discovery_session import (
-    Completed,
-    NeedsInput,
-    advance,
-    apply_exchange,
-    checkpoint_config,
-    completed_journal_events,
-    new_checkpoint,
-)
 from histgerm.research.inventory_vocabulary import FetchedDocument, VocabularyLimits
 from histgerm.research.journal_store import (
     JournalConflictError,
@@ -69,11 +46,9 @@ from histgerm.research.journal_store import (
 from histgerm.research.run_journal import (
     LeadFoundEvent,
     LeadFoundPayload,
-    QueryExecutedEvent,
     encode_events,
     replay_journal,
 )
-from histgerm.research.search_providers import SearchResult
 
 RUN_ON = date(2026, 8, 12)
 RUN_ID = "run-parity-0001"
@@ -393,140 +368,3 @@ def test_model_quarantine_events_are_recorded_and_parity_holds() -> None:
     assert len(from_result.invalid_model_responses) == 1
     assert from_result.invalid_model_responses[0].scope == "candidate"
     assert any(event.kind == "model_response_invalid" for event in events)
-
-
-# --------------------------------------------------------------------------- #
-# Resumable session vs injected run parity with no repeated retrieval         #
-# --------------------------------------------------------------------------- #
-def _capabilities(calls: list[str] | None = None) -> RuntimeCapabilities:
-    def fetch(url: str, /, *, max_bytes: int) -> Any:
-        if calls is not None:
-            calls.append(url)
-        return synthetic_fetch(url, max_bytes=max_bytes)
-
-    return load_runtime_capabilities(
-        fetch=fetch, clock=lambda: datetime(2026, 8, 12, tzinfo=UTC)
-    )
-
-
-def _start() -> DiscoveryCheckpoint:
-    return new_checkpoint(
-        category="tool",
-        stage=LanguageStage.MHG,
-        max_mined_terms=0,
-        max_exclusion_groups=1,
-        run_on=RUN_ON,
-    )
-
-
-def _answer(step: NeedsInput) -> DiscoveryExchange:
-    responses: list[dict[str, Any]] = []
-    for request in step.requests:
-        if isinstance(request, ModelElicitationRequest):
-            responses.append(
-                {
-                    "kind": "model_elicitation",
-                    "request_id": request.request_id,
-                    "output": model_answer(request.prompt),
-                }
-            )
-            continue
-        assert isinstance(request, ResultInspectionRequest)
-        responses.append(
-            {
-                "kind": "result_inspection",
-                "request_id": request.request_id,
-                "verdicts": [
-                    {
-                        "position": item.position,
-                        "classification": inspect_result(
-                            SearchResult(
-                                item.position, item.url, item.title, item.snippet
-                            )
-                        )[0],
-                        "reason": inspect_result(
-                            SearchResult(
-                                item.position, item.url, item.title, item.snippet
-                            )
-                        )[1],
-                    }
-                    for item in request.items
-                ],
-            }
-        )
-    return DiscoveryExchange.model_validate(
-        {
-            "schema_version": CHECKPOINT_SCHEMA_VERSION,
-            "run_id": step.checkpoint.run_id,
-            "checkpoint_revision": step.checkpoint.revision,
-            "responses": responses,
-        }
-    )
-
-
-def _drive(
-    runtime: RuntimeCapabilities,
-) -> tuple[Completed, DiscoveryCheckpoint, int]:
-    checkpoint = _start()
-    last = checkpoint
-    rounds = 0
-    while True:
-        step = advance(checkpoint, runtime)
-        if isinstance(step, Completed):
-            return step, last, rounds
-        rounds += 1
-        last = step.checkpoint
-        checkpoint = apply_exchange(step.checkpoint, _answer(step))
-
-
-def test_resumable_session_and_injected_run_have_equal_journal_parity() -> None:
-    resumed_calls: list[str] = []
-    resumed, last, rounds = _drive(_capabilities(resumed_calls))
-    assert rounds >= 3
-
-    injected_calls: list[str] = []
-    runtime = _capabilities(injected_calls)
-    injected = advance(
-        _start(),
-        dependencies=DiscoveryDependencies(
-            catalog=load_catalog(),
-            model_call=model_answer,
-            provider_fetch=runtime.provider_fetch,
-            result_inspector=inspect_result,
-            vocabulary_transport=runtime.vocabulary_transport,
-        ),
-    )
-    assert isinstance(injected, Completed)
-
-    config = checkpoint_config(_start())
-    resumed_projection = ja.synthetic_from_result(config, resumed.result, run_id=RUN_ID)
-    injected_projection = ja.synthetic_from_result(
-        config, injected.result, run_id=RUN_ID
-    )
-    assert resumed_projection == injected_projection
-
-    events = completed_journal_events(
-        last.model_copy(update={"run_id": RUN_ID}), resumed, recorded_at=None
-    )
-    assert ja.synthetic_from_events(events) == resumed_projection
-
-    # Journal replay repeats no retrieval: each executed query appears once, and
-    # the resumable transport fetched each catalog URL exactly once.
-    executed = [event for event in events if isinstance(event, QueryExecutedEvent)]
-    keys = [
-        (event.payload.channel, event.payload.query.casefold()) for event in executed
-    ]
-    assert len(keys) == len(set(keys))
-    catalog_hits = Counter(url for url in resumed_calls if "?" not in url)
-    assert catalog_hits and all(count == 1 for count in catalog_hits.values())
-    assert Counter(resumed_calls) == Counter(injected_calls)
-
-
-def test_completed_journal_events_use_checkpoint_run_identity() -> None:
-    resumed, last, _ = _drive(_capabilities())
-    events = completed_journal_events(last, resumed)
-
-    assert events[0].run_id == last.run_id
-    assert all(event.run_id == last.run_id for event in events)
-    projection = ja.synthetic_from_events(events)
-    assert projection.run_id == last.run_id

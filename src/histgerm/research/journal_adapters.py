@@ -31,7 +31,7 @@ from pathlib import Path
 from typing import Literal
 
 from .discovery_orchestration import DiscoveryConfig, DiscoveryRunResult
-from .discovery_protocol import RunParameters
+from .discovery_session import run_parameters
 from .journal_store import AppendResult, append_event, compact_journal
 from .run_journal import (
     AnyJournalEvent,
@@ -205,14 +205,7 @@ def _run_on(config: DiscoveryConfig) -> str:
 
 
 def _parameters_digest(config: DiscoveryConfig, run_on: str) -> str:
-    return RunParameters(
-        category=config.category,
-        stage=config.stage.value,
-        qualifiers=list(config.qualifiers),
-        max_mined_terms=config.max_mined_terms,
-        max_exclusion_groups=config.max_exclusion_groups,
-        run_on=run_on,
-    ).digest()
+    return run_parameters(config, run_on).digest()
 
 
 def _language(locale: str) -> Literal["de", "en"]:

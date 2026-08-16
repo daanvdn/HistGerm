@@ -3,7 +3,7 @@
   "plan_version": 1,
   "run_id": "plan-20260815T175900Z",
   "branch": "copilot/histgerm-curator-migration-plan-20260815T175900Z",
-  "current_task": "TASK-MIG-010",
+  "current_task": "TASK-MIG-011",
   "tasks": {
     "TASK-MIG-001": "complete",
     "TASK-MIG-002": "complete",
@@ -14,7 +14,7 @@
     "TASK-MIG-007": "complete",
     "TASK-MIG-008": "complete",
     "TASK-MIG-009": "complete",
-    "TASK-MIG-010": "pending",
+    "TASK-MIG-010": "complete",
     "TASK-MIG-011": "pending",
     "TASK-MIG-012": "pending",
     "TASK-MIG-013": "pending"
@@ -276,14 +276,25 @@
       }
     },
     "TASK-MIG-009": {
-      "hash": "pending",
-      "hash_rule": "rolling: migration-state.json is tracked in Git, so this task's own commit cannot embed its own hash. TASK-MIG-009 records its predecessor TASK-MIG-008's real commit hash (a6715211d17c4963caca9f6fe8aabb15d85df0b0) and leaves its own hash 'pending'; its successor TASK-MIG-010 finalizes this field with TASK-MIG-009's real commit hash. No false or self-referential hash is ever recorded.",
+      "hash": "13da88ed6180f5d53a68014cb2de55c34a0e8a82",
+      "hash_rule": "rolling: migration-state.json is tracked in Git, so this task's own commit cannot embed its own hash. TASK-MIG-009 recorded its predecessor TASK-MIG-008's real commit hash (a6715211d17c4963caca9f6fe8aabb15d85df0b0) and left its own hash 'pending'; its successor TASK-MIG-010 finalizes this field with TASK-MIG-009's real commit hash (13da88ed6180f5d53a68014cb2de55c34a0e8a82). No false or self-referential hash is ever recorded.",
       "message_subject_contains": "TASK-MIG-009",
       "parent": "a6715211d17c4963caca9f6fe8aabb15d85df0b0",
       "predecessor": {
         "task": "TASK-MIG-008",
         "hash": "a6715211d17c4963caca9f6fe8aabb15d85df0b0",
         "message_subject_contains": "TASK-MIG-008"
+      }
+    },
+    "TASK-MIG-010": {
+      "hash": "pending",
+      "hash_rule": "rolling: migration-state.json is tracked in Git, so this task's own commit cannot embed its own hash. TASK-MIG-010 records its predecessor TASK-MIG-009's real commit hash (13da88ed6180f5d53a68014cb2de55c34a0e8a82) and leaves its own hash 'pending'; its successor TASK-MIG-011 finalizes this field with TASK-MIG-010's real commit hash. No false or self-referential hash is ever recorded.",
+      "message_subject_contains": "TASK-MIG-010",
+      "parent": "13da88ed6180f5d53a68014cb2de55c34a0e8a82",
+      "predecessor": {
+        "task": "TASK-MIG-009",
+        "hash": "13da88ed6180f5d53a68014cb2de55c34a0e8a82",
+        "message_subject_contains": "TASK-MIG-009"
       }
     }
   },
@@ -574,6 +585,72 @@
         {"command": "git diff --check", "exit_code": 0}
       ],
       "notes": "Migrated the agent and four skills from the scripted request/response capability exchange to native Copilot orchestration recorded in the TASK-MIG-007 append-only run journal. The agent 'Discovery run journal and recovery' and the discover skill 'Native discovery run journal' sections replace checkpoint/response operational files with journal-append/journal-status/journal-validate/journal-compact: every external result becomes exactly one typed journal event (query_planned/query_executed/provider_gap/lead_found/retry_scheduled/model_response_invalid/candidate_researched/candidate_blocked/ledger_revision_observed/ledger_mutation_proposed/run_completed); resume and recovery are machine-driven (idempotent (run_id, sequence) append, --expected-last-sequence optimistic concurrency, deterministic journal-status replay, torn-trailing-line recovery), and a candidate_blocked gap never stops unrelated work. Native orchestration owns query order, provider fallback, retries, worker batches, and quarantine; deterministic Python still owns typed records, evidence validation, optimistic concurrency, atomic writes, inventory validation, and publication gates. Worker outputs stay validated as CandidateResearchResult and coordinator-only trusted writes are preserved; TASK-MIG-003 structured query intents are carried end to end via query_planned.intent_id. The exact-model hard-stop was removed in favor of recording the model identifier native orchestration used; frontmatter model: gpt-5.6-sol and disable-model-invocation: true are retained unchanged (the executable simulations complete without lifting disable-model-invocation, so it does not block the target orchestration) and its platform meaning is documented. validate-histgerm-inventory consumes journal-derived results (journal-validate + journal-status, journal result key), and publish-histgerm-batch derives its PR-report facts from the journal replay. No new CLI adapter was required: the TASK-MIG-007 journal-* subcommands already satisfy the migrated skills, and the legacy discover --checkpoint/--resume/--input branch plus discovery_protocol.py/discovery_session.py old-exchange symbols are retained unchanged as legacy implementation for TASK-MIG-010. tests/agent adds four executable simulations (bilingual/multi-channel journal shape, interruption/resume without repeating confirmed retrieval, publication path consuming journal-derived results, and no-surface-requires-an-old-exchange-symbol across agent/skills/docs), and the two former capability-exchange contract tests were rewritten to the journal contract. docs/inventory-curator.md operator flow was migrated to the journal (added to TASK-MIG-009 scope in the plan because GATE-CUTOVER requires no docs surface to require an old-exchange symbol). No live ledger/vocabulary/inventory YAML changed (ledger revision 95, vocabulary revision 0 unchanged)."
+    },
+    "TASK-MIG-010": {
+      "recorded_at": "2026-08-16T04:52:00+02:00",
+      "all_passed": true,
+      "enforced_by_pre_commit": true,
+      "scope": [
+        "src/histgerm/research/discovery_protocol.py",
+        "src/histgerm/research/discovery_session.py",
+        "src/histgerm/research/journal_adapters.py",
+        "src/histgerm/research/__main__.py",
+        "tests/research/test_journal_parity.py",
+        "tests/research/test_cli.py",
+        "tests/research/test_migration_baseline.py",
+        "tests/research/test_discovery_protocol.py",
+        "tests/research/test_discovery_session.py",
+        "tests/research/test_discovery_recovery.py",
+        "tests/research/synthetic_transport.py",
+        "tests/research/fixtures/checkpoint.txt",
+        "tests/research/fixtures/exchange.txt"
+      ],
+      "deleted_surfaces": {
+        "discovery_protocol_py": ["DiscoveryProtocolError", "StaleCheckpointError", "CHECKPOINT_SCHEMA_VERSION", "MAX_CHECKPOINT_BYTES", "MAX_EXCHANGE_BYTES", "MAX_ELICITATION_OUTPUT_CHARS", "MAX_INSPECTION_ITEMS", "ModelElicitationRequest", "ModelElicitationResponse", "InspectionItem", "ResultInspectionRequest", "InspectionVerdict", "ResultInspectionResponse", "CapabilityRequest", "CapabilityResponse", "DiscoveryExchange", "ElicitationRecord", "InspectionRecord", "ExecutionRecord", "VocabularyState", "DiscoveryCheckpoint", "prompt_digest", "item_digest", "request_id", "encode_records", "decode_records", "encode_vocabulary", "decode_vocabulary", "validate_operational_path", "write_checkpoint", "read_checkpoint", "read_exchange", "remove_operational_file"],
+        "discovery_session_py": ["_Pause", "NeedsInput", "Completed", "SessionStep", "new_checkpoint", "checkpoint_config", "advance", "apply_exchange", "completed_journal_events", "_inspection_records", "_Memo", "INSPECTION_BATCH_LIMIT"],
+        "main_py_cli": ["discover subcommand (--category/--stage/--qualifier/--max-mined-terms/--max-exclusion-groups/--checkpoint/--resume/--input)", "_discover", "_advance_discovery", "_CapabilityError (exit 6 capability_unavailable)", "DiscoveryProtocolError handler (exit 2 invalid_exchange)", "main(discovery_dependencies=...) keyword parameter"],
+        "deleted_tests": ["tests/research/test_discovery_protocol.py", "tests/research/test_discovery_session.py", "tests/research/test_discovery_recovery.py", "tests/research/synthetic_transport.py"],
+        "deleted_fixtures": ["tests/research/fixtures/checkpoint.txt", "tests/research/fixtures/exchange.txt"]
+      },
+      "preserved_surfaces": {
+        "journal_native": "RunParameters (+ its canonical digest()) in discovery_protocol.py and the new run_parameters(config, run_on) projection in discovery_session.py are the sole journal-native residue; journal_adapters._parameters_digest now consumes run_parameters, so neither module is a dead wrapper. discovery_orchestration.run_discovery, journal_adapters (discovery_run_events/synthetic_from_result/synthetic_from_events/append_discovery_journal), run_journal, journal_store, and the discovery_runtime provider-gap recovery are unchanged; the journal/native synthetic flow (tests/agent + tests/research/test_journal_parity.py) stays green.",
+        "recovery_behavior": "No journal-native recovery or recorded provenance was removed: torn-trailing-line recovery, idempotent (run_id, sequence) append, optimistic concurrency, and discovery_runtime._provider_fetch provider-gap handling remain intact and tested (test_run_journal.py, test_journal_parity.py, test_discovery_runtime.py)."
+      },
+      "code_reduction": {
+        "denominator": {
+          "files": ["src/histgerm/research/discovery_protocol.py", "src/histgerm/research/discovery_session.py"],
+          "method": "sum(len(Path(f).read_text(encoding='utf-8').splitlines()) for f in files)",
+          "baseline_combined_lines": 998,
+          "threshold_lines": 748,
+          "threshold_rule": "at least 25% lower than the frozen 998 baseline == floor(998 * 0.75) == 748; a combined count of 749 would be only ~24.9% lower and fails"
+        },
+        "actual": {
+          "discovery_protocol_py_lines": 45,
+          "discovery_session_py_lines": 38,
+          "combined_lines": 83,
+          "reduction_percent": 91.68,
+          "meets_target": true
+        },
+        "reproduced_by": "tests/research/test_migration_baseline.py::test_task_mig_010_combined_reduction_meets_target via combined_target_line_count()"
+      },
+      "targeted": [
+        {"command": "uv run pytest tests/research tests/agent", "exit_code": 0, "passed": 422, "skipped": 1},
+        {"command": "uv run ruff check .", "exit_code": 0},
+        {"command": "uv run ruff format --check .", "exit_code": 0},
+        {"command": "uv run mypy src tests", "exit_code": 0}
+      ],
+      "repository_validation": [
+        {"command": "uv run python -m histgerm.research validate --ledger research/discovery-ledger.yaml --format json", "exit_code": 0, "revision": 95},
+        {"command": "uv run python -m histgerm.research vocabulary-validate --vocabulary research/discovery-vocabulary.yaml --format json", "exit_code": 0, "revision": 0},
+        {"command": "uv run python -m histgerm.validation src/histgerm/data", "exit_code": 0},
+        {"command": "uv run pytest", "exit_code": 0, "passed": 564, "skipped": 1},
+        {"command": "uv run ruff check .", "exit_code": 0},
+        {"command": "uv run ruff format --check .", "exit_code": 0},
+        {"command": "uv run mypy src tests", "exit_code": 0},
+        {"command": "uv build --no-sources", "exit_code": 0},
+        {"command": "git diff --check", "exit_code": 0}
+      ],
+      "notes": "Retired the old capability exchange now that GATE-CUTOVER proved no agent/skill/CLI-required/docs/CI surface requires an old-exchange symbol. discovery_protocol.py and discovery_session.py were reduced to the journal-native run-identity residue (RunParameters + its digest, and run_parameters(config, run_on)); every request/response, checkpoint, exchange, inspection, elicitation, encode/decode, and operational-file symbol was deleted. The __main__.py discover command and its resumable --checkpoint/--resume/--input branch, injected-dependencies route, _CapabilityError (exit 6) and DiscoveryProtocolError (exit 2 invalid_exchange) handlers, and the main(discovery_dependencies=...) parameter were removed; all other CLI subcommands (bootstrap/validate/status/next, record-search/upsert-candidate/apply-result, vocabulary-*, journal-*) and their exit codes are unchanged. journal_adapters._parameters_digest now consumes discovery_session.run_parameters, so the retained modules are genuinely used and not dead wrappers. Obsolete old-exchange tests (test_discovery_protocol.py, test_discovery_session.py, test_discovery_recovery.py) and the now-orphaned synthetic_transport.py helper and checkpoint.txt/exchange.txt fixtures were deleted; test_journal_parity.py dropped its resumable-session-vs-injected parity section (the pure DiscoveryRunResult->journal projection/durability/gap/quarantine parity stays), test_cli.py dropped the three discover tests, and test_migration_baseline.py dropped the checkpoint/exchange fixture-parse tests and adds test_task_mig_010_combined_reduction_meets_target. The unique behaviors those deleted tests exercised remain covered by non-old-exchange suites: evidence grounding in tests/research/test_models.py, structured query intents in tests/research/test_query_intents.py, and elicitation retry/quarantine in tests/research/test_elicitation.py and test_discovery_metrics.py. The frozen TASK-MIG-001 code-reduction denominator (998) is the sole measure: the combined line count fell to 83 (protocol 45 + session 38), a 91.68% reduction, well under the 748 (>=25%) threshold. synthetic_whole_run_abort_count() is now 0 because the old-exchange DiscoveryProtocolError abort taxonomy was retired; synthetic_recovery_count() stays positive from the surviving journal/elicitation recovery tests. No live ledger/vocabulary/inventory YAML changed (ledger revision 95, vocabulary revision 0 unchanged)."
     }
   },
   "artifacts": {
@@ -583,8 +660,6 @@
     },
     "fixtures": {
       "method": "sha256 of the checked-in fixture file as written to the working tree",
-      "tests/research/fixtures/checkpoint.txt": "0b904b35a1d11e59f6593594832aa3e8332630d01a01d7c25d020a68ce2b59c4",
-      "tests/research/fixtures/exchange.txt": "5ec46a0872d5462bcdbe3aece97634b3b9a6a288cb5e838221a0e667dedad960",
       "tests/research/fixtures/ledger.yaml": "c6c23459580583fd494f0fd694da4475e91e809e0956e8d07aaa1f8ff8b45f66",
       "tests/research/fixtures/vocabulary.yaml": "6b43f15e20f87087d08315a074ef51aabba6f1f96554a691ec424bb6accbb58b",
       "tests/research/fixtures/model_output.txt": "f101a5f6a32fb0235e1c060a30807ea0a245c608ced48829144ca43e66c9209b",
