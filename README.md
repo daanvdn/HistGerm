@@ -142,7 +142,7 @@ do not run the live pilot as part of setup or implementation validation.
 | [Mittelhochdeutsches Wörterbuch](https://mwb.adwmainz.net/exist/apps/mwb/pages/index.html) | `dictionary-mwb` | mhg | described, browsable, api | headwords, lemmas, spelling variants, part of speech, senses, machine readable: true | 2026-08-11 | An epoch dictionary documenting the vocabulary and usage of German-language texts from 1050–1350. |
 
 
-### Tools (9)
+### Tools (10)
 
 | Resource | ID | Language stages | Availability | Tasks | Reviewed | Description |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -155,5 +155,6 @@ do not run the live pilot as part of setup or implementation validation.
 | [POSHistoricalText](https://github.com/sarschu/POSHistoricalText/blob/master/README.md) | `tool-poshistoricaltext` | mhg | described, browsable | pos_tagger | 2026-08-12 | A public collection of experimental scripts for part-of-speech tagging a late Middle High German text using several methods and combinations of methods. |
 | [RNNTagger](https://www.cis.uni-muenchen.de/~schmid/tools/RNNTagger/) | `tool-rnntagger` | enhg, mhg | described, downloadable | lemmatizer, pos_tagger | 2026-08-11 | Neural command-line tool for part-of-speech tagging and lemmatization with pretrained parameters for modern and historical languages. |
 | [Spacy-Model-for-Middle-High-German](https://github.com/Middle-High-German-Conceptual-Database/Spacy-Model-for-Middle-High-German) | `tool-spacy-model-mhg` | mhg | described | pos_tagger | 2026-08-12 | A Middle High German part-of-speech tagger model for spaCy. |
+| [XLM-RoBERTa (base) Middle High German Charter Masked Language Model](https://huggingface.co/atzenhofer/xlm-roberta-base-mhg-charter-mlm) | `tool-xlm-roberta-mhg-charter-mlm` | mhg | described, downloadable | language_model | 2026-08-16 | Fine-tuned XLM-RoBERTa base masked language model for Middle High German Monasterium charters, intended for fill-mask sequence prediction. |
 
 <!-- histgerm-catalog:end -->
