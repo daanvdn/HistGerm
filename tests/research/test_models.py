@@ -243,9 +243,9 @@ def test_component_application_and_corpus_identity_remain_distinct() -> None:
     assert corpus.category == "corpus"
 
 
-def test_revision_95_ledger_defaults_new_seed_fields_without_rewriting() -> None:
+def test_seed_ledger_defaults_new_seed_fields_without_rewriting() -> None:
     ledger = load_ledger(Path("research") / "discovery-ledger.yaml")
-    assert ledger.revision == 95
+    assert ledger.revision == 98
     legacy = next(candidate for candidate in ledger.candidates if not candidate.aliases)
     assert legacy.aliases == []
     assert legacy.source_wordings == []

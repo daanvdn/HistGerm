@@ -1,0 +1,83 @@
+id: tool-xlm-roberta-mhg-charter-mlm
+name: XLM-RoBERTa (base) Middle High German Charter Masked Language Model
+aliases:
+- atzenhofer/xlm-roberta-base-mhg-charter-mlm
+- xlm-roberta-base-mhg-charter-mlm
+description: Fine-tuned XLM-RoBERTa base masked language model for Middle High German Monasterium charters,
+  intended for fill-mask sequence prediction.
+links:
+  homepage: https://huggingface.co/atzenhofer/xlm-roberta-base-mhg-charter-mlm
+sources:
+- id: evidence-xlm-roberta-mhg-charter-mlm-model-card
+  url: https://huggingface.co/atzenhofer/xlm-roberta-base-mhg-charter-mlm
+  accessed_on: '2026-08-16'
+  supports:
+  - name
+  - description
+  - supported_stages.mhg
+  - training_data
+  - links
+  title: XLM-RoBERTa (base) Middle High German Charter Masked Language Model
+  quote: This model is a fine-tuned version of xlm-roberta-base on Middle High German (gmh; ISO 639-2;
+    c. 1050–1500) charters of the [monasterium.net](https://www.icar-us.eu/en/cooperation/online-portals/monasterium-net/)
+    data set.
+  note: 'The same model card also lists license: gpl-3.0 in YAML frontmatter.'
+- id: evidence-xlm-roberta-mhg-charter-mlm-task
+  url: https://huggingface.co/atzenhofer/xlm-roberta-base-mhg-charter-mlm
+  accessed_on: '2026-08-16'
+  supports:
+  - tasks
+  - input_formats
+  - output_formats
+  title: XLM-RoBERTa (base) Middle High German Charter Masked Language Model
+  quote: This model can be used for sequence prediction tasks, i.e., fill-masks.
+  note: Used to classify the record task as language_model.
+- id: evidence-xlm-roberta-mhg-charter-mlm-license
+  url: https://huggingface.co/atzenhofer/xlm-roberta-base-mhg-charter-mlm
+  accessed_on: '2026-08-16'
+  supports:
+  - access.license
+  title: XLM-RoBERTa (base) Middle High German Charter Masked Language Model
+  quote: 'license: gpl-3.0'
+  note: The model card YAML frontmatter supplies only the repository license label, not separate permission
+    grants.
+- id: evidence-xlm-roberta-mhg-charter-mlm-metadata
+  url: https://huggingface.co/api/models/atzenhofer/xlm-roberta-base-mhg-charter-mlm
+  accessed_on: '2026-08-16'
+  supports:
+  - access.availability
+  - hugging_face_links
+  - links
+  title: Hugging Face model metadata for atzenhofer/xlm-roberta-base-mhg-charter-mlm
+  note: The API metadata reports private=false, gated=false, disabled=false and lists model files including
+    model.safetensors and pytorch_model.bin.
+reviewed_on: '2026-08-16'
+tasks:
+- language_model
+supported_stages:
+- mhg
+input_formats:
+- plain_text
+output_formats:
+- plain_text
+access:
+  availability:
+  - described
+  - downloadable
+  model_training: unclear
+  original_data_redistribution: unclear
+  processed_data_redistribution: unclear
+  trained_weight_publication: unclear
+  license: gpl-3.0
+  license_url: https://huggingface.co/atzenhofer/xlm-roberta-base-mhg-charter-mlm
+  note: The model card labels the repository gpl-3.0, but this does not separately establish any of the
+    four modeled permissions, so all remain unclear.
+  source_ids:
+  - evidence-xlm-roberta-mhg-charter-mlm-license
+  - evidence-xlm-roberta-mhg-charter-mlm-metadata
+training_data:
+- Middle High German Monasterium (monasterium.net) charters
+hugging_face_links:
+- https://huggingface.co/atzenhofer/xlm-roberta-base-mhg-charter-mlm
+note: Fine-tuned from xlm-roberta-base; author Florian Atzenhofer-Baumgartner (2023); fill-mask masked
+  language model.
