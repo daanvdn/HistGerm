@@ -74,6 +74,11 @@ manually; the agent must not merge or enable auto-merge.
 > request, or work on any other category/stage sweep. Stop after reporting the
 > pull request and any explicit unresolved gaps.
 
+# Search provider improvements
+
+- [ ] Add `www.laudatio-repository.org` as a search provider, including provider
+      integration, safe bounded retrieval, result normalization, and tests.
+
 ### 3. Collect OHG dictionaries
 
 - [ ] Feed this task to the curator:
