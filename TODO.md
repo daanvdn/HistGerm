@@ -3,7 +3,7 @@
 Launch this once to execute the corrected migration plan at
 `plans/histgerm-curator-architecture-migration.md`.
 
-- [ ] Feed this launch entry to GitHub Copilot:
+- [x] Feed this launch entry to GitHub Copilot:
 
 > Execute `plans/histgerm-curator-architecture-migration.md` autonomously.
 > On startup, resume from `migration-state.json`: if it records an in-progress

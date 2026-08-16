@@ -23,7 +23,7 @@ repos:
         always_run: true
       - id: test
         name: Test
-        entry: uv run pytest -n auto
+        entry: uv run pytest -n auto --dist=loadfile
         language: system
         pass_filenames: false
         always_run: true

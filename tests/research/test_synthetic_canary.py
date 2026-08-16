@@ -358,17 +358,24 @@ class Outcome:
         return record
 
 
-def _project_and_store(
-    root: Path,
-    name: str,
+def _project_and_replay(
     config: DiscoveryConfig,
     result: DiscoveryRunResult,
 ) -> Any:
-    """Project one run result into a durable journal and return its replay."""
+    """Project one run result and replay it without testing persistence again."""
 
-    path = root / f"{name}{JOURNAL_SUFFIX}"
     events = ja.discovery_run_events(config, result, run_id=RUN_ID, recorded_at=AT)
-    ja.append_discovery_journal(path, events)
+    return replay_journal(events)
+
+
+def _materialize_complete_journal(
+    path: Path,
+    events: tuple[Any, ...],
+) -> Any:
+    """Write one complete journal fixture and read it through production APIs."""
+
+    validate_journal_path(path, option="--journal")
+    path.write_bytes(encode_events(events))
     parsed = read_journal(path)
     if parsed.events != events:
         raise AssertionError("journal round trip lost events")
@@ -391,7 +398,7 @@ def _no_false_completion(result: DiscoveryRunResult, replay: Any) -> bool:
 # --------------------------------------------------------------------------- #
 # Scenarios                                                                    #
 # --------------------------------------------------------------------------- #
-def _scenario_invalid_json_retry(root: Path) -> Outcome:
+def _scenario_invalid_json_retry() -> Outcome:
     model = SequenceModel(["not valid json", _candidates(_lead("Gamma"))])
     config = _config()
     result = run_discovery(
@@ -402,7 +409,7 @@ def _scenario_invalid_json_retry(root: Path) -> Outcome:
             lambda r: ("unrelated", "no matching resource"),
         ),
     )
-    replay = _project_and_store(root, "invalid-json-retry", config, result)
+    replay = _project_and_replay(config, result)
     recovered = (
         result.metrics["elicitation_retries"] == 1
         and result.metrics["elicitation_recovered_retries"] == 1
@@ -425,7 +432,7 @@ def _scenario_invalid_json_retry(root: Path) -> Outcome:
     )
 
 
-def _scenario_malformed_array_retry(root: Path) -> Outcome:
+def _scenario_malformed_array_retry() -> Outcome:
     model = SequenceModel(
         [json.dumps({"candidates": {"name": "X"}}), _candidates(_lead("Delta"))]
     )
@@ -438,7 +445,7 @@ def _scenario_malformed_array_retry(root: Path) -> Outcome:
             lambda r: ("unrelated", "no matching resource"),
         ),
     )
-    replay = _project_and_store(root, "malformed-array-retry", config, result)
+    replay = _project_and_replay(config, result)
     recovered = (
         result.metrics["elicitation_retries"] == 1
         and result.metrics["elicitation_recovered_retries"] == 1
@@ -459,7 +466,7 @@ def _scenario_malformed_array_retry(root: Path) -> Outcome:
     )
 
 
-def _scenario_provider_gaps(root: Path) -> Outcome:
+def _scenario_provider_gaps() -> Outcome:
     config = _config()
     model = SequenceModel([])
     result = run_discovery(
@@ -468,7 +475,7 @@ def _scenario_provider_gaps(root: Path) -> Outcome:
             model, _faulty_provider, lambda r: ("unrelated", "no matching resource")
         ),
     )
-    replay = _project_and_store(root, "provider-gaps", config, result)
+    replay = _project_and_replay(config, result)
     channels = {record.channel for record in result.assessments}
     gap_assessments = {
         record.assessment
@@ -599,7 +606,7 @@ def _scenario_mid_file_corruption(root: Path, base_events: tuple[Any, ...]) -> O
     )
 
 
-def _scenario_candidate_quarantine(root: Path) -> Outcome:
+def _scenario_candidate_quarantine() -> Outcome:
     model = SequenceModel(
         [
             _candidates(
@@ -618,7 +625,7 @@ def _scenario_candidate_quarantine(root: Path) -> Outcome:
             lambda r: ("unrelated", "no matching resource"),
         ),
     )
-    replay = _project_and_store(root, "candidate-quarantine", config, result)
+    replay = _project_and_replay(config, result)
     quarantines = result.elicitation.quarantines
     candidate_scoped = [q for q in quarantines if q.scope == "candidate"]
     kept = [lead.name for lead in result.elicitation.leads]
@@ -739,16 +746,12 @@ def _scenario_identity_ambiguity() -> Outcome:
 
 
 def _scenario_bilingual_empty_pass(
-    root: Path,
     config: DiscoveryConfig,
     result: DiscoveryRunResult,
     events: tuple[Any, ...],
 ) -> Outcome:
-    path = root / f"bilingual-empty{JOURNAL_SUFFIX}"
-    ja.append_discovery_journal(path, events)
-    parsed = read_journal(path)
-    replay = replay_journal(parsed.events)
-    planned = [event for event in parsed.events if event.kind == "query_planned"]
+    replay = replay_journal(events)
+    planned = [event for event in events if event.kind == "query_planned"]
     languages = {event.payload.language for event in planned}
     channels = {event.payload.channel for event in planned}
     truthful = result.complete == (not result.completion_gaps)
@@ -782,9 +785,8 @@ def _scenario_publication_from_journal(root: Path) -> Outcome:
     )
     path = root / f"publication{JOURNAL_SUFFIX}"
     events = ja.discovery_run_events(config, result, run_id=RUN_ID, recorded_at=AT)
-    ja.append_discovery_journal(path, events)
+    status = _materialize_complete_journal(path, events)
     parsed = read_journal(path)
-    status = journal_status(path)
     # The report facts come from the deterministic journal replay, not prose.
     derived_matches = status.as_status() == replay_journal(parsed.events).as_status()
     reconstructed_leads = status.leads == len(result.leads_with_context())
@@ -853,18 +855,18 @@ def build_canary_report(root: Path) -> dict[str, Any]:
     )
 
     outcomes = [
-        _scenario_invalid_json_retry(root),
-        _scenario_malformed_array_retry(root),
-        _scenario_provider_gaps(root),
+        _scenario_invalid_json_retry(),
+        _scenario_malformed_array_retry(),
+        _scenario_provider_gaps(),
         _scenario_interrupted_append(root, base_events),
         _scenario_stale_checkpoint(root, base_events),
         _scenario_mid_file_corruption(root, base_events),
-        _scenario_candidate_quarantine(root),
+        _scenario_candidate_quarantine(),
         _scenario_optimistic_concurrency(root, base_events),
         _scenario_missing_stage_evidence(),
         _scenario_unclear_legal_permission(),
         _scenario_identity_ambiguity(),
-        _scenario_bilingual_empty_pass(root, base_config, base_result, base_events),
+        _scenario_bilingual_empty_pass(base_config, base_result, base_events),
         _scenario_publication_from_journal(root),
         _scenario_package_exclusion(root),
     ]
