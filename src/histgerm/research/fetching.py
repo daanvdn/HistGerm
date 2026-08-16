@@ -12,7 +12,7 @@ import sys
 from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Literal, Protocol
+from typing import Literal, Protocol, cast
 from urllib.parse import urljoin, urlsplit
 
 from .models import AddressResolver, RequestDestination, resolve_request_destination
@@ -114,6 +114,14 @@ class _Connection(Protocol):
 
 
 type ConnectionFactory = Callable[[RequestDestination, float], _Connection]
+
+
+class _SearchPostRequest(Protocol):
+    provider: object
+    method: object
+    url: object
+    body: object
+    headers: object
 
 
 class _PinnedHTTPSConnection(http.client.HTTPSConnection):
@@ -231,6 +239,9 @@ def _read_bounded(response: ResponseLike, max_bytes: int) -> bytes:
 def fetch_pinned_metadata(
     destination: RequestDestination,
     *,
+    method: Literal["GET", "POST"] = "GET",
+    body: bytes | None = None,
+    request_headers: tuple[tuple[str, str], ...] = (),
     max_bytes: int = MAX_METADATA_BYTES,
     timeout: float = 30,
     connection_factory: ConnectionFactory = _connection,
@@ -243,18 +254,29 @@ def fetch_pinned_metadata(
     connection = connection_factory(destination, timeout)
     try:
         try:
+            headers = {
+                "Accept": "text/html, text/plain, application/json, "
+                "application/ld+json, application/xml",
+                "Accept-Encoding": "identity",
+                "Connection": "close",
+                "Host": _host_header(destination),
+                "User-Agent": "HistGerm-Metadata-Curator/1",
+            }
+            if method == "POST":
+                headers = _validated_post_headers(request_headers, body)
+                headers.update(
+                    {
+                        "Accept-Encoding": "identity",
+                        "Connection": "close",
+                        "Host": _host_header(destination),
+                        "User-Agent": "HistGerm-Metadata-Curator/1",
+                    }
+                )
             connection.request(
-                "GET",
+                method,
                 _request_target(current_url),
-                None,
-                {
-                    "Accept": "text/html, text/plain, application/json, "
-                    "application/ld+json, application/xml",
-                    "Accept-Encoding": "identity",
-                    "Connection": "close",
-                    "Host": _host_header(destination),
-                    "User-Agent": "HistGerm-Metadata-Curator/1",
-                },
+                body,
+                headers,
             )
         except OSError as error:
             raise MetadataFetchError(
@@ -293,7 +315,7 @@ def fetch_pinned_metadata(
 
 
 def fetch_public_metadata(
-    url: str,
+    url: str | object,
     *,
     max_bytes: int = MAX_METADATA_BYTES,
     max_redirects: int = 5,
@@ -304,7 +326,13 @@ def fetch_public_metadata(
     """Fetch public metadata with request-time DNS pinning and a streaming cap."""
     if max_bytes < 1 or max_redirects < 0 or timeout <= 0:
         raise ValueError("fetch limits must be positive")
-    current_url = url
+    method: Literal["GET", "POST"] = "GET"
+    body: bytes | None = None
+    request_headers: tuple[tuple[str, str], ...] = ()
+    if isinstance(url, str):
+        current_url = url
+    else:
+        current_url, method, body, request_headers = _validated_search_request(url)
     for redirect_count in range(max_redirects + 1):
         try:
             destination = resolve_request_destination(current_url, resolver=resolver)
@@ -318,8 +346,17 @@ def fetch_public_metadata(
             max_bytes=max_bytes,
             timeout=timeout,
             connection_factory=connection_factory,
+            method=method,
+            body=body,
+            request_headers=request_headers,
         )
         if response.status in _REDIRECT_STATUSES:
+            if method == "POST" and response.status in {301, 302, 303}:
+                raise MetadataFetchError(
+                    "POST redirect does not preserve the verified request",
+                    stage="redirect",
+                    status=response.status,
+                )
             location = response.headers.get("Location")
             if location is None:
                 raise MetadataFetchError(
@@ -343,6 +380,60 @@ def fetch_public_metadata(
             response.body,
         )
     raise AssertionError("redirect loop must return or raise")
+
+
+def _validated_search_request(
+    request: object,
+) -> tuple[str, Literal["POST"], bytes, tuple[tuple[str, str], ...]]:
+    """Accept only the checked-in LAUDATIO JSON POST request shape."""
+
+    candidate = cast(_SearchPostRequest, request)
+    if (
+        candidate.provider != "laudatio"
+        or candidate.method != "POST"
+        or candidate.url
+        != "https://www.laudatio-repository.org/api/elasticapi/v1/corpora/latest/searchMain"
+        or not isinstance(candidate.body, bytes)
+        or not isinstance(candidate.headers, tuple)
+    ):
+        raise ValueError("only the fixed LAUDATIO JSON POST request is supported")
+    body = candidate.body
+    try:
+        payload = json.loads(body)
+    except (UnicodeDecodeError, json.JSONDecodeError) as error:
+        raise ValueError("LAUDATIO request body must be JSON") from error
+    search_data = payload.get("searchData") if isinstance(payload, dict) else None
+    if (
+        not isinstance(search_data, dict)
+        or set(search_data) != {"from", "size", "query"}
+        or not isinstance(search_data["from"], int)
+        or search_data["from"] < 0
+        or search_data["size"] != 20
+        or not isinstance(search_data["query"], str)
+        or body
+        != json.dumps(payload, ensure_ascii=False, separators=(",", ":")).encode()
+    ):
+        raise ValueError("LAUDATIO request body is not deterministic")
+    headers = candidate.headers
+    _validated_post_headers(headers, body)
+    return candidate.url, "POST", body, headers
+
+
+def _validated_post_headers(
+    headers: tuple[tuple[str, str], ...], body: bytes | None
+) -> dict[str, str]:
+    if body is None or headers != (
+        ("Accept", "application/json"),
+        ("Content-Type", "application/json"),
+        ("Api-Version", "v1"),
+    ):
+        raise ValueError("LAUDATIO POST headers are not allowlisted")
+    return {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "Api-Version": "v1",
+        "Content-Length": str(len(body)),
+    }
 
 
 def main(argv: list[str] | None = None) -> int:

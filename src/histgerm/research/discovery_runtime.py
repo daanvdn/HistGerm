@@ -8,10 +8,11 @@ retrieved body is written to disk.
 
 from __future__ import annotations
 
+import json
 from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import UTC, datetime
-from typing import Protocol
+from typing import Protocol, cast
 
 from histgerm.catalog import Catalog, load_catalog
 
@@ -73,7 +74,10 @@ def _provider_fetch(
         if not isinstance(request, SearchRequest):
             raise TypeError("provider transport accepts only SearchRequest")
         try:
-            fetched = transport(request.url, max_bytes=MAX_PROVIDER_BYTES)
+            fetched = transport(
+                cast(str, request) if request.method == "POST" else request.url,
+                max_bytes=MAX_PROVIDER_BYTES,
+            )
         except MetadataFetchError as error:
             return ProviderResponse(
                 retrieval_mode=error.mode,
@@ -91,13 +95,14 @@ def _provider_fetch(
                 body="",
             )
         body = fetched.body.decode("utf-8", errors="replace")
+        next_cursor, exhausted = _laudatio_page_state(request, body)
         return ProviderResponse(
             retrieval_mode="bounded_http",
             observed_at=now(),
             http_status=200,
             body=body,
-            next_cursor=None,
-            exhausted=False,
+            next_cursor=next_cursor,
+            exhausted=exhausted,
         )
 
     return fetch_provider
@@ -113,6 +118,26 @@ def _vocabulary_transport(transport: MetadataFetch) -> BoundedTransport:
 
 def _now() -> datetime:
     return datetime.now(UTC)
+
+
+def _laudatio_page_state(request: SearchRequest, body: str) -> tuple[str | None, bool]:
+    """Extract only LAUDATIO's documented numeric offset state."""
+
+    if request.provider.value != "laudatio":
+        return None, False
+    try:
+        envelope = json.loads(body)
+        data = envelope["data"]
+        current = json.loads(request.body or b"")["searchData"]["from"]
+        if (
+            envelope.get("success") is not True
+            or not isinstance(data, list)
+            or not isinstance(current, int)
+        ):
+            return None, False
+    except (KeyError, TypeError, ValueError, json.JSONDecodeError):
+        return None, False
+    return (None, True) if not data else (str(current + len(data)), False)
 
 
 __all__ = [

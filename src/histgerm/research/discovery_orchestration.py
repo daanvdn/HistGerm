@@ -320,6 +320,7 @@ _REQUIRED_CHANNELS: tuple[_Channel, ...] = (
     _Channel("github", SearchProvider.GITHUB, ResponseFormat.HTML),
     _Channel("gitlab", SearchProvider.GITLAB, ResponseFormat.HTML),
     _Channel("huggingface", SearchProvider.HUGGINGFACE, ResponseFormat.HTML),
+    _Channel("laudatio", SearchProvider.LAUDATIO, ResponseFormat.API),
 )
 _GENERAL_WEB_CHANNEL_ORDER = (
     "general_web_google",
@@ -426,30 +427,24 @@ def run_discovery(
     executed_requests: set[tuple[str, str]] = set()
 
     for query in queries:
-        for channel in _REQUIRED_CHANNELS:
-            formulation = _first_round_formulation(channel)
-            text = render_query(query, formulation)
-            request_key = (channel.name, text.casefold())
-            if request_key in executed_requests:
-                continue
-            executed_requests.add(request_key)
-            records = _execute_query(
-                text,
-                query,
-                channel,
-                dependencies,
-            )
-            assessments.extend(records)
-            retained = _retain_execution_leads(records, leads)
-            if any(_has_lead(record) for record in records):
-                productive_requests.add((query, channel.name))
-            _record_execution_metrics(
-                metrics,
-                records,
-                family=query.family,
-                channel=channel.name,
-                new_candidates=retained,
-            )
+        for channel in _channels(config.category):
+            for text in _channel_texts(query, channel):
+                request_key = (channel.name, text.casefold())
+                if request_key in executed_requests:
+                    continue
+                executed_requests.add(request_key)
+                records = _execute_query(text, query, channel, dependencies)
+                assessments.extend(records)
+                retained = _retain_execution_leads(records, leads)
+                if any(_has_lead(record) for record in records):
+                    productive_requests.add((query, channel.name))
+                _record_execution_metrics(
+                    metrics,
+                    records,
+                    family=query.family,
+                    channel=channel.name,
+                    new_candidates=retained,
+                )
 
     initial_follow_ups = _untrusted_follow_up_queries(config, assessments)
     follow_up_queries = list(initial_follow_ups.queries)
@@ -457,7 +452,9 @@ def run_discovery(
     follow_up_limit_reached = initial_follow_ups.truncated
     while follow_up_queries:
         query, channel_name = follow_up_queries.pop(0)
-        channel = next(item for item in _REQUIRED_CHANNELS if item.name == channel_name)
+        channel = next(
+            item for item in _channels(config.category) if item.name == channel_name
+        )
         text = render_query(query, _first_round_formulation(channel))
         request_key = (channel.name, text.casefold())
         if request_key in executed_requests:
@@ -498,7 +495,7 @@ def run_discovery(
         max_characters=config.exclusion_character_limit,
     )[: config.max_exclusion_groups]
     for query in queries:
-        for channel in _REQUIRED_CHANNELS:
+        for channel in _channels(config.category):
             if (query, channel.name) in productive_requests:
                 continue
             formulations = _weak_coverage_formulations(query, channel)
@@ -529,7 +526,7 @@ def run_discovery(
                 )
 
     for query in _controlled_recall_queries(queries):
-        for channel in _REQUIRED_CHANNELS:
+        for channel in _channels(config.category):
             if channel.name not in _GENERAL_WEB_CHANNELS:
                 continue
             text = render_query(query, "stage_iso_639_3")
@@ -1365,11 +1362,36 @@ def _first_round_formulation(channel: _Channel) -> QueryFormulation:
     return "exact_stage" if channel.name in _EXACT_STAGE_CHANNELS else "plain"
 
 
+def _channels(category: ResourceCategory) -> tuple[_Channel, ...]:
+    """Keep the specialist corpus endpoint out of non-corpus discovery."""
+
+    return tuple(
+        channel
+        for channel in _REQUIRED_CHANNELS
+        if category == "corpus" or channel.name != "laudatio"
+    )
+
+
+def _channel_texts(query: FocusedQuery, channel: _Channel) -> tuple[str, ...]:
+    """Return the fixed corpus-only LAUDATIO phase formulations."""
+
+    if channel.name != "laudatio":
+        return (render_query(query, _first_round_formulation(channel)),)
+    labels = {
+        LanguageStage.OHG: ("Althochdeutsch", "goh", "Old High German"),
+        LanguageStage.MHG: ("Mittelhochdeutsch", "gmh", "Middle High German"),
+        LanguageStage.ENHG: ("Frühneuhochdeutsch", "fnhd", "Early New High German"),
+    }
+    return labels.get(query.stage, ())
+
+
 def _weak_coverage_formulations(
     query: FocusedQuery,
     channel: _Channel,
 ) -> tuple[QueryFormulation, ...]:
     base = _first_round_formulation(channel)
+    if channel.name == "laudatio":
+        return ()
     if channel.name not in _GENERAL_WEB_CHANNELS:
         return (base,)
     return tuple(
