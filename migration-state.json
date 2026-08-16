@@ -3,7 +3,7 @@
   "plan_version": 1,
   "run_id": "plan-20260815T175900Z",
   "branch": "copilot/histgerm-curator-migration-plan-20260815T175900Z",
-  "current_task": "TASK-MIG-012",
+  "current_task": "TASK-MIG-013",
   "tasks": {
     "TASK-MIG-001": "complete",
     "TASK-MIG-002": "complete",
@@ -16,7 +16,7 @@
     "TASK-MIG-009": "complete",
     "TASK-MIG-010": "complete",
     "TASK-MIG-011": "complete",
-    "TASK-MIG-012": "pending",
+    "TASK-MIG-012": "complete",
     "TASK-MIG-013": "pending"
   },
   "gates": {
@@ -171,7 +171,57 @@
         "git_diff_check": {"command": "git diff --check", "exit_code": 0}
       }
     },
-    "GATE-PILOT": {"status": "pending", "blocks": "TASK-MIG-013", "evaluated_at": null, "evidence": null}
+    "GATE-PILOT": {
+      "status": "pass",
+      "blocks": "TASK-MIG-013",
+      "evaluated_at": "2026-08-16T07:50:00+02:00",
+      "evidence": {
+        "predecessor_tasks_complete": {
+          "TASK-MIG-001": "complete",
+          "TASK-MIG-002": "complete",
+          "TASK-MIG-003": "complete",
+          "TASK-MIG-004": "complete",
+          "TASK-MIG-005": "complete",
+          "TASK-MIG-006": "complete",
+          "TASK-MIG-007": "complete",
+          "TASK-MIG-008": "complete",
+          "TASK-MIG-009": "complete",
+          "TASK-MIG-010": "complete",
+          "TASK-MIG-011": "complete",
+          "TASK-MIG-012": "complete"
+        },
+        "synthetic_canary_targets_pass": {
+          "suite": "tests/research/test_synthetic_canary.py",
+          "recoverable_resume_without_restart": "4/4 >= 0.95",
+          "whole_run_aborts": "0/4 < 0.05 and every abort an integrity refusal",
+          "false_completion": "0/6",
+          "candidate_quarantine_after_retries": "2/2 == 1.0",
+          "optimistic_concurrency_detection": "3/3 == 1.0",
+          "legal_and_stage_evidence_rejection": "2/2 == 1.0"
+        },
+        "full_repository_validation_passes": {
+          "pytest": "578 passed, 1 skipped",
+          "ruff_check": 0,
+          "ruff_format_check": 0,
+          "mypy": 0,
+          "build": 0,
+          "git_diff_check": 0,
+          "ledger_validate_revision": 95,
+          "vocabulary_validate_revision": 0,
+          "inventory_resources": 29
+        },
+        "next_sweep_selection_selects_incomplete_sweep": {
+          "command": "uv run python -m histgerm.research next --ledger research/discovery-ledger.yaml --format json",
+          "invocation_count": 1,
+          "selected_sweep_id": "tool-mhg",
+          "category": "tool",
+          "stage": "mhg",
+          "sweep_state": "in_progress",
+          "ledger_revision": 95
+        },
+        "pilot_target_recorded_once": true
+      }
+    }
   },
   "commits": {
     "TASK-MIG-001": {
@@ -298,7 +348,7 @@
       }
     },
     "TASK-MIG-011": {
-      "hash": "pending",
+      "hash": "57784f36098f946731fd28b06965799e31486002",
       "hash_rule": "rolling: migration-state.json is tracked in Git, so this task's own commit cannot embed its own hash. TASK-MIG-011 records its predecessor TASK-MIG-010's real commit hash (b697c4d737f2d0ec5f4b455fe094709297900a51) and leaves its own hash 'pending'; its successor TASK-MIG-012 finalizes this field with TASK-MIG-011's real commit hash. No false or self-referential hash is ever recorded.",
       "message_subject_contains": "TASK-MIG-011",
       "parent": "b697c4d737f2d0ec5f4b455fe094709297900a51",
@@ -306,6 +356,17 @@
         "task": "TASK-MIG-010",
         "hash": "b697c4d737f2d0ec5f4b455fe094709297900a51",
         "message_subject_contains": "TASK-MIG-010"
+      }
+    },
+    "TASK-MIG-012": {
+      "hash": "pending",
+      "hash_rule": "rolling: migration-state.json is tracked in Git, so this task's own commit cannot embed its own hash. TASK-MIG-012 finalizes its predecessor TASK-MIG-011's real commit hash (57784f36098f946731fd28b06965799e31486002) and leaves its own hash 'pending'; its successor TASK-MIG-013 finalizes this field with TASK-MIG-012's real commit hash. No false or self-referential hash is ever recorded.",
+      "message_subject_contains": "TASK-MIG-012",
+      "parent": "57784f36098f946731fd28b06965799e31486002",
+      "predecessor": {
+        "task": "TASK-MIG-011",
+        "hash": "57784f36098f946731fd28b06965799e31486002",
+        "message_subject_contains": "TASK-MIG-011"
       }
     }
   },
@@ -722,6 +783,142 @@
               {"command": "git diff --check", "exit_code": 0}
             ],
             "notes": "Replaced brittle phrase-presence contract assertions under tests/agent/ with behavioral and structural checks. The frozen TASK-MIG-001 denominator (149 behavioral phrase-presence assertions: 138 assert_phrases phrases + 7 direct `assert \"literal\" in <text>` + 4 loop `for v in (...): assert v in <text>`, with 5 structural packaging `in` checks excluded) is the sole measure; the count fell to 15 (14 assert_phrases + 1 JSON-schema direct `in`), an 89.93% reduction, well under the 74 (>=50%) ceiling. Retained exact assertions are limited to true textual contracts (the serialized JSON discovery-output schema, the exact machine-gate commands the validate skill runs, and the publication branch-name templates and action prohibitions), each carrying an inline comment explaining why its wording is contractual. Every other contract kept coverage via assert_concepts()/assert_sentence_concepts() (which tolerate equivalent wording and are excluded from the count by design), structural enum/inventory parsers, and the executable run-journal simulations. Docs now name model provenance, structured query intents on query_planned, the uniform exit-code failure taxonomy, and baseline security hygiene; the plan completion checklist was advanced through TASK-MIG-011. No production logic changed and no live ledger/vocabulary/inventory YAML changed (ledger revision 95, vocabulary revision 0, 29 inventory resources unchanged). TASK-MIG-012 must not be started until scheduled under this run's strict serialization contract."
+          },
+          "TASK-MIG-012": {
+            "recorded_at": "2026-08-16T07:50:00+02:00",
+            "all_passed": true,
+            "enforced_by_pre_commit": true,
+            "scope": [
+              "tests/research/test_synthetic_canary.py"
+            ],
+            "canary_metrics": {
+              "network_access": false,
+              "scenarios": 14,
+              "targets": {
+                "recoverable_resume_without_restart": {
+                  "recovered": 4,
+                  "total": 4,
+                  "rate": 1.0,
+                  "threshold": 0.95,
+                  "meets_target": true
+                },
+                "whole_run_aborts": {
+                  "improper_aborts": 0,
+                  "recoverable_total": 4,
+                  "rate": 0.0,
+                  "threshold": 0.05,
+                  "all_aborts_are_integrity": true,
+                  "meets_target": true
+                },
+                "false_completion": {
+                  "false_completions": 0,
+                  "completed_runs": 6,
+                  "rate": 0.0,
+                  "meets_target": true
+                },
+                "candidate_quarantine_after_retries": {
+                  "quarantined": 2,
+                  "malformed_after_retries": 2,
+                  "rate": 1.0,
+                  "meets_target": true
+                },
+                "optimistic_concurrency_detection": {
+                  "detected": 3,
+                  "injected": 3,
+                  "rate": 1.0,
+                  "meets_target": true
+                },
+                "legal_and_stage_evidence_rejection": {
+                  "rejected": 2,
+                  "injected": 2,
+                  "rate": 1.0,
+                  "meets_target": true
+                }
+              },
+              "supplemental": {
+                "integrity_refusals": {
+                  "refused": 2,
+                  "triggered": 2,
+                  "rate": 1.0
+                },
+                "identity_ambiguity_rejection": {
+                  "rejected": 2,
+                  "injected": 2,
+                  "rate": 1.0
+                },
+                "package_exclusion": {
+                  "all_passed": true,
+                  "excluded_suffix": ".journal.jsonl"
+                },
+                "rollback_triggers": [
+                  "mid_file_corruption_is_integrity_refused",
+                  "stale_checkpoint_sequence_is_integrity_refused"
+                ]
+              }
+            },
+            "targeted": [
+              {
+                "command": "uv run pytest tests/research/test_synthetic_canary.py",
+                "exit_code": 0,
+                "passed": 13
+              },
+              {
+                "command": "uv run ruff check .",
+                "exit_code": 0
+              },
+              {
+                "command": "uv run ruff format --check .",
+                "exit_code": 0
+              },
+              {
+                "command": "uv run mypy src tests",
+                "exit_code": 0
+              }
+            ],
+            "repository_validation": [
+              {
+                "command": "uv run python -m histgerm.research validate --ledger research/discovery-ledger.yaml --format json",
+                "exit_code": 0,
+                "revision": 95
+              },
+              {
+                "command": "uv run python -m histgerm.research vocabulary-validate --vocabulary research/discovery-vocabulary.yaml --format json",
+                "exit_code": 0,
+                "revision": 0
+              },
+              {
+                "command": "uv run python -m histgerm.validation src/histgerm/data",
+                "exit_code": 0,
+                "resources": 29
+              },
+              {
+                "command": "uv run pytest",
+                "exit_code": 0,
+                "passed": 578,
+                "skipped": 1
+              },
+              {
+                "command": "uv run ruff check .",
+                "exit_code": 0
+              },
+              {
+                "command": "uv run ruff format --check .",
+                "exit_code": 0
+              },
+              {
+                "command": "uv run mypy src tests",
+                "exit_code": 0
+              },
+              {
+                "command": "uv build --no-sources",
+                "exit_code": 0
+              },
+              {
+                "command": "git diff --check",
+                "exit_code": 0
+              }
+            ],
+            "notes": "TASK-MIG-012 synthetic canary. Added tests/research/test_synthetic_canary.py: an end-to-end fault suite that drives the migrated native-orchestration pipeline (run_discovery -> journal_adapters -> journal_store/run_journal) under 14 synthetic scenarios with no network, subprocess, or live ledger/vocabulary access. Scenarios cover invalid-JSON retry, malformed-candidate quarantine, malformed-array retry, mixed provider gaps (429/challenge/timeout/unrelated) across every required channel with every returned result inspected, interrupted journal append with idempotent resume, stale-checkpoint and mid-file-corruption integrity refusals, concurrent ledger+vocabulary+journal optimistic-concurrency conflicts, a candidate lacking stage evidence, an undisclosed legal permission, ambiguous identity, a bilingual multi-channel empty pass, journal-derived publication reporting, and operational-artifact package exclusion. The machine-readable metrics report is emitted as captured test output and mirrored in the pull-request body; the repository payload policy permits only the root migration-state.json as tracked JSON, so no JSON fixture is added. All six plan targets are asserted by tests and met: recoverable resume without restart 4/4 (>=95%), improper whole-run aborts 0/4 (<5%, every abort an integrity refusal), false completion 0/6, candidate quarantine after exhausted retries 2/2 (100%), optimistic-concurrency detection 3/3 (100%), and legal-and-stage evidence rejection 2/2 (100%). No production logic changed; the canary exposed no defect. No live ledger/vocabulary/inventory YAML changed (ledger revision 95, vocabulary revision 0, 29 inventory resources)."
           }
         },
         "artifacts": {
@@ -914,7 +1111,25 @@
         "fixture_naming": "JSON-content fixtures use the .txt extension (checkpoint.txt, exchange.txt, model_output.txt, journal_event_schema.txt), matching the repository convention (tests/fixtures/controlled_browser/*.txt) and avoiding the .json payload suffix that archive safety forbids. They still parse via the current checked-in JSON models or, for journal_event_schema.txt, reproduce the generated event JSON Schema.",
         "next": "TASK-MIG-011 (executable contracts and documentation) is complete and its commit finalizes TASK-MIG-010's real hash (b697c4d737f2d0ec5f4b455fe094709297900a51), so current_task is TASK-MIG-012 (synthetic canary, pending). TASK-MIG-011's own hash stays 'pending' for its successor TASK-MIG-012 to finalize under the rolling-hash rule. TASK-MIG-011 replaced brittle behavioral phrase-presence contract tests under tests/agent/ with behavioral/structural checks: the frozen TASK-MIG-001 denominator of 149 phrase-presence assertions fell to 15 (an 89.93% reduction, well under the 74 >=50% ceiling), reproduced as an executable contract by tests/agent/test_phrase_contract_budget.py. Retained exact assertions cover only true textual contracts (the serialized JSON discovery-output schema, the exact machine-gate commands, and the publication branch templates/prohibitions), each with an inline contractual-wording comment; all other safety, orchestration, and publication contracts kept coverage through assert_concepts()/assert_sentence_concepts(), structural enum/inventory parsers, and the run-journal simulations. Docs (docs/inventory-curator.md) now name model provenance rather than exact-model pinning, note structured query intents riding query_planned, name the uniform exit-code failure taxonomy, and reframe source/payload safety as low-cost baseline hygiene; journal-native architecture, machine gates, machine-driven resume, and the single-branch/single-PR workflow remain accurate with no old-exchange instructions. The plan section 13 completion checklist was advanced through TASK-MIG-011. Full validation passed (uv run pytest 565 passed/1 skipped, ruff check/format and mypy clean, ledger revision 95 and vocabulary revision 0 unchanged, 29 inventory resources, uv build and git diff --check clean). The frozen TASK-MIG-010 code-reduction denominator (998 combined lines) and the TASK-MIG-011 phrase denominator (149) stay unchanged historical baselines. TASK-MIG-012 must not be started until scheduled under the strict serialization contract of this run; do not begin it as part of TASK-MIG-011."
       }
+    },
+    "canary": {
+      "path": "tests/research/test_synthetic_canary.py",
+      "sha256": "79551329f529c47ff11dbd3e416d23f6a82d503edf3b87bb6c92986d9846c0ff",
+      "method": "sha256 of the checked-in test module as written to the working tree",
+      "report_location": "captured pytest output (test_report_is_machine_readable_and_every_target_is_met) and the migration pull-request body; no tracked JSON payload is added because the repository payload policy permits only the root migration-state.json",
+      "scenarios": 14
     }
   },
-  "pilot_target": null
+  "pilot_target": {
+    "recorded_at": "2026-08-16T07:50:00+02:00",
+    "selection_command": "uv run python -m histgerm.research next --ledger research/discovery-ledger.yaml --format json",
+    "invocation_count": 1,
+    "category": "tool",
+    "stage": "mhg",
+    "sweep_id": "tool-mhg",
+    "sweep_state": "in_progress",
+    "ledger_revision": 95,
+    "reselection": false,
+    "note": "Deterministically selected exactly once for GATE-PILOT per plan section 9 using the existing next-sweep command; select_next_sweep is read-only and did not mutate the live ledger (revision 95 unchanged) or vocabulary. TASK-MIG-013 must reuse this recorded target and ledger revision and never re-select."
+  }
 }
