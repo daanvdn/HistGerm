@@ -36,6 +36,16 @@ from .discovery_session import (
     apply_exchange,
     new_checkpoint,
 )
+from .journal_store import (
+    JournalConflictError,
+    JournalCorruptionError,
+    JournalPathError,
+    JournalWriteError,
+    append_event,
+    compact_journal,
+    read_journal,
+    validate_journal_path,
+)
 from .ledger import (
     LedgerPolicyError,
     LedgerRevisionError,
@@ -48,6 +58,12 @@ from .ledger import (
     validate_ledger,
 )
 from .models import CandidateEntry, CandidateResearchResult, DiscoveryLedger, SearchPass
+from .run_journal import (
+    JOURNAL_SCHEMA_VERSION,
+    AnyJournalEvent,
+    parse_event,
+    replay_journal,
+)
 from .vocabulary_store import (
     DiscoveryVocabulary,
     VocabularyPolicyError,
@@ -102,6 +118,16 @@ def _parser() -> _Parser:
     _vocabulary_arguments(vocabulary_apply)
     vocabulary_apply.add_argument('--expected-revision', required=True, type=int)
     vocabulary_apply.add_argument('--input', required=True, type=Path)
+    for command in ('journal-validate', 'journal-status'):
+        child = subparsers.add_parser(command)
+        _journal_arguments(child)
+    journal_append = subparsers.add_parser('journal-append')
+    _journal_arguments(journal_append)
+    journal_append.add_argument('--input', required=True, type=Path)
+    journal_append.add_argument('--expected-last-sequence', type=int)
+    journal_compact = subparsers.add_parser('journal-compact')
+    _journal_arguments(journal_compact)
+    journal_compact.add_argument('--expected-last-sequence', type=int)
     for command in sorted(_MUTATING_COMMANDS):
         child = subparsers.add_parser(command)
         _common_arguments(child)
@@ -115,6 +141,10 @@ def _common_arguments(parser: argparse.ArgumentParser) -> None:
 
 def _vocabulary_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument('--vocabulary', type=Path, default=_DEFAULT_VOCABULARY)
+    parser.add_argument('--format', choices=('json',), default='json')
+
+def _journal_arguments(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument('--journal', required=True, type=Path)
     parser.add_argument('--format', choices=('json',), default='json')
 
 def _success(command: str, revision: int, result: dict[str, Any]) -> int:
@@ -144,6 +174,35 @@ def _read_vocabulary_input(path: Path) -> DiscoveryVocabulary:
         return parse_vocabulary_bytes(path.read_bytes(), source_path=str(path))
     except VocabularyValidationError as error:
         raise ValueError(str(error)) from error
+
+def _read_journal_event(path: Path) -> AnyJournalEvent:
+    try:
+        text = path.read_text(encoding='utf-8')
+    except UnicodeDecodeError as error:
+        raise ValueError('input JSON must be valid UTF-8') from error
+    raw = json.loads(text)
+    if not isinstance(raw, dict):
+        raise ValueError('input JSON must contain one object')
+    return parse_event(raw)
+
+def _journal(arguments: argparse.Namespace) -> int:
+    """Run one journal subcommand and emit exactly one JSON object."""
+    command: str = arguments.command
+    journal_path = validate_journal_path(arguments.journal, option='--journal')
+    if command == 'journal-append':
+        outcome = append_event(journal_path, _read_journal_event(arguments.input), expected_last_sequence=arguments.expected_last_sequence)
+        _emit({'ok': True, 'command': command, 'schema_version': JOURNAL_SCHEMA_VERSION, 'run_id': outcome.run_id, 'sequence': outcome.sequence, 'last_sequence': outcome.last_sequence, 'events': outcome.event_count, 'content_hash': outcome.content_hash, 'idempotent': outcome.idempotent, 'kind': outcome.kind})
+        return 0
+    if command == 'journal-compact':
+        outcome = compact_journal(journal_path, expected_last_sequence=arguments.expected_last_sequence)
+        _emit({'ok': True, 'command': command, 'schema_version': JOURNAL_SCHEMA_VERSION, 'run_id': outcome.run_id, 'sequence': outcome.sequence, 'last_sequence': outcome.last_sequence, 'events': outcome.event_count, 'content_hash': outcome.content_hash, 'idempotent': outcome.idempotent, 'kind': outcome.kind})
+        return 0
+    parsed = read_journal(journal_path)
+    if command == 'journal-validate':
+        _emit({'ok': True, 'command': command, 'schema_version': JOURNAL_SCHEMA_VERSION, 'run_id': parsed.run_id, 'events': len(parsed.events), 'last_sequence': parsed.last_sequence, 'content_hash': parsed.content_hash, 'truncated_tail': parsed.truncated_tail})
+        return 0
+    _emit({'ok': True, 'command': command, 'schema_version': JOURNAL_SCHEMA_VERSION, 'run_id': parsed.run_id, 'last_sequence': parsed.last_sequence, 'content_hash': parsed.content_hash, 'truncated_tail': parsed.truncated_tail, 'status': replay_journal(parsed.events).as_status()})
+    return 0
 
 def _validation_path(error: ValidationError) -> str:
     first = error.errors()[0]
@@ -224,6 +283,8 @@ def _run(arguments: argparse.Namespace, discovery_dependencies: DiscoveryDepende
     command: str = arguments.command
     if command == 'discover':
         return _discover(arguments, discovery_dependencies)
+    if command.startswith('journal-'):
+        return _journal(arguments)
     if command.startswith('vocabulary-'):
         vocabulary_path: Path = arguments.vocabulary
         if command == 'vocabulary-apply':
@@ -287,6 +348,12 @@ def main(
         return _failure(command, 'invalid_arguments', 'arguments', str(error), 2)
     except DiscoveryProtocolError as error:
         return _failure(command, 'invalid_exchange', 'discovery', str(error), 2)
+    except JournalConflictError as error:
+        return _failure(command, 'journal_conflict', 'journal', str(error), 3)
+    except JournalPathError as error:
+        return _failure(command, 'invalid_journal_path', 'journal', str(error), 2)
+    except JournalCorruptionError as error:
+        return _failure(command, 'invalid_journal', 'journal', str(error), 2)
     except VocabularyRevisionError as error:
         return _failure(command, 'stale_revision', 'revision', str(error), 3)
     except LedgerRevisionError as error:
@@ -299,7 +366,7 @@ def main(
         return _failure(command, 'capability_unavailable', 'discovery', str(error), 6)
     except VocabularyValidationError as error:
         return _failure(command, 'invalid_vocabulary', 'vocabulary', str(error), 2)
-    except (VocabularyWriteError, LedgerWriteError, OSError) as error:
+    except (VocabularyWriteError, LedgerWriteError, JournalWriteError, OSError) as error:
         return _failure(command, 'filesystem_error', 'filesystem', str(error), 4)
     except ValidationError as error:
         return _failure(command, 'validation_error', _validation_path(error), str(error), 2)

@@ -3,7 +3,7 @@
   "plan_version": 1,
   "run_id": "plan-20260815T175900Z",
   "branch": "copilot/histgerm-curator-migration-plan-20260815T175900Z",
-  "current_task": "TASK-MIG-007",
+  "current_task": "TASK-MIG-008",
   "tasks": {
     "TASK-MIG-001": "complete",
     "TASK-MIG-002": "complete",
@@ -11,7 +11,7 @@
     "TASK-MIG-004": "complete",
     "TASK-MIG-005": "complete",
     "TASK-MIG-006": "complete",
-    "TASK-MIG-007": "pending",
+    "TASK-MIG-007": "complete",
     "TASK-MIG-008": "pending",
     "TASK-MIG-009": "pending",
     "TASK-MIG-010": "pending",
@@ -150,14 +150,25 @@
       }
     },
     "TASK-MIG-006": {
-      "hash": "pending",
-      "hash_rule": "rolling: migration-state.json is tracked in Git, so this task's own commit cannot embed its own hash. TASK-MIG-006 records its predecessor TASK-MIG-005's real commit hash (47ee03b5d2480ead23649121f9a74393883ca4de) and leaves its own hash 'pending'; its successor TASK-MIG-007 finalizes this field. No false or self-referential hash is ever recorded.",
+      "hash": "448138958f6834692e97461c21261a99d72b11c9",
+      "hash_rule": "rolling: migration-state.json is tracked in Git, so this task's own commit cannot embed its own hash. TASK-MIG-006 records its predecessor TASK-MIG-005's real commit hash (47ee03b5d2480ead23649121f9a74393883ca4de) and left its own hash 'pending'; its successor TASK-MIG-007 finalizes this field with TASK-MIG-006's real commit hash (448138958f6834692e97461c21261a99d72b11c9). No false or self-referential hash is ever recorded.",
       "message_subject_contains": "TASK-MIG-006",
       "parent": "47ee03b5d2480ead23649121f9a74393883ca4de",
       "predecessor": {
         "task": "TASK-MIG-005",
         "hash": "47ee03b5d2480ead23649121f9a74393883ca4de",
         "message_subject_contains": "TASK-MIG-005"
+      }
+    },
+    "TASK-MIG-007": {
+      "hash": "pending",
+      "hash_rule": "rolling: migration-state.json is tracked in Git, so this task's own commit cannot embed its own hash. TASK-MIG-007 records its predecessor TASK-MIG-006's real commit hash (448138958f6834692e97461c21261a99d72b11c9) and leaves its own hash 'pending'; its successor TASK-MIG-008 finalizes this field. No false or self-referential hash is ever recorded.",
+      "message_subject_contains": "TASK-MIG-007",
+      "parent": "448138958f6834692e97461c21261a99d72b11c9",
+      "predecessor": {
+        "task": "TASK-MIG-006",
+        "hash": "448138958f6834692e97461c21261a99d72b11c9",
+        "message_subject_contains": "TASK-MIG-006"
       }
     }
   },
@@ -330,6 +341,47 @@
         {"command": "git diff --check", "exit_code": 0}
       ],
       "notes": "Made discovery protocol failures resumable without discarding confirmed work. discovery_session.apply_exchange keeps fatal handling for a wrong run identifier, an unknown or replayed request, a mismatched capability type, and duplicate or unrequested inspection positions, so no response can ever apply to the wrong item or run. A revision mismatch (stale or future) now raises the new StaleCheckpointError, a DiscoveryProtocolError subclass carrying run_id, expected_revision, and the current outstanding requests, so the coordinator receives actionable current-state output instead of a discarded run. An inspection response that classifies only some requested positions is accepted: answered positions are recorded by item digest and the unanswered positions re-defer, so the memo re-offers exactly the missing items as a strictly smaller batch on the next advance; an entirely unanswered request stays a fatal missing response. The memo splits deferred inspection pages into successive bounded batches no larger than INSPECTION_BATCH_LIMIT (default 20) via itertools.batched, which also removes the latent >MAX_INSPECTION_ITEMS request-construction crash. discovery_runtime._provider_fetch now turns lower-level OSError/TimeoutError transport failures (alongside the existing MetadataFetchError path) into structured, body-less provider-gap ProviderResponses so one channel's transport gap never aborts the others, while a wrong argument type still raises TypeError. New tests/research/test_discovery_recovery.py drives all GATE-RECOVERY requirements end to end through the resumable state machine (evidence-grounded dispositions, canonical query intents, malformed-sibling retention, single-retry formatting recovery, missing-position smaller-batch retry, bounded batch splitting, provider-gap continuation, stale/future actionable output, wrong-run fatality, and resume without repeating confirmed retrieval); test_discovery_runtime.py adds the OSError provider-gap adapter case. No serialized checkpoint/exchange format field was removed, no public export dropped, no CLI exit code changed, and no live ledger/vocabulary/inventory YAML changed."
+    },
+    "TASK-MIG-007": {
+      "recorded_at": "2026-08-16T01:16:59+02:00",
+      "all_passed": true,
+      "enforced_by_pre_commit": true,
+      "scope": [
+        "src/histgerm/research/run_journal.py",
+        "src/histgerm/research/journal_store.py",
+        "src/histgerm/research/__main__.py",
+        "tests/research/test_run_journal.py",
+        "tests/research/fixtures/journal_event_schema.txt"
+      ],
+      "targeted": [
+        {"command": "uv run pytest tests/research/test_run_journal.py", "exit_code": 0}
+      ],
+      "repository_validation": [
+        {"command": "uv run python -m histgerm.research validate --ledger research/discovery-ledger.yaml --format json", "exit_code": 0},
+        {"command": "uv run python -m histgerm.research vocabulary-validate --vocabulary research/discovery-vocabulary.yaml --format json", "exit_code": 0},
+        {"command": "uv run python -m histgerm.validation src/histgerm/data", "exit_code": 0},
+        {"command": "uv run pytest", "exit_code": 0},
+        {"command": "uv run ruff check .", "exit_code": 0},
+        {"command": "uv run ruff format --check .", "exit_code": 0},
+        {"command": "uv run mypy src tests", "exit_code": 0},
+        {"command": "git diff --check", "exit_code": 0}
+      ],
+      "packaging": [
+        {"command": "uv build --no-sources", "exit_code": 0},
+        {
+          "command": "verify run_journal.py/journal_store.py ship as library source while migration-state.json, run-journal, and checkpoint artifacts stay excluded from both wheel and sdist",
+          "exit_code": 0,
+          "run_journal_in_wheel": true,
+          "journal_store_in_wheel": true,
+          "migration_state_in_wheel": false,
+          "migration_state_in_sdist": false,
+          "journal_or_checkpoint_artifact_in_wheel": false,
+          "journal_or_checkpoint_artifact_in_sdist": false,
+          "schema_artifact_in_wheel": false,
+          "schema_artifact_in_sdist": false
+        }
+      ],
+      "notes": "Introduced a typed, versioned, append-only run journal in two new modules under src/histgerm/research/. run_journal.py owns the fixed event envelope (schema_version, run_id, sequence, recorded_at, kind, payload) and thirteen discriminated payload kinds (run_started, query_planned, query_executed, provider_gap, lead_found, model_response_invalid, retry_scheduled, candidate_blocked, candidate_researched, ledger_revision_observed, ledger_mutation_proposed, checkpoint, run_completed) as strict extra='forbid' models under one kind-discriminated union, plus canonical byte-stable line encoding, the SHA-256 journal content hash reproduced identically for writing and hashing, a deterministic order-sensitive replay reduction (replay_journal -> JournalReplay), and the generated validation JSON Schema whose canonical serialization is stored as tests/research/fixtures/journal_event_schema.txt and hashed in artifacts.journal. journal_store.py provides durable, atomic, interruption-safe append reusing the TASK-MIG-004 write_durable_temporary + replace_atomically primitives under a journal-locks-v1 bounded OS advisory lock: append is idempotent on an identical (run_id, sequence) and raises JournalConflictError on a conflicting duplicate, a wrong run identifier, a sequence gap, or an expected_last_sequence mismatch (optimistic concurrency); read_journal recovers a single torn trailing line (an interrupted append) while raising JournalCorruptionError on mid-file corruption, a non-UTF-8 body, a sequence gap, a wrong run identifier, a missing/duplicate run_started, or a stale checkpoint hash/last_sequence; compact_journal appends a verifiable checkpoint retaining the prior content hash and last sequence, idempotent on an already-checkpointed tail; and validate_journal_path requires a *.journal.jsonl operational path outside the histgerm package so the artifact stays out of trusted inventory data and every distribution. __main__.py adds the JSON-only journal-validate/journal-status/journal-append/journal-compact subcommands, each emitting exactly one JSON object, with new nonzero exit codes journal_conflict=3, invalid_journal_path=2, invalid_journal=2, and filesystem_error=4, while every existing CLI command, exit code, and serialized ledger/vocabulary/checkpoint format is unchanged. tests/research/test_run_journal.py covers interrupted-append validity via a monkeypatched os.replace, schema/version/event typing, deterministic and order-sensitive replay, torn-tail recovery versus fatal mid-file/gap/wrong-run/non-UTF-8/first-event corruption, idempotent versus conflicting append, optimistic-concurrency conflicts, verifiable and tamper-detecting checkpoints, cross-process concurrent append without lost updates, path safety, CLI single-JSON output and exit codes, and the recorded schema-artifact hash. No live ledger/vocabulary/inventory YAML changed (ledger revision 95, vocabulary revision 0 unchanged)."
     }
   },
   "artifacts": {
@@ -410,6 +462,54 @@
       "invariants_preserved": "The checkpoint and exchange schema_version stays 1 with no field removed; DiscoveryProtocolError, apply_exchange, advance, new_checkpoint, and the request/response models keep their public shapes; the durable checkpoint format and CLI exit codes are unchanged; no live ledger/vocabulary/inventory YAML changed.",
       "serialization_diff": "none: no serialized checkpoint or exchange format changed and no new persisted structure was added (StaleCheckpointError attributes are transient), so no artifact hash is required for this task."
     },
+    "journal": {
+      "modules": [
+        "src/histgerm/research/run_journal.py",
+        "src/histgerm/research/journal_store.py"
+      ],
+      "description": "Typed, versioned, append-only run journal for TASK-MIG-007: a fixed event envelope (schema_version, run_id, sequence, recorded_at, kind, payload) with thirteen discriminated payload kinds, a deterministic replay reduction, canonical byte-stable line encoding + content hash, durable atomic interruption-safe append, idempotent (run_id, sequence) append with optimistic-concurrency conflict handling, compact verifiable checkpoints, and JSON-only CLI subcommands.",
+      "event_kinds": [
+        "run_started",
+        "query_planned",
+        "query_executed",
+        "provider_gap",
+        "lead_found",
+        "model_response_invalid",
+        "retry_scheduled",
+        "candidate_blocked",
+        "candidate_researched",
+        "ledger_revision_observed",
+        "ledger_mutation_proposed",
+        "checkpoint",
+        "run_completed"
+      ],
+      "primitives": [
+        "run_journal.RunJournalEvent: discriminated union on kind over thirteen strict (extra='forbid') event models sharing the _EventBase envelope; EVENT_ADAPTER is the TypeAdapter used to validate one event object.",
+        "run_journal.encode_event/encode_events/journal_content_hash: canonical sort_keys JSON line encoding, newline-terminated bytes, and the SHA-256 content hash reproduced identically for writing and hashing.",
+        "run_journal.replay_journal: deterministic, order-sensitive reduction of an ordered event sequence into JournalReplay run state (counts, parameters, leads, provider gaps, blocked/researched candidates, last ledger revision, last checkpoint, completion).",
+        "run_journal.event_schema/canonical_schema_json/schema_digest: the generated validation JSON Schema, its canonical serialization stored as tests/research/fixtures/journal_event_schema.txt, and its SHA-256 digest.",
+        "journal_store.append_event: durable, atomic, interruption-safe append via the TASK-MIG-004 write_durable_temporary + replace_atomically primitives under a journal-locks-v1 bounded OS lock; idempotent on an identical (run_id, sequence) and raising JournalConflictError on a conflicting duplicate, wrong run identifier, sequence gap, or expected_last_sequence mismatch.",
+        "journal_store.read_journal: recovers a single torn trailing line (an interrupted append) while raising JournalCorruptionError on mid-file corruption, a non-UTF-8 body, a sequence gap, a wrong run identifier, a missing/duplicate run_started, or a stale checkpoint hash/last_sequence.",
+        "journal_store.compact_journal: appends a verifiable checkpoint event retaining the prior content hash and last sequence, idempotent when the journal already ends with a checkpoint.",
+        "journal_store.validate_journal_path: requires a *.journal.jsonl operational path outside the histgerm package so the artifact stays out of trusted inventory data and every distribution."
+      ],
+      "cli_subcommands": {
+        "journal-validate": "read + integrity-check one journal; emit schema_version, run_id, events, last_sequence, content_hash, truncated_tail (exit 0).",
+        "journal-status": "emit the deterministic replay status of one journal (exit 0).",
+        "journal-append": "append one JSON event from --input, optional --expected-last-sequence; emit the append outcome with idempotent flag (exit 0).",
+        "journal-compact": "append a compact checkpoint; emit the outcome (exit 0)."
+      },
+      "cli_exit_codes": {
+        "journal_conflict": 3,
+        "invalid_journal_path": 2,
+        "invalid_journal": 2,
+        "filesystem_error": 4
+      },
+      "schema_source": "histgerm.research.run_journal.canonical_schema_json()",
+      "schema_artifact": "tests/research/fixtures/journal_event_schema.txt",
+      "schema_sha256": "edd2251d267e344606f50e506927503dc70fe79f735b7a0e4edb3888f6c3cbce",
+      "serialization_diff": "additive: a new operational append-only journal format is introduced (run-journal artifacts stay excluded from every distribution by the TASK-MIG-001 globs); no existing ledger, vocabulary, or checkpoint serialized format, public exception type, or existing CLI exit code changed; no live ledger/vocabulary/inventory YAML changed."
+    },
     "baselines": {
       "code_reduction_denominator": {
         "description": "Sole denominator for the TASK-MIG-010 >=25% combined code-reduction target.",
@@ -455,8 +555,8 @@
       },
       "operational_notes": {
         "state_tracking": "migration-state.json is tracked in Git (no .gitignore entry) as the single durable source of truth. It is excluded from the wheel and sdist via pyproject [tool.uv.build-backend] source-exclude, and tests/test_wheel.py permits only this exact root file under the repository payload rule while still rejecting every other JSON payload and asserting the file's absence from both distributions.",
-        "fixture_naming": "JSON-content fixtures use the .txt extension (checkpoint.txt, exchange.txt, model_output.txt), matching the repository convention (tests/fixtures/controlled_browser/*.txt) and avoiding the .json payload suffix that archive safety forbids. They still parse via the current checked-in JSON models.",
-        "next": "TASK-MIG-006 (resumable protocol failures) is complete and GATE-RECOVERY passed (machine-verified), so current_task is TASK-MIG-007 (typed run journal and CLI, pending). TASK-MIG-005's real commit hash (47ee03b5d2480ead23649121f9a74393883ca4de) is now recorded; TASK-MIG-006's own hash stays 'pending' for its successor TASK-MIG-007 to finalize. GATE-RECOVERY blocks TASK-MIG-007 and is now pass; TASK-MIG-007 also depends directly on TASK-MIG-004. The frozen TASK-MIG-010 code-reduction denominator (998 combined lines) and the TASK-MIG-011 phrase denominator stay unchanged historical baselines even though discovery_session.py and discovery_protocol.py grew for this task; the synthetic_recovery_count (2) and synthetic_whole_run_abort_count (19) baselines are likewise frozen and are not re-measured here. TASK-MIG-007 must not be started until it is scheduled under the strict serialization contract of this run."
+        "fixture_naming": "JSON-content fixtures use the .txt extension (checkpoint.txt, exchange.txt, model_output.txt, journal_event_schema.txt), matching the repository convention (tests/fixtures/controlled_browser/*.txt) and avoiding the .json payload suffix that archive safety forbids. They still parse via the current checked-in JSON models or, for journal_event_schema.txt, reproduce the generated event JSON Schema.",
+        "next": "TASK-MIG-007 (typed run journal and CLI) is complete, so current_task is TASK-MIG-008 (journal dual-write and parity, pending). TASK-MIG-006's real commit hash (448138958f6834692e97461c21261a99d72b11c9) is now recorded; TASK-MIG-007's own hash stays 'pending' for its successor TASK-MIG-008 to finalize. GATE-RECOVERY (pass) blocked TASK-MIG-007, which also depended directly on TASK-MIG-004; TASK-MIG-008 follows TASK-MIG-007 and precedes GATE-JOURNAL-PARITY (which explicitly asserts TASK-MIG-004, TASK-MIG-007, and TASK-MIG-008). The run journal is an additive operational format: run-journal (*.journal.jsonl, run-journal/**) and checkpoint artifacts stay excluded from every distribution by the TASK-MIG-001 globs, and the generated event JSON Schema is hashed in artifacts.journal.schema_sha256. The frozen TASK-MIG-010 code-reduction denominator (998 combined lines) and the TASK-MIG-011 phrase denominator stay unchanged historical baselines; the synthetic_recovery_count (2) and synthetic_whole_run_abort_count (19) baselines are likewise frozen and are not re-measured here. TASK-MIG-008 must not be started until it is scheduled under the strict serialization contract of this run."
       }
     }
   },
