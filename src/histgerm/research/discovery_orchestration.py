@@ -267,6 +267,34 @@ class DiscoveryRunResult:
             "vocabulary_revision": self.vocabulary_revision,
         }
 
+    def leads_with_context(self) -> tuple[tuple[str, str, str, int], ...]:
+        """Return each retained lead as ``(name, url, channel, position)``.
+
+        Leads are de-duplicated by case-folded URL across the run's assessments
+        in the exact first-seen order the execution retained them, reproducing
+        :attr:`leads` while also carrying the originating channel. This lets a
+        journal record the identical lead set with its channel context without
+        repeating any retrieval, so a dual-write projection stays a pure function
+        of the confirmed run result.
+        """
+
+        leads: dict[str, tuple[str, str, str, int]] = {}
+        for record in self.assessments:
+            for result, inspection in zip(
+                record.results, record.inspections, strict=True
+            ):
+                if inspection.classification != "lead":
+                    continue
+                key = result.url.casefold()
+                if key not in leads:
+                    leads[key] = (
+                        result.title,
+                        result.url,
+                        record.channel,
+                        result.position,
+                    )
+        return tuple(leads.values())
+
 
 @dataclass(frozen=True, slots=True)
 class _Channel:

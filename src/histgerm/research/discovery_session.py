@@ -49,7 +49,9 @@ from .discovery_protocol import (
     request_id,
 )
 from .discovery_runtime import RuntimeCapabilities
+from .journal_adapters import discovery_run_events
 from .models import CandidateEntry, ResourceCategory
+from .run_journal import AnyJournalEvent
 from .search_providers import (
     ResultClassification,
     ResultInspection,
@@ -259,6 +261,30 @@ def apply_exchange(
                 *sorted(pending),
             ],
         }
+    )
+
+
+def completed_journal_events(
+    checkpoint: DiscoveryCheckpoint,
+    completed: Completed,
+    *,
+    recorded_at: str | None = None,
+) -> tuple[AnyJournalEvent, ...]:
+    """Project a completed resumable run into its append-only journal stream.
+
+    The old exchange stays the execution authority: this reads only the confirmed
+    checkpoint identity and configuration plus the finished transient result, so
+    the journal records the identical run under ``checkpoint.run_id`` without
+    repeating any retrieval or mutating live state. The stream is deterministic,
+    so replaying it reconstructs the same synthetic result the run produced.
+    """
+
+    config = checkpoint_config(checkpoint)
+    return discovery_run_events(
+        config,
+        completed.result,
+        run_id=checkpoint.run_id,
+        recorded_at=recorded_at,
     )
 
 
@@ -488,5 +514,6 @@ __all__ = [
     "advance",
     "apply_exchange",
     "checkpoint_config",
+    "completed_journal_events",
     "new_checkpoint",
 ]

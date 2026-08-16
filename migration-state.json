@@ -3,7 +3,7 @@
   "plan_version": 1,
   "run_id": "plan-20260815T175900Z",
   "branch": "copilot/histgerm-curator-migration-plan-20260815T175900Z",
-  "current_task": "TASK-MIG-008",
+  "current_task": "TASK-MIG-009",
   "tasks": {
     "TASK-MIG-001": "complete",
     "TASK-MIG-002": "complete",
@@ -12,7 +12,7 @@
     "TASK-MIG-005": "complete",
     "TASK-MIG-006": "complete",
     "TASK-MIG-007": "complete",
-    "TASK-MIG-008": "pending",
+    "TASK-MIG-008": "complete",
     "TASK-MIG-009": "pending",
     "TASK-MIG-010": "pending",
     "TASK-MIG-011": "pending",
@@ -76,7 +76,51 @@
         "mypy": {"command": "uv run mypy src tests", "exit_code": 0}
       }
     },
-    "GATE-JOURNAL-PARITY": {"status": "pending", "blocks": "TASK-MIG-009", "evaluated_at": null, "evidence": null},
+    "GATE-JOURNAL-PARITY": {
+      "status": "pass",
+      "blocks": "TASK-MIG-009",
+      "evaluated_at": "2026-08-16T02:12:59+02:00",
+      "evidence": {
+        "predecessor_tasks_complete": {
+          "TASK-MIG-001": "complete",
+          "TASK-MIG-002": "complete",
+          "TASK-MIG-003": "complete",
+          "TASK-MIG-004": "complete",
+          "TASK-MIG-005": "complete",
+          "TASK-MIG-006": "complete",
+          "TASK-MIG-007": "complete",
+          "TASK-MIG-008": "complete"
+        },
+        "explicitly_asserted": ["TASK-MIG-004", "TASK-MIG-007", "TASK-MIG-008"],
+        "serialization_required": ["TASK-MIG-001", "TASK-MIG-002", "TASK-MIG-003", "TASK-MIG-005", "TASK-MIG-006"],
+        "journal_replay_is_deterministic": [
+          "tests/research/test_journal_parity.py::test_journal_replay_is_deterministic_and_order_sensitive",
+          "tests/research/test_journal_parity.py::test_replay_reconstructs_lead_and_query_counts"
+        ],
+        "old_path_and_replayed_synthetic_results_equivalent": [
+          "tests/research/test_journal_parity.py::test_old_path_and_journal_replay_projections_are_identical",
+          "tests/research/test_journal_parity.py::test_resumable_session_and_injected_run_have_equal_journal_parity",
+          "tests/research/test_journal_parity.py::test_provider_gap_run_parity_records_gaps_not_executions",
+          "tests/research/test_journal_parity.py::test_model_quarantine_events_are_recorded_and_parity_holds"
+        ],
+        "interrupted_runs_resume_without_repeating_confirmed_retrievals": [
+          "tests/research/test_journal_parity.py::test_interrupted_append_leaves_prior_journal_valid_and_resumes",
+          "tests/research/test_journal_parity.py::test_resumable_session_and_injected_run_have_equal_journal_parity",
+          "tests/research/test_discovery_session.py::test_resume_never_repeats_confirmed_retrieval"
+        ],
+        "optimistic_concurrency_and_atomicity": [
+          "tests/research/test_journal_parity.py::test_dual_write_optimistic_concurrency_and_conflicts",
+          "tests/research/test_journal_parity.py::test_durable_round_trip_matches_old_path",
+          "tests/research/test_journal_parity.py::test_compacted_journal_reduces_to_the_same_projection"
+        ],
+        "mismatches_are_test_failures_never_runtime_fallbacks": true,
+        "no_live_state_changed": "the dual-write adapter is a pure projection of the authoritative DiscoveryRunResult; run_discovery, advance, apply_exchange, DiscoveryRunResult.as_json, and every serialized ledger/vocabulary/checkpoint/journal format are unchanged",
+        "pytest": {"command": "uv run pytest", "exit_code": 0, "passed": 579, "skipped": 1},
+        "mypy": {"command": "uv run mypy src tests", "exit_code": 0},
+        "ruff_check": {"command": "uv run ruff check .", "exit_code": 0},
+        "ruff_format": {"command": "uv run ruff format --check .", "exit_code": 0}
+      }
+    },
     "GATE-CUTOVER": {"status": "pending", "blocks": "TASK-MIG-010", "evaluated_at": null, "evidence": null},
     "GATE-PILOT": {"status": "pending", "blocks": "TASK-MIG-013", "evaluated_at": null, "evidence": null}
   },
@@ -161,14 +205,25 @@
       }
     },
     "TASK-MIG-007": {
-      "hash": "pending",
-      "hash_rule": "rolling: migration-state.json is tracked in Git, so this task's own commit cannot embed its own hash. TASK-MIG-007 records its predecessor TASK-MIG-006's real commit hash (448138958f6834692e97461c21261a99d72b11c9) and leaves its own hash 'pending'; its successor TASK-MIG-008 finalizes this field. No false or self-referential hash is ever recorded.",
+      "hash": "cf19f7fffee51e825604e9bbb085f3ef5e6ca4ab",
+      "hash_rule": "rolling: migration-state.json is tracked in Git, so this task's own commit cannot embed its own hash. TASK-MIG-007 recorded its predecessor TASK-MIG-006's real commit hash (448138958f6834692e97461c21261a99d72b11c9) and left its own hash 'pending'; its successor TASK-MIG-008 finalizes this field with TASK-MIG-007's real commit hash (cf19f7fffee51e825604e9bbb085f3ef5e6ca4ab). No false or self-referential hash is ever recorded.",
       "message_subject_contains": "TASK-MIG-007",
       "parent": "448138958f6834692e97461c21261a99d72b11c9",
       "predecessor": {
         "task": "TASK-MIG-006",
         "hash": "448138958f6834692e97461c21261a99d72b11c9",
         "message_subject_contains": "TASK-MIG-006"
+      }
+    },
+    "TASK-MIG-008": {
+      "hash": "pending",
+      "hash_rule": "rolling: migration-state.json is tracked in Git, so this task's own commit cannot embed its own hash. TASK-MIG-008 records its predecessor TASK-MIG-007's real commit hash (cf19f7fffee51e825604e9bbb085f3ef5e6ca4ab) and leaves its own hash 'pending'; its successor TASK-MIG-009 finalizes this field with TASK-MIG-008's real commit hash. No false or self-referential hash is ever recorded.",
+      "message_subject_contains": "TASK-MIG-008",
+      "parent": "cf19f7fffee51e825604e9bbb085f3ef5e6ca4ab",
+      "predecessor": {
+        "task": "TASK-MIG-007",
+        "hash": "cf19f7fffee51e825604e9bbb085f3ef5e6ca4ab",
+        "message_subject_contains": "TASK-MIG-007"
       }
     }
   },
@@ -382,6 +437,48 @@
         }
       ],
       "notes": "Introduced a typed, versioned, append-only run journal in two new modules under src/histgerm/research/. run_journal.py owns the fixed event envelope (schema_version, run_id, sequence, recorded_at, kind, payload) and thirteen discriminated payload kinds (run_started, query_planned, query_executed, provider_gap, lead_found, model_response_invalid, retry_scheduled, candidate_blocked, candidate_researched, ledger_revision_observed, ledger_mutation_proposed, checkpoint, run_completed) as strict extra='forbid' models under one kind-discriminated union, plus canonical byte-stable line encoding, the SHA-256 journal content hash reproduced identically for writing and hashing, a deterministic order-sensitive replay reduction (replay_journal -> JournalReplay), and the generated validation JSON Schema whose canonical serialization is stored as tests/research/fixtures/journal_event_schema.txt and hashed in artifacts.journal. journal_store.py provides durable, atomic, interruption-safe append reusing the TASK-MIG-004 write_durable_temporary + replace_atomically primitives under a journal-locks-v1 bounded OS advisory lock: append is idempotent on an identical (run_id, sequence) and raises JournalConflictError on a conflicting duplicate, a wrong run identifier, a sequence gap, or an expected_last_sequence mismatch (optimistic concurrency); read_journal recovers a single torn trailing line (an interrupted append) while raising JournalCorruptionError on mid-file corruption, a non-UTF-8 body, a sequence gap, a wrong run identifier, a missing/duplicate run_started, or a stale checkpoint hash/last_sequence; compact_journal appends a verifiable checkpoint retaining the prior content hash and last sequence, idempotent on an already-checkpointed tail; and validate_journal_path requires a *.journal.jsonl operational path outside the histgerm package so the artifact stays out of trusted inventory data and every distribution. __main__.py adds the JSON-only journal-validate/journal-status/journal-append/journal-compact subcommands, each emitting exactly one JSON object, with new nonzero exit codes journal_conflict=3, invalid_journal_path=2, invalid_journal=2, and filesystem_error=4, while every existing CLI command, exit code, and serialized ledger/vocabulary/checkpoint format is unchanged. tests/research/test_run_journal.py covers interrupted-append validity via a monkeypatched os.replace, schema/version/event typing, deterministic and order-sensitive replay, torn-tail recovery versus fatal mid-file/gap/wrong-run/non-UTF-8/first-event corruption, idempotent versus conflicting append, optimistic-concurrency conflicts, verifiable and tamper-detecting checkpoints, cross-process concurrent append without lost updates, path safety, CLI single-JSON output and exit codes, and the recorded schema-artifact hash. No live ledger/vocabulary/inventory YAML changed (ledger revision 95, vocabulary revision 0 unchanged)."
+    },
+    "TASK-MIG-008": {
+      "recorded_at": "2026-08-16T02:12:59+02:00",
+      "all_passed": true,
+      "enforced_by_pre_commit": true,
+      "scope": [
+        "src/histgerm/research/journal_adapters.py",
+        "src/histgerm/research/discovery_orchestration.py",
+        "src/histgerm/research/discovery_session.py",
+        "tests/research/test_journal_parity.py"
+      ],
+      "targeted": [
+        {"command": "uv run pytest tests/research/test_journal_parity.py tests/research/test_discovery_session.py tests/research/test_discovery_orchestration.py tests/research/test_run_journal.py tests/research/test_discovery_recovery.py", "exit_code": 0}
+      ],
+      "repository_validation": [
+        {"command": "uv run python -m histgerm.research validate --ledger research/discovery-ledger.yaml --format json", "exit_code": 0},
+        {"command": "uv run python -m histgerm.research vocabulary-validate --vocabulary research/discovery-vocabulary.yaml --format json", "exit_code": 0},
+        {"command": "uv run python -m histgerm.validation src/histgerm/data", "exit_code": 0},
+        {"command": "uv run pytest", "exit_code": 0},
+        {"command": "uv run ruff check .", "exit_code": 0},
+        {"command": "uv run ruff format --check .", "exit_code": 0},
+        {"command": "uv run mypy src tests", "exit_code": 0},
+        {"command": "git diff --check", "exit_code": 0}
+      ],
+      "packaging": [
+        {"command": "uv build --no-sources", "exit_code": 0},
+        {
+          "command": "verify journal_adapters.py ships as library source while migration-state.json, run-journal, checkpoint, and schema artifacts stay excluded from both wheel and sdist",
+          "exit_code": 0,
+          "journal_adapters_in_wheel": true,
+          "journal_adapters_in_sdist": true,
+          "run_journal_in_wheel": true,
+          "journal_store_in_wheel": true,
+          "migration_state_in_wheel": false,
+          "migration_state_in_sdist": false,
+          "journal_or_checkpoint_artifact_in_wheel": false,
+          "journal_or_checkpoint_artifact_in_sdist": false,
+          "schema_artifact_in_wheel": false,
+          "schema_artifact_in_sdist": false
+        }
+      ],
+      "notes": "Added the deterministic journal dual-write and parity path without changing any live result. A new src/histgerm/research/journal_adapters.py maps one authoritative DiscoveryRunResult to an ordered, append-only run-journal event stream (discovery_run_events: run_started, then elicitation retries and quarantines, one query_planned plus a query_executed or provider_gap per assessment, one lead_found per retained lead, and a terminal run_completed with gap-free sequences) and provides two symmetric reductions, synthetic_from_result and synthetic_from_events, into one SyntheticDiscoveryResult projection so the old path and the journal replay are equal by construction; a mismatch is a hard test failure, never a runtime fallback. append_discovery_journal durably writes the stream through the TASK-MIG-007 store, inheriting atomic interruption-safe append, optimistic-concurrency sequencing, and idempotent restart-resume, and can append a verifiable compaction checkpoint that the projection ignores. discovery_orchestration.py gains the additive pure DiscoveryRunResult.leads_with_context(), which projects retained leads with their originating channel by the exact case-folded-URL first-seen dedup the run already uses, so the journal records the identical lead set without repeating any retrieval. discovery_session.py gains the additive completed_journal_events(checkpoint, completed), which builds the stream under the confirmed checkpoint.run_id and configuration. tests/research/test_journal_parity.py proves in-memory and durable old-path/replay parity, deterministic order-sensitive replay, a compacted-journal round trip, an interrupted-append that leaves the prior journal valid then resumes idempotently, optimistic-concurrency and conflicting-duplicate handling of the dual-write, provider-gap and model-quarantine parity, and resumable-session-vs-injected-run parity with each executed query recorded exactly once and each catalog URL fetched exactly once. No serialized ledger/vocabulary/checkpoint/journal format, public exception type, CLI command, or exit code changed; DiscoveryRunResult.as_json is unchanged; no live ledger/vocabulary/inventory YAML changed (ledger revision 95, vocabulary revision 0 unchanged)."
     }
   },
   "artifacts": {
@@ -510,6 +607,24 @@
       "schema_sha256": "edd2251d267e344606f50e506927503dc70fe79f735b7a0e4edb3888f6c3cbce",
       "serialization_diff": "additive: a new operational append-only journal format is introduced (run-journal artifacts stay excluded from every distribution by the TASK-MIG-001 globs); no existing ledger, vocabulary, or checkpoint serialized format, public exception type, or existing CLI exit code changed; no live ledger/vocabulary/inventory YAML changed."
     },
+    "journal_parity": {
+      "modules": [
+        "src/histgerm/research/journal_adapters.py",
+        "src/histgerm/research/discovery_orchestration.py",
+        "src/histgerm/research/discovery_session.py"
+      ],
+      "description": "Deterministic journal dual-write and parity for TASK-MIG-008: a pure projection of the authoritative DiscoveryRunResult into an append-only run-journal event stream, plus two symmetric reductions that make old-path and journal-replayed synthetic results equal by construction. The old exchange remains the execution authority; no live result, serialized format, or public behavior changed.",
+      "primitives": [
+        "journal_adapters.discovery_run_events(config, result, *, run_id, recorded_at=None): maps one DiscoveryRunResult to an ordered, gap-free event stream (run_started at sequence 0; elicitation retries as retry_scheduled and quarantines as model_response_invalid; one query_planned plus a query_executed or provider_gap per assessment; one lead_found per retained lead; a terminal run_completed). A gap is any assessment whose Assessment is access_gap or transport_error. The mapping reads only the confirmed result, so it repeats no retrieval.",
+        "journal_adapters.synthetic_from_result / synthetic_from_events -> SyntheticDiscoveryResult: two independent reductions into the same projection (run identity, immutable scope and parameters_digest, planned and executed queries, provider gaps, retained leads with channel context, invalid model responses, retry count, terminal status). Fields the journal does not carry (vocabulary internals, pagination, completion-gap prose) are intentionally excluded so parity never depends on unrecorded information. Equality is a hard test assertion, never a runtime fallback.",
+        "journal_adapters.append_discovery_journal(path, events, *, checkpoint=False): durably appends the stream through the TASK-MIG-007 store, inheriting atomic interruption-safe append, optimistic-concurrency sequencing, and idempotent restart-resume; an optional trailing compaction checkpoint is appended and is ignored by the projection.",
+        "discovery_orchestration.DiscoveryRunResult.leads_with_context(): additive pure method projecting each retained lead as (name, url, channel, position) by the exact case-folded-URL first-seen dedup the run already uses, reproducing DiscoveryRunResult.leads while adding the originating channel.",
+        "discovery_session.completed_journal_events(checkpoint, completed, *, recorded_at=None): additive helper that builds the stream under the confirmed checkpoint.run_id and configuration for a completed resumable run."
+      ],
+      "parity_identity": "synthetic_from_result(config, result, run_id=R) == synthetic_from_events(discovery_run_events(config, result, run_id=R)), and both equal synthetic_from_events(read_journal(path).events) after a durable round trip.",
+      "invariants_preserved": "run_discovery, advance, apply_exchange, new_checkpoint, DiscoveryRunResult.as_json, DiscoveryProtocolError, the request/response and checkpoint models, the run-journal event schema (schema_version 1) and store, and every CLI command and exit code keep their public shapes; no serialized ledger/vocabulary/checkpoint/journal format changed and no live ledger/vocabulary/inventory YAML changed.",
+      "serialization_diff": "none: the adapter is a transient projection over the existing TASK-MIG-007 journal format and adds no new persisted structure (SyntheticDiscoveryResult is in-memory), so no new artifact hash is required for this task."
+    },
     "baselines": {
       "code_reduction_denominator": {
         "description": "Sole denominator for the TASK-MIG-010 >=25% combined code-reduction target.",
@@ -556,7 +671,7 @@
       "operational_notes": {
         "state_tracking": "migration-state.json is tracked in Git (no .gitignore entry) as the single durable source of truth. It is excluded from the wheel and sdist via pyproject [tool.uv.build-backend] source-exclude, and tests/test_wheel.py permits only this exact root file under the repository payload rule while still rejecting every other JSON payload and asserting the file's absence from both distributions.",
         "fixture_naming": "JSON-content fixtures use the .txt extension (checkpoint.txt, exchange.txt, model_output.txt, journal_event_schema.txt), matching the repository convention (tests/fixtures/controlled_browser/*.txt) and avoiding the .json payload suffix that archive safety forbids. They still parse via the current checked-in JSON models or, for journal_event_schema.txt, reproduce the generated event JSON Schema.",
-        "next": "TASK-MIG-007 (typed run journal and CLI) is complete, so current_task is TASK-MIG-008 (journal dual-write and parity, pending). TASK-MIG-006's real commit hash (448138958f6834692e97461c21261a99d72b11c9) is now recorded; TASK-MIG-007's own hash stays 'pending' for its successor TASK-MIG-008 to finalize. GATE-RECOVERY (pass) blocked TASK-MIG-007, which also depended directly on TASK-MIG-004; TASK-MIG-008 follows TASK-MIG-007 and precedes GATE-JOURNAL-PARITY (which explicitly asserts TASK-MIG-004, TASK-MIG-007, and TASK-MIG-008). The run journal is an additive operational format: run-journal (*.journal.jsonl, run-journal/**) and checkpoint artifacts stay excluded from every distribution by the TASK-MIG-001 globs, and the generated event JSON Schema is hashed in artifacts.journal.schema_sha256. The frozen TASK-MIG-010 code-reduction denominator (998 combined lines) and the TASK-MIG-011 phrase denominator stay unchanged historical baselines; the synthetic_recovery_count (2) and synthetic_whole_run_abort_count (19) baselines are likewise frozen and are not re-measured here. TASK-MIG-008 must not be started until it is scheduled under the strict serialization contract of this run."
+        "next": "TASK-MIG-008 (journal dual-write and parity) is complete, so current_task is TASK-MIG-009 (native Copilot orchestration, pending), blocked by GATE-JOURNAL-PARITY (now pass). TASK-MIG-007's real commit hash (cf19f7fffee51e825604e9bbb085f3ef5e6ca4ab) is now recorded; TASK-MIG-008's own hash stays 'pending' for its successor TASK-MIG-009 to finalize. GATE-JOURNAL-PARITY explicitly asserted TASK-MIG-004, TASK-MIG-007, and TASK-MIG-008 and by serialization required TASK-MIG-001..003, 005, 006; all predecessors TASK-MIG-001..008 are complete. Parity is a deterministic projection: journal_adapters.discovery_run_events maps the authoritative DiscoveryRunResult to an append-only event stream, and synthetic_from_result/synthetic_from_events reduce to one SyntheticDiscoveryResult that is equal by construction (see artifacts.journal_parity); a mismatch is a hard test failure, never a runtime fallback. No live result, serialized ledger/vocabulary/checkpoint/journal format, public exception type, CLI command, or exit code changed (ledger revision 95, vocabulary revision 0 unchanged). The frozen TASK-MIG-010 code-reduction denominator (998 combined lines) and the TASK-MIG-011 phrase denominator stay unchanged historical baselines; the synthetic_recovery_count (2) and synthetic_whole_run_abort_count (19) baselines are likewise frozen and are not re-measured here. TASK-MIG-009 must not be started until it is scheduled under the strict serialization contract of this run; do not begin it as part of TASK-MIG-008."
       }
     }
   },
