@@ -76,7 +76,7 @@ manually; the agent must not merge or enable auto-merge.
 
 # Search provider improvements
 
-- [ ] Add `www.laudatio-repository.org` as a search provider, including provider
+- [x] Add `www.laudatio-repository.org` as a search provider, including provider
       integration, safe bounded retrieval, result normalization, and tests.
 
 ### 3. Collect OHG dictionaries
@@ -142,7 +142,7 @@ manually; the agent must not merge or enable auto-merge.
 
 ### 7. Collect MHG tools (live pilot)
 
-- [ ] Feed this task to the curator:
+- [x] Feed this task to the curator:
 
 > This assignment is explicit project-owner approval for both `GATE-CURATOR`
 > and the separate live MHG tools pilot. Perform the first complete `tool` /
