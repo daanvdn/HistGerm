@@ -1,5 +1,5 @@
 schema_version: 1
-revision: 98
+revision: 105
 initialized_on: '2026-08-12'
 updated_on: '2026-08-16'
 sweeps:
@@ -471,7 +471,7 @@ sweeps:
   category: tool
   stage: mhg
   state: in_progress
-  pass_count: 5
+  pass_count: 6
   consecutive_empty_passes: 0
   last_run_on: '2026-08-16'
   passes:
@@ -1440,6 +1440,578 @@ sweeps:
       zero blocked. Pass is intentionally incomplete: CLARIN VLO, OLAC, Zenodo, institutional
       catalogs, and GitHub required channels, and full general-web pagination, were
       not exhausted in this bounded pilot and remain for sweep continuation.'
+  - id: pass-tool-mhg-2026-08-16-laudatio-followup
+    run_on: '2026-08-16'
+    queries:
+    - query: Mittelhochdeutsch
+      language: de
+      channel: laudatio
+      source_urls:
+      - https://www.laudatio-repository.org/browse/corpus/sIZPk4ABwG-ADazldESF/corpora
+      - https://www.laudatio-repository.org/browse/corpus/bSQeC3MB7CArCQ9Cw8yZ/corpora
+      - https://www.laudatio-repository.org/browse/corpus/yiTKCnMB7CArCQ9CxLhJ/corpora
+      - https://www.laudatio-repository.org/browse/corpus/MiXVDnMB7CArCQ9CABmW/corpora
+      completed: true
+      note: LAUDATIO returned four MHG-bearing corpus records; their canonical registry
+        metadata was inspected and provider pagination was exhausted.
+    - query: Mittelhochdeutsch Tagger
+      language: de
+      channel: laudatio
+      source_urls:
+      - https://www.laudatio-repository.org/browse/corpus/sIZPk4ABwG-ADazldESF/corpora
+      - https://www.laudatio-repository.org/browse/corpus/bSQeC3MB7CArCQ9Cw8yZ/corpora
+      - https://www.laudatio-repository.org/browse/corpus/yiTKCnMB7CArCQ9CxLhJ/corpora
+      - https://www.laudatio-repository.org/browse/corpus/MiXVDnMB7CArCQ9CABmW/corpora
+      completed: true
+      note: LAUDATIO registry search inspected all 4 returned corpus records across
+        1 page(s); pagination exhausted. Tool names were treated as untrusted usage
+        leads, not component-level stage evidence.
+    - query: Middle High German tagger
+      language: en
+      channel: laudatio
+      source_urls:
+      - https://www.laudatio-repository.org/browse/corpus/xCS3CnMB7CArCQ9C3LRB/corpora
+      - https://www.laudatio-repository.org/browse/corpus/aiTdCXMB7CArCQ9CzEPy/corpora
+      - https://www.laudatio-repository.org/browse/corpus/VyQiCnMB7CArCQ9CjF3O/corpora
+      - https://www.laudatio-repository.org/browse/corpus/s0ImHH8BwG-ADazlg9LW/corpora
+      - https://www.laudatio-repository.org/browse/corpus/wyS4CXMB7CArCQ9CvCuB/corpora
+      - https://www.laudatio-repository.org/browse/corpus/ZluUPIkBUnBk-z0f73dr/corpora
+      - https://www.laudatio-repository.org/browse/corpus/lFzOPIkBUnBk-z0fVtCF/corpora
+      - https://www.laudatio-repository.org/browse/corpus/fiTICXMB7CArCQ9C_TQo/corpora
+      - https://www.laudatio-repository.org/browse/corpus/9SX7DnMB7CArCQ9CBB_J/corpora
+      - https://www.laudatio-repository.org/browse/corpus/miUsD3MB7CArCQ9C6Cul/corpora
+      - https://www.laudatio-repository.org/browse/corpus/PySSCnMB7CArCQ9CNKFY/corpora
+      - https://www.laudatio-repository.org/browse/corpus/7ySuCXMB7CArCQ9Ccica/corpora
+      - https://www.laudatio-repository.org/browse/corpus/HiTACXMB7CArCQ9CDy3m/corpora
+      - https://www.laudatio-repository.org/browse/corpus/YCQZCnMB7CArCQ9Ce1hF/corpora
+      - https://www.laudatio-repository.org/browse/corpus/AiSSCXMB7CArCQ9CsyMe/corpora
+      completed: true
+      note: LAUDATIO registry search inspected all 15 returned corpus records across
+        1 page(s); pagination exhausted. Tool names were treated as untrusted usage
+        leads, not component-level stage evidence.
+    - query: Mittelhochdeutsch morphologische Annotation
+      language: de
+      channel: laudatio
+      source_urls:
+      - https://www.laudatio-repository.org/browse/corpus/sIZPk4ABwG-ADazldESF/corpora
+      - https://www.laudatio-repository.org/browse/corpus/bSQeC3MB7CArCQ9Cw8yZ/corpora
+      - https://www.laudatio-repository.org/browse/corpus/yiTKCnMB7CArCQ9CxLhJ/corpora
+      - https://www.laudatio-repository.org/browse/corpus/MiXVDnMB7CArCQ9CABmW/corpora
+      - https://www.laudatio-repository.org/browse/corpus/1EfEEXQBbN_-VhLLUVbl/corpora
+      - https://www.laudatio-repository.org/browse/corpus/fiTICXMB7CArCQ9C_TQo/corpora
+      - https://www.laudatio-repository.org/browse/corpus/7ySuCXMB7CArCQ9Ccica/corpora
+      - https://www.laudatio-repository.org/browse/corpus/HiTACXMB7CArCQ9CDy3m/corpora
+      - https://www.laudatio-repository.org/browse/corpus/VyQiCnMB7CArCQ9CjF3O/corpora
+      - https://www.laudatio-repository.org/browse/corpus/ZCSVC3MB7CArCQ9CVedt/corpora
+      - https://www.laudatio-repository.org/browse/corpus/aiTdCXMB7CArCQ9CzEPy/corpora
+      - https://www.laudatio-repository.org/browse/corpus/NEK37XMBbN_-VhLLTi3h/corpora
+      - https://www.laudatio-repository.org/browse/corpus/AiSSCXMB7CArCQ9CsyMe/corpora
+      - https://www.laudatio-repository.org/browse/corpus/XnU19IIBa2XDdNuCXFx-/corpora
+      completed: true
+      note: LAUDATIO registry search inspected all 14 returned corpus records across
+        1 page(s); pagination exhausted. Tool names were treated as untrusted usage
+        leads, not component-level stage evidence.
+    - query: Middle High German morphological annotation
+      language: en
+      channel: laudatio
+      source_urls:
+      - https://www.laudatio-repository.org/browse/corpus/s0ImHH8BwG-ADazlg9LW/corpora
+      - https://www.laudatio-repository.org/browse/corpus/xCS3CnMB7CArCQ9C3LRB/corpora
+      - https://www.laudatio-repository.org/browse/corpus/aiTdCXMB7CArCQ9CzEPy/corpora
+      - https://www.laudatio-repository.org/browse/corpus/VyQiCnMB7CArCQ9CjF3O/corpora
+      - https://www.laudatio-repository.org/browse/corpus/wyS4CXMB7CArCQ9CvCuB/corpora
+      - https://www.laudatio-repository.org/browse/corpus/ZluUPIkBUnBk-z0f73dr/corpora
+      - https://www.laudatio-repository.org/browse/corpus/lFzOPIkBUnBk-z0fVtCF/corpora
+      - https://www.laudatio-repository.org/browse/corpus/fiTICXMB7CArCQ9C_TQo/corpora
+      - https://www.laudatio-repository.org/browse/corpus/AiSSCXMB7CArCQ9CsyMe/corpora
+      - https://www.laudatio-repository.org/browse/corpus/9SX7DnMB7CArCQ9CBB_J/corpora
+      - https://www.laudatio-repository.org/browse/corpus/miUsD3MB7CArCQ9C6Cul/corpora
+      - https://www.laudatio-repository.org/browse/corpus/PySSCnMB7CArCQ9CNKFY/corpora
+      - https://www.laudatio-repository.org/browse/corpus/7ySuCXMB7CArCQ9Ccica/corpora
+      - https://www.laudatio-repository.org/browse/corpus/HiTACXMB7CArCQ9CDy3m/corpora
+      - https://www.laudatio-repository.org/browse/corpus/YCQZCnMB7CArCQ9Ce1hF/corpora
+      - https://www.laudatio-repository.org/browse/corpus/1EfEEXQBbN_-VhLLUVbl/corpora
+      - https://www.laudatio-repository.org/browse/corpus/MiXVDnMB7CArCQ9CABmW/corpora
+      - https://www.laudatio-repository.org/browse/corpus/ZCSVC3MB7CArCQ9CVedt/corpora
+      - https://www.laudatio-repository.org/browse/corpus/NEK37XMBbN_-VhLLTi3h/corpora
+      - https://www.laudatio-repository.org/browse/corpus/bSQeC3MB7CArCQ9Cw8yZ/corpora
+      - https://www.laudatio-repository.org/browse/corpus/XnU19IIBa2XDdNuCXFx-/corpora
+      completed: true
+      note: LAUDATIO registry search inspected all 21 returned corpus records across
+        2 page(s); pagination exhausted. Tool names were treated as untrusted usage
+        leads, not component-level stage evidence.
+    - query: Mittelhochdeutsch Lemmatisierung
+      language: de
+      channel: laudatio
+      source_urls:
+      - https://www.laudatio-repository.org/browse/corpus/sIZPk4ABwG-ADazldESF/corpora
+      - https://www.laudatio-repository.org/browse/corpus/bSQeC3MB7CArCQ9Cw8yZ/corpora
+      - https://www.laudatio-repository.org/browse/corpus/yiTKCnMB7CArCQ9CxLhJ/corpora
+      - https://www.laudatio-repository.org/browse/corpus/MiXVDnMB7CArCQ9CABmW/corpora
+      completed: true
+      note: LAUDATIO registry search inspected all 4 returned corpus records across
+        1 page(s); pagination exhausted. Tool names were treated as untrusted usage
+        leads, not component-level stage evidence.
+    - query: Middle High German lemmatization
+      language: en
+      channel: laudatio
+      source_urls:
+      - https://www.laudatio-repository.org/browse/corpus/xCS3CnMB7CArCQ9C3LRB/corpora
+      - https://www.laudatio-repository.org/browse/corpus/aiTdCXMB7CArCQ9CzEPy/corpora
+      - https://www.laudatio-repository.org/browse/corpus/VyQiCnMB7CArCQ9CjF3O/corpora
+      - https://www.laudatio-repository.org/browse/corpus/s0ImHH8BwG-ADazlg9LW/corpora
+      - https://www.laudatio-repository.org/browse/corpus/wyS4CXMB7CArCQ9CvCuB/corpora
+      - https://www.laudatio-repository.org/browse/corpus/ZluUPIkBUnBk-z0f73dr/corpora
+      - https://www.laudatio-repository.org/browse/corpus/lFzOPIkBUnBk-z0fVtCF/corpora
+      - https://www.laudatio-repository.org/browse/corpus/fiTICXMB7CArCQ9C_TQo/corpora
+      - https://www.laudatio-repository.org/browse/corpus/9SX7DnMB7CArCQ9CBB_J/corpora
+      - https://www.laudatio-repository.org/browse/corpus/miUsD3MB7CArCQ9C6Cul/corpora
+      - https://www.laudatio-repository.org/browse/corpus/PySSCnMB7CArCQ9CNKFY/corpora
+      - https://www.laudatio-repository.org/browse/corpus/7ySuCXMB7CArCQ9Ccica/corpora
+      - https://www.laudatio-repository.org/browse/corpus/HiTACXMB7CArCQ9CDy3m/corpora
+      - https://www.laudatio-repository.org/browse/corpus/YCQZCnMB7CArCQ9Ce1hF/corpora
+      - https://www.laudatio-repository.org/browse/corpus/AiSSCXMB7CArCQ9CsyMe/corpora
+      completed: true
+      note: LAUDATIO registry search inspected all 15 returned corpus records across
+        1 page(s); pagination exhausted. Tool names were treated as untrusted usage
+        leads, not component-level stage evidence.
+    - query: Mittelhochdeutsch Normalisierung
+      language: de
+      channel: laudatio
+      source_urls:
+      - https://www.laudatio-repository.org/browse/corpus/sIZPk4ABwG-ADazldESF/corpora
+      - https://www.laudatio-repository.org/browse/corpus/bSQeC3MB7CArCQ9Cw8yZ/corpora
+      - https://www.laudatio-repository.org/browse/corpus/yiTKCnMB7CArCQ9CxLhJ/corpora
+      - https://www.laudatio-repository.org/browse/corpus/MiXVDnMB7CArCQ9CABmW/corpora
+      completed: true
+      note: LAUDATIO registry search inspected all 4 returned corpus records across
+        1 page(s); pagination exhausted. Tool names were treated as untrusted usage
+        leads, not component-level stage evidence.
+    - query: Middle High German normalization
+      language: en
+      channel: laudatio
+      source_urls:
+      - https://www.laudatio-repository.org/browse/corpus/xCS3CnMB7CArCQ9C3LRB/corpora
+      - https://www.laudatio-repository.org/browse/corpus/aiTdCXMB7CArCQ9CzEPy/corpora
+      - https://www.laudatio-repository.org/browse/corpus/AiSSCXMB7CArCQ9CsyMe/corpora
+      - https://www.laudatio-repository.org/browse/corpus/VyQiCnMB7CArCQ9CjF3O/corpora
+      - https://www.laudatio-repository.org/browse/corpus/s0ImHH8BwG-ADazlg9LW/corpora
+      - https://www.laudatio-repository.org/browse/corpus/wyS4CXMB7CArCQ9CvCuB/corpora
+      - https://www.laudatio-repository.org/browse/corpus/ZluUPIkBUnBk-z0f73dr/corpora
+      - https://www.laudatio-repository.org/browse/corpus/lFzOPIkBUnBk-z0fVtCF/corpora
+      - https://www.laudatio-repository.org/browse/corpus/fiTICXMB7CArCQ9C_TQo/corpora
+      - https://www.laudatio-repository.org/browse/corpus/9SX7DnMB7CArCQ9CBB_J/corpora
+      - https://www.laudatio-repository.org/browse/corpus/miUsD3MB7CArCQ9C6Cul/corpora
+      - https://www.laudatio-repository.org/browse/corpus/PySSCnMB7CArCQ9CNKFY/corpora
+      - https://www.laudatio-repository.org/browse/corpus/7ySuCXMB7CArCQ9Ccica/corpora
+      - https://www.laudatio-repository.org/browse/corpus/HiTACXMB7CArCQ9CDy3m/corpora
+      - https://www.laudatio-repository.org/browse/corpus/YCQZCnMB7CArCQ9Ce1hF/corpora
+      completed: true
+      note: LAUDATIO registry search inspected all 15 returned corpus records across
+        1 page(s); pagination exhausted. Tool names were treated as untrusted usage
+        leads, not component-level stage evidence.
+    - query: Mittelhochdeutsch Parser
+      language: de
+      channel: laudatio
+      source_urls:
+      - https://www.laudatio-repository.org/browse/corpus/sIZPk4ABwG-ADazldESF/corpora
+      - https://www.laudatio-repository.org/browse/corpus/bSQeC3MB7CArCQ9Cw8yZ/corpora
+      - https://www.laudatio-repository.org/browse/corpus/yiTKCnMB7CArCQ9CxLhJ/corpora
+      - https://www.laudatio-repository.org/browse/corpus/MiXVDnMB7CArCQ9CABmW/corpora
+      completed: true
+      note: LAUDATIO registry search inspected all 4 returned corpus records across
+        1 page(s); pagination exhausted. Tool names were treated as untrusted usage
+        leads, not component-level stage evidence.
+    - query: Middle High German parser
+      language: en
+      channel: laudatio
+      source_urls:
+      - https://www.laudatio-repository.org/browse/corpus/xCS3CnMB7CArCQ9C3LRB/corpora
+      - https://www.laudatio-repository.org/browse/corpus/aiTdCXMB7CArCQ9CzEPy/corpora
+      - https://www.laudatio-repository.org/browse/corpus/VyQiCnMB7CArCQ9CjF3O/corpora
+      - https://www.laudatio-repository.org/browse/corpus/s0ImHH8BwG-ADazlg9LW/corpora
+      - https://www.laudatio-repository.org/browse/corpus/wyS4CXMB7CArCQ9CvCuB/corpora
+      - https://www.laudatio-repository.org/browse/corpus/ZluUPIkBUnBk-z0f73dr/corpora
+      - https://www.laudatio-repository.org/browse/corpus/lFzOPIkBUnBk-z0fVtCF/corpora
+      - https://www.laudatio-repository.org/browse/corpus/fiTICXMB7CArCQ9C_TQo/corpora
+      - https://www.laudatio-repository.org/browse/corpus/9SX7DnMB7CArCQ9CBB_J/corpora
+      - https://www.laudatio-repository.org/browse/corpus/miUsD3MB7CArCQ9C6Cul/corpora
+      - https://www.laudatio-repository.org/browse/corpus/PySSCnMB7CArCQ9CNKFY/corpora
+      - https://www.laudatio-repository.org/browse/corpus/7ySuCXMB7CArCQ9Ccica/corpora
+      - https://www.laudatio-repository.org/browse/corpus/HiTACXMB7CArCQ9CDy3m/corpora
+      - https://www.laudatio-repository.org/browse/corpus/YCQZCnMB7CArCQ9Ce1hF/corpora
+      - https://www.laudatio-repository.org/browse/corpus/AiSSCXMB7CArCQ9CsyMe/corpora
+      completed: true
+      note: LAUDATIO registry search inspected all 15 returned corpus records across
+        1 page(s); pagination exhausted. Tool names were treated as untrusted usage
+        leads, not component-level stage evidence.
+    - query: Mittelhochdeutsch Tokenisierung
+      language: de
+      channel: laudatio
+      source_urls:
+      - https://www.laudatio-repository.org/browse/corpus/1EfEEXQBbN_-VhLLUVbl/corpora
+      - https://www.laudatio-repository.org/browse/corpus/sIZPk4ABwG-ADazldESF/corpora
+      - https://www.laudatio-repository.org/browse/corpus/bSQeC3MB7CArCQ9Cw8yZ/corpora
+      - https://www.laudatio-repository.org/browse/corpus/yiTKCnMB7CArCQ9CxLhJ/corpora
+      - https://www.laudatio-repository.org/browse/corpus/MiXVDnMB7CArCQ9CABmW/corpora
+      completed: true
+      note: LAUDATIO registry search inspected all 5 returned corpus records across
+        1 page(s); pagination exhausted. Tool names were treated as untrusted usage
+        leads, not component-level stage evidence.
+    - query: Middle High German tokenization
+      language: en
+      channel: laudatio
+      source_urls:
+      - https://www.laudatio-repository.org/browse/corpus/xCS3CnMB7CArCQ9C3LRB/corpora
+      - https://www.laudatio-repository.org/browse/corpus/aiTdCXMB7CArCQ9CzEPy/corpora
+      - https://www.laudatio-repository.org/browse/corpus/VyQiCnMB7CArCQ9CjF3O/corpora
+      - https://www.laudatio-repository.org/browse/corpus/s0ImHH8BwG-ADazlg9LW/corpora
+      - https://www.laudatio-repository.org/browse/corpus/wyS4CXMB7CArCQ9CvCuB/corpora
+      - https://www.laudatio-repository.org/browse/corpus/ZluUPIkBUnBk-z0f73dr/corpora
+      - https://www.laudatio-repository.org/browse/corpus/lFzOPIkBUnBk-z0fVtCF/corpora
+      - https://www.laudatio-repository.org/browse/corpus/fiTICXMB7CArCQ9C_TQo/corpora
+      - https://www.laudatio-repository.org/browse/corpus/9SX7DnMB7CArCQ9CBB_J/corpora
+      - https://www.laudatio-repository.org/browse/corpus/miUsD3MB7CArCQ9C6Cul/corpora
+      - https://www.laudatio-repository.org/browse/corpus/PySSCnMB7CArCQ9CNKFY/corpora
+      - https://www.laudatio-repository.org/browse/corpus/7ySuCXMB7CArCQ9Ccica/corpora
+      - https://www.laudatio-repository.org/browse/corpus/HiTACXMB7CArCQ9CDy3m/corpora
+      - https://www.laudatio-repository.org/browse/corpus/YCQZCnMB7CArCQ9Ce1hF/corpora
+      - https://www.laudatio-repository.org/browse/corpus/AiSSCXMB7CArCQ9CsyMe/corpora
+      completed: true
+      note: LAUDATIO registry search inspected all 15 returned corpus records across
+        1 page(s); pagination exhausted. Tool names were treated as untrusted usage
+        leads, not component-level stage evidence.
+    - query: Mittelhochdeutsch Sprachmodell
+      language: de
+      channel: laudatio
+      source_urls:
+      - https://www.laudatio-repository.org/browse/corpus/sIZPk4ABwG-ADazldESF/corpora
+      - https://www.laudatio-repository.org/browse/corpus/bSQeC3MB7CArCQ9Cw8yZ/corpora
+      - https://www.laudatio-repository.org/browse/corpus/yiTKCnMB7CArCQ9CxLhJ/corpora
+      - https://www.laudatio-repository.org/browse/corpus/MiXVDnMB7CArCQ9CABmW/corpora
+      completed: true
+      note: LAUDATIO registry search inspected all 4 returned corpus records across
+        1 page(s); pagination exhausted. Tool names were treated as untrusted usage
+        leads, not component-level stage evidence.
+    - query: Middle High German language model
+      language: en
+      channel: laudatio
+      source_urls:
+      - https://www.laudatio-repository.org/browse/corpus/xCS3CnMB7CArCQ9C3LRB/corpora
+      - https://www.laudatio-repository.org/browse/corpus/aiTdCXMB7CArCQ9CzEPy/corpora
+      - https://www.laudatio-repository.org/browse/corpus/VyQiCnMB7CArCQ9CjF3O/corpora
+      - https://www.laudatio-repository.org/browse/corpus/s0ImHH8BwG-ADazlg9LW/corpora
+      - https://www.laudatio-repository.org/browse/corpus/wyS4CXMB7CArCQ9CvCuB/corpora
+      - https://www.laudatio-repository.org/browse/corpus/ZluUPIkBUnBk-z0f73dr/corpora
+      - https://www.laudatio-repository.org/browse/corpus/lFzOPIkBUnBk-z0fVtCF/corpora
+      - https://www.laudatio-repository.org/browse/corpus/fiTICXMB7CArCQ9C_TQo/corpora
+      - https://www.laudatio-repository.org/browse/corpus/9SX7DnMB7CArCQ9CBB_J/corpora
+      - https://www.laudatio-repository.org/browse/corpus/PySSCnMB7CArCQ9CNKFY/corpora
+      - https://www.laudatio-repository.org/browse/corpus/sSQOC3MB7CArCQ9Cx8mM/corpora
+      - https://www.laudatio-repository.org/browse/corpus/7ySuCXMB7CArCQ9Ccica/corpora
+      - https://www.laudatio-repository.org/browse/corpus/HiTACXMB7CArCQ9CDy3m/corpora
+      - https://www.laudatio-repository.org/browse/corpus/miUsD3MB7CArCQ9C6Cul/corpora
+      - https://www.laudatio-repository.org/browse/corpus/YCQZCnMB7CArCQ9Ce1hF/corpora
+      - https://www.laudatio-repository.org/browse/corpus/AiSSCXMB7CArCQ9CsyMe/corpora
+      completed: true
+      note: LAUDATIO registry search inspected all 16 returned corpus records across
+        1 page(s); pagination exhausted. Tool names were treated as untrusted usage
+        leads, not component-level stage evidence.
+    - query: Mittelhochdeutsch Worteinbettung
+      language: de
+      channel: laudatio
+      source_urls:
+      - https://www.laudatio-repository.org/browse/corpus/sIZPk4ABwG-ADazldESF/corpora
+      - https://www.laudatio-repository.org/browse/corpus/bSQeC3MB7CArCQ9Cw8yZ/corpora
+      - https://www.laudatio-repository.org/browse/corpus/yiTKCnMB7CArCQ9CxLhJ/corpora
+      - https://www.laudatio-repository.org/browse/corpus/MiXVDnMB7CArCQ9CABmW/corpora
+      completed: true
+      note: LAUDATIO registry search inspected all 4 returned corpus records across
+        1 page(s); pagination exhausted. Tool names were treated as untrusted usage
+        leads, not component-level stage evidence.
+    - query: Middle High German word embedding
+      language: en
+      channel: laudatio
+      source_urls:
+      - https://www.laudatio-repository.org/browse/corpus/xCS3CnMB7CArCQ9C3LRB/corpora
+      - https://www.laudatio-repository.org/browse/corpus/aiTdCXMB7CArCQ9CzEPy/corpora
+      - https://www.laudatio-repository.org/browse/corpus/VyQiCnMB7CArCQ9CjF3O/corpora
+      - https://www.laudatio-repository.org/browse/corpus/s0ImHH8BwG-ADazlg9LW/corpora
+      - https://www.laudatio-repository.org/browse/corpus/wyS4CXMB7CArCQ9CvCuB/corpora
+      - https://www.laudatio-repository.org/browse/corpus/miUsD3MB7CArCQ9C6Cul/corpora
+      - https://www.laudatio-repository.org/browse/corpus/ZluUPIkBUnBk-z0f73dr/corpora
+      - https://www.laudatio-repository.org/browse/corpus/lFzOPIkBUnBk-z0fVtCF/corpora
+      - https://www.laudatio-repository.org/browse/corpus/fiTICXMB7CArCQ9C_TQo/corpora
+      - https://www.laudatio-repository.org/browse/corpus/PySSCnMB7CArCQ9CNKFY/corpora
+      - https://www.laudatio-repository.org/browse/corpus/9SX7DnMB7CArCQ9CBB_J/corpora
+      - https://www.laudatio-repository.org/browse/corpus/7ySuCXMB7CArCQ9Ccica/corpora
+      - https://www.laudatio-repository.org/browse/corpus/HiTACXMB7CArCQ9CDy3m/corpora
+      - https://www.laudatio-repository.org/browse/corpus/YCQZCnMB7CArCQ9Ce1hF/corpora
+      - https://www.laudatio-repository.org/browse/corpus/AiSSCXMB7CArCQ9CsyMe/corpora
+      completed: true
+      note: LAUDATIO registry search inspected all 15 returned corpus records across
+        1 page(s); pagination exhausted. Tool names were treated as untrusted usage
+        leads, not component-level stage evidence.
+    - query: Mittelhochdeutsch BERT-Modellfamilie
+      language: de
+      channel: laudatio
+      source_urls:
+      - https://www.laudatio-repository.org/browse/corpus/sIZPk4ABwG-ADazldESF/corpora
+      - https://www.laudatio-repository.org/browse/corpus/bSQeC3MB7CArCQ9Cw8yZ/corpora
+      - https://www.laudatio-repository.org/browse/corpus/yiTKCnMB7CArCQ9CxLhJ/corpora
+      - https://www.laudatio-repository.org/browse/corpus/MiXVDnMB7CArCQ9CABmW/corpora
+      completed: true
+      note: LAUDATIO registry search inspected all 4 returned corpus records across
+        1 page(s); pagination exhausted. Tool names were treated as untrusted usage
+        leads, not component-level stage evidence.
+    - query: Middle High German BERT family
+      language: en
+      channel: laudatio
+      source_urls:
+      - https://www.laudatio-repository.org/browse/corpus/xCS3CnMB7CArCQ9C3LRB/corpora
+      - https://www.laudatio-repository.org/browse/corpus/aiTdCXMB7CArCQ9CzEPy/corpora
+      - https://www.laudatio-repository.org/browse/corpus/VyQiCnMB7CArCQ9CjF3O/corpora
+      - https://www.laudatio-repository.org/browse/corpus/s0ImHH8BwG-ADazlg9LW/corpora
+      - https://www.laudatio-repository.org/browse/corpus/wyS4CXMB7CArCQ9CvCuB/corpora
+      - https://www.laudatio-repository.org/browse/corpus/ZluUPIkBUnBk-z0f73dr/corpora
+      - https://www.laudatio-repository.org/browse/corpus/lFzOPIkBUnBk-z0fVtCF/corpora
+      - https://www.laudatio-repository.org/browse/corpus/fiTICXMB7CArCQ9C_TQo/corpora
+      - https://www.laudatio-repository.org/browse/corpus/9SX7DnMB7CArCQ9CBB_J/corpora
+      - https://www.laudatio-repository.org/browse/corpus/miUsD3MB7CArCQ9C6Cul/corpora
+      - https://www.laudatio-repository.org/browse/corpus/PySSCnMB7CArCQ9CNKFY/corpora
+      - https://www.laudatio-repository.org/browse/corpus/7ySuCXMB7CArCQ9Ccica/corpora
+      - https://www.laudatio-repository.org/browse/corpus/HiTACXMB7CArCQ9CDy3m/corpora
+      - https://www.laudatio-repository.org/browse/corpus/YCQZCnMB7CArCQ9Ce1hF/corpora
+      - https://www.laudatio-repository.org/browse/corpus/AiSSCXMB7CArCQ9CsyMe/corpora
+      completed: true
+      note: LAUDATIO registry search inspected all 15 returned corpus records across
+        1 page(s); pagination exhausted. Tool names were treated as untrusted usage
+        leads, not component-level stage evidence.
+    - query: Mittelhochdeutsch NLP-Werkzeug
+      language: de
+      channel: laudatio
+      source_urls:
+      - https://www.laudatio-repository.org/browse/corpus/sIZPk4ABwG-ADazldESF/corpora
+      - https://www.laudatio-repository.org/browse/corpus/bSQeC3MB7CArCQ9Cw8yZ/corpora
+      - https://www.laudatio-repository.org/browse/corpus/yiTKCnMB7CArCQ9CxLhJ/corpora
+      - https://www.laudatio-repository.org/browse/corpus/MiXVDnMB7CArCQ9CABmW/corpora
+      completed: true
+      note: LAUDATIO registry search inspected all 4 returned corpus records across
+        1 page(s); pagination exhausted. Tool names were treated as untrusted usage
+        leads, not component-level stage evidence.
+    - query: Middle High German NLP tool
+      language: en
+      channel: laudatio
+      source_urls:
+      - https://www.laudatio-repository.org/browse/corpus/xCS3CnMB7CArCQ9C3LRB/corpora
+      - https://www.laudatio-repository.org/browse/corpus/aiTdCXMB7CArCQ9CzEPy/corpora
+      - https://www.laudatio-repository.org/browse/corpus/PySSCnMB7CArCQ9CNKFY/corpora
+      - https://www.laudatio-repository.org/browse/corpus/VyQiCnMB7CArCQ9CjF3O/corpora
+      - https://www.laudatio-repository.org/browse/corpus/s0ImHH8BwG-ADazlg9LW/corpora
+      - https://www.laudatio-repository.org/browse/corpus/wyS4CXMB7CArCQ9CvCuB/corpora
+      - https://www.laudatio-repository.org/browse/corpus/ZluUPIkBUnBk-z0f73dr/corpora
+      - https://www.laudatio-repository.org/browse/corpus/lFzOPIkBUnBk-z0fVtCF/corpora
+      - https://www.laudatio-repository.org/browse/corpus/fiTICXMB7CArCQ9C_TQo/corpora
+      - https://www.laudatio-repository.org/browse/corpus/9SX7DnMB7CArCQ9CBB_J/corpora
+      - https://www.laudatio-repository.org/browse/corpus/miUsD3MB7CArCQ9C6Cul/corpora
+      - https://www.laudatio-repository.org/browse/corpus/7ySuCXMB7CArCQ9Ccica/corpora
+      - https://www.laudatio-repository.org/browse/corpus/HiTACXMB7CArCQ9CDy3m/corpora
+      - https://www.laudatio-repository.org/browse/corpus/YCQZCnMB7CArCQ9Ce1hF/corpora
+      - https://www.laudatio-repository.org/browse/corpus/AiSSCXMB7CArCQ9CsyMe/corpora
+      completed: true
+      note: LAUDATIO registry search inspected all 15 returned corpus records across
+        1 page(s); pagination exhausted. Tool names were treated as untrusted usage
+        leads, not component-level stage evidence.
+    - query: Mittelhochdeutsch STTS
+      language: de
+      channel: laudatio
+      source_urls:
+      - https://www.laudatio-repository.org/browse/corpus/sIZPk4ABwG-ADazldESF/corpora
+      - https://www.laudatio-repository.org/browse/corpus/bSQeC3MB7CArCQ9Cw8yZ/corpora
+      - https://www.laudatio-repository.org/browse/corpus/yiTKCnMB7CArCQ9CxLhJ/corpora
+      - https://www.laudatio-repository.org/browse/corpus/MiXVDnMB7CArCQ9CABmW/corpora
+      completed: true
+      note: LAUDATIO registry search inspected all 4 returned corpus records across
+        1 page(s); pagination exhausted. Tool names were treated as untrusted usage
+        leads, not component-level stage evidence.
+    - query: Middle High German STTS
+      language: en
+      channel: laudatio
+      source_urls:
+      - https://www.laudatio-repository.org/browse/corpus/xCS3CnMB7CArCQ9C3LRB/corpora
+      - https://www.laudatio-repository.org/browse/corpus/aiTdCXMB7CArCQ9CzEPy/corpora
+      - https://www.laudatio-repository.org/browse/corpus/VyQiCnMB7CArCQ9CjF3O/corpora
+      - https://www.laudatio-repository.org/browse/corpus/s0ImHH8BwG-ADazlg9LW/corpora
+      - https://www.laudatio-repository.org/browse/corpus/wyS4CXMB7CArCQ9CvCuB/corpora
+      - https://www.laudatio-repository.org/browse/corpus/ZluUPIkBUnBk-z0f73dr/corpora
+      - https://www.laudatio-repository.org/browse/corpus/lFzOPIkBUnBk-z0fVtCF/corpora
+      - https://www.laudatio-repository.org/browse/corpus/fiTICXMB7CArCQ9C_TQo/corpora
+      - https://www.laudatio-repository.org/browse/corpus/9SX7DnMB7CArCQ9CBB_J/corpora
+      - https://www.laudatio-repository.org/browse/corpus/miUsD3MB7CArCQ9C6Cul/corpora
+      - https://www.laudatio-repository.org/browse/corpus/PySSCnMB7CArCQ9CNKFY/corpora
+      - https://www.laudatio-repository.org/browse/corpus/7ySuCXMB7CArCQ9Ccica/corpora
+      - https://www.laudatio-repository.org/browse/corpus/HiTACXMB7CArCQ9CDy3m/corpora
+      - https://www.laudatio-repository.org/browse/corpus/YCQZCnMB7CArCQ9Ce1hF/corpora
+      - https://www.laudatio-repository.org/browse/corpus/AiSSCXMB7CArCQ9CsyMe/corpora
+      completed: true
+      note: LAUDATIO registry search inspected all 15 returned corpus records across
+        1 page(s); pagination exhausted. Tool names were treated as untrusted usage
+        leads, not component-level stage evidence.
+    - query: Mittelhochdeutsch HiTS
+      language: de
+      channel: laudatio
+      source_urls:
+      - https://www.laudatio-repository.org/browse/corpus/sIZPk4ABwG-ADazldESF/corpora
+      - https://www.laudatio-repository.org/browse/corpus/bSQeC3MB7CArCQ9Cw8yZ/corpora
+      - https://www.laudatio-repository.org/browse/corpus/yiTKCnMB7CArCQ9CxLhJ/corpora
+      - https://www.laudatio-repository.org/browse/corpus/MiXVDnMB7CArCQ9CABmW/corpora
+      completed: true
+      note: LAUDATIO registry search inspected all 4 returned corpus records across
+        1 page(s); pagination exhausted. Tool names were treated as untrusted usage
+        leads, not component-level stage evidence.
+    - query: Middle High German HiTS
+      language: en
+      channel: laudatio
+      source_urls:
+      - https://www.laudatio-repository.org/browse/corpus/xCS3CnMB7CArCQ9C3LRB/corpora
+      - https://www.laudatio-repository.org/browse/corpus/aiTdCXMB7CArCQ9CzEPy/corpora
+      - https://www.laudatio-repository.org/browse/corpus/VyQiCnMB7CArCQ9CjF3O/corpora
+      - https://www.laudatio-repository.org/browse/corpus/s0ImHH8BwG-ADazlg9LW/corpora
+      - https://www.laudatio-repository.org/browse/corpus/wyS4CXMB7CArCQ9CvCuB/corpora
+      - https://www.laudatio-repository.org/browse/corpus/ZluUPIkBUnBk-z0f73dr/corpora
+      - https://www.laudatio-repository.org/browse/corpus/lFzOPIkBUnBk-z0fVtCF/corpora
+      - https://www.laudatio-repository.org/browse/corpus/fiTICXMB7CArCQ9C_TQo/corpora
+      - https://www.laudatio-repository.org/browse/corpus/9SX7DnMB7CArCQ9CBB_J/corpora
+      - https://www.laudatio-repository.org/browse/corpus/miUsD3MB7CArCQ9C6Cul/corpora
+      - https://www.laudatio-repository.org/browse/corpus/PySSCnMB7CArCQ9CNKFY/corpora
+      - https://www.laudatio-repository.org/browse/corpus/7ySuCXMB7CArCQ9Ccica/corpora
+      - https://www.laudatio-repository.org/browse/corpus/HiTACXMB7CArCQ9CDy3m/corpora
+      - https://www.laudatio-repository.org/browse/corpus/YCQZCnMB7CArCQ9Ce1hF/corpora
+      - https://www.laudatio-repository.org/browse/corpus/AiSSCXMB7CArCQ9CsyMe/corpora
+      completed: true
+      note: LAUDATIO registry search inspected all 15 returned corpus records across
+        1 page(s); pagination exhausted. Tool names were treated as untrusted usage
+        leads, not component-level stage evidence.
+    - query: Mittelhochdeutsch ANNIS
+      language: de
+      channel: laudatio
+      source_urls:
+      - https://www.laudatio-repository.org/browse/corpus/sIZPk4ABwG-ADazldESF/corpora
+      - https://www.laudatio-repository.org/browse/corpus/PySSCnMB7CArCQ9CNKFY/corpora
+      - https://www.laudatio-repository.org/browse/corpus/XnU19IIBa2XDdNuCXFx-/corpora
+      - https://www.laudatio-repository.org/browse/corpus/bSQeC3MB7CArCQ9Cw8yZ/corpora
+      - https://www.laudatio-repository.org/browse/corpus/yiTKCnMB7CArCQ9CxLhJ/corpora
+      - https://www.laudatio-repository.org/browse/corpus/MiXVDnMB7CArCQ9CABmW/corpora
+      completed: true
+      note: LAUDATIO registry search inspected all 6 returned corpus records across
+        1 page(s); pagination exhausted. Tool names were treated as untrusted usage
+        leads, not component-level stage evidence.
+    - query: Middle High German ANNIS
+      language: en
+      channel: laudatio
+      source_urls:
+      - https://www.laudatio-repository.org/browse/corpus/xCS3CnMB7CArCQ9C3LRB/corpora
+      - https://www.laudatio-repository.org/browse/corpus/aiTdCXMB7CArCQ9CzEPy/corpora
+      - https://www.laudatio-repository.org/browse/corpus/PySSCnMB7CArCQ9CNKFY/corpora
+      - https://www.laudatio-repository.org/browse/corpus/VyQiCnMB7CArCQ9CjF3O/corpora
+      - https://www.laudatio-repository.org/browse/corpus/s0ImHH8BwG-ADazlg9LW/corpora
+      - https://www.laudatio-repository.org/browse/corpus/wyS4CXMB7CArCQ9CvCuB/corpora
+      - https://www.laudatio-repository.org/browse/corpus/ZluUPIkBUnBk-z0f73dr/corpora
+      - https://www.laudatio-repository.org/browse/corpus/lFzOPIkBUnBk-z0fVtCF/corpora
+      - https://www.laudatio-repository.org/browse/corpus/fiTICXMB7CArCQ9C_TQo/corpora
+      - https://www.laudatio-repository.org/browse/corpus/XnU19IIBa2XDdNuCXFx-/corpora
+      - https://www.laudatio-repository.org/browse/corpus/9SX7DnMB7CArCQ9CBB_J/corpora
+      - https://www.laudatio-repository.org/browse/corpus/miUsD3MB7CArCQ9C6Cul/corpora
+      - https://www.laudatio-repository.org/browse/corpus/7ySuCXMB7CArCQ9Ccica/corpora
+      - https://www.laudatio-repository.org/browse/corpus/HiTACXMB7CArCQ9CDy3m/corpora
+      - https://www.laudatio-repository.org/browse/corpus/YCQZCnMB7CArCQ9Ce1hF/corpora
+      - https://www.laudatio-repository.org/browse/corpus/AiSSCXMB7CArCQ9CsyMe/corpora
+      completed: true
+      note: LAUDATIO registry search inspected all 16 returned corpus records across
+        1 page(s); pagination exhausted. Tool names were treated as untrusted usage
+        leads, not component-level stage evidence.
+    - query: Mittelhochdeutsch EXMARaLDA
+      language: de
+      channel: laudatio
+      source_urls:
+      - https://www.laudatio-repository.org/browse/corpus/sIZPk4ABwG-ADazldESF/corpora
+      - https://www.laudatio-repository.org/browse/corpus/bSQeC3MB7CArCQ9Cw8yZ/corpora
+      - https://www.laudatio-repository.org/browse/corpus/yiTKCnMB7CArCQ9CxLhJ/corpora
+      - https://www.laudatio-repository.org/browse/corpus/MiXVDnMB7CArCQ9CABmW/corpora
+      completed: true
+      note: LAUDATIO registry search inspected all 4 returned corpus records across
+        1 page(s); pagination exhausted. Tool names were treated as untrusted usage
+        leads, not component-level stage evidence.
+    - query: Middle High German EXMARaLDA
+      language: en
+      channel: laudatio
+      source_urls:
+      - https://www.laudatio-repository.org/browse/corpus/xCS3CnMB7CArCQ9C3LRB/corpora
+      - https://www.laudatio-repository.org/browse/corpus/aiTdCXMB7CArCQ9CzEPy/corpora
+      - https://www.laudatio-repository.org/browse/corpus/VyQiCnMB7CArCQ9CjF3O/corpora
+      - https://www.laudatio-repository.org/browse/corpus/s0ImHH8BwG-ADazlg9LW/corpora
+      - https://www.laudatio-repository.org/browse/corpus/wyS4CXMB7CArCQ9CvCuB/corpora
+      - https://www.laudatio-repository.org/browse/corpus/ZluUPIkBUnBk-z0f73dr/corpora
+      - https://www.laudatio-repository.org/browse/corpus/lFzOPIkBUnBk-z0fVtCF/corpora
+      - https://www.laudatio-repository.org/browse/corpus/fiTICXMB7CArCQ9C_TQo/corpora
+      - https://www.laudatio-repository.org/browse/corpus/9SX7DnMB7CArCQ9CBB_J/corpora
+      - https://www.laudatio-repository.org/browse/corpus/miUsD3MB7CArCQ9C6Cul/corpora
+      - https://www.laudatio-repository.org/browse/corpus/PySSCnMB7CArCQ9CNKFY/corpora
+      - https://www.laudatio-repository.org/browse/corpus/7ySuCXMB7CArCQ9Ccica/corpora
+      - https://www.laudatio-repository.org/browse/corpus/HiTACXMB7CArCQ9CDy3m/corpora
+      - https://www.laudatio-repository.org/browse/corpus/YCQZCnMB7CArCQ9Ce1hF/corpora
+      - https://www.laudatio-repository.org/browse/corpus/AiSSCXMB7CArCQ9CsyMe/corpora
+      completed: true
+      note: LAUDATIO registry search inspected all 15 returned corpus records across
+        1 page(s); pagination exhausted. Tool names were treated as untrusted usage
+        leads, not component-level stage evidence.
+    - query: Mittelhochdeutsch OCR4all
+      language: de
+      channel: laudatio
+      source_urls:
+      - https://www.laudatio-repository.org/browse/corpus/sIZPk4ABwG-ADazldESF/corpora
+      - https://www.laudatio-repository.org/browse/corpus/bSQeC3MB7CArCQ9Cw8yZ/corpora
+      - https://www.laudatio-repository.org/browse/corpus/yiTKCnMB7CArCQ9CxLhJ/corpora
+      - https://www.laudatio-repository.org/browse/corpus/MiXVDnMB7CArCQ9CABmW/corpora
+      completed: true
+      note: LAUDATIO registry search inspected all 4 returned corpus records across
+        1 page(s); pagination exhausted. Tool names were treated as untrusted usage
+        leads, not component-level stage evidence.
+    - query: Middle High German OCR4all
+      language: en
+      channel: laudatio
+      source_urls:
+      - https://www.laudatio-repository.org/browse/corpus/xCS3CnMB7CArCQ9C3LRB/corpora
+      - https://www.laudatio-repository.org/browse/corpus/aiTdCXMB7CArCQ9CzEPy/corpora
+      - https://www.laudatio-repository.org/browse/corpus/VyQiCnMB7CArCQ9CjF3O/corpora
+      - https://www.laudatio-repository.org/browse/corpus/s0ImHH8BwG-ADazlg9LW/corpora
+      - https://www.laudatio-repository.org/browse/corpus/wyS4CXMB7CArCQ9CvCuB/corpora
+      - https://www.laudatio-repository.org/browse/corpus/ZluUPIkBUnBk-z0f73dr/corpora
+      - https://www.laudatio-repository.org/browse/corpus/lFzOPIkBUnBk-z0fVtCF/corpora
+      - https://www.laudatio-repository.org/browse/corpus/fiTICXMB7CArCQ9C_TQo/corpora
+      - https://www.laudatio-repository.org/browse/corpus/9SX7DnMB7CArCQ9CBB_J/corpora
+      - https://www.laudatio-repository.org/browse/corpus/miUsD3MB7CArCQ9C6Cul/corpora
+      - https://www.laudatio-repository.org/browse/corpus/PySSCnMB7CArCQ9CNKFY/corpora
+      - https://www.laudatio-repository.org/browse/corpus/7ySuCXMB7CArCQ9Ccica/corpora
+      - https://www.laudatio-repository.org/browse/corpus/HiTACXMB7CArCQ9CDy3m/corpora
+      - https://www.laudatio-repository.org/browse/corpus/YCQZCnMB7CArCQ9Ce1hF/corpora
+      - https://www.laudatio-repository.org/browse/corpus/AiSSCXMB7CArCQ9CsyMe/corpora
+      completed: true
+      note: LAUDATIO registry search inspected all 15 returned corpus records across
+        1 page(s); pagination exhausted. Tool names were treated as untrusted usage
+        leads, not component-level stage evidence.
+    candidate_ids:
+    - candidate-tool-annis
+    - candidate-tool-exmaralda
+    - candidate-tool-ocr4all
+    new_candidate_ids:
+    - candidate-tool-annis
+    - candidate-tool-exmaralda
+    - candidate-tool-ocr4all
+    complete: false
+    note: Provider-specific LAUDATIO follow-up only. All returned records and focused
+      tool-name pivots were inspected and all candidates dispositioned, but this pass
+      intentionally does not claim complete tool/MHG channel or sweep coverage.
 - id: tool-enhg
   category: tool
   stage: enhg
@@ -2346,6 +2918,38 @@ candidates:
   disposition_reason: An epoch dictionary documenting the vocabulary and usage of
     German-language texts from 1050–1350.
   refreshed_existing: false
+- id: candidate-tool-annis
+  name: ANNIS
+  aliases:
+  - Search and Visualization in Multilevel Linguistic Corpora ANNIS
+  - 'Search and Visualization in Multilevel Linguistic Corpora: ANNIS'
+  source_wordings:
+  - ANNIS
+  - Search and Visualization in Multilevel Linguistic Corpora ANNIS.
+  - 'Search and Visualization in Multilevel Linguistic Corpora: ANNIS.'
+  category: tool
+  discovered_on: '2026-08-16'
+  last_checked_on: '2026-08-16'
+  discovery_urls:
+  - https://www.laudatio-repository.org/browse/corpus/xCS3CnMB7CArCQ9C3LRB/corpora
+  - https://www.laudatio-repository.org/browse/corpus/sIZPk4ABwG-ADazldESF/corpora
+  - https://www.laudatio-repository.org/browse/corpus/bSQeC3MB7CArCQ9Cw8yZ/corpora
+  - https://www.laudatio-repository.org/browse/corpus/yiTKCnMB7CArCQ9CxLhJ/corpora
+  - https://www.laudatio-repository.org/browse/corpus/MiXVDnMB7CArCQ9CABmW/corpora
+  discovery_stage_claims:
+  - Middle High German
+  - Mittelhochdeutsch
+  - gmh
+  disposition: blocked
+  disposition_reason: 'Blocked: LAUDATIO establishes that MHG corpora use ANNIS, but
+    not that ANNIS itself supports a HistGerm stage or that required Tool fields are
+    documented.'
+  evidence_gaps:
+  - LAUDATIO corpus metadata does not establish component-level support by ANNIS for
+    OHG, MHG, or ENHG.
+  - Within the provider-specific evidence, required Tool fields cannot be established,
+    including a schema-supported task and complete access metadata.
+  refreshed_existing: false
 - id: candidate-tool-cltk-gmh-models
   name: gmh_models_cltk
   aliases: []
@@ -2370,6 +2974,31 @@ candidates:
     so all four permissions remain unclear.
   - The metadata does not document input or output formats, resource versions, evaluation
     data, or reported metrics.
+  refreshed_existing: false
+- id: candidate-tool-exmaralda
+  name: EXMARaLDA Partitur Editor
+  aliases:
+  - EXMARaLDA
+  source_wordings:
+  - EXMARaLDA - https://exmaralda.org/de/
+  - EXMARaLDA Partitur Editor
+  category: tool
+  discovered_on: '2026-08-16'
+  last_checked_on: '2026-08-16'
+  discovery_urls:
+  - https://www.laudatio-repository.org/browse/corpus/sIZPk4ABwG-ADazldESF/corpora
+  - https://www.laudatio-repository.org/browse/corpus/yiTKCnMB7CArCQ9CxLhJ/corpora
+  discovery_stage_claims:
+  - Mittelhochdeutsch
+  - gmh
+  disposition: blocked
+  disposition_reason: 'Blocked: LAUDATIO verifies EXMARaLDA use by MHG-bearing corpora
+    but not component-level historical-stage support or the required Tool metadata.'
+  evidence_gaps:
+  - LAUDATIO does not directly establish component-level OHG, MHG, or ENHG support
+    for EXMARaLDA.
+  - The permitted LAUDATIO sources do not establish the required Tool facts, including
+    canonical identity, supported tasks, and access metadata.
   refreshed_existing: false
 - id: candidate-tool-mhd-pos-tagging-benchmark
   name: mhd-pos-tagging-benchmark
@@ -2514,6 +3143,30 @@ candidates:
     availability, provenance, and required Tool fields could not be independently
     established; the candidate therefore cannot be identified as the existing tool-mhg-transfer-learning-parser
     or added as a distinct resource.
+  refreshed_existing: false
+- id: candidate-tool-ocr4all
+  name: OCR4all
+  aliases: []
+  source_wordings:
+  - OCR4all
+  category: tool
+  discovered_on: '2026-08-16'
+  last_checked_on: '2026-08-16'
+  discovery_urls:
+  - https://www.laudatio-repository.org/browse/corpus/lFzOPIkBUnBk-z0fVtCF/corpora
+  discovery_stage_claims:
+  - Middle High German
+  disposition: blocked
+  disposition_reason: Blocked because the LAUDATIO corpus record evidences OCR4all
+    usage and corpus languages only, not OCR4all's component-level task, historical-stage
+    support, or required Tool metadata.
+  evidence_gaps:
+  - LAUDATIO does not establish component-level Middle High German or other in-scope
+    historical-stage support for OCR4all.
+  - LAUDATIO does not establish OCR as OCR4all's component-level controlled task;
+    the annotation_encoding_tool field records corpus usage only.
+  - LAUDATIO does not establish the required Tool facts, including a canonical description,
+    access metadata, and component-level source evidence.
   refreshed_existing: false
 - id: candidate-tool-poshistoricaltext
   name: POSHistoricalText
