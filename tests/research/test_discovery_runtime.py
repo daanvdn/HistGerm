@@ -74,6 +74,20 @@ def test_provider_adapter_reports_exact_access_gaps_without_bodies() -> None:
     assert response.body == ""
 
 
+def test_provider_adapter_maps_transport_oserror_to_a_structured_gap() -> None:
+    def fetch(url: str, /, *, max_bytes: int) -> FetchedMetadata:
+        raise TimeoutError("provider connection timed out")
+
+    capabilities = load_runtime_capabilities(fetch=fetch, clock=clock)
+    response = capabilities.provider_fetch(request())
+    assert response.http_status is None
+    assert response.failure_stage == "connection"
+    assert response.body == ""
+    assert response.retrieval_mode == "bounded_http"
+    assert response.observed_at == clock()
+    assert response.next_cursor is None and response.exhausted is False
+
+
 def test_vocabulary_adapter_applies_the_smaller_byte_ceiling() -> None:
     seen: list[int] = []
 

@@ -52,62 +52,63 @@ each candidate batch of at most three so it can report concise counts and the
 current ledger revision. Do not combine an entire sweep into one opaque tool
 call or worker batch.
 
-### Resumable discovery capability loop
+### Native discovery run journal
 
-Before candidate and pass processing, the calling custom-agent coordinator
-must execute `discover` through its capability-exchange protocol:
+Native Copilot orchestration sequences the sweep and chooses query order,
+provider fallback, retries, worker batches, and candidate quarantine; the
+deterministic Python CLI owns typed records, the append-only run journal,
+optimistic concurrency, and atomic writes. There is no scripted
+request/response state machine, checkpoint file, or response file.
 
-1. Create unique checkpoint and response paths in the OS temporary directory;
-   neither path may be inside the repository.
-2. Start `discover` with the selected category and stage plus
-   `--checkpoint <checkpoint-path> --format json`.
-3. If the returned state is `needs_input`, dispatch every emitted
-   `model_elicitation` and `result_inspection` request with the coordinator's
-   configured pinned model. Preserve each request unchanged. For result
-   inspection, preserve every item and position exactly and classify every
-   requested position exactly once.
-4. Write one schema-valid response JSON object to the response path. Copy the
-   emitted schema version, run ID, and latest checkpoint revision exactly; add
-   one response for every request and no others. Refuse to resume an incomplete,
-   reordered, reconstructed, stale, or otherwise invalid response sequence.
-5. Resume only with
-   `discover --resume <checkpoint-path> --input <response-path> --format json`,
-   then repeat from step 3 while the state remains `needs_input`.
-6. Preserve existing user-visible progress reporting throughout the loop.
-   After `complete`, retain the final `DiscoveryRunResult` unchanged for the
-   subsequent candidate/pass workflow; do not reconstruct, summarize, or
-   discard it.
-7. If a capability response does not validate for its emitted request, send
-   that exact unchanged request to the same pinned model once more with only
-   the validation error and an instruction to return the required schema
-   without commentary. Never extract embedded JSON, rewrite, normalize, or
-   complete the response locally. This one correction attempt is available
-   only before a valid exchange is accepted. A stale revision, changed
-   identifier, missing or reordered request, or incomplete inspection
-   position sequence stops immediately.
-8. Before cleanup after refusal or failure, create a uniquely named diagnostic
-   directory in the OS temporary directory. Copy every existing checkpoint and
-   response there byte for byte, and save the failing CLI JSON output plus any
-   malformed and corrected model output. Keep these untrusted diagnostic
-   copies outside the repository, never commit or publish them, report every
-   exact path, and do not delete them during the failed run. Then delete both
-   original operational files and verify their removal. On success, retain no
-   diagnostic copies and verify cleanup of both operational files.
+Keep one append-only run journal for the run as an operational
+`*.journal.jsonl` file outside the repository; it is excluded from every
+distribution and is never committed or published. Record every external result
+as exactly one typed journal event through the checked-in CLI:
 
-Responses contain bounded model judgments, not evidence. Never alter a request,
-invent a provider response, reconstruct checkpoint state, treat a model
-elicitation or inspection as evidence, or bypass the checked-in state machine.
-After the single model-generated format correction allowed above, stop on any
-invalid exchange rather than retrying with modified identifiers or checkpoint
-content.
+1. Append each event with
+   `uv run python -m histgerm.research journal-append --journal
+   <run.journal.jsonl> --input <event.json>`, passing the last observed sequence
+   as `--expected-last-sequence` for optimistic concurrency. A planned query is
+   a `query_planned` event carrying its `intent_id`; its outcome is a
+   `query_executed` event, or a body-less `provider_gap` event for a transport
+   or access failure. Each inspected lead is a `lead_found` event. A malformed
+   model elicitation is a `retry_scheduled` event and then, if still invalid, a
+   `model_response_invalid` event. Each validated worker disposition is a
+   `candidate_researched` or `candidate_blocked` event. Each observed ledger
+   revision and proposed mutation are `ledger_revision_observed` and
+   `ledger_mutation_proposed` events. The terminal outcome is a `run_completed`
+   event.
+2. Make resume and recovery machine-driven. `journal-append` is idempotent on an
+   identical `(run_id, sequence)` and rejects a conflicting duplicate, wrong run
+   identifier, sequence gap, or `--expected-last-sequence` mismatch, so replaying
+   appends after an interruption never repeats a confirmed retrieval.
+3. Resume with `uv run python -m histgerm.research journal-status --journal
+   <run.journal.jsonl> --format json`, which deterministically replays the
+   confirmed run state (query, gap, lead, blocked, researched, revision, and
+   completion counts) so the coordinator continues exactly where the journal
+   ended.
+4. Verify integrity with `uv run python -m histgerm.research journal-validate`,
+   which recovers a single torn trailing line from an interrupted append while
+   rejecting mid-file corruption, and periodically append a compact checkpoint
+   with `uv run python -m histgerm.research journal-compact`.
 
-On refusal or failure, the calling coordinator must give the project owner an
-actionable prose stop report containing the failed phase, run ID and checkpoint
-revision, exact validator code and message, expected response shape, concise
-description of the received shape, whether the correction attempt was used,
-the rule preventing further recovery, ledger and repository mutation status,
-every diagnostic-copy path, and the smallest protocol or input change needed
-before resuming. The report must not expose secrets, full external payloads,
+Journal events record bounded model judgments and observed provider outcomes,
+never evidence. Never alter or invent a provider response, treat a model
+elicitation or inspection as evidence, or reconstruct confirmed state by hand
+instead of replaying the journal. A malformed model output is retried once and
+then quarantined as a `model_response_invalid` event; a stale ledger revision,
+changed run identifier, missing event, or second malformed output is not
+silently corrected and stops the affected step. A `candidate_blocked` evidence
+gap never stops unrelated queries, leads, or workers.
+
+The run journal is the durable diagnostic record. On refusal or failure, keep
+the journal outside the repository, never commit or publish it, and give the
+project owner an actionable prose stop report containing the failed phase, run
+identifier, journal last sequence and content hash, exact validator code and
+message, expected versus received event shape, whether the single model-format
+retry was used, the rule preventing recovery, ledger and repository mutation
+status, the journal path, and the smallest input or state change needed before
+resuming. The report must not expose secrets, full external payloads,
 chain-of-thought, or unsupported conclusions.
 
 Only the coordinator may mutate the ledger. Use

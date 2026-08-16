@@ -1,0 +1,1284 @@
+{
+  "schema_version": 1,
+  "plan_version": 1,
+  "run_id": "plan-20260815T175900Z",
+  "branch": "copilot/histgerm-curator-migration-plan-20260815T175900Z",
+  "current_task": "TASK-MIG-013",
+  "tasks": {
+    "TASK-MIG-001": "complete",
+    "TASK-MIG-002": "complete",
+    "TASK-MIG-003": "complete",
+    "TASK-MIG-004": "complete",
+    "TASK-MIG-005": "complete",
+    "TASK-MIG-006": "complete",
+    "TASK-MIG-007": "complete",
+    "TASK-MIG-008": "complete",
+    "TASK-MIG-009": "complete",
+    "TASK-MIG-010": "complete",
+    "TASK-MIG-011": "complete",
+    "TASK-MIG-012": "complete",
+    "TASK-MIG-013": "complete"
+  },
+  "gates": {
+    "GATE-PLAN": {
+      "status": "pass",
+      "blocks": "TASK-MIG-001",
+      "evaluated_at": "2026-08-15T21:46:00+02:00",
+      "evidence": {
+        "plan_tracked_in_git": true,
+        "plan_path": "plans/histgerm-curator-architecture-migration.md",
+        "contains_literals": ["GATE-PLAN", "TASK-MIG-001", "TASK-MIG-013"],
+        "migration_state_present_and_parses_initial_schema": true,
+        "migration_state_tracked_in_git": true,
+        "integration_branch_non_default": true,
+        "default_branch": "main",
+        "based_on_default_branch_head": "e3e08cadd1e0fa996ad4616935a98e372c819922"
+      }
+    },
+    "GATE-RECOVERY": {
+      "status": "pass",
+      "blocks": "TASK-MIG-007",
+      "evaluated_at": "2026-08-16T00:21:00+02:00",
+      "evidence": {
+        "predecessor_tasks_complete": {
+          "TASK-MIG-001": "complete",
+          "TASK-MIG-002": "complete",
+          "TASK-MIG-003": "complete",
+          "TASK-MIG-004": "complete",
+          "TASK-MIG-005": "complete",
+          "TASK-MIG-006": "complete"
+        },
+        "explicitly_asserted": ["TASK-MIG-002", "TASK-MIG-003", "TASK-MIG-005", "TASK-MIG-006"],
+        "serialization_required": ["TASK-MIG-001", "TASK-MIG-004"],
+        "evidence_grounding_tests_pass": {
+          "unsupported_stage": "tests/research/test_models.py::test_added_result_requires_matching_stage_evidence",
+          "source_silence_out_of_scope": "tests/research/test_models.py::test_source_silence_becomes_blocked_never_out_of_scope",
+          "identity_ambiguity": "tests/research/test_models.py::test_identity_ambiguity_carries_conflict_and_cannot_be_added",
+          "colocated_recovery_guard": "tests/research/test_discovery_recovery.py::test_evidence_grounded_dispositions_stay_strict",
+          "structured_query_intents": "tests/research/test_discovery_recovery.py::test_structured_query_intent_registry_stays_canonical"
+        },
+        "malformed_sibling_retained_not_discarded": "tests/research/test_discovery_recovery.py::test_malformed_sibling_is_quarantined_without_discarding_valid_lead",
+        "malformed_formatting_single_retry_recovers": "tests/research/test_discovery_recovery.py::test_malformed_response_formatting_is_recovered_by_one_retry",
+        "missing_positions_smaller_batch_retry": "tests/research/test_discovery_recovery.py::test_missing_inspection_positions_recover_via_smaller_batch_retry",
+        "large_page_split_into_bounded_batches": "tests/research/test_discovery_recovery.py::test_large_inspection_page_is_split_into_bounded_batches",
+        "provider_transport_gap_structured_not_aborting": [
+          "tests/research/test_discovery_recovery.py::test_provider_transport_gap_does_not_abort_other_channels",
+          "tests/research/test_discovery_runtime.py::test_provider_adapter_maps_transport_oserror_to_a_structured_gap",
+          "tests/research/test_discovery_runtime.py::test_provider_adapter_reports_exact_access_gaps_without_bodies"
+        ],
+        "stale_or_future_revision_actionable_not_discarded": "tests/research/test_discovery_recovery.py::test_stale_or_future_revision_returns_actionable_state",
+        "wrong_run_identity_remains_fatal": "tests/research/test_discovery_recovery.py::test_wrong_run_identity_remains_fatal_and_is_not_stale",
+        "resume_no_repeated_confirmed_retrieval": [
+          "tests/research/test_discovery_session.py::test_resume_never_repeats_confirmed_retrieval",
+          "tests/research/test_discovery_recovery.py::test_missing_inspection_positions_recover_via_smaller_batch_retry"
+        ],
+        "pytest": {"command": "uv run pytest", "exit_code": 0, "passed": 531, "skipped": 1},
+        "mypy": {"command": "uv run mypy src tests", "exit_code": 0}
+      }
+    },
+    "GATE-JOURNAL-PARITY": {
+      "status": "pass",
+      "blocks": "TASK-MIG-009",
+      "evaluated_at": "2026-08-16T02:12:59+02:00",
+      "evidence": {
+        "predecessor_tasks_complete": {
+          "TASK-MIG-001": "complete",
+          "TASK-MIG-002": "complete",
+          "TASK-MIG-003": "complete",
+          "TASK-MIG-004": "complete",
+          "TASK-MIG-005": "complete",
+          "TASK-MIG-006": "complete",
+          "TASK-MIG-007": "complete",
+          "TASK-MIG-008": "complete"
+        },
+        "explicitly_asserted": ["TASK-MIG-004", "TASK-MIG-007", "TASK-MIG-008"],
+        "serialization_required": ["TASK-MIG-001", "TASK-MIG-002", "TASK-MIG-003", "TASK-MIG-005", "TASK-MIG-006"],
+        "journal_replay_is_deterministic": [
+          "tests/research/test_journal_parity.py::test_journal_replay_is_deterministic_and_order_sensitive",
+          "tests/research/test_journal_parity.py::test_replay_reconstructs_lead_and_query_counts"
+        ],
+        "old_path_and_replayed_synthetic_results_equivalent": [
+          "tests/research/test_journal_parity.py::test_old_path_and_journal_replay_projections_are_identical",
+          "tests/research/test_journal_parity.py::test_resumable_session_and_injected_run_have_equal_journal_parity",
+          "tests/research/test_journal_parity.py::test_provider_gap_run_parity_records_gaps_not_executions",
+          "tests/research/test_journal_parity.py::test_model_quarantine_events_are_recorded_and_parity_holds"
+        ],
+        "interrupted_runs_resume_without_repeating_confirmed_retrievals": [
+          "tests/research/test_journal_parity.py::test_interrupted_append_leaves_prior_journal_valid_and_resumes",
+          "tests/research/test_journal_parity.py::test_resumable_session_and_injected_run_have_equal_journal_parity",
+          "tests/research/test_discovery_session.py::test_resume_never_repeats_confirmed_retrieval"
+        ],
+        "optimistic_concurrency_and_atomicity": [
+          "tests/research/test_journal_parity.py::test_dual_write_optimistic_concurrency_and_conflicts",
+          "tests/research/test_journal_parity.py::test_durable_round_trip_matches_old_path",
+          "tests/research/test_journal_parity.py::test_compacted_journal_reduces_to_the_same_projection"
+        ],
+        "mismatches_are_test_failures_never_runtime_fallbacks": true,
+        "no_live_state_changed": "the dual-write adapter is a pure projection of the authoritative DiscoveryRunResult; run_discovery, advance, apply_exchange, DiscoveryRunResult.as_json, and every serialized ledger/vocabulary/checkpoint/journal format are unchanged",
+        "pytest": {"command": "uv run pytest", "exit_code": 0, "passed": 579, "skipped": 1},
+        "mypy": {"command": "uv run mypy src tests", "exit_code": 0},
+        "ruff_check": {"command": "uv run ruff check .", "exit_code": 0},
+        "ruff_format": {"command": "uv run ruff format --check .", "exit_code": 0}
+      }
+    },
+    "GATE-CUTOVER": {
+      "status": "pass",
+      "blocks": "TASK-MIG-010",
+      "evaluated_at": "2026-08-16T04:37:43+02:00",
+      "evidence": {
+        "predecessor_tasks_complete": {
+          "TASK-MIG-001": "complete",
+          "TASK-MIG-002": "complete",
+          "TASK-MIG-003": "complete",
+          "TASK-MIG-004": "complete",
+          "TASK-MIG-005": "complete",
+          "TASK-MIG-006": "complete",
+          "TASK-MIG-007": "complete",
+          "TASK-MIG-008": "complete",
+          "TASK-MIG-009": "complete"
+        },
+        "explicitly_asserted": ["TASK-MIG-009"],
+        "serialization_required": ["TASK-MIG-001", "TASK-MIG-002", "TASK-MIG-003", "TASK-MIG-004", "TASK-MIG-005", "TASK-MIG-006", "TASK-MIG-007", "TASK-MIG-008"],
+        "native_bilingual_and_multi_channel_simulations_pass": [
+          "tests/agent/test_native_orchestration_simulations.py::test_bilingual_multichannel_run_journal_shape",
+          "tests/agent/test_native_orchestration_simulations.py::test_interruption_resume_never_repeats_confirmed_retrieval"
+        ],
+        "publication_validation_consumes_journal_derived_results": [
+          "tests/agent/test_native_orchestration_simulations.py::test_publication_consumes_journal_derived_results",
+          ".github/skills/validate-histgerm-inventory/SKILL.md '## Run-journal derived results' consumes journal-validate + journal-status and records a journal result",
+          ".github/skills/publish-histgerm-batch/SKILL.md 'Consume journal-derived results' derives PR-report facts from the journal-status replay"
+        ],
+        "no_contract_surface_requires_an_old_exchange_symbol": {
+          "check": "tests/agent/test_native_orchestration_simulations.py::test_no_surface_requires_an_old_exchange_symbol",
+          "surfaces_scanned": [".github/agents/histgerm-inventory-curator.agent.md", ".github/skills/discover-histgerm-resources/SKILL.md", ".github/skills/curate-histgerm-resource/SKILL.md", ".github/skills/validate-histgerm-inventory/SKILL.md", ".github/skills/publish-histgerm-batch/SKILL.md", "docs/inventory-curator.md"],
+          "forbidden_tokens_absent": ["--checkpoint", "--resume", "model_elicitation", "result_inspection", "needs_input", "read_exchange", "apply_exchange", "DiscoveryCheckpoint", "capability exchange", "capability-exchange", "discover --"],
+          "ci_clean": [".github/workflows/ci.yml", ".github/workflows/copilot-setup-steps.yml"]
+        },
+        "retained_legacy_awaiting_TASK-MIG-010_not_required_contract_references": {
+          "note": "The only non-test callers of old-exchange interfaces are the intentionally retained legacy implementation cluster (discovery_protocol.py request/response/checkpoint symbols, discovery_session.py advance/apply_exchange, and the __main__.py `discover --checkpoint/--resume/--input` branch). Per the plan, TASK-MIG-010 removes these; they are legacy implementation, not required contract references. No agent, skill, CLI-required, docs, or CI surface requires an old-exchange symbol.",
+          "files": ["src/histgerm/research/discovery_protocol.py", "src/histgerm/research/discovery_session.py", "src/histgerm/research/__main__.py"]
+        },
+        "disable_model_invocation_review": "disable-model-invocation: true is retained unchanged; the executable native-orchestration simulations complete without it being lifted, so it does not block target native orchestration. Its platform meaning (no auto-invocation from a model turn; does not block the agent's own native orchestration/worker delegation/journal writes) is documented in the agent frontmatter note and docs/inventory-curator.md.",
+        "query_intent_behavior_preserved_end_to_end": "query_planned journal events carry intent_id; asserted by tests/agent/test_native_orchestration_simulations.py::test_bilingual_multichannel_run_journal_shape and the unchanged TASK-MIG-003 query-intent suite.",
+        "pytest": {"command": "uv run pytest", "exit_code": 0, "passed": 591, "skipped": 1},
+        "mypy": {"command": "uv run mypy src tests", "exit_code": 0},
+        "ruff_check": {"command": "uv run ruff check .", "exit_code": 0},
+        "ruff_format": {"command": "uv run ruff format --check .", "exit_code": 0},
+        "ledger_validate": {"command": "uv run python -m histgerm.research validate --ledger research/discovery-ledger.yaml --format json", "exit_code": 0, "revision": 95},
+        "vocabulary_validate": {"command": "uv run python -m histgerm.research vocabulary-validate --vocabulary research/discovery-vocabulary.yaml --format json", "exit_code": 0, "revision": 0},
+        "inventory_validate": {"command": "uv run python -m histgerm.validation src/histgerm/data", "exit_code": 0},
+        "build": {"command": "uv build --no-sources", "exit_code": 0},
+        "git_diff_check": {"command": "git diff --check", "exit_code": 0}
+      }
+    },
+    "GATE-PILOT": {
+      "status": "pass",
+      "blocks": "TASK-MIG-013",
+      "evaluated_at": "2026-08-16T07:50:00+02:00",
+      "evidence": {
+        "predecessor_tasks_complete": {
+          "TASK-MIG-001": "complete",
+          "TASK-MIG-002": "complete",
+          "TASK-MIG-003": "complete",
+          "TASK-MIG-004": "complete",
+          "TASK-MIG-005": "complete",
+          "TASK-MIG-006": "complete",
+          "TASK-MIG-007": "complete",
+          "TASK-MIG-008": "complete",
+          "TASK-MIG-009": "complete",
+          "TASK-MIG-010": "complete",
+          "TASK-MIG-011": "complete",
+          "TASK-MIG-012": "complete"
+        },
+        "synthetic_canary_targets_pass": {
+          "suite": "tests/research/test_synthetic_canary.py",
+          "recoverable_resume_without_restart": "4/4 >= 0.95",
+          "whole_run_aborts": "0/4 < 0.05 and every abort an integrity refusal",
+          "false_completion": "0/6",
+          "candidate_quarantine_after_retries": "2/2 == 1.0",
+          "optimistic_concurrency_detection": "3/3 == 1.0",
+          "legal_and_stage_evidence_rejection": "2/2 == 1.0"
+        },
+        "full_repository_validation_passes": {
+          "pytest": "578 passed, 1 skipped",
+          "ruff_check": 0,
+          "ruff_format_check": 0,
+          "mypy": 0,
+          "build": 0,
+          "git_diff_check": 0,
+          "ledger_validate_revision": 95,
+          "vocabulary_validate_revision": 0,
+          "inventory_resources": 29
+        },
+        "next_sweep_selection_selects_incomplete_sweep": {
+          "command": "uv run python -m histgerm.research next --ledger research/discovery-ledger.yaml --format json",
+          "invocation_count": 1,
+          "selected_sweep_id": "tool-mhg",
+          "category": "tool",
+          "stage": "mhg",
+          "sweep_state": "in_progress",
+          "ledger_revision": 95
+        },
+        "pilot_target_recorded_once": true
+      }
+    }
+  },
+  "commits": {
+    "TASK-MIG-001": {
+      "hash": "41f2354014d2cd15093dee45e8a688725c96dbb0",
+      "hash_rule": "rolling: migration-state.json is tracked in Git, so a task's own commit cannot embed its own hash. Each task records its predecessor's real hash and leaves its own hash 'pending'; the successor finalizes it. TASK-MIG-002's commit records TASK-MIG-001's real retry-commit hash in this field. TASK-MIG-013's hash is finalized by the final draft-PR-update commit. No false or self-referential hash is ever recorded.",
+      "message_subject_contains": "TASK-MIG-001",
+      "parent": "de83e6a311108c903544839b8e94e981c9fcf4cb",
+      "predecessor": {
+        "task": "GATE-PLAN/rollback-boundary",
+        "hash": "de83e6a311108c903544839b8e94e981c9fcf4cb",
+        "message_subject_contains": "revert(migration): revert untracked-state TASK-MIG-001 baseline"
+      },
+      "history": {
+        "attempt_1": {
+          "commit": "4c8add1eb8926a423e1336b0e3dd695c0ab06d71",
+          "status": "rolled_back",
+          "reason": "migration-state.json was gitignored/untracked, contradicting the plan contract that it is the single durable source of truth committed and pushed on the integration branch for cross-session and PR-based resume; .gitignore was modified outside the declared TASK-MIG-001 scope; the draft PR body reintroduced reviewer/merge-mandatory wording contrary to the machine-only workflow.",
+          "reverted_by": "de83e6a311108c903544839b8e94e981c9fcf4cb"
+        },
+        "attempt_2": {
+          "commit": "41f2354014d2cd15093dee45e8a688725c96dbb0",
+          "status": "complete",
+          "note": "Non-destructive retry on the same branch and draft PR #5: migration-state.json is tracked in Git and pushed (still excluded from wheel/sdist and verified absent from both); .gitignore restored to its pre-TASK-MIG-001 content (no migration/journal/checkpoint ignores); tests/test_wheel.py narrowed so the repository payload rule permits only the exact root migration-state.json while archive safety still rejects JSON and distribution tests assert its absence; fixtures, baseline test, and pyproject source-exclude additions recreated; plan TASK-MIG-001 scope/acceptance updated to declare migration-state.json and tests/test_wheel.py."
+        }
+      }
+    },
+    "TASK-MIG-002": {
+      "hash": "e9a16d258ceab0b910caf80dc14af9afae177840",
+      "hash_rule": "rolling: migration-state.json is tracked in Git, so this task's own commit cannot embed its own hash. TASK-MIG-002 records its predecessor TASK-MIG-001's real retry-commit hash (41f2354014d2cd15093dee45e8a688725c96dbb0) and left its own hash 'pending'; its successor TASK-MIG-003 finalizes this field with TASK-MIG-002's real commit hash (e9a16d258ceab0b910caf80dc14af9afae177840). No false or self-referential hash is ever recorded.",
+      "message_subject_contains": "TASK-MIG-002",
+      "parent": "41f2354014d2cd15093dee45e8a688725c96dbb0",
+      "predecessor": {
+        "task": "TASK-MIG-001",
+        "hash": "41f2354014d2cd15093dee45e8a688725c96dbb0",
+        "message_subject_contains": "TASK-MIG-001"
+      }
+    },
+    "TASK-MIG-003": {
+      "hash": "c2b50eb593cf54575ecc15248c4fe4a06516d2eb",
+      "hash_rule": "rolling: migration-state.json is tracked in Git, so this task's own commit cannot embed its own hash. TASK-MIG-003 records its predecessor TASK-MIG-002's real commit hash (e9a16d258ceab0b910caf80dc14af9afae177840) and left its own hash 'pending'; its successor TASK-MIG-004 finalizes this field with TASK-MIG-003's real commit hash (c2b50eb593cf54575ecc15248c4fe4a06516d2eb). No false or self-referential hash is ever recorded.",
+      "message_subject_contains": "TASK-MIG-003",
+      "parent": "e9a16d258ceab0b910caf80dc14af9afae177840",
+      "predecessor": {
+        "task": "TASK-MIG-002",
+        "hash": "e9a16d258ceab0b910caf80dc14af9afae177840",
+        "message_subject_contains": "TASK-MIG-002"
+      }
+    },
+    "TASK-MIG-004": {
+      "hash": "7516bad2d643afe5c5b0f79535ce1895026f558d",
+      "hash_rule": "rolling: migration-state.json is tracked in Git, so this task's own commit cannot embed its own hash. TASK-MIG-004 recorded its predecessor TASK-MIG-003's real commit hash (c2b50eb593cf54575ecc15248c4fe4a06516d2eb) and left its own hash 'pending'; its successor TASK-MIG-005 finalizes this field with TASK-MIG-004's real commit hash (7516bad2d643afe5c5b0f79535ce1895026f558d). No false or self-referential hash is ever recorded.",
+      "message_subject_contains": "TASK-MIG-004",
+      "parent": "c2b50eb593cf54575ecc15248c4fe4a06516d2eb",
+      "predecessor": {
+        "task": "TASK-MIG-003",
+        "hash": "c2b50eb593cf54575ecc15248c4fe4a06516d2eb",
+        "message_subject_contains": "TASK-MIG-003"
+      }
+    },
+    "TASK-MIG-005": {
+      "hash": "47ee03b5d2480ead23649121f9a74393883ca4de",
+      "hash_rule": "rolling: migration-state.json is tracked in Git, so this task's own commit cannot embed its own hash. TASK-MIG-005 records its predecessor TASK-MIG-004's real commit hash (7516bad2d643afe5c5b0f79535ce1895026f558d) and leaves its own hash 'pending'; its successor TASK-MIG-006 finalizes this field with TASK-MIG-005's real commit hash (47ee03b5d2480ead23649121f9a74393883ca4de). No false or self-referential hash is ever recorded.",
+      "message_subject_contains": "TASK-MIG-005",
+      "parent": "7516bad2d643afe5c5b0f79535ce1895026f558d",
+      "predecessor": {
+        "task": "TASK-MIG-004",
+        "hash": "7516bad2d643afe5c5b0f79535ce1895026f558d",
+        "message_subject_contains": "TASK-MIG-004"
+      }
+    },
+    "TASK-MIG-006": {
+      "hash": "448138958f6834692e97461c21261a99d72b11c9",
+      "hash_rule": "rolling: migration-state.json is tracked in Git, so this task's own commit cannot embed its own hash. TASK-MIG-006 records its predecessor TASK-MIG-005's real commit hash (47ee03b5d2480ead23649121f9a74393883ca4de) and left its own hash 'pending'; its successor TASK-MIG-007 finalizes this field with TASK-MIG-006's real commit hash (448138958f6834692e97461c21261a99d72b11c9). No false or self-referential hash is ever recorded.",
+      "message_subject_contains": "TASK-MIG-006",
+      "parent": "47ee03b5d2480ead23649121f9a74393883ca4de",
+      "predecessor": {
+        "task": "TASK-MIG-005",
+        "hash": "47ee03b5d2480ead23649121f9a74393883ca4de",
+        "message_subject_contains": "TASK-MIG-005"
+      }
+    },
+    "TASK-MIG-007": {
+      "hash": "cf19f7fffee51e825604e9bbb085f3ef5e6ca4ab",
+      "hash_rule": "rolling: migration-state.json is tracked in Git, so this task's own commit cannot embed its own hash. TASK-MIG-007 recorded its predecessor TASK-MIG-006's real commit hash (448138958f6834692e97461c21261a99d72b11c9) and left its own hash 'pending'; its successor TASK-MIG-008 finalizes this field with TASK-MIG-007's real commit hash (cf19f7fffee51e825604e9bbb085f3ef5e6ca4ab). No false or self-referential hash is ever recorded.",
+      "message_subject_contains": "TASK-MIG-007",
+      "parent": "448138958f6834692e97461c21261a99d72b11c9",
+      "predecessor": {
+        "task": "TASK-MIG-006",
+        "hash": "448138958f6834692e97461c21261a99d72b11c9",
+        "message_subject_contains": "TASK-MIG-006"
+      }
+    },
+    "TASK-MIG-008": {
+      "hash": "a6715211d17c4963caca9f6fe8aabb15d85df0b0",
+      "hash_rule": "rolling: migration-state.json is tracked in Git, so this task's own commit cannot embed its own hash. TASK-MIG-008 recorded its predecessor TASK-MIG-007's real commit hash (cf19f7fffee51e825604e9bbb085f3ef5e6ca4ab) and left its own hash 'pending'; its successor TASK-MIG-009 finalizes this field with TASK-MIG-008's real commit hash (a6715211d17c4963caca9f6fe8aabb15d85df0b0). No false or self-referential hash is ever recorded.",
+      "message_subject_contains": "TASK-MIG-008",
+      "parent": "cf19f7fffee51e825604e9bbb085f3ef5e6ca4ab",
+      "predecessor": {
+        "task": "TASK-MIG-007",
+        "hash": "cf19f7fffee51e825604e9bbb085f3ef5e6ca4ab",
+        "message_subject_contains": "TASK-MIG-007"
+      }
+    },
+    "TASK-MIG-009": {
+      "hash": "13da88ed6180f5d53a68014cb2de55c34a0e8a82",
+      "hash_rule": "rolling: migration-state.json is tracked in Git, so this task's own commit cannot embed its own hash. TASK-MIG-009 recorded its predecessor TASK-MIG-008's real commit hash (a6715211d17c4963caca9f6fe8aabb15d85df0b0) and left its own hash 'pending'; its successor TASK-MIG-010 finalizes this field with TASK-MIG-009's real commit hash (13da88ed6180f5d53a68014cb2de55c34a0e8a82). No false or self-referential hash is ever recorded.",
+      "message_subject_contains": "TASK-MIG-009",
+      "parent": "a6715211d17c4963caca9f6fe8aabb15d85df0b0",
+      "predecessor": {
+        "task": "TASK-MIG-008",
+        "hash": "a6715211d17c4963caca9f6fe8aabb15d85df0b0",
+        "message_subject_contains": "TASK-MIG-008"
+      }
+    },
+    "TASK-MIG-010": {
+      "hash": "b697c4d737f2d0ec5f4b455fe094709297900a51",
+      "hash_rule": "rolling: migration-state.json is tracked in Git, so this task's own commit cannot embed its own hash. TASK-MIG-010 recorded its predecessor TASK-MIG-009's real commit hash (13da88ed6180f5d53a68014cb2de55c34a0e8a82) and left its own hash 'pending'; its successor TASK-MIG-011 finalizes this field with TASK-MIG-010's real commit hash (b697c4d737f2d0ec5f4b455fe094709297900a51). No false or self-referential hash is ever recorded.",
+      "message_subject_contains": "TASK-MIG-010",
+      "parent": "13da88ed6180f5d53a68014cb2de55c34a0e8a82",
+      "predecessor": {
+        "task": "TASK-MIG-009",
+        "hash": "13da88ed6180f5d53a68014cb2de55c34a0e8a82",
+        "message_subject_contains": "TASK-MIG-009"
+      }
+    },
+    "TASK-MIG-011": {
+      "hash": "57784f36098f946731fd28b06965799e31486002",
+      "hash_rule": "rolling: migration-state.json is tracked in Git, so this task's own commit cannot embed its own hash. TASK-MIG-011 records its predecessor TASK-MIG-010's real commit hash (b697c4d737f2d0ec5f4b455fe094709297900a51) and leaves its own hash 'pending'; its successor TASK-MIG-012 finalizes this field with TASK-MIG-011's real commit hash. No false or self-referential hash is ever recorded.",
+      "message_subject_contains": "TASK-MIG-011",
+      "parent": "b697c4d737f2d0ec5f4b455fe094709297900a51",
+      "predecessor": {
+        "task": "TASK-MIG-010",
+        "hash": "b697c4d737f2d0ec5f4b455fe094709297900a51",
+        "message_subject_contains": "TASK-MIG-010"
+      }
+    },
+    "TASK-MIG-012": {
+      "hash": "c5b032b36b9a846a228997cbdc5e25378dce7a2c",
+      "hash_rule": "rolling: migration-state.json is tracked in Git, so this task's own commit cannot embed its own hash. TASK-MIG-012 finalizes its predecessor TASK-MIG-011's real commit hash (57784f36098f946731fd28b06965799e31486002) and leaves its own hash 'pending'; its successor TASK-MIG-013 finalizes this field with TASK-MIG-012's real commit hash. No false or self-referential hash is ever recorded.",
+      "message_subject_contains": "TASK-MIG-012",
+      "parent": "57784f36098f946731fd28b06965799e31486002",
+      "predecessor": {
+        "task": "TASK-MIG-011",
+        "hash": "57784f36098f946731fd28b06965799e31486002",
+        "message_subject_contains": "TASK-MIG-011"
+      }
+    },
+    "TASK-MIG-013": {
+      "hash": "7e2fbdf212dcdc2537e3a87f22959ddb2d61e390",
+      "hash_rule": "rolling: migration-state.json is tracked in Git, so this final task commit cannot embed its own hash. TASK-MIG-013 finalizes its predecessor TASK-MIG-012's real commit hash (c5b032b36b9a846a228997cbdc5e25378dce7a2c) and leaves its own hash 'pending'. Because TASK-MIG-013 is the last task, the follow-up update-migration-pr commit that refreshes draft PR #5 finalizes this field with TASK-MIG-013's real commit hash. No false or self-referential hash is ever recorded.",
+      "message_subject_contains": "TASK-MIG-013",
+      "parent": "c5b032b36b9a846a228997cbdc5e25378dce7a2c",
+      "predecessor": {
+        "task": "TASK-MIG-012",
+        "hash": "c5b032b36b9a846a228997cbdc5e25378dce7a2c",
+        "message_subject_contains": "TASK-MIG-012"
+      }
+    }
+  },
+  "checks": {
+    "TASK-MIG-013": {
+      "recorded_at": "2026-08-16T11:00:00+02:00",
+      "all_passed": true,
+      "classification": "ready",
+      "environment": "local",
+      "inventory_branch": "copilot/inventory-tool-mhg-plan-20260815T175900Z",
+      "inventory_base": "origin/main@e3e08cadd1e0fa996ad4616935a98e372c819922",
+      "inventory_commit": "6aa27265bf929ebf4f97fd20726c842aec6b3c15",
+      "inventory_pull_request": "https://github.com/daanvdn/HistGerm/pull/6",
+      "inventory_pr_state": "open_ready_not_merged",
+      "run_journal": {
+        "run_id": "tool-mhg-plan-20260815T175900Z",
+        "path_outside_repository": true,
+        "committed": false,
+        "events": 23,
+        "last_sequence": 22,
+        "content_hash": "df0d2926f038f501385f8fe37ad17d6a684d1a59b99a95017b8e90f8da21b333",
+        "truncated_tail": false,
+        "journal_validate": "ok",
+        "journal_status_deterministic": true
+      },
+      "inventory_validation": [
+        {
+          "command": "uv run python -m histgerm.research validate --ledger research/discovery-ledger.yaml --format json",
+          "exit_code": 0,
+          "revision": 98,
+          "candidates": 44
+        },
+        {
+          "command": "uv run python -m histgerm.research vocabulary-validate --vocabulary research/discovery-vocabulary.yaml --format json",
+          "exit_code": 0,
+          "revision": 0
+        },
+        {
+          "command": "uv run python -m histgerm.validation src/histgerm/data",
+          "exit_code": 0,
+          "resources": 30,
+          "tools": 10
+        },
+        {
+          "command": "uv run pytest",
+          "exit_code": 0,
+          "passed": 463
+        },
+        {
+          "command": "uv run ruff check .",
+          "exit_code": 0
+        },
+        {
+          "command": "uv run ruff format --check .",
+          "exit_code": 0
+        },
+        {
+          "command": "uv run mypy src tests",
+          "exit_code": 0
+        },
+        {
+          "command": "uv build --no-sources",
+          "exit_code": 0,
+          "new_tool_packaged_once": true,
+          "ledger_excluded": true,
+          "vocabulary_excluded": true,
+          "journal_excluded": true
+        },
+        {
+          "command": "git diff --check",
+          "exit_code": 0
+        }
+      ],
+      "journal_integrity": [
+        {
+          "command": "journal-validate",
+          "exit_code": 0,
+          "events": 23,
+          "truncated_tail": false
+        },
+        {
+          "command": "journal-status",
+          "exit_code": 0,
+          "deterministic": true
+        }
+      ],
+      "notes": "TASK-MIG-013 machine-selected real inventory pilot (one sweep/canary batch) on the locked GATE-PILOT target category=tool stage=mhg sweep=tool-mhg, resuming the discovery ledger from the recorded revision 95. Executed with the checked-in curator architecture: the migrated run-journal CLI recorded 23 typed events outside the repository (never committed); discovery used the bounded resolver-pinned transport histgerm.research.fetching only; the single new candidate was curated by a read-only worker per curate-histgerm-resource, validated as CandidateResearchResult, and applied with apply-result. Ledger advanced 95->98 via upsert-candidate, apply-result, and record-search under optimistic concurrency. One new tool added (tool-xlm-roberta-mhg-charter-mlm, a Middle High German XLM-RoBERTa charter masked language model verified from its canonical Hugging Face model card); zero blocked; the recorded pass pass-tool-mhg-2026-08-16-gmh-pilot is truthfully incomplete and the tool-mhg sweep stays in_progress. All required inventory validation passed (classification ready) and the batch published as separate ready inventory PR #6 against main; neither PR is merged and no auto-merge is enabled. The inventory branch is based on origin/main (default branch) as the publish skill requires; the migrated journal/skill tooling ran from a migration-branch worktree because it is checked in there, while the ledger/inventory batch validates and commits against origin/main. No metadata-truth regression, no forbidden domain/category/framework expansion, no third-party payload retrieved or committed."
+    },
+    "TASK-MIG-001": {
+      "recorded_at": "2026-08-15T21:46:00+02:00",
+      "all_passed": true,
+      "enforced_by_pre_commit": true,
+      "targeted": [
+        {"command": "uv run pytest tests/research/test_migration_baseline.py", "exit_code": 0},
+        {"command": "uv run pytest tests/test_wheel.py", "exit_code": 0},
+        {"command": "uv run ruff check .", "exit_code": 0},
+        {"command": "uv run ruff format --check .", "exit_code": 0},
+        {"command": "uv run mypy src tests", "exit_code": 0}
+      ],
+      "gate_plan": [
+        {"command": "git ls-files --error-unmatch plans/histgerm-curator-architecture-migration.md", "exit_code": 0},
+        {"command": "git ls-files --error-unmatch migration-state.json", "exit_code": 0},
+        {"command": "plan-contains-literals GATE-PLAN TASK-MIG-001 TASK-MIG-013", "exit_code": 0},
+        {"command": "python -c parse migration-state.json against initial schema", "exit_code": 0}
+      ],
+      "repository_validation": [
+        {"command": "uv run python -m histgerm.research validate --ledger research/discovery-ledger.yaml --format json", "exit_code": 0},
+        {"command": "uv run python -m histgerm.research vocabulary-validate --vocabulary research/discovery-vocabulary.yaml --format json", "exit_code": 0},
+        {"command": "uv run python -m histgerm.validation src/histgerm/data", "exit_code": 0},
+        {"command": "uv run pytest", "exit_code": 0},
+        {"command": "git diff --check", "exit_code": 0}
+      ],
+      "packaging": [
+        {"command": "uv build --no-sources", "exit_code": 0},
+        {
+          "command": "verify-migration-state-tracked-but-excluded + journal/checkpoint globs excluded",
+          "exit_code": 0,
+          "sdist": "dist/histgerm-0.1.0.tar.gz",
+          "wheel": "dist/histgerm-0.1.0-py3-none-any.whl",
+          "migration_state_tracked_in_git": true,
+          "migration_state_in_sdist": false,
+          "migration_state_in_wheel": false,
+          "journal_or_checkpoint_in_sdist": false,
+          "journal_or_checkpoint_in_wheel": false
+        }
+      ]
+    },
+    "TASK-MIG-002": {
+      "recorded_at": "2026-08-15T21:46:24+02:00",
+      "all_passed": true,
+      "enforced_by_pre_commit": true,
+      "scope": ["src/histgerm/research/models.py", "tests/research/test_models.py"],
+      "targeted": [
+        {"command": "uv run pytest tests/research/test_models.py", "exit_code": 0}
+      ],
+      "repository_validation": [
+        {"command": "uv run python -m histgerm.research validate --ledger research/discovery-ledger.yaml --format json", "exit_code": 0},
+        {"command": "uv run python -m histgerm.research vocabulary-validate --vocabulary research/discovery-vocabulary.yaml --format json", "exit_code": 0},
+        {"command": "uv run python -m histgerm.validation src/histgerm/data", "exit_code": 0},
+        {"command": "uv run pytest", "exit_code": 0},
+        {"command": "uv run ruff check .", "exit_code": 0},
+        {"command": "uv run ruff format --check .", "exit_code": 0},
+        {"command": "uv run mypy src tests", "exit_code": 0},
+        {"command": "git diff --check", "exit_code": 0}
+      ],
+      "notes": "Validators-only change: added stage-evidence grounding for 'added' via the EvidenceExcerpt.supports dotted-support convention, identity-ambiguity semantics (matched_resource_id outside a duplicate requires identity_conflict; identity_conflict cannot produce 'added'), and regression coverage that source silence yields 'blocked' not 'out_of_scope' plus malformed-sibling candidate-local retention. No new required constructor fields; the legal-evidence validator is unchanged. No live ledger/vocabulary/inventory YAML changed."
+    },
+    "TASK-MIG-003": {
+      "recorded_at": "2026-08-15T22:20:00+02:00",
+      "all_passed": true,
+      "enforced_by_pre_commit": true,
+      "scope": [
+        "src/histgerm/research/query_intents.py",
+        "src/histgerm/research/models.py",
+        "src/histgerm/research/focused_queries.py",
+        "src/histgerm/research/discovery_orchestration.py",
+        "tests/research/test_query_intents.py",
+        "tests/research/test_focused_queries.py",
+        "tests/research/test_models.py"
+      ],
+      "targeted": [
+        {"command": "uv run pytest tests/research/test_query_intents.py tests/research/test_models.py tests/research/test_focused_queries.py tests/research/test_discovery_orchestration.py", "exit_code": 0}
+      ],
+      "repository_validation": [
+        {"command": "uv run python -m histgerm.research validate --ledger research/discovery-ledger.yaml --format json", "exit_code": 0},
+        {"command": "uv run python -m histgerm.research vocabulary-validate --vocabulary research/discovery-vocabulary.yaml --format json", "exit_code": 0},
+        {"command": "uv run python -m histgerm.validation src/histgerm/data", "exit_code": 0},
+        {"command": "uv run pytest", "exit_code": 0},
+        {"command": "uv run ruff check .", "exit_code": 0},
+        {"command": "uv run ruff format --check .", "exit_code": 0},
+        {"command": "uv run mypy src tests", "exit_code": 0},
+        {"command": "git diff --check", "exit_code": 0}
+      ],
+      "notes": "Introduced the canonical query-intent registry (src/histgerm/research/query_intents.py) as the single source of stage/category/architecture terms, channel classes, and typed QueryIntent records. SearchQueryRecord gains an optional intent_id (str | None, default null) referencing one registry intent while retaining authored query text; SearchPass completion now validates structured intent coverage when any record declares an intent (each record contributes exactly one intent, so a term-stuffed query cannot satisfy multiple intents) and falls back to the identical legacy substring gate only for records without an intent_id, preserving read compatibility for the existing ledger (revision 95 validates without mutation). focused_queries.FocusedQuery.intent_id emits canonical intents without changing generation behavior or constructors, and DiscoveryRunResult.as_json carries the intent_id downstream for native orchestration. No new required constructor fields, no exported-constructor changes, and no live ledger/vocabulary/inventory YAML changed."
+    },
+    "TASK-MIG-004": {
+      "recorded_at": "2026-08-15T22:50:31+02:00",
+      "all_passed": true,
+      "enforced_by_pre_commit": true,
+      "scope": [
+        "src/histgerm/research/_persistence.py",
+        "src/histgerm/research/ledger.py",
+        "src/histgerm/research/vocabulary_store.py",
+        "src/histgerm/research/discovery_protocol.py",
+        "tests/research/test_persistence.py",
+        "tests/research/test_ledger.py",
+        "tests/research/test_vocabulary_store.py",
+        "tests/research/test_discovery_protocol.py"
+      ],
+      "targeted": [
+        {"command": "uv run pytest tests/research/test_persistence.py tests/research/test_ledger.py tests/research/test_vocabulary_store.py tests/research/test_discovery_protocol.py", "exit_code": 0}
+      ],
+      "repository_validation": [
+        {"command": "uv run python -m histgerm.research validate --ledger research/discovery-ledger.yaml --format json", "exit_code": 0},
+        {"command": "uv run python -m histgerm.research vocabulary-validate --vocabulary research/discovery-vocabulary.yaml --format json", "exit_code": 0},
+        {"command": "uv run python -m histgerm.validation src/histgerm/data", "exit_code": 0},
+        {"command": "uv run pytest", "exit_code": 0},
+        {"command": "uv run ruff check .", "exit_code": 0},
+        {"command": "uv run ruff format --check .", "exit_code": 0},
+        {"command": "uv run mypy src tests", "exit_code": 0},
+        {"command": "git diff --check", "exit_code": 0}
+      ],
+      "notes": "Extracted one private durable-persistence utility (src/histgerm/research/_persistence.py) providing same-directory temporary write + flush + fsync + optional chmod (write_durable_temporary), atomic replace with prior-content-preserving cleanup (replace_atomically), temporary removal (remove_temporary), a deterministic external lock path (stable_lock_path), and a bounded OS-backed exclusive advisory lock (bounded_file_lock). ledger.py now delegates _lock_path_for_ledger/_ledger_file_lock/_write_temporary/_commit to the shared utility while preserving the ledger's OS lock (namespace 'ledger-locks-v1'), revision guards, LedgerWriteError/LedgerRevisionError/LedgerPolicyError types, and byte-stable canonical YAML. vocabulary_store.py replaces the fragile O_CREAT|O_EXCL next-to-file lock with the same OS advisory lock (namespace 'vocabulary-locks-v1'): a crashed owner leaves no stale lock because the kernel releases the advisory lock on process exit, giving explicit stale-owner handling without unsafe automatic deletion, and no next-to-file .lock is ever created. discovery_protocol.write_checkpoint now flushes and fsyncs the checkpoint through the shared utility while keeping the 0o600 permissions, '.histgerm-' temp prefix, MAX_CHECKPOINT_BYTES bound, DiscoveryProtocolError size error, and original-exception re-raise on OS failure. No serialized ledger/vocabulary/checkpoint format, public exception type, or CLI exit code changed. New robust tests cover fsync durability, atomic-replace prior-content preservation, cross-process ledger and vocabulary revision contention without lost updates, bounded-lock timeout against a live owner, and stale-owner lock reclaim after an owner crash with no lock-file deletion. No live ledger/vocabulary/inventory YAML changed."
+    },
+    "TASK-MIG-005": {
+      "recorded_at": "2026-08-15T23:31:00+02:00",
+      "all_passed": true,
+      "enforced_by_pre_commit": true,
+      "scope": [
+        "src/histgerm/research/elicitation.py",
+        "src/histgerm/research/discovery_metrics.py",
+        "src/histgerm/research/discovery_orchestration.py",
+        "tests/research/test_elicitation.py",
+        "tests/research/test_discovery_metrics.py",
+        "tests/research/test_discovery_orchestration.py"
+      ],
+      "targeted": [
+        {"command": "uv run pytest tests/research/test_elicitation.py tests/research/test_discovery_metrics.py tests/research/test_discovery_orchestration.py tests/research/test_migration_baseline.py", "exit_code": 0}
+      ],
+      "repository_validation": [
+        {"command": "uv run python -m histgerm.research validate --ledger research/discovery-ledger.yaml --format json", "exit_code": 0},
+        {"command": "uv run python -m histgerm.research vocabulary-validate --vocabulary research/discovery-vocabulary.yaml --format json", "exit_code": 0},
+        {"command": "uv run python -m histgerm.validation src/histgerm/data", "exit_code": 0},
+        {"command": "uv run pytest", "exit_code": 0},
+        {"command": "uv run ruff check .", "exit_code": 0},
+        {"command": "uv run ruff format --check .", "exit_code": 0},
+        {"command": "uv run mypy src tests", "exit_code": 0},
+        {"command": "git diff --check", "exit_code": 0}
+      ],
+      "notes": "Reworked bounded, transient model-led elicitation (src/histgerm/research/elicitation.py) so malformed model output is recovered candidate-locally instead of discarding valid work. The whole-response candidate list is now parsed independently of the candidates it contains (_ResponseEnvelope validates only the {\"candidates\": [...]} envelope with extra='forbid'/strict), and each candidate is validated on its own via _CandidateOutput: one malformed sibling (extra field, URL/control-char name, wrong type, non-object entry) becomes a scoped ElicitationQuarantine (scope='candidate', deterministic 1-based position, stable reason, best-effort raw name) while every valid sibling is retained. Invalid response formatting (non-JSON, wrong envelope shape, a non-list candidates value, or oversize output) is retried exactly once with a schema-feedback prompt that echoes the exact rejection reason and re-states the name-only contract; a recovered retry yields leads and after retry exhaustion the response becomes a scope='response' quarantine that contributes no leads (no success-shaped fallback). Safe count-limit excess is truncated with an explicit warning: max_candidates_per_response drops surplus entries and max_aliases_per_candidate trims surplus aliases while keeping the lead. Deterministic ElicitationMetrics (retries_attempted/recovered, responses_blocked, candidates_quarantined, candidates_truncated, aliases_truncated) and warnings/quarantines are exposed on ElicitationResult as additive, default-valued fields (existing leads/prompts/requires_external_search unchanged), ElicitationPrompt.kind widens to include 'retry', and ElicitationOutputError stays exported and is still raised loudly when the injected model returns a non-string (a dependency-contract violation, never a recoverable model formatting error). DiscoveryCoverage gains elicitation_retries/recovered_retries/blocked_responses/quarantined_candidates counters surfaced through snapshot() and DiscoveryRunResult.as_json, wired from ElicitationResult.metrics in run_discovery. Provider-gap and trusted-evidence semantics are untouched (elicitation still produces only untrusted name-only leads requiring external search). New/updated tests cover malformed arrays, malformed objects/siblings, URL/wrong-type names, invalid-JSON-then-valid retry recovery, repeated-invalid scoped blocking, candidate- and alias-count truncation warnings, oversize retry recovery, non-string loud rejection, the surviving exclusion-name bound, the new metrics snapshot keys, and an end-to-end run_discovery worker-result path that keeps a valid lead beside a quarantined sibling and surfaces the metrics. No serialized ledger/vocabulary/checkpoint format, public exception type, or CLI exit code changed; no live ledger/vocabulary/inventory YAML changed."
+    },
+    "TASK-MIG-006": {
+      "recorded_at": "2026-08-16T00:21:00+02:00",
+      "all_passed": true,
+      "enforced_by_pre_commit": true,
+      "scope": [
+        "src/histgerm/research/discovery_session.py",
+        "src/histgerm/research/discovery_protocol.py",
+        "src/histgerm/research/discovery_runtime.py",
+        "tests/research/test_discovery_recovery.py",
+        "tests/research/test_discovery_runtime.py"
+      ],
+      "targeted": [
+        {"command": "uv run pytest tests/research/test_discovery_session.py tests/research/test_discovery_protocol.py tests/research/test_discovery_runtime.py tests/research/test_discovery_recovery.py", "exit_code": 0}
+      ],
+      "repository_validation": [
+        {"command": "uv run python -m histgerm.research validate --ledger research/discovery-ledger.yaml --format json", "exit_code": 0},
+        {"command": "uv run python -m histgerm.research vocabulary-validate --vocabulary research/discovery-vocabulary.yaml --format json", "exit_code": 0},
+        {"command": "uv run python -m histgerm.validation src/histgerm/data", "exit_code": 0},
+        {"command": "uv run pytest", "exit_code": 0},
+        {"command": "uv run ruff check .", "exit_code": 0},
+        {"command": "uv run ruff format --check .", "exit_code": 0},
+        {"command": "uv run mypy src tests", "exit_code": 0},
+        {"command": "git diff --check", "exit_code": 0}
+      ],
+      "notes": "Made discovery protocol failures resumable without discarding confirmed work. discovery_session.apply_exchange keeps fatal handling for a wrong run identifier, an unknown or replayed request, a mismatched capability type, and duplicate or unrequested inspection positions, so no response can ever apply to the wrong item or run. A revision mismatch (stale or future) now raises the new StaleCheckpointError, a DiscoveryProtocolError subclass carrying run_id, expected_revision, and the current outstanding requests, so the coordinator receives actionable current-state output instead of a discarded run. An inspection response that classifies only some requested positions is accepted: answered positions are recorded by item digest and the unanswered positions re-defer, so the memo re-offers exactly the missing items as a strictly smaller batch on the next advance; an entirely unanswered request stays a fatal missing response. The memo splits deferred inspection pages into successive bounded batches no larger than INSPECTION_BATCH_LIMIT (default 20) via itertools.batched, which also removes the latent >MAX_INSPECTION_ITEMS request-construction crash. discovery_runtime._provider_fetch now turns lower-level OSError/TimeoutError transport failures (alongside the existing MetadataFetchError path) into structured, body-less provider-gap ProviderResponses so one channel's transport gap never aborts the others, while a wrong argument type still raises TypeError. New tests/research/test_discovery_recovery.py drives all GATE-RECOVERY requirements end to end through the resumable state machine (evidence-grounded dispositions, canonical query intents, malformed-sibling retention, single-retry formatting recovery, missing-position smaller-batch retry, bounded batch splitting, provider-gap continuation, stale/future actionable output, wrong-run fatality, and resume without repeating confirmed retrieval); test_discovery_runtime.py adds the OSError provider-gap adapter case. No serialized checkpoint/exchange format field was removed, no public export dropped, no CLI exit code changed, and no live ledger/vocabulary/inventory YAML changed."
+    },
+    "TASK-MIG-007": {
+      "recorded_at": "2026-08-16T01:16:59+02:00",
+      "all_passed": true,
+      "enforced_by_pre_commit": true,
+      "scope": [
+        "src/histgerm/research/run_journal.py",
+        "src/histgerm/research/journal_store.py",
+        "src/histgerm/research/__main__.py",
+        "tests/research/test_run_journal.py",
+        "tests/research/fixtures/journal_event_schema.txt"
+      ],
+      "targeted": [
+        {"command": "uv run pytest tests/research/test_run_journal.py", "exit_code": 0}
+      ],
+      "repository_validation": [
+        {"command": "uv run python -m histgerm.research validate --ledger research/discovery-ledger.yaml --format json", "exit_code": 0},
+        {"command": "uv run python -m histgerm.research vocabulary-validate --vocabulary research/discovery-vocabulary.yaml --format json", "exit_code": 0},
+        {"command": "uv run python -m histgerm.validation src/histgerm/data", "exit_code": 0},
+        {"command": "uv run pytest", "exit_code": 0},
+        {"command": "uv run ruff check .", "exit_code": 0},
+        {"command": "uv run ruff format --check .", "exit_code": 0},
+        {"command": "uv run mypy src tests", "exit_code": 0},
+        {"command": "git diff --check", "exit_code": 0}
+      ],
+      "packaging": [
+        {"command": "uv build --no-sources", "exit_code": 0},
+        {
+          "command": "verify run_journal.py/journal_store.py ship as library source while migration-state.json, run-journal, and checkpoint artifacts stay excluded from both wheel and sdist",
+          "exit_code": 0,
+          "run_journal_in_wheel": true,
+          "journal_store_in_wheel": true,
+          "migration_state_in_wheel": false,
+          "migration_state_in_sdist": false,
+          "journal_or_checkpoint_artifact_in_wheel": false,
+          "journal_or_checkpoint_artifact_in_sdist": false,
+          "schema_artifact_in_wheel": false,
+          "schema_artifact_in_sdist": false
+        }
+      ],
+      "notes": "Introduced a typed, versioned, append-only run journal in two new modules under src/histgerm/research/. run_journal.py owns the fixed event envelope (schema_version, run_id, sequence, recorded_at, kind, payload) and thirteen discriminated payload kinds (run_started, query_planned, query_executed, provider_gap, lead_found, model_response_invalid, retry_scheduled, candidate_blocked, candidate_researched, ledger_revision_observed, ledger_mutation_proposed, checkpoint, run_completed) as strict extra='forbid' models under one kind-discriminated union, plus canonical byte-stable line encoding, the SHA-256 journal content hash reproduced identically for writing and hashing, a deterministic order-sensitive replay reduction (replay_journal -> JournalReplay), and the generated validation JSON Schema whose canonical serialization is stored as tests/research/fixtures/journal_event_schema.txt and hashed in artifacts.journal. journal_store.py provides durable, atomic, interruption-safe append reusing the TASK-MIG-004 write_durable_temporary + replace_atomically primitives under a journal-locks-v1 bounded OS advisory lock: append is idempotent on an identical (run_id, sequence) and raises JournalConflictError on a conflicting duplicate, a wrong run identifier, a sequence gap, or an expected_last_sequence mismatch (optimistic concurrency); read_journal recovers a single torn trailing line (an interrupted append) while raising JournalCorruptionError on mid-file corruption, a non-UTF-8 body, a sequence gap, a wrong run identifier, a missing/duplicate run_started, or a stale checkpoint hash/last_sequence; compact_journal appends a verifiable checkpoint retaining the prior content hash and last sequence, idempotent on an already-checkpointed tail; and validate_journal_path requires a *.journal.jsonl operational path outside the histgerm package so the artifact stays out of trusted inventory data and every distribution. __main__.py adds the JSON-only journal-validate/journal-status/journal-append/journal-compact subcommands, each emitting exactly one JSON object, with new nonzero exit codes journal_conflict=3, invalid_journal_path=2, invalid_journal=2, and filesystem_error=4, while every existing CLI command, exit code, and serialized ledger/vocabulary/checkpoint format is unchanged. tests/research/test_run_journal.py covers interrupted-append validity via a monkeypatched os.replace, schema/version/event typing, deterministic and order-sensitive replay, torn-tail recovery versus fatal mid-file/gap/wrong-run/non-UTF-8/first-event corruption, idempotent versus conflicting append, optimistic-concurrency conflicts, verifiable and tamper-detecting checkpoints, cross-process concurrent append without lost updates, path safety, CLI single-JSON output and exit codes, and the recorded schema-artifact hash. No live ledger/vocabulary/inventory YAML changed (ledger revision 95, vocabulary revision 0 unchanged)."
+    },
+    "TASK-MIG-008": {
+      "recorded_at": "2026-08-16T02:12:59+02:00",
+      "all_passed": true,
+      "enforced_by_pre_commit": true,
+      "scope": [
+        "src/histgerm/research/journal_adapters.py",
+        "src/histgerm/research/discovery_orchestration.py",
+        "src/histgerm/research/discovery_session.py",
+        "tests/research/test_journal_parity.py"
+      ],
+      "targeted": [
+        {"command": "uv run pytest tests/research/test_journal_parity.py tests/research/test_discovery_session.py tests/research/test_discovery_orchestration.py tests/research/test_run_journal.py tests/research/test_discovery_recovery.py", "exit_code": 0}
+      ],
+      "repository_validation": [
+        {"command": "uv run python -m histgerm.research validate --ledger research/discovery-ledger.yaml --format json", "exit_code": 0},
+        {"command": "uv run python -m histgerm.research vocabulary-validate --vocabulary research/discovery-vocabulary.yaml --format json", "exit_code": 0},
+        {"command": "uv run python -m histgerm.validation src/histgerm/data", "exit_code": 0},
+        {"command": "uv run pytest", "exit_code": 0},
+        {"command": "uv run ruff check .", "exit_code": 0},
+        {"command": "uv run ruff format --check .", "exit_code": 0},
+        {"command": "uv run mypy src tests", "exit_code": 0},
+        {"command": "git diff --check", "exit_code": 0}
+      ],
+      "packaging": [
+        {"command": "uv build --no-sources", "exit_code": 0},
+        {
+          "command": "verify journal_adapters.py ships as library source while migration-state.json, run-journal, checkpoint, and schema artifacts stay excluded from both wheel and sdist",
+          "exit_code": 0,
+          "journal_adapters_in_wheel": true,
+          "journal_adapters_in_sdist": true,
+          "run_journal_in_wheel": true,
+          "journal_store_in_wheel": true,
+          "migration_state_in_wheel": false,
+          "migration_state_in_sdist": false,
+          "journal_or_checkpoint_artifact_in_wheel": false,
+          "journal_or_checkpoint_artifact_in_sdist": false,
+          "schema_artifact_in_wheel": false,
+          "schema_artifact_in_sdist": false
+        }
+      ],
+      "notes": "Added the deterministic journal dual-write and parity path without changing any live result. A new src/histgerm/research/journal_adapters.py maps one authoritative DiscoveryRunResult to an ordered, append-only run-journal event stream (discovery_run_events: run_started, then elicitation retries and quarantines, one query_planned plus a query_executed or provider_gap per assessment, one lead_found per retained lead, and a terminal run_completed with gap-free sequences) and provides two symmetric reductions, synthetic_from_result and synthetic_from_events, into one SyntheticDiscoveryResult projection so the old path and the journal replay are equal by construction; a mismatch is a hard test failure, never a runtime fallback. append_discovery_journal durably writes the stream through the TASK-MIG-007 store, inheriting atomic interruption-safe append, optimistic-concurrency sequencing, and idempotent restart-resume, and can append a verifiable compaction checkpoint that the projection ignores. discovery_orchestration.py gains the additive pure DiscoveryRunResult.leads_with_context(), which projects retained leads with their originating channel by the exact case-folded-URL first-seen dedup the run already uses, so the journal records the identical lead set without repeating any retrieval. discovery_session.py gains the additive completed_journal_events(checkpoint, completed), which builds the stream under the confirmed checkpoint.run_id and configuration. tests/research/test_journal_parity.py proves in-memory and durable old-path/replay parity, deterministic order-sensitive replay, a compacted-journal round trip, an interrupted-append that leaves the prior journal valid then resumes idempotently, optimistic-concurrency and conflicting-duplicate handling of the dual-write, provider-gap and model-quarantine parity, and resumable-session-vs-injected-run parity with each executed query recorded exactly once and each catalog URL fetched exactly once. No serialized ledger/vocabulary/checkpoint/journal format, public exception type, CLI command, or exit code changed; DiscoveryRunResult.as_json is unchanged; no live ledger/vocabulary/inventory YAML changed (ledger revision 95, vocabulary revision 0 unchanged)."
+    },
+    "TASK-MIG-009": {
+      "recorded_at": "2026-08-16T04:37:43+02:00",
+      "all_passed": true,
+      "enforced_by_pre_commit": true,
+      "scope": [
+        ".github/agents/histgerm-inventory-curator.agent.md",
+        ".github/skills/discover-histgerm-resources/SKILL.md",
+        ".github/skills/curate-histgerm-resource/SKILL.md",
+        ".github/skills/validate-histgerm-inventory/SKILL.md",
+        ".github/skills/publish-histgerm-batch/SKILL.md",
+        "src/histgerm/research/__main__.py",
+        "docs/inventory-curator.md",
+        "tests/agent/test_inventory_curator_contracts.py",
+        "tests/agent/test_native_orchestration_simulations.py",
+        "plans/histgerm-curator-architecture-migration.md"
+      ],
+      "targeted": [
+        {"command": "uv run pytest tests/agent", "exit_code": 0, "passed": 41},
+        {"command": "uv run ruff check .", "exit_code": 0},
+        {"command": "uv run ruff format --check .", "exit_code": 0},
+        {"command": "uv run mypy src tests", "exit_code": 0}
+      ],
+      "repository_validation": [
+        {"command": "uv run python -m histgerm.research validate --ledger research/discovery-ledger.yaml --format json", "exit_code": 0},
+        {"command": "uv run python -m histgerm.research vocabulary-validate --vocabulary research/discovery-vocabulary.yaml --format json", "exit_code": 0},
+        {"command": "uv run python -m histgerm.validation src/histgerm/data", "exit_code": 0},
+        {"command": "uv run pytest", "exit_code": 0, "passed": 591, "skipped": 1},
+        {"command": "uv run ruff check .", "exit_code": 0},
+        {"command": "uv run ruff format --check .", "exit_code": 0},
+        {"command": "uv run mypy src tests", "exit_code": 0},
+        {"command": "uv build --no-sources", "exit_code": 0},
+        {"command": "git diff --check", "exit_code": 0}
+      ],
+      "notes": "Migrated the agent and four skills from the scripted request/response capability exchange to native Copilot orchestration recorded in the TASK-MIG-007 append-only run journal. The agent 'Discovery run journal and recovery' and the discover skill 'Native discovery run journal' sections replace checkpoint/response operational files with journal-append/journal-status/journal-validate/journal-compact: every external result becomes exactly one typed journal event (query_planned/query_executed/provider_gap/lead_found/retry_scheduled/model_response_invalid/candidate_researched/candidate_blocked/ledger_revision_observed/ledger_mutation_proposed/run_completed); resume and recovery are machine-driven (idempotent (run_id, sequence) append, --expected-last-sequence optimistic concurrency, deterministic journal-status replay, torn-trailing-line recovery), and a candidate_blocked gap never stops unrelated work. Native orchestration owns query order, provider fallback, retries, worker batches, and quarantine; deterministic Python still owns typed records, evidence validation, optimistic concurrency, atomic writes, inventory validation, and publication gates. Worker outputs stay validated as CandidateResearchResult and coordinator-only trusted writes are preserved; TASK-MIG-003 structured query intents are carried end to end via query_planned.intent_id. The exact-model hard-stop was removed in favor of recording the model identifier native orchestration used; frontmatter model: gpt-5.6-sol and disable-model-invocation: true are retained unchanged (the executable simulations complete without lifting disable-model-invocation, so it does not block the target orchestration) and its platform meaning is documented. validate-histgerm-inventory consumes journal-derived results (journal-validate + journal-status, journal result key), and publish-histgerm-batch derives its PR-report facts from the journal replay. No new CLI adapter was required: the TASK-MIG-007 journal-* subcommands already satisfy the migrated skills, and the legacy discover --checkpoint/--resume/--input branch plus discovery_protocol.py/discovery_session.py old-exchange symbols are retained unchanged as legacy implementation for TASK-MIG-010. tests/agent adds four executable simulations (bilingual/multi-channel journal shape, interruption/resume without repeating confirmed retrieval, publication path consuming journal-derived results, and no-surface-requires-an-old-exchange-symbol across agent/skills/docs), and the two former capability-exchange contract tests were rewritten to the journal contract. docs/inventory-curator.md operator flow was migrated to the journal (added to TASK-MIG-009 scope in the plan because GATE-CUTOVER requires no docs surface to require an old-exchange symbol). No live ledger/vocabulary/inventory YAML changed (ledger revision 95, vocabulary revision 0 unchanged)."
+    },
+    "TASK-MIG-010": {
+      "recorded_at": "2026-08-16T04:52:00+02:00",
+      "all_passed": true,
+      "enforced_by_pre_commit": true,
+      "scope": [
+        "src/histgerm/research/discovery_protocol.py",
+        "src/histgerm/research/discovery_session.py",
+        "src/histgerm/research/journal_adapters.py",
+        "src/histgerm/research/__main__.py",
+        "tests/research/test_journal_parity.py",
+        "tests/research/test_cli.py",
+        "tests/research/test_migration_baseline.py",
+        "tests/research/test_discovery_protocol.py",
+        "tests/research/test_discovery_session.py",
+        "tests/research/test_discovery_recovery.py",
+        "tests/research/synthetic_transport.py",
+        "tests/research/fixtures/checkpoint.txt",
+        "tests/research/fixtures/exchange.txt"
+      ],
+      "deleted_surfaces": {
+        "discovery_protocol_py": ["DiscoveryProtocolError", "StaleCheckpointError", "CHECKPOINT_SCHEMA_VERSION", "MAX_CHECKPOINT_BYTES", "MAX_EXCHANGE_BYTES", "MAX_ELICITATION_OUTPUT_CHARS", "MAX_INSPECTION_ITEMS", "ModelElicitationRequest", "ModelElicitationResponse", "InspectionItem", "ResultInspectionRequest", "InspectionVerdict", "ResultInspectionResponse", "CapabilityRequest", "CapabilityResponse", "DiscoveryExchange", "ElicitationRecord", "InspectionRecord", "ExecutionRecord", "VocabularyState", "DiscoveryCheckpoint", "prompt_digest", "item_digest", "request_id", "encode_records", "decode_records", "encode_vocabulary", "decode_vocabulary", "validate_operational_path", "write_checkpoint", "read_checkpoint", "read_exchange", "remove_operational_file"],
+        "discovery_session_py": ["_Pause", "NeedsInput", "Completed", "SessionStep", "new_checkpoint", "checkpoint_config", "advance", "apply_exchange", "completed_journal_events", "_inspection_records", "_Memo", "INSPECTION_BATCH_LIMIT"],
+        "main_py_cli": ["discover subcommand (--category/--stage/--qualifier/--max-mined-terms/--max-exclusion-groups/--checkpoint/--resume/--input)", "_discover", "_advance_discovery", "_CapabilityError (exit 6 capability_unavailable)", "DiscoveryProtocolError handler (exit 2 invalid_exchange)", "main(discovery_dependencies=...) keyword parameter"],
+        "deleted_tests": ["tests/research/test_discovery_protocol.py", "tests/research/test_discovery_session.py", "tests/research/test_discovery_recovery.py", "tests/research/synthetic_transport.py"],
+        "deleted_fixtures": ["tests/research/fixtures/checkpoint.txt", "tests/research/fixtures/exchange.txt"]
+      },
+      "preserved_surfaces": {
+        "journal_native": "RunParameters (+ its canonical digest()) in discovery_protocol.py and the new run_parameters(config, run_on) projection in discovery_session.py are the sole journal-native residue; journal_adapters._parameters_digest now consumes run_parameters, so neither module is a dead wrapper. discovery_orchestration.run_discovery, journal_adapters (discovery_run_events/synthetic_from_result/synthetic_from_events/append_discovery_journal), run_journal, journal_store, and the discovery_runtime provider-gap recovery are unchanged; the journal/native synthetic flow (tests/agent + tests/research/test_journal_parity.py) stays green.",
+        "recovery_behavior": "No journal-native recovery or recorded provenance was removed: torn-trailing-line recovery, idempotent (run_id, sequence) append, optimistic concurrency, and discovery_runtime._provider_fetch provider-gap handling remain intact and tested (test_run_journal.py, test_journal_parity.py, test_discovery_runtime.py)."
+      },
+      "code_reduction": {
+        "denominator": {
+          "files": ["src/histgerm/research/discovery_protocol.py", "src/histgerm/research/discovery_session.py"],
+          "method": "sum(len(Path(f).read_text(encoding='utf-8').splitlines()) for f in files)",
+          "baseline_combined_lines": 998,
+          "threshold_lines": 748,
+          "threshold_rule": "at least 25% lower than the frozen 998 baseline == floor(998 * 0.75) == 748; a combined count of 749 would be only ~24.9% lower and fails"
+        },
+        "actual": {
+          "discovery_protocol_py_lines": 45,
+          "discovery_session_py_lines": 38,
+          "combined_lines": 83,
+          "reduction_percent": 91.68,
+          "meets_target": true
+        },
+        "reproduced_by": "tests/research/test_migration_baseline.py::test_task_mig_010_combined_reduction_meets_target via combined_target_line_count()"
+      },
+      "targeted": [
+        {"command": "uv run pytest tests/research tests/agent", "exit_code": 0, "passed": 422, "skipped": 1},
+        {"command": "uv run ruff check .", "exit_code": 0},
+        {"command": "uv run ruff format --check .", "exit_code": 0},
+        {"command": "uv run mypy src tests", "exit_code": 0}
+      ],
+      "repository_validation": [
+        {"command": "uv run python -m histgerm.research validate --ledger research/discovery-ledger.yaml --format json", "exit_code": 0, "revision": 95},
+        {"command": "uv run python -m histgerm.research vocabulary-validate --vocabulary research/discovery-vocabulary.yaml --format json", "exit_code": 0, "revision": 0},
+        {"command": "uv run python -m histgerm.validation src/histgerm/data", "exit_code": 0},
+        {"command": "uv run pytest", "exit_code": 0, "passed": 564, "skipped": 1},
+        {"command": "uv run ruff check .", "exit_code": 0},
+        {"command": "uv run ruff format --check .", "exit_code": 0},
+        {"command": "uv run mypy src tests", "exit_code": 0},
+        {"command": "uv build --no-sources", "exit_code": 0},
+        {"command": "git diff --check", "exit_code": 0}
+      ],
+      "notes": "Retired the old capability exchange now that GATE-CUTOVER proved no agent/skill/CLI-required/docs/CI surface requires an old-exchange symbol. discovery_protocol.py and discovery_session.py were reduced to the journal-native run-identity residue (RunParameters + its digest, and run_parameters(config, run_on)); every request/response, checkpoint, exchange, inspection, elicitation, encode/decode, and operational-file symbol was deleted. The __main__.py discover command and its resumable --checkpoint/--resume/--input branch, injected-dependencies route, _CapabilityError (exit 6) and DiscoveryProtocolError (exit 2 invalid_exchange) handlers, and the main(discovery_dependencies=...) parameter were removed; all other CLI subcommands (bootstrap/validate/status/next, record-search/upsert-candidate/apply-result, vocabulary-*, journal-*) and their exit codes are unchanged. journal_adapters._parameters_digest now consumes discovery_session.run_parameters, so the retained modules are genuinely used and not dead wrappers. Obsolete old-exchange tests (test_discovery_protocol.py, test_discovery_session.py, test_discovery_recovery.py) and the now-orphaned synthetic_transport.py helper and checkpoint.txt/exchange.txt fixtures were deleted; test_journal_parity.py dropped its resumable-session-vs-injected parity section (the pure DiscoveryRunResult->journal projection/durability/gap/quarantine parity stays), test_cli.py dropped the three discover tests, and test_migration_baseline.py dropped the checkpoint/exchange fixture-parse tests and adds test_task_mig_010_combined_reduction_meets_target. The unique behaviors those deleted tests exercised remain covered by non-old-exchange suites: evidence grounding in tests/research/test_models.py, structured query intents in tests/research/test_query_intents.py, and elicitation retry/quarantine in tests/research/test_elicitation.py and test_discovery_metrics.py. The frozen TASK-MIG-001 code-reduction denominator (998) is the sole measure: the combined line count fell to 83 (protocol 45 + session 38), a 91.68% reduction, well under the 748 (>=25%) threshold. synthetic_whole_run_abort_count() is now 0 because the old-exchange DiscoveryProtocolError abort taxonomy was retired; synthetic_recovery_count() stays positive from the surviving journal/elicitation recovery tests. No live ledger/vocabulary/inventory YAML changed (ledger revision 95, vocabulary revision 0 unchanged)."
+          },
+          "TASK-MIG-011": {
+            "recorded_at": "2026-08-16T06:20:00+02:00",
+            "all_passed": true,
+            "enforced_by_pre_commit": true,
+            "scope": [
+              "tests/agent/test_inventory_curator_contracts.py",
+              "tests/agent/test_phrase_contract_budget.py",
+              "docs/inventory-curator.md",
+              "plans/histgerm-curator-architecture-migration.md"
+            ],
+            "phrase_contract_reduction": {
+              "denominator": {
+                "description": "Frozen TASK-MIG-001 behavioral phrase-presence assertion baseline under tests/agent/test_*.py; the sole denominator for this target.",
+                "baseline_count": 149,
+                "threshold_rule": "at least 50% lower than 149 == final count <= floor(149 * 0.5) == 74; a count of 75 would be only ~49.7% lower and fails",
+                "threshold_count": 74
+              },
+              "method": "AST count of exact string-literal presence checks against agent/skill/doc contract text: every phrase argument of assert_phrases(); every `assert \"literal\" in <text>`; every `for v in (literals): assert v in <text>`. Structural `in` checks against packaging containers (source-exclude 'exclusions') and against computed collections (set/list/dict literals or comprehensions) are excluded. Reproduced as an executable contract by tests/agent/test_phrase_contract_budget.py::test_behavioral_phrase_presence_assertions_meet_reduction_target.",
+              "actual": {
+                "assert_phrases_phrases": 14,
+                "direct_in_policy_asserts": 1,
+                "loop_in_policy_phrases": 0,
+                "behavioral_phrase_presence_assertions": 15,
+                "reduction_percent": 89.93,
+                "meets_target": true
+              },
+              "retained_exact_contracts": {
+                "each_has_contractual_comment": true,
+                "json_output_schema": "the serialized empty-discovery output {\"candidate_entries\":[],\"search_passes\":[],\"ledger_revision\":0} in discover (1 direct `in` check)",
+                "machine_gate_commands": "validate skill: uv run pytest / uv run ruff check . / uv run ruff format --check . / uv run mypy src tests / uv build --no-sources / git diff --check (6 assert_phrases)",
+                "publication_branch_templates_and_prohibitions": "publish skill: copilot/inventory-<category>-<stage>-<run-id>, `copilot/inventory-refresh-<run-id>`, Never publish from the default branch, Open `ready` only when every required validation passes, Open `draft` only when (5 assert_phrases); agent: Never commit to the default branch, Stop after opening the pull request, Never execute the future MHG tools pilot (3 assert_phrases)"
+              },
+              "coverage_preserved_by": "Removed phrase-presence assertions were replaced, not deleted: assert_concepts() equivalent-wording checks (worker/coordinator write boundaries, lossless discovery/curation handoff, bilingual stage/channel coverage, evidence/uncertainty/refresh, baseline source/payload hygiene, runtime IP pinning, bounded progress reporting, PR-report body), structural regex/token parsers (disposition and legal-permission enums parsed as backticked tokens, skill inventory), and the executable append-only journal simulations in tests/agent/test_native_orchestration_simulations.py. No safety, orchestration, or publication contract lost coverage."
+            },
+            "documentation": {
+              "surfaces": [
+                "docs/inventory-curator.md"
+              ],
+              "changes": "Named the model provenance record explicitly (records the exact model identifier as model provenance rather than exact-model pinning), noted that query_planned carries the structured query intent identifier, named the uniform command failure taxonomy that maps outcomes to exit codes, and reframed source/payload safety as low-cost baseline hygiene that never justifies added protocol complexity, whole-run termination, or extra operator effort. The journal-native architecture, machine gates, machine-driven resume/recovery, and the single-branch/single-PR workflow were already documented and remain accurate; no old-exchange instructions are present (enforced by tests/agent/test_native_orchestration_simulations.py::test_no_surface_requires_an_old_exchange_symbol).",
+              "plan_completion_status": "The plan's section 13 completion checklist now checks TASK-MIG-001..010, GATE-RECOVERY, GATE-JOURNAL-PARITY, GATE-CUTOVER, and TASK-MIG-011; TASK-MIG-012, GATE-PILOT, TASK-MIG-013, and final acceptance remain unchecked."
+            },
+            "targeted": [
+              {"command": "uv run pytest tests/agent", "exit_code": 0, "passed": 42},
+              {"command": "uv run ruff check .", "exit_code": 0},
+              {"command": "uv run ruff format --check .", "exit_code": 0},
+              {"command": "uv run mypy src tests", "exit_code": 0}
+            ],
+            "repository_validation": [
+              {"command": "uv run python -m histgerm.research validate --ledger research/discovery-ledger.yaml --format json", "exit_code": 0, "revision": 95},
+              {"command": "uv run python -m histgerm.research vocabulary-validate --vocabulary research/discovery-vocabulary.yaml --format json", "exit_code": 0, "revision": 0},
+              {"command": "uv run python -m histgerm.validation src/histgerm/data", "exit_code": 0, "resources": 29},
+              {"command": "uv run pytest", "exit_code": 0, "passed": 565, "skipped": 1},
+              {"command": "uv run ruff check .", "exit_code": 0},
+              {"command": "uv run ruff format --check .", "exit_code": 0},
+              {"command": "uv run mypy src tests", "exit_code": 0},
+              {"command": "uv build --no-sources", "exit_code": 0},
+              {"command": "git diff --check", "exit_code": 0}
+            ],
+            "notes": "Replaced brittle phrase-presence contract assertions under tests/agent/ with behavioral and structural checks. The frozen TASK-MIG-001 denominator (149 behavioral phrase-presence assertions: 138 assert_phrases phrases + 7 direct `assert \"literal\" in <text>` + 4 loop `for v in (...): assert v in <text>`, with 5 structural packaging `in` checks excluded) is the sole measure; the count fell to 15 (14 assert_phrases + 1 JSON-schema direct `in`), an 89.93% reduction, well under the 74 (>=50%) ceiling. Retained exact assertions are limited to true textual contracts (the serialized JSON discovery-output schema, the exact machine-gate commands the validate skill runs, and the publication branch-name templates and action prohibitions), each carrying an inline comment explaining why its wording is contractual. Every other contract kept coverage via assert_concepts()/assert_sentence_concepts() (which tolerate equivalent wording and are excluded from the count by design), structural enum/inventory parsers, and the executable run-journal simulations. Docs now name model provenance, structured query intents on query_planned, the uniform exit-code failure taxonomy, and baseline security hygiene; the plan completion checklist was advanced through TASK-MIG-011. No production logic changed and no live ledger/vocabulary/inventory YAML changed (ledger revision 95, vocabulary revision 0, 29 inventory resources unchanged). TASK-MIG-012 must not be started until scheduled under this run's strict serialization contract."
+          },
+          "TASK-MIG-012": {
+            "recorded_at": "2026-08-16T07:50:00+02:00",
+            "all_passed": true,
+            "enforced_by_pre_commit": true,
+            "scope": [
+              "tests/research/test_synthetic_canary.py"
+            ],
+            "canary_metrics": {
+              "network_access": false,
+              "scenarios": 14,
+              "targets": {
+                "recoverable_resume_without_restart": {
+                  "recovered": 4,
+                  "total": 4,
+                  "rate": 1.0,
+                  "threshold": 0.95,
+                  "meets_target": true
+                },
+                "whole_run_aborts": {
+                  "improper_aborts": 0,
+                  "recoverable_total": 4,
+                  "rate": 0.0,
+                  "threshold": 0.05,
+                  "all_aborts_are_integrity": true,
+                  "meets_target": true
+                },
+                "false_completion": {
+                  "false_completions": 0,
+                  "completed_runs": 6,
+                  "rate": 0.0,
+                  "meets_target": true
+                },
+                "candidate_quarantine_after_retries": {
+                  "quarantined": 2,
+                  "malformed_after_retries": 2,
+                  "rate": 1.0,
+                  "meets_target": true
+                },
+                "optimistic_concurrency_detection": {
+                  "detected": 3,
+                  "injected": 3,
+                  "rate": 1.0,
+                  "meets_target": true
+                },
+                "legal_and_stage_evidence_rejection": {
+                  "rejected": 2,
+                  "injected": 2,
+                  "rate": 1.0,
+                  "meets_target": true
+                }
+              },
+              "supplemental": {
+                "integrity_refusals": {
+                  "refused": 2,
+                  "triggered": 2,
+                  "rate": 1.0
+                },
+                "identity_ambiguity_rejection": {
+                  "rejected": 2,
+                  "injected": 2,
+                  "rate": 1.0
+                },
+                "package_exclusion": {
+                  "all_passed": true,
+                  "excluded_suffix": ".journal.jsonl"
+                },
+                "rollback_triggers": [
+                  "mid_file_corruption_is_integrity_refused",
+                  "stale_checkpoint_sequence_is_integrity_refused"
+                ]
+              }
+            },
+            "targeted": [
+              {
+                "command": "uv run pytest tests/research/test_synthetic_canary.py",
+                "exit_code": 0,
+                "passed": 13
+              },
+              {
+                "command": "uv run ruff check .",
+                "exit_code": 0
+              },
+              {
+                "command": "uv run ruff format --check .",
+                "exit_code": 0
+              },
+              {
+                "command": "uv run mypy src tests",
+                "exit_code": 0
+              }
+            ],
+            "repository_validation": [
+              {
+                "command": "uv run python -m histgerm.research validate --ledger research/discovery-ledger.yaml --format json",
+                "exit_code": 0,
+                "revision": 95
+              },
+              {
+                "command": "uv run python -m histgerm.research vocabulary-validate --vocabulary research/discovery-vocabulary.yaml --format json",
+                "exit_code": 0,
+                "revision": 0
+              },
+              {
+                "command": "uv run python -m histgerm.validation src/histgerm/data",
+                "exit_code": 0,
+                "resources": 29
+              },
+              {
+                "command": "uv run pytest",
+                "exit_code": 0,
+                "passed": 578,
+                "skipped": 1
+              },
+              {
+                "command": "uv run ruff check .",
+                "exit_code": 0
+              },
+              {
+                "command": "uv run ruff format --check .",
+                "exit_code": 0
+              },
+              {
+                "command": "uv run mypy src tests",
+                "exit_code": 0
+              },
+              {
+                "command": "uv build --no-sources",
+                "exit_code": 0
+              },
+              {
+                "command": "git diff --check",
+                "exit_code": 0
+              }
+            ],
+            "notes": "TASK-MIG-012 synthetic canary. Added tests/research/test_synthetic_canary.py: an end-to-end fault suite that drives the migrated native-orchestration pipeline (run_discovery -> journal_adapters -> journal_store/run_journal) under 14 synthetic scenarios with no network, subprocess, or live ledger/vocabulary access. Scenarios cover invalid-JSON retry, malformed-candidate quarantine, malformed-array retry, mixed provider gaps (429/challenge/timeout/unrelated) across every required channel with every returned result inspected, interrupted journal append with idempotent resume, stale-checkpoint and mid-file-corruption integrity refusals, concurrent ledger+vocabulary+journal optimistic-concurrency conflicts, a candidate lacking stage evidence, an undisclosed legal permission, ambiguous identity, a bilingual multi-channel empty pass, journal-derived publication reporting, and operational-artifact package exclusion. The machine-readable metrics report is emitted as captured test output and mirrored in the pull-request body; the repository payload policy permits only the root migration-state.json as tracked JSON, so no JSON fixture is added. All six plan targets are asserted by tests and met: recoverable resume without restart 4/4 (>=95%), improper whole-run aborts 0/4 (<5%, every abort an integrity refusal), false completion 0/6, candidate quarantine after exhausted retries 2/2 (100%), optimistic-concurrency detection 3/3 (100%), and legal-and-stage evidence rejection 2/2 (100%). No production logic changed; the canary exposed no defect. No live ledger/vocabulary/inventory YAML changed (ledger revision 95, vocabulary revision 0, 29 inventory resources)."
+          }
+        },
+        "artifacts": {
+    "plan": {
+      "path": "plans/histgerm-curator-architecture-migration.md",
+      "sha256": "34531fb8db7b82d8126208113bba94221cea80c0220058f02e0d7bce272bc61d"
+    },
+    "fixtures": {
+      "method": "sha256 of the checked-in fixture file as written to the working tree",
+      "tests/research/fixtures/ledger.yaml": "c6c23459580583fd494f0fd694da4475e91e809e0956e8d07aaa1f8ff8b45f66",
+      "tests/research/fixtures/vocabulary.yaml": "6b43f15e20f87087d08315a074ef51aabba6f1f96554a691ec424bb6accbb58b",
+      "tests/research/fixtures/model_output.txt": "f101a5f6a32fb0235e1c060a30807ea0a245c608ced48829144ca43e66c9209b",
+      "tests/research/fixtures/provider_response.html": "1269bda58f78bf814570c44b947a5526c4dd904a84a3bce8a31651b424349035"
+    },
+    "query_intents": {
+      "module": "src/histgerm/research/query_intents.py",
+      "method": "sha256 of canonical json.dumps(payload, sort_keys=True, ensure_ascii=False, separators=(',', ':')) reproduced by tests/research/test_query_intents.py::test_recorded_artifact_hashes_match",
+      "registry_schema_source": "histgerm.research.query_intents.registry_snapshot()",
+      "coverage_matrix_source": "histgerm.research.query_intents.coverage_matrix()",
+      "compatibility_result_source": "tests.research.test_query_intents.compatibility_artifact()",
+      "term_stuffing_outcome_source": "tests.research.test_query_intents.term_stuffing_artifact()",
+      "registry_schema_sha256": "c9808f9c8636f7672d6e8493b5d7923122fe909f6f481252e6f5f9dc1c4d70b4",
+      "coverage_matrix_sha256": "1259853d215ca96cd7c79aa9ab2bd057448d6cb2f79a5f106392efbd5917a1ec",
+      "compatibility_result_sha256": "92581a013e178b5dc9a49a21af686a6532420467a16213686a57f180a1da435f",
+      "term_stuffing_outcome_sha256": "b64b8e43d9d28f97f9f36c154b56d428dc9840c10c2b79a22c1e3d6cd3defc03"
+    },
+    "persistence": {
+      "module": "src/histgerm/research/_persistence.py",
+      "description": "Shared durable, atomic, single-writer persistence primitives extracted for TASK-MIG-004 and reused by the ledger, vocabulary store, and checkpoint writer.",
+      "primitives": [
+        "write_durable_temporary: same-directory mkstemp, write, flush, os.fsync, optional chmod; cleans up and re-raises the original error on failure.",
+        "replace_atomically: os.replace with prior-content-preserving cleanup that re-raises the original error so the caller reports its own atomic-replace failure.",
+        "remove_temporary: unlink tolerating only prior absence.",
+        "stable_lock_path: deterministic per-target lock path outside the target directory, distinct per target and namespace.",
+        "bounded_file_lock: bounded OS-backed exclusive advisory lock on a never-evicted lock file; the kernel releases it on owner exit so a crash leaves no stale lock and no unsafe deletion is required."
+      ],
+      "consumers": {
+        "ledger": "namespace 'ledger-locks-v1'; preserves LedgerWriteError/LedgerRevisionError/LedgerPolicyError and byte-stable canonical YAML.",
+        "vocabulary": "namespace 'vocabulary-locks-v1'; replaces the O_CREAT|O_EXCL next-to-file lock, so no '.<name>.lock' is created and a crashed owner is handled without deletion.",
+        "checkpoint": "adds flush + os.fsync while keeping 0o600 permissions, the '.histgerm-' temp prefix, the size bound, and original-exception re-raise on OS failure."
+      },
+      "serialization_diff": "none: no ledger, vocabulary, or checkpoint serialized format, public exception type, or CLI exit code changed, so no artifact hash is required for this task."
+    },
+    "elicitation_recovery": {
+      "module": "src/histgerm/research/elicitation.py",
+      "description": "Candidate-local model-output recovery for TASK-MIG-005: malformed sibling output never discards valid candidate leads, and unrecoverable output becomes an explicit, deterministic quarantine instead of an exception or a success-shaped fallback.",
+      "primitives": [
+        "_ResponseEnvelope: validates only the {\"candidates\": [...]} envelope (extra='forbid', strict) so individual candidates are parsed independently; a non-JSON body, wrong envelope shape, non-list candidates value, or oversize output is returned as a soft _EnvelopeError, never a raise.",
+        "_elicit_response: retries invalid response formatting exactly once with a schema-feedback prompt (ElicitationPrompt kind='retry') that echoes the exact rejection reason; a recovered retry yields leads, and after retry exhaustion the response becomes a scope='response' ElicitationQuarantine contributing no leads.",
+        "_add_output_leads: validates each candidate via _CandidateOutput; a malformed sibling becomes a scope='candidate' ElicitationQuarantine (deterministic 1-based position, stable reason, best-effort raw name) while valid siblings are retained; max_candidates_per_response and max_aliases_per_candidate excess is truncated with an explicit warning.",
+        "_call_model: raises the still-exported ElicitationOutputError only when the injected model returns a non-string (a dependency-contract violation, never a recoverable model formatting error)."
+      ],
+      "result_additions": {
+        "ElicitationResult": "additive default-valued fields quarantines: tuple[ElicitationQuarantine, ...] = (), warnings: tuple[str, ...] = (), metrics: ElicitationMetrics = ElicitationMetrics(); existing leads/prompts/requires_external_search are unchanged and still keyword-constructed.",
+        "ElicitationMetrics": "retries_attempted, retries_recovered, responses_blocked, candidates_quarantined, candidates_truncated, aliases_truncated.",
+        "ElicitationQuarantine": "iteration, scope ('candidate'|'response'), position (int|None), reason (stable), name (str|None).",
+        "ElicitationPrompt.kind": "widened from ('broad','follow_up') to ('broad','follow_up','retry')."
+      },
+      "metrics_integration": "DiscoveryCoverage gains elicitation_retries/elicitation_recovered_retries/elicitation_blocked_responses/elicitation_quarantined_candidates, surfaced through snapshot() and DiscoveryRunResult.as_json and wired from ElicitationResult.metrics in run_discovery.",
+      "invariants_preserved": "Elicitation still yields only untrusted, name-only leads requiring external search; provider-gap and trusted-evidence semantics are untouched; no partially validated trusted record is ever accepted; no serialized format, public exception type, or CLI exit code changed.",
+      "serialization_diff": "none: elicitation output is transient and unpersisted, so no artifact hash is required for this task."
+    },
+    "protocol_recovery": {
+      "modules": [
+        "src/histgerm/research/discovery_session.py",
+        "src/histgerm/research/discovery_protocol.py",
+        "src/histgerm/research/discovery_runtime.py"
+      ],
+      "description": "Resumable protocol failures for TASK-MIG-006: every recoverable failure preserves confirmed positions and retrievals and resumes without repeating confirmed work, while any recovery that could apply a response to the wrong item or run stays fatal.",
+      "primitives": [
+        "StaleCheckpointError(DiscoveryProtocolError): raised by apply_exchange on any revision mismatch (stale or future); carries run_id, expected_revision, and the current outstanding requests so the coordinator receives actionable current-state output instead of a discarded run. No response is applied, so no confirmed item or run is mutated by a mismatched exchange.",
+        "apply_exchange missing-position recovery: an inspection response that classifies only some requested positions records the answered positions by item digest and leaves the rest unconfirmed; the memo re-offers exactly the missing items as a strictly smaller batch on the next advance. Duplicate positions, unrequested positions, an unknown or replayed request, a mismatched capability type, and a wrong run identifier stay fatal, and an entirely unanswered pending request stays a fatal missing response.",
+        "INSPECTION_BATCH_LIMIT (default 20) + itertools.batched: the memo splits large deferred inspection pages and smaller retry sets into successive bounded batches, giving smaller-batch retries and removing the latent >MAX_INSPECTION_ITEMS request-construction crash.",
+        "discovery_runtime._provider_fetch provider gaps: lower-level OSError/TimeoutError transport failures (alongside the existing MetadataFetchError path) become structured, body-less provider-gap ProviderResponses so one channel's transport gap never aborts the others; a wrong argument type still raises TypeError."
+      ],
+      "invariants_preserved": "The checkpoint and exchange schema_version stays 1 with no field removed; DiscoveryProtocolError, apply_exchange, advance, new_checkpoint, and the request/response models keep their public shapes; the durable checkpoint format and CLI exit codes are unchanged; no live ledger/vocabulary/inventory YAML changed.",
+      "serialization_diff": "none: no serialized checkpoint or exchange format changed and no new persisted structure was added (StaleCheckpointError attributes are transient), so no artifact hash is required for this task."
+    },
+    "journal": {
+      "modules": [
+        "src/histgerm/research/run_journal.py",
+        "src/histgerm/research/journal_store.py"
+      ],
+      "description": "Typed, versioned, append-only run journal for TASK-MIG-007: a fixed event envelope (schema_version, run_id, sequence, recorded_at, kind, payload) with thirteen discriminated payload kinds, a deterministic replay reduction, canonical byte-stable line encoding + content hash, durable atomic interruption-safe append, idempotent (run_id, sequence) append with optimistic-concurrency conflict handling, compact verifiable checkpoints, and JSON-only CLI subcommands.",
+      "event_kinds": [
+        "run_started",
+        "query_planned",
+        "query_executed",
+        "provider_gap",
+        "lead_found",
+        "model_response_invalid",
+        "retry_scheduled",
+        "candidate_blocked",
+        "candidate_researched",
+        "ledger_revision_observed",
+        "ledger_mutation_proposed",
+        "checkpoint",
+        "run_completed"
+      ],
+      "primitives": [
+        "run_journal.RunJournalEvent: discriminated union on kind over thirteen strict (extra='forbid') event models sharing the _EventBase envelope; EVENT_ADAPTER is the TypeAdapter used to validate one event object.",
+        "run_journal.encode_event/encode_events/journal_content_hash: canonical sort_keys JSON line encoding, newline-terminated bytes, and the SHA-256 content hash reproduced identically for writing and hashing.",
+        "run_journal.replay_journal: deterministic, order-sensitive reduction of an ordered event sequence into JournalReplay run state (counts, parameters, leads, provider gaps, blocked/researched candidates, last ledger revision, last checkpoint, completion).",
+        "run_journal.event_schema/canonical_schema_json/schema_digest: the generated validation JSON Schema, its canonical serialization stored as tests/research/fixtures/journal_event_schema.txt, and its SHA-256 digest.",
+        "journal_store.append_event: durable, atomic, interruption-safe append via the TASK-MIG-004 write_durable_temporary + replace_atomically primitives under a journal-locks-v1 bounded OS lock; idempotent on an identical (run_id, sequence) and raising JournalConflictError on a conflicting duplicate, wrong run identifier, sequence gap, or expected_last_sequence mismatch.",
+        "journal_store.read_journal: recovers a single torn trailing line (an interrupted append) while raising JournalCorruptionError on mid-file corruption, a non-UTF-8 body, a sequence gap, a wrong run identifier, a missing/duplicate run_started, or a stale checkpoint hash/last_sequence.",
+        "journal_store.compact_journal: appends a verifiable checkpoint event retaining the prior content hash and last sequence, idempotent when the journal already ends with a checkpoint.",
+        "journal_store.validate_journal_path: requires a *.journal.jsonl operational path outside the histgerm package so the artifact stays out of trusted inventory data and every distribution."
+      ],
+      "cli_subcommands": {
+        "journal-validate": "read + integrity-check one journal; emit schema_version, run_id, events, last_sequence, content_hash, truncated_tail (exit 0).",
+        "journal-status": "emit the deterministic replay status of one journal (exit 0).",
+        "journal-append": "append one JSON event from --input, optional --expected-last-sequence; emit the append outcome with idempotent flag (exit 0).",
+        "journal-compact": "append a compact checkpoint; emit the outcome (exit 0)."
+      },
+      "cli_exit_codes": {
+        "journal_conflict": 3,
+        "invalid_journal_path": 2,
+        "invalid_journal": 2,
+        "filesystem_error": 4
+      },
+      "schema_source": "histgerm.research.run_journal.canonical_schema_json()",
+      "schema_artifact": "tests/research/fixtures/journal_event_schema.txt",
+      "schema_sha256": "edd2251d267e344606f50e506927503dc70fe79f735b7a0e4edb3888f6c3cbce",
+      "serialization_diff": "additive: a new operational append-only journal format is introduced (run-journal artifacts stay excluded from every distribution by the TASK-MIG-001 globs); no existing ledger, vocabulary, or checkpoint serialized format, public exception type, or existing CLI exit code changed; no live ledger/vocabulary/inventory YAML changed."
+    },
+    "journal_parity": {
+      "modules": [
+        "src/histgerm/research/journal_adapters.py",
+        "src/histgerm/research/discovery_orchestration.py",
+        "src/histgerm/research/discovery_session.py"
+      ],
+      "description": "Deterministic journal dual-write and parity for TASK-MIG-008: a pure projection of the authoritative DiscoveryRunResult into an append-only run-journal event stream, plus two symmetric reductions that make old-path and journal-replayed synthetic results equal by construction. The old exchange remains the execution authority; no live result, serialized format, or public behavior changed.",
+      "primitives": [
+        "journal_adapters.discovery_run_events(config, result, *, run_id, recorded_at=None): maps one DiscoveryRunResult to an ordered, gap-free event stream (run_started at sequence 0; elicitation retries as retry_scheduled and quarantines as model_response_invalid; one query_planned plus a query_executed or provider_gap per assessment; one lead_found per retained lead; a terminal run_completed). A gap is any assessment whose Assessment is access_gap or transport_error. The mapping reads only the confirmed result, so it repeats no retrieval.",
+        "journal_adapters.synthetic_from_result / synthetic_from_events -> SyntheticDiscoveryResult: two independent reductions into the same projection (run identity, immutable scope and parameters_digest, planned and executed queries, provider gaps, retained leads with channel context, invalid model responses, retry count, terminal status). Fields the journal does not carry (vocabulary internals, pagination, completion-gap prose) are intentionally excluded so parity never depends on unrecorded information. Equality is a hard test assertion, never a runtime fallback.",
+        "journal_adapters.append_discovery_journal(path, events, *, checkpoint=False): durably appends the stream through the TASK-MIG-007 store, inheriting atomic interruption-safe append, optimistic-concurrency sequencing, and idempotent restart-resume; an optional trailing compaction checkpoint is appended and is ignored by the projection.",
+        "discovery_orchestration.DiscoveryRunResult.leads_with_context(): additive pure method projecting each retained lead as (name, url, channel, position) by the exact case-folded-URL first-seen dedup the run already uses, reproducing DiscoveryRunResult.leads while adding the originating channel.",
+        "discovery_session.completed_journal_events(checkpoint, completed, *, recorded_at=None): additive helper that builds the stream under the confirmed checkpoint.run_id and configuration for a completed resumable run."
+      ],
+      "parity_identity": "synthetic_from_result(config, result, run_id=R) == synthetic_from_events(discovery_run_events(config, result, run_id=R)), and both equal synthetic_from_events(read_journal(path).events) after a durable round trip.",
+      "invariants_preserved": "run_discovery, advance, apply_exchange, new_checkpoint, DiscoveryRunResult.as_json, DiscoveryProtocolError, the request/response and checkpoint models, the run-journal event schema (schema_version 1) and store, and every CLI command and exit code keep their public shapes; no serialized ledger/vocabulary/checkpoint/journal format changed and no live ledger/vocabulary/inventory YAML changed.",
+      "serialization_diff": "none: the adapter is a transient projection over the existing TASK-MIG-007 journal format and adds no new persisted structure (SyntheticDiscoveryResult is in-memory), so no new artifact hash is required for this task."
+    },
+    "baselines": {
+      "code_reduction_denominator": {
+        "description": "Sole denominator for the TASK-MIG-010 >=25% combined code-reduction target.",
+        "files": [
+          "src/histgerm/research/discovery_protocol.py",
+          "src/histgerm/research/discovery_session.py"
+        ],
+        "method": "sum(len(Path(f).read_text(encoding='utf-8').splitlines()) for f in files)",
+        "discovery_protocol_py_lines": 542,
+        "discovery_session_py_lines": 456,
+        "combined_lines": 998
+      },
+      "research_total_lines": {
+        "description": "Informational only; not a target denominator.",
+        "method": "sum(len(Path(f).read_text(encoding='utf-8').splitlines()) for f in sorted(Path('src/histgerm/research').glob('*.py')))",
+        "lines": 10394
+      },
+      "phrase_test_reduction_denominator": {
+        "description": "Sole denominator for the TASK-MIG-011 >=50% behavioral phrase-presence reduction target.",
+        "scope": "tests/agent/test_*.py",
+        "method": "AST count of exact string-literal presence checks against agent/skill/doc contract text: every phrase argument of assert_phrases(); every `assert \"literal\" in <text>`; every `for v in (literals): assert v in <text>`. Structural `in` checks against packaging containers (source-exclude 'exclusions') are excluded.",
+        "assert_phrases_phrases": 138,
+        "direct_in_policy_asserts": 7,
+        "loop_in_policy_phrases": 4,
+        "structural_in_phrases_excluded": 5,
+        "behavioral_phrase_presence_assertions": 149
+      },
+      "targeted_research_test_duration": {
+        "description": "Informational targeted research-test wall-clock baseline; environment-dependent, not a target denominator.",
+        "command": "uv run pytest tests/research",
+        "pytest_reported_seconds": 109.96,
+        "tests_passed": 292
+      },
+      "synthetic_whole_run_abort_count": {
+        "description": "Current synthetic whole-run abort assertions (fatal DiscoveryProtocolError paths) under tests/research/.",
+        "method": "AST count of pytest.raises(DiscoveryProtocolError, ...) calls across tests/research/test_*.py",
+        "count": 19
+      },
+      "synthetic_recovery_count": {
+        "description": "Current synthetic resume/recovery test functions under tests/research/.",
+        "method": "AST count of `def test_*` functions whose name matches (resume|recover) case-insensitively across tests/research/test_*.py",
+        "count": 2
+      },
+      "operational_notes": {
+        "state_tracking": "migration-state.json is tracked in Git (no .gitignore entry) as the single durable source of truth. It is excluded from the wheel and sdist via pyproject [tool.uv.build-backend] source-exclude, and tests/test_wheel.py permits only this exact root file under the repository payload rule while still rejecting every other JSON payload and asserting the file's absence from both distributions.",
+        "fixture_naming": "JSON-content fixtures use the .txt extension (checkpoint.txt, exchange.txt, model_output.txt, journal_event_schema.txt), matching the repository convention (tests/fixtures/controlled_browser/*.txt) and avoiding the .json payload suffix that archive safety forbids. They still parse via the current checked-in JSON models or, for journal_event_schema.txt, reproduce the generated event JSON Schema.",
+        "next": "TASK-MIG-011 (executable contracts and documentation) is complete and its commit finalizes TASK-MIG-010's real hash (b697c4d737f2d0ec5f4b455fe094709297900a51), so current_task is TASK-MIG-012 (synthetic canary, pending). TASK-MIG-011's own hash stays 'pending' for its successor TASK-MIG-012 to finalize under the rolling-hash rule. TASK-MIG-011 replaced brittle behavioral phrase-presence contract tests under tests/agent/ with behavioral/structural checks: the frozen TASK-MIG-001 denominator of 149 phrase-presence assertions fell to 15 (an 89.93% reduction, well under the 74 >=50% ceiling), reproduced as an executable contract by tests/agent/test_phrase_contract_budget.py. Retained exact assertions cover only true textual contracts (the serialized JSON discovery-output schema, the exact machine-gate commands, and the publication branch templates/prohibitions), each with an inline contractual-wording comment; all other safety, orchestration, and publication contracts kept coverage through assert_concepts()/assert_sentence_concepts(), structural enum/inventory parsers, and the run-journal simulations. Docs (docs/inventory-curator.md) now name model provenance rather than exact-model pinning, note structured query intents riding query_planned, name the uniform exit-code failure taxonomy, and reframe source/payload safety as low-cost baseline hygiene; journal-native architecture, machine gates, machine-driven resume, and the single-branch/single-PR workflow remain accurate with no old-exchange instructions. The plan section 13 completion checklist was advanced through TASK-MIG-011. Full validation passed (uv run pytest 565 passed/1 skipped, ruff check/format and mypy clean, ledger revision 95 and vocabulary revision 0 unchanged, 29 inventory resources, uv build and git diff --check clean). The frozen TASK-MIG-010 code-reduction denominator (998 combined lines) and the TASK-MIG-011 phrase denominator (149) stay unchanged historical baselines. TASK-MIG-012 must not be started until scheduled under the strict serialization contract of this run; do not begin it as part of TASK-MIG-011."
+      }
+    },
+    "canary": {
+      "path": "tests/research/test_synthetic_canary.py",
+      "sha256": "79551329f529c47ff11dbd3e416d23f6a82d503edf3b87bb6c92986d9846c0ff",
+      "method": "sha256 of the checked-in test module as written to the working tree",
+      "report_location": "captured pytest output (test_report_is_machine_readable_and_every_target_is_met) and the migration pull-request body; no tracked JSON payload is added because the repository payload policy permits only the root migration-state.json",
+      "scenarios": 14
+    },
+    "pilot": {
+      "sweep_id": "tool-mhg",
+      "category": "tool",
+      "stage": "mhg",
+      "inventory_branch": "copilot/inventory-tool-mhg-plan-20260815T175900Z",
+      "inventory_commit": "6aa27265bf929ebf4f97fd20726c842aec6b3c15",
+      "inventory_pull_request": "https://github.com/daanvdn/HistGerm/pull/6",
+      "changed_paths": ["README.md", "research/discovery-ledger.yaml", "src/histgerm/data/tools/xlm-roberta-mhg-charter-mlm.yaml", "tests/research/test_models.py"],
+      "resource_added": "tool-xlm-roberta-mhg-charter-mlm",
+      "run_journal_path_outside_repository": true,
+      "run_journal_committed": false
+    }
+  },
+  "pilot_target": {
+    "recorded_at": "2026-08-16T07:50:00+02:00",
+    "selection_command": "uv run python -m histgerm.research next --ledger research/discovery-ledger.yaml --format json",
+    "invocation_count": 1,
+    "category": "tool",
+    "stage": "mhg",
+    "sweep_id": "tool-mhg",
+    "sweep_state": "in_progress",
+    "ledger_revision": 95,
+    "reselection": false,
+    "note": "Deterministically selected exactly once for GATE-PILOT per plan section 9 using the existing next-sweep command; select_next_sweep is read-only and did not mutate the live ledger (revision 95 unchanged) or vocabulary. TASK-MIG-013 must reuse this recorded target and ledger revision and never re-select.",
+    "result": {
+      "executed_at": "2026-08-16T11:00:00+02:00",
+      "reselection": false,
+      "reused_recorded_target_and_revision": true,
+      "ledger_revision_before": 95,
+      "ledger_revision_after": 98,
+      "ledger_mutations": ["upsert-candidate", "apply-result", "record-search"],
+      "sweep_state_after": "in_progress",
+      "pass_id": "pass-tool-mhg-2026-08-16-gmh-pilot",
+      "pass_complete": false,
+      "vocabulary_revision": 0,
+      "inventory_branch": "copilot/inventory-tool-mhg-plan-20260815T175900Z",
+      "inventory_pull_request": "https://github.com/daanvdn/HistGerm/pull/6",
+      "inventory_pr_state": "open_ready_not_merged",
+      "resource_added": "tool-xlm-roberta-mhg-charter-mlm",
+      "reports": {
+        "query_intents_attempted": 4,
+        "query_intents_completed": 1,
+        "provider_gaps": 1,
+        "candidates_found": 1,
+        "candidates_added": 1,
+        "candidates_blocked": 0,
+        "candidates_duplicate": 0,
+        "candidates_out_of_scope": 0,
+        "leads": 5,
+        "recoveries_without_restart": 0,
+        "operator_interventions": 0,
+        "schema_invalid_candidates": 0,
+        "evidence_grounding_failures": 0
+      },
+      "note": "The recorded GATE-PILOT selection (invocation_count 1, ledger_revision 95) was preserved and never re-selected; 'next' was not re-run. This 'result' block only appends the pilot outcome."
+    }
+  },
+  "architecture_acceptance": {
+    "recorded_at": "2026-08-16T11:00:00+02:00",
+    "no_metadata_truth_regression": true,
+    "recovery_and_abort_targets_remain_met": true,
+    "every_proposed_trusted_field_passes_deterministic_evidence_validation": true,
+    "candidate_yield_blocking_rate_provider_gap_rate_recorded_against_baseline": true,
+    "pilot_inventory_pull_request": "https://github.com/daanvdn/HistGerm/pull/6",
+    "migration_pull_request": "#5",
+    "note": "Final architecture acceptance for the migrated HistGerm inventory-curator architecture, recorded after the TASK-MIG-013 machine-selected real pilot. Neither the migration PR (#5) nor the pilot inventory PR (#6) is merged by this workflow."
+  }
+}

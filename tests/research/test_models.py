@@ -2,11 +2,23 @@ from __future__ import annotations
 
 from datetime import date
 from pathlib import Path
+from typing import Any
 
 import pytest
 from conftest import candidate_data, pass_data
 from pydantic import ValidationError
+from test_query_intents import structured_pass_data, term_stuffed_pass_data
 
+from histgerm.models import (
+    Access,
+    AnnotationLayer,
+    Availability,
+    Corpus,
+    CorpusVersion,
+    LanguageStage,
+    LegalPermission,
+    Source,
+)
 from histgerm.research import (
     CandidateEntry,
     CandidateResearchResult,
@@ -17,6 +29,7 @@ from histgerm.research import (
     resolve_request_destination,
     upsert_candidate,
 )
+from histgerm.research.query_intents import required_intent_ids
 
 
 @pytest.mark.parametrize(
@@ -144,6 +157,67 @@ def test_complete_tool_pass_requires_bilingual_architecture_families() -> None:
         query["query"] = query["query"].replace("BERT family", "")
     with pytest.raises(ValidationError, match="tool architecture families"):
         SearchPass.model_validate(missing_architecture)
+
+
+@pytest.mark.parametrize("category", ["corpus", "tool", "dictionary"])
+def test_structured_intent_coverage_completes_a_pass(category: str) -> None:
+    search_pass = SearchPass.model_validate(structured_pass_data(category=category))
+    assert search_pass.complete
+    declared = {
+        query.intent_id for query in search_pass.queries if query.intent_id is not None
+    }
+    assert declared == required_intent_ids(category, "mhg")
+
+
+def test_incomplete_intent_coverage_is_rejected() -> None:
+    data = structured_pass_data(category="tool")
+    dropped = sorted(required_intent_ids("tool", "mhg"))[-1]
+    for query in data["queries"]:
+        if query["intent_id"] == dropped:
+            query["intent_id"] = None
+    with pytest.raises(ValidationError, match="missing required query intents"):
+        SearchPass.model_validate(data)
+
+
+def test_term_stuffed_query_cannot_satisfy_multiple_intents() -> None:
+    # The identical term-stuffed text still satisfies the legacy substring gate.
+    assert SearchPass.model_validate(pass_data(category="tool")).complete
+    # Once a single intent is declared the pass uses structured coverage, and one
+    # term-stuffed query can only ever claim its single declared intent.
+    stuffed = term_stuffed_pass_data(category="tool")
+    declared = {
+        query.get("intent_id")
+        for query in stuffed["queries"]
+        if query.get("intent_id") is not None
+    }
+    assert len(declared) < len(required_intent_ids("tool", "mhg"))
+    with pytest.raises(ValidationError, match="missing required query intents"):
+        SearchPass.model_validate(stuffed)
+
+
+def test_intent_id_must_match_pass_cell_and_query_language() -> None:
+    foreign = structured_pass_data(category="tool")
+    target_language = foreign["queries"][0]["language"]
+    foreign_intent = next(
+        intent_id
+        for intent_id in sorted(required_intent_ids("corpus", "mhg"))
+        if intent_id.rsplit("-", 1)[-1] == target_language
+    )
+    foreign["queries"][0]["intent_id"] = foreign_intent
+    with pytest.raises(ValidationError, match="does not target pass"):
+        SearchPass.model_validate(foreign)
+
+
+def test_search_query_record_rejects_language_mismatched_intent() -> None:
+    with pytest.raises(ValidationError, match="does not match query language"):
+        SearchQueryRecord(
+            query="x",
+            language="en",
+            channel="olac",
+            source_urls=["https://catalog.clarin.eu/ds/ComponentRegistry"],
+            completed=True,
+            intent_id="intent-tool-mhg-tagging-de",
+        )
 
 
 def test_candidate_and_result_dispositions_remain_strict() -> None:
@@ -276,3 +350,201 @@ def test_seed_handoff_round_trip_is_lossless_and_deterministic(
     assert stored.source_wordings == candidate.source_wordings
     assert stored.discovery_urls == candidate.discovery_urls
     assert updated.model_dump(mode="json") == reloaded.model_dump(mode="json")
+
+
+def _corpus_record(
+    *, covered_stages: tuple[LanguageStage, ...] = (LanguageStage.MHG,)
+) -> Corpus:
+    """Build a minimal valid corpus proposed record with unclear access."""
+    return Corpus(
+        id="corpus-reference",
+        name="Reference Corpus of Middle High German",
+        reviewed_on=date(2026, 8, 12),
+        covered_stages=list(covered_stages),
+        links={"homepage": "https://example.org/project/"},
+        sources=[
+            Source(
+                id="corpus-page",
+                url="https://example.org/project/",
+                accessed_on=date(2026, 8, 12),
+                supports=["name", "covered_stages", "access", "versions"],
+            )
+        ],
+        access=Access(
+            availability=[Availability.DESCRIBED],
+            model_training=LegalPermission.UNCLEAR,
+            original_data_redistribution=LegalPermission.UNCLEAR,
+            processed_data_redistribution=LegalPermission.UNCLEAR,
+            trained_weight_publication=LegalPermission.UNCLEAR,
+            source_ids=["corpus-page"],
+        ),
+        versions=[
+            CorpusVersion(
+                id="v1",
+                availability=[Availability.DESCRIBED],
+                annotations=[
+                    AnnotationLayer(
+                        id="pos",
+                        type="pos",
+                        tagset_name="HiTS",
+                        source_ids=["corpus-page"],
+                    )
+                ],
+                texts=[],
+            )
+        ],
+    )
+
+
+def _stage_excerpt(*supports: str) -> EvidenceExcerpt:
+    """Build one canonical-project evidence excerpt with the given supports."""
+    return EvidenceExcerpt(
+        url="https://example.org/project/",
+        accessed_on=date(2026, 8, 12),
+        kind="canonical_project",
+        supports=list(supports),
+    )
+
+
+def _added_result(**updates: Any) -> CandidateResearchResult:
+    """Build an otherwise valid ``added`` corpus research result."""
+    data: dict[str, Any] = {
+        "candidate_id": "candidate-example",
+        "category": "corpus",
+        "disposition": "added",
+        "canonical_name": "Reference Corpus of Middle High German",
+        "verified_stages": [LanguageStage.MHG],
+        "evidence": [_stage_excerpt("identity", "covered_stages.mhg")],
+        "evidence_gaps": [],
+        "matched_resource_id": None,
+        "risk_flags": [],
+        "summary": "Canonical Middle High German corpus added.",
+        "proposed_record": _corpus_record(),
+    }
+    data.update(updates)
+    return CandidateResearchResult(**data)
+
+
+def test_added_result_requires_matching_stage_evidence() -> None:
+    result = _added_result()
+    assert result.disposition == "added"
+    assert result.verified_stages == [LanguageStage.MHG]
+
+    # A verified stage without a matching dotted-support excerpt fails.
+    with pytest.raises(ValidationError, match="requires canonical evidence"):
+        _added_result(verified_stages=[LanguageStage.MHG, LanguageStage.OHG])
+
+    # Evidence whose supports do not ground the stage is insufficient; the
+    # grounding uses the excerpt supports, not the trusted proposed record.
+    with pytest.raises(ValidationError, match="requires canonical evidence"):
+        _added_result(evidence=[_stage_excerpt("identity")])
+
+
+def test_identity_ambiguity_carries_conflict_and_cannot_be_added() -> None:
+    # An identity_conflict risk flag prevents an added disposition.
+    with pytest.raises(
+        ValidationError, match="identity_conflict cannot produce an added"
+    ):
+        _added_result(risk_flags=["identity_conflict"])
+
+    # A competing matched_resource_id outside a duplicate is identity ambiguity
+    # and must carry the identity_conflict risk flag.
+    with pytest.raises(ValidationError, match="identity_conflict risk flag"):
+        _added_result(matched_resource_id="corpus-reference", risk_flags=[])
+
+    # A duplicate legitimately carries matched_resource_id without the flag.
+    duplicate = CandidateResearchResult(
+        candidate_id="candidate-example",
+        category="corpus",
+        disposition="duplicate",
+        verified_stages=[],
+        evidence=[],
+        evidence_gaps=[],
+        matched_resource_id="corpus-reference",
+        risk_flags=[],
+        summary="Duplicate of an existing corpus.",
+    )
+    assert duplicate.matched_resource_id == "corpus-reference"
+
+
+def test_source_silence_becomes_blocked_never_out_of_scope() -> None:
+    # Source silence (no stage evidence) cannot yield an out_of_scope result.
+    with pytest.raises(ValidationError, match="out_of_scope requires direct evidence"):
+        CandidateResearchResult(
+            candidate_id="candidate-example",
+            category="corpus",
+            disposition="out_of_scope",
+            verified_stages=[],
+            evidence=[],
+            evidence_gaps=[],
+            risk_flags=[],
+            summary="No canonical stage evidence was found.",
+        )
+
+    # The correct disposition for absent evidence is a candidate-local block.
+    blocked = CandidateResearchResult(
+        candidate_id="candidate-example",
+        category="corpus",
+        disposition="blocked",
+        verified_stages=[],
+        evidence=[],
+        evidence_gaps=["No canonical stage evidence was found."],
+        risk_flags=[],
+        summary="Blocked pending canonical stage evidence.",
+    )
+    assert blocked.disposition == "blocked"
+
+
+def test_one_malformed_result_retains_valid_sibling_dispositions() -> None:
+    valid_first: dict[str, Any] = {
+        "candidate_id": "candidate-alpha",
+        "category": "corpus",
+        "disposition": "blocked",
+        "verified_stages": [],
+        "evidence": [],
+        "evidence_gaps": ["Canonical stage evidence unavailable."],
+        "risk_flags": [],
+        "summary": "Blocked pending evidence.",
+    }
+    malformed_sibling: dict[str, Any] = {
+        "candidate_id": "candidate-beta",
+        "category": "corpus",
+        # Added without verified stages, evidence, or a proposed record.
+        "disposition": "added",
+        "verified_stages": [],
+        "evidence": [],
+        "evidence_gaps": [],
+        "risk_flags": [],
+        "summary": "Malformed added result.",
+    }
+    valid_second: dict[str, Any] = {
+        "candidate_id": "candidate-gamma",
+        "category": "tool",
+        "disposition": "out_of_scope",
+        "verified_stages": [],
+        "evidence": [
+            {
+                "url": "https://example.org/tool",
+                "accessed_on": "2026-08-12",
+                "kind": "institutional",
+                "supports": ["identity"],
+            }
+        ],
+        "evidence_gaps": [],
+        "risk_flags": [],
+        "summary": "Modern-only tool, out of historical scope.",
+    }
+
+    validated: list[CandidateResearchResult] = []
+    quarantined: list[int] = []
+    for index, payload in enumerate((valid_first, malformed_sibling, valid_second)):
+        try:
+            validated.append(CandidateResearchResult.model_validate(payload))
+        except ValidationError:
+            quarantined.append(index)
+
+    assert [result.candidate_id for result in validated] == [
+        "candidate-alpha",
+        "candidate-gamma",
+    ]
+    assert quarantined == [1]

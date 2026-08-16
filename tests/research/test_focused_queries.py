@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import re
+
 import pytest
 
 from histgerm.models import LanguageStage
@@ -14,6 +16,11 @@ from histgerm.research.focused_queries import (
     generate_focused_queries,
     normalize_metadata_lead_terms,
     render_query,
+)
+from histgerm.research.query_intents import (
+    INTENT_ID_PATTERN,
+    parse_intent_id,
+    required_intent_ids,
 )
 
 
@@ -159,6 +166,32 @@ def test_exclusions_are_deduplicated_and_bounded() -> None:
     expanded = apply_exclusion_group(query, groups[0])
     assert expanded.startswith(query.text)
     assert '-"TreeTagger"' in expanded
+
+
+@pytest.mark.parametrize("category", ["corpus", "tool", "dictionary"])
+@pytest.mark.parametrize("stage", ["ohg", "mhg", "enhg"])
+def test_focused_queries_emit_intent_ids_covering_required_intents(
+    category: ResourceCategory, stage: str
+) -> None:
+    queries = generate_focused_queries(category, stage)
+    intent_ids = {query.intent_id for query in queries}
+    assert all(re.match(INTENT_ID_PATTERN, intent_id) for intent_id in intent_ids)
+    assert required_intent_ids(category, stage) <= intent_ids
+    for query in queries:
+        parsed = parse_intent_id(query.intent_id)
+        assert parsed is not None
+        assert parsed[0] == category
+        assert parsed[1] == stage
+        assert parsed[3] == query.language
+
+
+def test_focused_query_intent_is_stable_and_concept_scoped() -> None:
+    tagger = query(concept="Tagger", language="de")
+    assert tagger.intent_id == "intent-tool-mhg-tagging-de"
+    # The abbreviation formulation changes the rendered text but not the intent.
+    assert query(concept="Tagger", language="de").intent_id == tagger.intent_id
+    embedding = query(concept="Worteinbettung", language="de")
+    assert embedding.intent_id == "intent-tool-mhg-word_embedding-de"
 
 
 def query(

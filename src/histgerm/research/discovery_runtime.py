@@ -60,6 +60,16 @@ def _provider_fetch(
     now: Callable[[], datetime],
 ) -> Callable[[SearchRequest], ProviderResponse]:
     def fetch_provider(request: SearchRequest) -> ProviderResponse:
+        """Fetch one provider request, turning transport failures into gaps.
+
+        A wrong argument type is a programming error and still raises. Every
+        bounded transport failure, whether a policy or HTTP ``MetadataFetchError``
+        or a lower-level ``OSError``/``TimeoutError``, becomes a structured
+        provider-gap ``ProviderResponse`` with no body so the channel is recorded
+        as an access gap and the remaining channels keep running instead of the
+        whole discovery aborting.
+        """
+
         if not isinstance(request, SearchRequest):
             raise TypeError("provider transport accepts only SearchRequest")
         try:
@@ -70,6 +80,14 @@ def _provider_fetch(
                 observed_at=now(),
                 http_status=error.status,
                 failure_stage=error.stage,
+                body="",
+            )
+        except OSError:
+            return ProviderResponse(
+                retrieval_mode="bounded_http",
+                observed_at=now(),
+                http_status=None,
+                failure_stage="connection",
                 body="",
             )
         body = fetched.body.decode("utf-8", errors="replace")

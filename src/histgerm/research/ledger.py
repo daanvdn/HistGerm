@@ -3,10 +3,7 @@
 """Validated, revisioned operations for the discovery ledger."""
 from __future__ import annotations
 
-import hashlib
 import os
-import tempfile
-import time
 from calendar import monthrange
 from collections.abc import Iterator, Mapping, Sequence
 from contextlib import contextmanager
@@ -26,6 +23,13 @@ from yaml.tokens import (  # type: ignore[import-untyped]
 from histgerm.catalog import load_catalog
 from histgerm.models import BaseResource, LanguageStage
 
+from ._persistence import (
+    bounded_file_lock,
+    remove_temporary,
+    replace_atomically,
+    stable_lock_path,
+    write_durable_temporary,
+)
 from .models import (
     CandidateEntry,
     CandidateResearchResult,
@@ -236,60 +240,13 @@ def _locked_ledger(path: Path, expected_revision: int) -> Iterator[DiscoveryLedg
 
 def _lock_path_for_ledger(path: Path) -> Path:
     """Return stable external lock state unique to this ledger checkout path."""
-    identity = os.path.normcase(os.fspath(path.resolve()))
-    digest = hashlib.sha256(os.fsencode(identity)).hexdigest()
-    return Path(tempfile.gettempdir()) / 'histgerm' / 'ledger-locks-v1' / f'{digest}.lock'
+    return stable_lock_path(path, namespace='ledger-locks-v1')
 
 @contextmanager
 def _ledger_file_lock(lock: Path) -> Iterator[None]:
     """Hold an OS-backed exclusive lock; the stable lock file is never evicted."""
-    lock.parent.mkdir(parents=True, exist_ok=True)
-    descriptor = os.open(lock, os.O_CREAT | os.O_RDWR, 0o600)
-    deadline = time.monotonic() + _LOCK_TIMEOUT_SECONDS
-    acquired = False
-    try:
-        if os.name == 'nt':
-            import msvcrt
-            locking = getattr(msvcrt, 'locking')  # noqa: B009
-            lock_nblck = getattr(msvcrt, 'LK_NBLCK')  # noqa: B009
-            while True:
-                try:
-                    os.lseek(descriptor, 0, os.SEEK_SET)
-                    locking(descriptor, lock_nblck, 1)
-                    acquired = True
-                    break
-                except OSError:
-                    if time.monotonic() >= deadline:
-                        raise LedgerWriteError(f'timed out waiting for ledger lock {lock}') from None
-                    time.sleep(0.02)
-        else:
-            import fcntl
-            flock = getattr(fcntl, 'flock')  # noqa: B009
-            lock_ex = getattr(fcntl, 'LOCK_EX')  # noqa: B009
-            lock_nb = getattr(fcntl, 'LOCK_NB')  # noqa: B009
-            while True:
-                try:
-                    flock(descriptor, lock_ex | lock_nb)
-                    acquired = True
-                    break
-                except BlockingIOError:
-                    if time.monotonic() >= deadline:
-                        raise LedgerWriteError(f'timed out waiting for ledger lock {lock}') from None
-                    time.sleep(0.02)
+    with bounded_file_lock(lock, label='ledger', timeout=_LOCK_TIMEOUT_SECONDS, on_timeout=LedgerWriteError):
         yield
-    finally:
-        try:
-            if acquired and os.name == 'nt':
-                os.lseek(descriptor, 0, os.SEEK_SET)
-                getattr(msvcrt, 'locking')(  # noqa: B009
-                    descriptor, getattr(msvcrt, 'LK_UNLCK'), 1  # noqa: B009
-                )
-            elif acquired:
-                getattr(fcntl, 'flock')(  # noqa: B009
-                    descriptor, getattr(fcntl, 'LOCK_UN')  # noqa: B009
-                )
-        finally:
-            os.close(descriptor)
 
 def _require_revision(ledger: DiscoveryLedger, expected_revision: int) -> None:
     if ledger.revision != expected_revision:
@@ -320,36 +277,21 @@ def _commit(path: Path, ledger: DiscoveryLedger, expected_revision: int) -> Disc
     validated = _canonicalize(DiscoveryLedger.model_validate(ledger.model_copy(update={'revision': expected_revision + 1})))
     temporary = _write_temporary(path, validated)
     try:
-        os.replace(temporary, path)
+        replace_atomically(temporary, path)
     except OSError as error:
-        _remove_temporary(temporary)
         raise LedgerWriteError(f'could not atomically replace ledger {path}') from error
     return load_ledger(path)
 
 def _write_temporary(path: Path, ledger: DiscoveryLedger) -> Path:
-    descriptor = -1
-    temporary: Path | None = None
     try:
-        descriptor, raw_path = tempfile.mkstemp(dir=path.parent, prefix=f'.{path.name}.', suffix='.tmp')
-        temporary = Path(raw_path)
-        with os.fdopen(descriptor, 'w', encoding='utf-8', newline='\n') as stream:
-            descriptor = -1
-            yaml.safe_dump(ledger.model_dump(mode='json', exclude_none=True), stream, sort_keys=False, allow_unicode=True)
-            stream.flush()
-            os.fsync(stream.fileno())
-        return temporary
+        payload = yaml.safe_dump(ledger.model_dump(mode='json', exclude_none=True), sort_keys=False, allow_unicode=True).encode('utf-8')
+        return write_durable_temporary(path, payload, prefix=f'.{path.name}.', suffix='.tmp')
     except (OSError, yaml.YAMLError) as error:
-        if descriptor != -1:
-            os.close(descriptor)
-        if temporary is not None:
-            _remove_temporary(temporary)
         raise LedgerWriteError(f'could not write temporary ledger for {path}') from error
 
 def _remove_temporary(path: Path) -> None:
     try:
-        path.unlink()
-    except FileNotFoundError:
-        pass
+        remove_temporary(path)
     except OSError as error:
         raise LedgerWriteError(f'could not remove temporary ledger {path}') from error
 __all__ = ['LedgerPolicyError', 'LedgerRevisionError', 'LedgerWriteError', 'apply_research_result', 'initialize_ledger', 'load_ledger', 'record_search_pass', 'select_next_sweep', 'upsert_candidate', 'validate_ledger']

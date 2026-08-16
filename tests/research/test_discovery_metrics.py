@@ -76,3 +76,19 @@ def test_vocabulary_lifecycle_metrics_are_reported_separately() -> None:
     assert snapshot["vocabulary_reused_decisions"] == 5
     assert snapshot["vocabulary_inactive_associations"] == 6
     assert snapshot["vocabulary_access_gaps"] == 1
+
+
+def test_elicitation_recovery_counters_are_reported() -> None:
+    metrics = DiscoveryCoverage(
+        elicitation_retries=2,
+        elicitation_recovered_retries=1,
+        elicitation_blocked_responses=1,
+        elicitation_quarantined_candidates=3,
+    )
+
+    snapshot = metrics.snapshot()
+
+    assert snapshot["elicitation_retries"] == 2
+    assert snapshot["elicitation_recovered_retries"] == 1
+    assert snapshot["elicitation_blocked_responses"] == 1
+    assert snapshot["elicitation_quarantined_candidates"] == 3

@@ -50,10 +50,13 @@ valid disposition is supported; unknown optional fields need not be filled.
 Return the full validated result without reducing it to a `CandidateEntry`,
 summary, or ledger response. The calling coordinator must retain this exact
 object, apply this same object with `apply-result`, and retain its `evidence`
-and `proposed_record` after application for trusted YAML and review. Refresh
-mode has the identical result and retention contract; it must return the
-evidenced field changes and schema-valid proposed record when representable,
-not merely a duplicate disposition or `refreshed_existing` flag.
+and `proposed_record` after application for trusted YAML and review. The
+coordinator also records the validated disposition as one typed
+`candidate_researched` or `candidate_blocked` run-journal event; this worker
+performs no journal, ledger, or repository write. Refresh mode has the identical
+result and retention contract; it must return the evidenced field changes and
+schema-valid proposed record when representable, not merely a duplicate
+disposition or `refreshed_existing` flag.
 
 ## Read-only worker procedure
 

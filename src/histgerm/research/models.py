@@ -24,6 +24,20 @@ from pydantic import (
 
 from histgerm.models import Corpus, Dictionary, LanguageStage, LegalPermission, Tool
 
+from .query_intents import (
+    CHANNELS as _CHANNELS,
+)
+from .query_intents import (
+    INTENT_ID_PATTERN as _INTENT_ID_PATTERN,
+)
+from .query_intents import (
+    architecture_terms,
+    category_terms,
+    parse_intent_id,
+    required_intent_ids,
+    stage_terms,
+)
+
 type ResourceCategory = Literal['corpus', 'tool', 'dictionary']
 type CandidateDisposition = Literal['pending', 'added', 'duplicate', 'out_of_scope', 'blocked']
 type SweepState = Literal['not_started', 'in_progress', 'complete']
@@ -36,11 +50,8 @@ _CANDIDATE_ID_PATTERN = '^candidate-[a-z0-9]+(?:-[a-z0-9]+)*$'
 _CHANNEL_PATTERN = '^[a-z][a-z0-9]*(?:[-_][a-z0-9]+)*$'
 _SUPPORT_RE = re.compile('^[a-z][a-z0-9_]*(?:\\.[a-z0-9]+(?:[-_][a-z0-9]+)*)*$')
 _CATEGORY_PREFIXES: dict[ResourceCategory, str] = {'corpus': 'corpus-', 'tool': 'tool-', 'dictionary': 'dictionary-'}
+_STAGE_SUPPORT_FIELDS: dict[ResourceCategory, str] = {'corpus': 'covered_stages', 'tool': 'supported_stages', 'dictionary': 'covered_stages'}
 _FINAL_DISPOSITIONS = {'added', 'duplicate', 'out_of_scope', 'blocked'}
-_STAGE_TERMS: dict[str, dict[SearchLanguage, tuple[str, ...]]] = {'ohg': {'de': ('Althochdeutsch', 'OHG'), 'en': ('Old High German', 'OHG')}, 'mhg': {'de': ('Mittelhochdeutsch', 'MHG'), 'en': ('Middle High German', 'MHG')}, 'enhg': {'de': ('Frühneuhochdeutsch', 'ENHG'), 'en': ('Early New High German', 'ENHG')}}
-_CATEGORY_TERMS: dict[str, dict[SearchLanguage, tuple[str, ...]]] = {'corpus': {'de': ('Korpus', 'Textkorpus', 'Textsammlung', 'Sprachdaten'), 'en': ('corpus', 'text collection', 'dataset', 'language data')}, 'tool': {'de': ('Tagger', 'Lemmatisierer', 'Parser', 'Sprachmodell'), 'en': ('tagger', 'lemmatizer', 'parser', 'language model')}, 'dictionary': {'de': ('Wörterbuch', 'Lexikon', 'Wortschatz'), 'en': ('dictionary', 'lexicon', 'vocabulary')}}
-_TOOL_ARCHITECTURE_TERMS: dict[SearchLanguage, tuple[str, ...]] = {'de': ('Tokenizer', 'BERT-Architektur', 'BERT-Modellfamilie', 'vortrainiertes Sprachmodell', 'maskiertes Sprachmodell', 'Worteinbettung'), 'en': ('tokenizer', 'BERT architecture', 'BERT family', 'pretrained language model', 'masked language model', 'word embedding')}
-_CHANNELS = {'web_de': {'web_de', 'general_web_de', 'german_web'}, 'web_en': {'web_en', 'general_web_en', 'english_web'}, 'clarin': {'clarin', 'clarin_vlo'}, 'olac': {'olac'}, 'zenodo': {'zenodo', 'research_repositories'}, 'institutional': {'institutional', 'institutional_catalogs'}, 'github': {'github', 'github_search'}, 'huggingface': {'huggingface', 'hugging_face'}}
 _NON_PUBLIC_NAMES = ('.localhost', '.local', '.internal', '.home.arpa', '.test', '.invalid', '.example')
 _EMBEDDED_IPV4_RE = re.compile(r'(?<!\d)(?:\d{1,3}[.-]){3}\d{1,3}(?!\d)')
 
@@ -144,6 +155,7 @@ class SearchQueryRecord(_ResearchModel):
     channel: str = Field(pattern=_CHANNEL_PATTERN)
     source_urls: list[PublicHttpUrl]
     completed: bool
+    intent_id: str | None = Field(default=None, pattern=_INTENT_ID_PATTERN)
     note: str | None = None
 
     @model_validator(mode='after')
@@ -152,6 +164,8 @@ class SearchQueryRecord(_ResearchModel):
             raise ValueError('a query without source URLs requires a policy note')
         if self.completed and not self.source_urls and not any(marker in (self.note or '').casefold() for marker in ('inapplicable', 'not applicable')):
             raise ValueError('a completed query without source URLs requires an explicit inapplicable policy reason')
+        if self.intent_id is not None and self.intent_id.rsplit('-', 1)[-1] != self.language:
+            raise ValueError(f'query intent {self.intent_id!r} does not match query language {self.language!r}')
         return self
 
 class SearchPass(_ResearchModel):
@@ -195,20 +209,50 @@ class SearchPass(_ResearchModel):
         missing_channels = [name for name, aliases in _CHANNELS.items() if channels.isdisjoint(aliases)]
         if missing_channels:
             raise ValueError(f'complete pass is missing required channels {missing_channels!r}')
-        languages: tuple[SearchLanguage, ...] = ('de', 'en')
-        for language in languages:
-            texts = [query.query.casefold() for query in self.queries if query.language == language]
-            missing_pairs = [f'{stage_term} + {category_term}' for stage_term in _STAGE_TERMS[stage][language] for category_term in _CATEGORY_TERMS[category][language] if not any(stage_term.casefold() in text and category_term.casefold() in text for text in texts)]
-            if missing_pairs:
-                raise ValueError(f'complete pass is missing {language} query families {missing_pairs!r}')
-            if category == 'tool':
-                missing_architectures = [term for term in _TOOL_ARCHITECTURE_TERMS[language] if not any(term.casefold() in text for text in texts)]
-                if missing_architectures:
-                    raise ValueError(f'complete pass is missing {language} tool architecture families {missing_architectures!r}')
+        if any(query.intent_id is not None for query in self.queries):
+            self._validate_intent_coverage(category, stage)
+        else:
+            self._validate_substring_coverage(category, stage)
         german_web = any(query.language == 'de' and query.channel in _CHANNELS['web_de'] for query in self.queries)
         english_web = any(query.language == 'en' and query.channel in _CHANNELS['web_en'] for query in self.queries)
         if not german_web or not english_web:
             raise ValueError('complete pass requires German and English web search')
+
+    def _validate_intent_coverage(self, category: str, stage: str) -> None:
+        """Prove completed coverage from typed intent records, not substrings.
+
+        Each query record contributes at most its single declared intent, so a
+        term-stuffed query can never satisfy more than one required intent.
+        """
+        declared: set[str] = set()
+        for query in self.queries:
+            if query.intent_id is None:
+                continue
+            parsed = parse_intent_id(query.intent_id)
+            if parsed is None:
+                raise ValueError(f'query intent {query.intent_id!r} is not a valid intent id')
+            intent_category, intent_stage, _family, intent_language = parsed
+            if intent_category != category or intent_stage != stage:
+                raise ValueError(f'query intent {query.intent_id!r} does not target pass {category}-{stage}')
+            if intent_language != query.language:
+                raise ValueError(f'query intent {query.intent_id!r} does not match query language {query.language!r}')
+            declared.add(query.intent_id)
+        missing = required_intent_ids(category, stage) - declared
+        if missing:
+            raise ValueError(f'complete pass is missing required query intents {sorted(missing)!r}')
+
+    def _validate_substring_coverage(self, category: str, stage: str) -> None:
+        """Validate legacy records lacking intent ids by canonical substring."""
+        languages: tuple[SearchLanguage, ...] = ('de', 'en')
+        for language in languages:
+            texts = [query.query.casefold() for query in self.queries if query.language == language]
+            missing_pairs = [f'{stage_term} + {category_term}' for stage_term in stage_terms(stage, language) for category_term in category_terms(category, language) if not any(stage_term.casefold() in text and category_term.casefold() in text for text in texts)]
+            if missing_pairs:
+                raise ValueError(f'complete pass is missing {language} query families {missing_pairs!r}')
+            if category == 'tool':
+                missing_architectures = [term for term in architecture_terms(language) if not any(term.casefold() in text for text in texts)]
+                if missing_architectures:
+                    raise ValueError(f'complete pass is missing {language} tool architecture families {missing_architectures!r}')
 
 class CandidateEntry(_ResearchModel):
     """Represent one durable evaluated discovery candidate."""
@@ -381,12 +425,16 @@ class CandidateResearchResult(_ResearchModel):
 
     @model_validator(mode='after')
     def validate_result(self) -> CandidateResearchResult:
-        """Validate disposition, category, and direct legal evidence."""
+        """Validate disposition, identity, stage, category, and direct legal evidence."""
         expected_type = {'corpus': Corpus, 'tool': Tool, 'dictionary': Dictionary}[self.category]
         if self.proposed_record is not None and (not isinstance(self.proposed_record, expected_type)):
             raise ValueError('proposed_record type must match category')
         if self.matched_resource_id is not None:
             _require_category_prefix(self.matched_resource_id, self.category, 'matched_resource_id')
+            if self.disposition != 'duplicate' and 'identity_conflict' not in self.risk_flags:
+                raise ValueError('a matched_resource_id outside a duplicate is identity ambiguity requiring the identity_conflict risk flag')
+        if 'identity_conflict' in self.risk_flags and self.disposition == 'added':
+            raise ValueError('identity ambiguity flagged identity_conflict cannot produce an added result')
         if self.disposition == 'added':
             if not self.verified_stages:
                 raise ValueError('added requires an in-scope verified stage')
@@ -395,6 +443,7 @@ class CandidateResearchResult(_ResearchModel):
             if self.proposed_record is None:
                 raise ValueError('added requires a proposed_record')
             _require_category_prefix(self.proposed_record.id, self.category, 'proposed record ID')
+            self._validate_stage_evidence()
         if self.disposition == 'duplicate' and self.matched_resource_id is None:
             raise ValueError('duplicate requires matched_resource_id')
         if self.disposition == 'out_of_scope':
@@ -407,6 +456,15 @@ class CandidateResearchResult(_ResearchModel):
         if self.proposed_record is not None:
             self._validate_legal_evidence()
         return self
+
+    def _validate_stage_evidence(self) -> None:
+        """Require canonical excerpt evidence grounding every added verified stage."""
+        support_field = _STAGE_SUPPORT_FIELDS[self.category]
+        grounded = {support for excerpt in self.evidence for support in excerpt.supports}
+        for stage in self.verified_stages:
+            support = f'{support_field}.{stage.value}'
+            if support not in grounded:
+                raise ValueError(f'added verified stage {stage.value!r} requires canonical evidence with supports={support!r}')
 
     def _validate_legal_evidence(self) -> None:
         """Require matching quoted worker evidence for direct legal claims."""

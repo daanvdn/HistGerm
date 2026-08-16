@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from collections.abc import Sequence
 from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
@@ -61,6 +62,63 @@ class EmptyModel:
         self.events.append("model")
         self.calls += 1
         return '{"candidates":[]}'
+
+
+class MalformedSiblingModel:
+    """Return one valid lead beside a malformed sibling, then empty responses."""
+
+    def __init__(self) -> None:
+        self.calls = 0
+
+    def __call__(self, prompt: str, /) -> str:
+        self.calls += 1
+        if self.calls == 1:
+            return json.dumps(
+                {
+                    "candidates": [
+                        {"name": "Kept Lead", "aliases": ["KL"]},
+                        {"name": "Bad Sibling", "aliases": [], "rationale": "nope"},
+                    ]
+                }
+            )
+        return '{"candidates":[]}'
+
+
+def test_malformed_model_sibling_keeps_valid_lead_and_surfaces_metrics() -> None:
+    model = MalformedSiblingModel()
+
+    result = run_discovery(
+        DiscoveryConfig(
+            category="tool",
+            stage=LanguageStage.MHG,
+            max_mined_terms=0,
+            max_exclusion_groups=1,
+            vocabulary=VocabularyLimits(max_pages=1),
+        ),
+        DiscoveryDependencies(
+            catalog=load_catalog(),
+            model_call=model,
+            vocabulary_transport=lambda url, *, max_bytes: FetchedDocument(
+                url, "text/plain", b""
+            ),
+            provider_fetch=lambda request: ProviderResponse(
+                retrieval_mode="bounded_http",
+                observed_at=datetime(2026, 8, 12, tzinfo=UTC),
+                http_status=200,
+                body="<main>No results</main>",
+            ),
+            result_inspector=lambda result: ("unrelated", "no matching resource"),
+        ),
+    )
+
+    assert [lead.name for lead in result.elicitation.leads] == ["Kept Lead"]
+    assert len(result.elicitation.quarantines) == 1
+    assert result.elicitation.quarantines[0].scope == "candidate"
+    assert result.metrics["model_leads"] == 1
+    assert result.metrics["elicitation_quarantined_candidates"] == 1
+    assert result.metrics["elicitation_retries"] == 0
+    assert result.metrics["elicitation_blocked_responses"] == 0
+    assert result.as_json()["metrics"] == result.metrics
 
 
 def test_production_path_enforces_order_channels_inspection_and_exclusions() -> None:

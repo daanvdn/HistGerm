@@ -1,0 +1,650 @@
+schema_version: 1
+revision: 0
+initialized_on: '2026-08-12'
+updated_on: '2026-08-12'
+sweeps:
+- id: corpus-ohg
+  category: corpus
+  stage: ohg
+  state: not_started
+  pass_count: 0
+  consecutive_empty_passes: 0
+  passes: []
+- id: corpus-mhg
+  category: corpus
+  stage: mhg
+  state: not_started
+  pass_count: 0
+  consecutive_empty_passes: 0
+  passes: []
+- id: corpus-enhg
+  category: corpus
+  stage: enhg
+  state: not_started
+  pass_count: 0
+  consecutive_empty_passes: 0
+  passes: []
+- id: tool-ohg
+  category: tool
+  stage: ohg
+  state: not_started
+  pass_count: 0
+  consecutive_empty_passes: 0
+  passes: []
+- id: tool-mhg
+  category: tool
+  stage: mhg
+  state: not_started
+  pass_count: 0
+  consecutive_empty_passes: 0
+  passes: []
+- id: tool-enhg
+  category: tool
+  stage: enhg
+  state: not_started
+  pass_count: 0
+  consecutive_empty_passes: 0
+  passes: []
+- id: dictionary-ohg
+  category: dictionary
+  stage: ohg
+  state: not_started
+  pass_count: 0
+  consecutive_empty_passes: 0
+  passes: []
+- id: dictionary-mhg
+  category: dictionary
+  stage: mhg
+  state: not_started
+  pass_count: 0
+  consecutive_empty_passes: 0
+  passes: []
+- id: dictionary-enhg
+  category: dictionary
+  stage: enhg
+  state: not_started
+  pass_count: 0
+  consecutive_empty_passes: 0
+  passes: []
+candidates:
+- id: candidate-corpus-altdeutsche-originalurkunden
+  name: Corpus der altdeutschen Originalurkunden bis zum Jahr 1300
+  aliases:
+  - Corpus altdeutscher Originalurkunden
+  source_wordings:
+  - Corpus der altdeutschen Originalurkunden bis zum Jahr 1300
+  category: corpus
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-12'
+  discovery_urls:
+  - https://tcdh.uni-trier.de/en/projekt/digitization-corpus-altdeutscher-originalurkunden
+  - http://tcdh01.uni-trier.de/cgi-bin/iCorpus/CorpusIndex.tcl
+  - http://tcdh01.uni-trier.de/cgi-bin/iCorpus/CorpusIndex.tcl?hea=&for=&nav=&cnt=news
+  discovery_stage_claims:
+  - mhg
+  disposition: added
+  resource_id: corpus-altdeutsche-originalurkunden
+  disposition_reason: Digital edition of 4,422 German-language legal and business
+    documents from the beginnings through 1299, explicitly described as a central
+    corpus for research into Middle High German.
+  refreshed_existing: false
+- id: candidate-corpus-badw-mhg
+  name: Mittelhochdeutsch-Korpus
+  aliases: []
+  source_wordings:
+  - Mittelhochdeutsch-Korpus
+  category: corpus
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-12'
+  discovery_urls:
+  - https://api.github.com/repos/badw-dh/Mittelhochdeutsch-Korpus
+  - https://api.github.com/repos/badw-dh/Mittelhochdeutsch-Korpus/readme
+  - https://linguistics.rub.de/rem/corpus/index.html
+  - https://linguistics.rub.de/rem/people/migrako.html
+  discovery_stage_claims:
+  - mhg
+  disposition: added
+  resource_id: corpus-badw-mhg
+  disposition_reason: A handschriftentreu transcribed corpus of approximately 1.1
+    million word forms from more than 100 temporally and geographically distributed
+    Middle High German texts, with lexical, morphological, morphosyntactic, and graphonological
+    annotation.
+  refreshed_existing: false
+- id: candidate-corpus-creta-parzival
+  name: CRETA CUTE Parzival subcorpus
+  aliases:
+  - Parzival
+  source_wordings:
+  - CRETA CUTE Parzival subcorpus
+  category: corpus
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-12'
+  discovery_urls:
+  - https://www.creta.uni-stuttgart.de/cute/datenmaterial/korpus/index.html
+  - https://www.creta.uni-stuttgart.de/cute/datenmaterial/index.html
+  - https://www.creta.uni-stuttgart.de/cute/datenmaterial/entitaetsannotationen/index.html
+  discovery_stage_claims:
+  - mhg
+  disposition: added
+  resource_id: corpus-creta-parzival
+  disposition_reason: A downloadable CRETA CUTE subcorpus of Wolfram von Eschenbach's
+    Middle High German Parzival, with typed entity-reference annotations for books
+    3–6.
+  refreshed_existing: false
+- id: candidate-corpus-der-borte
+  name: '''Der Borte'' Dietrichs von der Glezze - Mittelhochdeutscher Text mit neuhochdeutscher
+    Übersetzung'
+  aliases: []
+  source_wordings:
+  - '''Der Borte'' Dietrichs von der Glezze - Mittelhochdeutscher Text mit neuhochdeutscher
+    Übersetzung'
+  category: corpus
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-12'
+  discovery_urls:
+  - https://zenodo.org/api/records/20626546
+  discovery_stage_claims:
+  - mhg
+  disposition: added
+  resource_id: corpus-der-borte
+  disposition_reason: A structured single-text dataset containing the Middle High
+    German edition text of Der Borte by Dietrich von der Glezze, verse numbers, two
+    New High German translations, and grammatical and semantic commentary.
+  refreshed_existing: false
+- id: candidate-corpus-dmgh-interlinked
+  name: Digital Middle High German Inter-Linked
+  aliases:
+  - Digitales Mittelhochdeutsches Textarchiv
+  source_wordings:
+  - Digital Middle High German Inter-Linked
+  category: corpus
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-12'
+  discovery_urls:
+  - https://tcdh.uni-trier.de/en/projekt/digital-middle-high-german-inter-linked
+  - https://mwb.adwmainz.net/exist/apps/mwb/pages/about.html
+  - https://uni-salzburg.elsevierpure.com/en/datasets/mhdbdb-tei-repository/
+  discovery_stage_claims:
+  - mhg
+  disposition: added
+  resource_id: corpus-dmgh-interlinked
+  disposition_reason: An American-German cooperation project that digitized philologically
+    reliable Middle High German texts from standard academic editions, encoded them
+    according to TEI standards in XML, and presented the text archive through separate
+    Trier and American interfaces.
+  refreshed_existing: false
+- id: candidate-corpus-hgb
+  name: Corpus of Historical German, Bochum
+  aliases:
+  - HGB
+  source_wordings:
+  - Corpus of Historical German, Bochum
+  category: corpus
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-12'
+  discovery_urls:
+  - https://linguistics.ruhr-uni-bochum.de/~dipper/resources/index.html
+  - https://zenodo.org/records/10870745
+  discovery_stage_claims:
+  - mhg
+  disposition: added
+  resource_id: corpus-hgb
+  disposition_reason: A corpus of almost 29,000 tokens drawn from ReM texts and annotated
+    with an extended Universal Dependencies scheme.
+  refreshed_existing: false
+- id: candidate-corpus-ipchg
+  name: Indiana Parsed Corpus of Historical (High) German
+  aliases:
+  - IPCHG
+  - Indiana Parsed Corpus of Historical High German
+  source_wordings:
+  - Indiana Parsed Corpus of Historical (High) German
+  category: corpus
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-12'
+  discovery_urls:
+  - https://ipchg.iu.edu/index.html
+  - https://ipchg.iu.edu/corpus/corpus_structure.html
+  - https://ipchg.iu.edu/corpus/index.html
+  - https://ipchg.iu.edu/corpus/versions.html
+  - https://ipchg.iu.edu/corpus/licenses.html
+  discovery_stage_claims:
+  - mhg
+  - enhg
+  disposition: added
+  resource_id: corpus-ipchg
+  disposition_reason: Syntactically parsed corpus of High German texts spanning the
+    11th through 20th centuries, including explicitly documented Middle High German
+    and Early New High German components.
+  refreshed_existing: false
+- id: candidate-corpus-medieval-ner
+  name: Named-Entity Dataset for Medieval Latin, Middle High German and Old Norse
+  aliases: []
+  source_wordings:
+  - Named-Entity Dataset for Medieval Latin, Middle High German and Old Norse
+  category: corpus
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-12'
+  discovery_urls:
+  - https://zenodo.org/api/records/4571507
+  discovery_stage_claims:
+  - mhg
+  disposition: added
+  resource_id: corpus-medieval-ner
+  disposition_reason: A multilingual named-entity dataset listing lemmata and tokens
+    from Decem Libri Historium (Medieval Latin), Völsunga saga (Old Norse), and Nibelungenlied
+    (Middle High German).
+  refreshed_existing: false
+- id: candidate-corpus-mhdbdb-postdata
+  name: Middle High German Conceptual Database
+  aliases: []
+  source_wordings:
+  - Middle High German Conceptual Database
+  category: corpus
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-12'
+  discovery_urls:
+  - https://postdata.linhd.uned.es/corpus-y-datasets/
+  - https://api.github.com/repos/linhd-postdata/MHDBDB
+  discovery_stage_claims:
+  - mhg
+  disposition: added
+  resource_id: corpus-mhdbdb-postdata
+  disposition_reason: A separately published POSTDATA poetry subset of the University
+    of Salzburg MHDBDB corpus with metric annotation.
+  refreshed_existing: false
+- id: candidate-corpus-mhdbdb
+  name: Mittelhochdeutsche Begriffsdatenbank
+  aliases:
+  - MHDBDB
+  source_wordings:
+  - Mittelhochdeutsche Begriffsdatenbank
+  category: corpus
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-12'
+  discovery_urls:
+  - https://uni-salzburg.elsevierpure.com/en/datasets/mhdbdb-tei-repository/
+  - https://dhcraft.org/mhdbdb-tei-only/hilfe-korpussuche.html
+  - https://api.github.com/repos/DigitalHumanitiesCraft/mhdbdb-tei-only
+  discovery_stage_claims:
+  - mhg
+  disposition: added
+  resource_id: corpus-mhdbdb
+  disposition_reason: TEI-encoded Middle High German literature texts with semantic
+    annotations and a web-based exploration interface.
+  refreshed_existing: false
+- id: candidate-corpus-mhdtexts
+  name: MHDtexts
+  aliases: []
+  source_wordings:
+  - MHDtexts
+  category: corpus
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-12'
+  discovery_urls:
+  - https://api.github.com/repos/cmm2209/MHDtexts
+  - https://api.github.com/repos/cmm2209/MHDtexts/commits/main
+  discovery_stage_claims:
+  - mhg
+  disposition: added
+  resource_id: corpus-mhdtexts
+  disposition_reason: A plain-text corpus of Middle High German texts.
+  refreshed_existing: false
+- id: candidate-corpus-mhg-rubrics
+  name: Collection of Middle High German Rubrics in Miscellany Manuscripts 12th-16th
+    centuries
+  aliases: []
+  source_wordings:
+  - Collection of Middle High German Rubrics in Miscellany Manuscripts 12th-16th centuries
+  category: corpus
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-12'
+  discovery_urls:
+  - https://zenodo.org/records/3373827
+  discovery_stage_claims:
+  - mhg
+  disposition: added
+  resource_id: corpus-mhg-rubrics
+  disposition_reason: A manually compiled collection of almost 1,432 Middle High German
+    rubrics from 68 miscellany manuscripts, corresponding to more than 800 works.
+  refreshed_existing: false
+- id: candidate-corpus-mhg-schwertnamen
+  name: Mittelhochdeutsche Schwertnamen (Groß- und Kleinschreibung in ausgewählten
+    Manuskripten)
+  aliases: []
+  source_wordings:
+  - Mittelhochdeutsche Schwertnamen (Groß- und Kleinschreibung in ausgewählten Manuskripten)
+  category: corpus
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-12'
+  discovery_urls:
+  - https://zenodo.org/api/records/17232661
+  discovery_stage_claims:
+  - mhg
+  disposition: added
+  resource_id: corpus-mhg-schwertnamen
+  disposition_reason: Structured corpus data recording sword names, capitalization,
+    manuscript or print sources, and relevant transcriptions for selected medieval
+    German works.
+  refreshed_existing: false
+- id: candidate-corpus-mhg4sna
+  name: 'MHG4SNA: Middle high german texts annotated for social network analysis'
+  aliases:
+  - MHG4SNA
+  source_wordings:
+  - 'MHG4SNA: Middle high german texts annotated for social network analysis'
+  category: corpus
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-12'
+  discovery_urls:
+  - https://zenodo.org/api/records/7544005
+  - https://api.github.com/repos/NoraKet/MHG4SNA
+  discovery_stage_claims:
+  - mhg
+  disposition: added
+  resource_id: corpus-mhg4sna
+  disposition_reason: A corpus of multiple Middle High German texts annotated for
+    social network analysis, including entity mentions and grounding, direct speech,
+    narrator comments, POS tags, and segmentation.
+  refreshed_existing: false
+- id: candidate-corpus-mwb-textarchiv
+  name: Digitales Textarchiv des Mittelhochdeutschen Wörterbuchs
+  aliases: []
+  source_wordings:
+  - Digitales Textarchiv des Mittelhochdeutschen Wörterbuchs
+  category: corpus
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-12'
+  discovery_urls:
+  - https://mhdwb-online.de/hinweise.html
+  - https://mwb.adwmainz.net/exist/apps/mwb/pages/texts/index.html
+  - https://mwb.adwmainz.net/exist/apps/mwb/pages/about.html
+  - https://adw-goe.de/en/research/research-projects-within-the-academies-programme/middle-high-german-dictionary/
+  discovery_stage_claims:
+  - mhg
+  disposition: added
+  resource_id: corpus-mwb-textarchiv
+  disposition_reason: A named MWB Online archive component listing source editions
+    for which the MWB offers digital full texts in historically varying PDF, HTML,
+    or XML formats.
+  refreshed_existing: false
+- id: candidate-corpus-rem
+  name: Reference Corpus of Middle High German
+  aliases:
+  - ReM
+  source_wordings:
+  - Reference Corpus of Middle High German
+  category: corpus
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-12'
+  discovery_urls:
+  - https://linguistics.rub.de/rem/index.html
+  - https://linguistics.rub.de/rem/access/index.en.html
+  - https://zenodo.org/records/13982324
+  - https://linguistics.rub.de/rem/corpus/index.html
+  - https://linguistics.rub.de/rem/corpus/layers.html
+  - https://creativecommons.org/licenses/by-sa/4.0/legalcode.en
+  - https://linguistics.rub.de/rem/corpus/texts.html
+  - https://linguistics.rub.de/rem/corpus/details.html#M330
+  - https://linguistics.rub.de/rem/documentation/metadata.html
+  - https://linguistics.rub.de/rem/documentation/lemma.html
+  - https://linguistics.rub.de/rem/documentation/pos.html
+  - https://linguistics.rub.de/rem/documentation/morph.html
+  - https://linguistics.rub.de/comphist/resources/hits/
+  - https://doi.org/10.21248/jlcl.28.2013.170
+  - https://linguistics.rub.de/rem/access/NEWS
+  - https://zenodo.org/api/records/13982324/files/ReM-v2.1_coraxml.zip/container
+  discovery_stage_claims:
+  - mhg
+  disposition: added
+  resource_id: corpus-rem
+  disposition_reason: Diplomatically transcribed and annotated Middle High German
+    corpus covering 1050–1350.
+  refreshed_existing: false
+- id: candidate-corpus-sangspruch-annotations
+  name: SFB1391 B03 AB Sangspruch Annotationen
+  aliases: []
+  source_wordings:
+  - SFB1391 B03 AB Sangspruch Annotationen
+  category: corpus
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-12'
+  discovery_urls:
+  - https://zenodo.org/api/records/13378982
+  discovery_stage_claims:
+  - mhg
+  disposition: added
+  resource_id: corpus-sangspruch-annotations
+  disposition_reason: Archived annotation data for the aesthetic vocabulary of a Middle
+    High German sangspruch text corpus, comprising twelve collaborative annotation
+    rounds, associated guidelines, and corpus and export tables.
+  refreshed_existing: false
+- id: candidate-corpus-suesse-annotations
+  name: SFB1391 B03 AB Süße Annotationen
+  aliases: []
+  source_wordings:
+  - SFB1391 B03 AB Süße Annotationen
+  category: corpus
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-12'
+  discovery_urls:
+  - https://zenodo.org/records/7701565
+  discovery_stage_claims:
+  - mhg
+  disposition: added
+  resource_id: corpus-suesse-annotations
+  disposition_reason: Restricted annotation dataset comprising six annotation rounds
+    and associated guidelines for occurrences of the süeze word family in a representative
+    corpus of Middle High German texts.
+  refreshed_existing: false
+- id: candidate-corpus-ungehiure-semantics
+  name: Annotation historische Semantik von mhd. ungehiure
+  aliases: []
+  source_wordings:
+  - Annotation historische Semantik von mhd. ungehiure
+  category: corpus
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-12'
+  discovery_urls:
+  - https://zenodo.org/api/records/13305364
+  - https://zenodo.org/api/records/13305364/files/Dokumentation_Datensatz_Annotationen_ungehiure_DEU_ENG.txt/content
+  discovery_stage_claims:
+  - mhg
+  disposition: added
+  resource_id: corpus-ungehiure-semantics
+  disposition_reason: An openly downloadable research dataset containing annotated
+    search results for ungehiure from the Middle High German Conceptual Database,
+    a corpus overview and text list, CATMA annotation exports, and derived analyses.
+  refreshed_existing: false
+- id: candidate-tool-cltk-gmh-models
+  name: gmh_models_cltk
+  aliases:
+  - CLTK gmh_models_cltk
+  source_wordings:
+  - gmh_models_cltk
+  category: tool
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-12'
+  discovery_urls:
+  - https://api.github.com/repos/cltk/gmh_models_cltk
+  - https://api.github.com/repos/cltk/gmh_models_cltk/readme
+  discovery_stage_claims:
+  - mhg
+  disposition: added
+  resource_id: tool-cltk-gmh-models
+  disposition_reason: A CLTK repository of pre-compiled taggers and tokenizers for
+    tagging Middle High German, built with NLTK and CLTK data.
+  refreshed_existing: false
+- id: candidate-tool-mhd-pos-tagging-benchmark
+  name: mhd-pos-tagging-benchmark
+  aliases: []
+  source_wordings:
+  - mhd-pos-tagging-benchmark
+  category: tool
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-12'
+  discovery_urls:
+  - https://api.github.com/repos/DigitalHumanitiesCraft/mhd-pos-tagging-benchmark
+  - https://api.github.com/repos/DigitalHumanitiesCraft/mhd-pos-tagging-benchmark/contents
+  discovery_stage_claims:
+  - mhg
+  disposition: added
+  resource_id: tool-mhd-pos-tagging-benchmark
+  disposition_reason: Model-agnostic benchmark for POS tagging of Middle High German
+    texts against ReM ground truth.
+  refreshed_existing: false
+- id: candidate-tool-mhg-contextual-string-embeddings-backward
+  name: Middle High German Contextual String Embeddings (Backward)
+  aliases: []
+  source_wordings:
+  - Middle High German Contextual String Embeddings (Backward)
+  category: tool
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-12'
+  discovery_urls:
+  - https://zenodo.org/api/records/18659437
+  - https://zenodo.org/api/records/18659437/files
+  discovery_stage_claims:
+  - mhg
+  disposition: added
+  resource_id: tool-mhg-contextual-string-embeddings-backward
+  disposition_reason: A backward contextual string embedding model for Middle High
+    German, trained on literary and historical texts for downstream NLP tasks.
+  refreshed_existing: false
+- id: candidate-tool-mhg-contextual-string-embeddings-forward
+  name: Middle High German Contextual String Embeddings (Forward)
+  aliases: []
+  source_wordings:
+  - Middle High German Contextual String Embeddings (Forward)
+  category: tool
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-12'
+  discovery_urls:
+  - https://zenodo.org/api/records/18657493
+  discovery_stage_claims:
+  - mhg
+  disposition: added
+  resource_id: tool-mhg-contextual-string-embeddings-forward
+  disposition_reason: Contextual string embeddings for Middle High German, trained
+    on literary and historical texts for downstream NLP tasks involving medieval German.
+  refreshed_existing: false
+- id: candidate-tool-mhg-transfer-learning-parser
+  name: Middle High German Parser Using Transfer Learning
+  aliases: []
+  source_wordings:
+  - Middle High German Parser Using Transfer Learning
+  category: tool
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-12'
+  discovery_urls:
+  - https://api.github.com/repos/tuerkerhan/thesis
+  discovery_stage_claims:
+  - mhg
+  disposition: added
+  resource_id: tool-mhg-transfer-learning-parser
+  disposition_reason: A syntactic parser for Middle High German using transfer learning.
+  refreshed_existing: false
+- id: candidate-tool-mhg-treetagger-pos-tagger
+  name: POS Tagger for Middle High German Texts
+  aliases:
+  - POS Tagger für mittelhochdeutsche Texte
+  - Middle High German TreeTagger parameter file
+  source_wordings:
+  - POS Tagger for Middle High German Texts
+  category: tool
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-12'
+  discovery_urls:
+  - https://www.ims.uni-stuttgart.de/en/research/resources/tools/pos-tag-mhg/
+  - https://cis.uni-muenchen.de/~schmid/tools/TreeTagger/
+  - https://zenodo.org/api/records/4646130
+  discovery_stage_claims:
+  - mhg
+  disposition: added
+  resource_id: tool-mhg-treetagger-pos-tagger
+  disposition_reason: A Middle High German part-of-speech tagging resource provided
+    as a TreeTagger parameter file trained on a POS-tagged version of the Middle High
+    German Conceptual Database.
+  refreshed_existing: false
+- id: candidate-tool-poshistoricaltext
+  name: POSHistoricalText
+  aliases:
+  - Part-of-speech tagging for Middle High German text
+  source_wordings:
+  - POSHistoricalText
+  category: tool
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-12'
+  discovery_urls:
+  - https://api.github.com/repos/sarschu/POSHistoricalText
+  - https://api.github.com/repos/sarschu/POSHistoricalText/readme
+  - https://api.github.com/repos/sarschu/POSHistoricalText/contents
+  discovery_stage_claims:
+  - mhg
+  disposition: added
+  resource_id: tool-poshistoricaltext
+  disposition_reason: A public collection of experimental scripts for part-of-speech
+    tagging a late Middle High German text using several methods and combinations
+    of methods.
+  refreshed_existing: false
+- id: candidate-tool-rnntagger
+  name: RNNTagger
+  aliases: []
+  source_wordings:
+  - RNNTagger
+  category: tool
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-11'
+  discovery_urls:
+  - https://www.cis.uni-muenchen.de/~schmid/tools/RNNTagger/
+  - https://www.cis.uni-muenchen.de/~schmid/tools/RNNTagger/Tagger-Licence
+  - https://api.crossref.org/works/10.1145/3322905.3322915
+  discovery_stage_claims:
+  - enhg
+  - mhg
+  disposition: added
+  resource_id: tool-rnntagger
+  disposition_reason: Neural command-line tool for part-of-speech tagging and lemmatization
+    with pretrained parameters for modern and historical languages.
+  refreshed_existing: false
+- id: candidate-tool-spacy-model-mhg
+  name: Spacy-Model-for-Middle-High-German
+  aliases: []
+  source_wordings:
+  - Spacy-Model-for-Middle-High-German
+  category: tool
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-12'
+  discovery_urls:
+  - https://api.github.com/repos/Middle-High-German-Conceptual-Database/Spacy-Model-for-Middle-High-German
+  discovery_stage_claims:
+  - mhg
+  disposition: added
+  resource_id: tool-spacy-model-mhg
+  disposition_reason: A Middle High German part-of-speech tagger model for spaCy.
+  refreshed_existing: false
+- id: candidate-dictionary-mwb
+  name: Mittelhochdeutsches Wörterbuch
+  aliases:
+  - MWB
+  source_wordings:
+  - Mittelhochdeutsches Wörterbuch
+  category: dictionary
+  discovered_on: '2026-08-12'
+  last_checked_on: '2026-08-11'
+  discovery_urls:
+  - https://mwb.adwmainz.net/exist/apps/mwb/pages/about.html
+  - https://mhdwb-online.de/
+  - https://mhdwb-online.de/hinweise-neu.html
+  - https://mwb.adwmainz.net/exist/apps/mwb/pages/entries/entry.html?lid=84000
+  - https://www.uni-trier.de/forschung/mittelhochdeutsches-woerterbuch/mwb-online
+  - https://api.woerterbuchnetz.de/open-api/dictionaries/MWB/lemmata/abe
+  - https://tcdh.uni-trier.de/de/projekt/woerterbuchnetz
+  - https://www.hirzel.de/mittelhochdeutsches-woerterbuch.-erster-band/9783777623276
+  discovery_stage_claims:
+  - mhg
+  disposition: added
+  resource_id: dictionary-mwb
+  disposition_reason: An epoch dictionary documenting the vocabulary and usage of
+    German-language texts from 1050–1350.
+  refreshed_existing: false

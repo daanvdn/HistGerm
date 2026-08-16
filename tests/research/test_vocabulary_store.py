@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import os
+import subprocess
+import sys
 from copy import deepcopy
 from datetime import date
 from pathlib import Path
@@ -163,6 +165,43 @@ def test_apply_increments_once_and_rejects_stale_revision(tmp_path: Path) -> Non
         apply_vocabulary(path, proposed, expected_revision=0)
     assert load_vocabulary(path).revision == 1
     assert not list(tmp_path.glob(".vocabulary.yaml.*.tmp"))
+    assert not (tmp_path / ".vocabulary.yaml.lock").exists()
+
+
+def test_cross_process_apply_serializes_without_lost_updates(tmp_path: Path) -> None:
+    path = tmp_path / "vocabulary.yaml"
+    write_vocabulary(path, populated_data())
+    inputs = []
+    for name in ("alpha", "beta"):
+        payload = populated_data()
+        payload["sources"][0]["crawl_cache_key"] = f"cache-{name}"
+        destination = tmp_path / f"{name}.yaml"
+        write_vocabulary(destination, payload)
+        inputs.append(destination)
+    processes = [
+        subprocess.Popen(
+            [
+                sys.executable,
+                "-m",
+                "histgerm.research",
+                "vocabulary-apply",
+                "--vocabulary",
+                str(path),
+                "--expected-revision",
+                "0",
+                "--input",
+                str(destination),
+            ],
+            stdout=subprocess.PIPE,
+            text=True,
+        )
+        for destination in inputs
+    ]
+    outputs = [process.communicate(timeout=20)[0] for process in processes]
+    assert sorted(process.returncode for process in processes) == [0, 3]
+    assert sum('"ok":true' in output for output in outputs) == 1
+    assert sum('"stale_revision"' in output for output in outputs) == 1
+    assert load_vocabulary(path).revision == 1
     assert not (tmp_path / ".vocabulary.yaml.lock").exists()
 
 

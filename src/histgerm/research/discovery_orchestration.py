@@ -219,6 +219,7 @@ class DiscoveryRunResult:
                     "text": query.text,
                     "language": query.language,
                     "family": query.family,
+                    "intent_id": query.intent_id,
                     "qualifier": query.qualifier,
                 }
                 for query in self.queries
@@ -265,6 +266,34 @@ class DiscoveryRunResult:
             "completion_gaps": list(self.completion_gaps),
             "vocabulary_revision": self.vocabulary_revision,
         }
+
+    def leads_with_context(self) -> tuple[tuple[str, str, str, int], ...]:
+        """Return each retained lead as ``(name, url, channel, position)``.
+
+        Leads are de-duplicated by case-folded URL across the run's assessments
+        in the exact first-seen order the execution retained them, reproducing
+        :attr:`leads` while also carrying the originating channel. This lets a
+        journal record the identical lead set with its channel context without
+        repeating any retrieval, so a dual-write projection stays a pure function
+        of the confirmed run result.
+        """
+
+        leads: dict[str, tuple[str, str, str, int]] = {}
+        for record in self.assessments:
+            for result, inspection in zip(
+                record.results, record.inspections, strict=True
+            ):
+                if inspection.classification != "lead":
+                    continue
+                key = result.url.casefold()
+                if key not in leads:
+                    leads[key] = (
+                        result.title,
+                        result.url,
+                        record.channel,
+                        result.position,
+                    )
+        return tuple(leads.values())
 
 
 @dataclass(frozen=True, slots=True)
@@ -386,6 +415,10 @@ def run_discovery(
         vocabulary_reused_decisions=incremental.reused_decisions,
         vocabulary_inactive_associations=incremental.inactive_associations,
         vocabulary_access_gaps=incremental.access_gaps,
+        elicitation_retries=elicitation.metrics.retries_attempted,
+        elicitation_recovered_retries=elicitation.metrics.retries_recovered,
+        elicitation_blocked_responses=elicitation.metrics.responses_blocked,
+        elicitation_quarantined_candidates=elicitation.metrics.candidates_quarantined,
     )
     assessments: list[SearchAssessmentRecord] = []
     leads: dict[str, SearchResult] = {}

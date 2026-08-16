@@ -77,8 +77,7 @@ For a local run:
   the current `origin/<default>` head exactly;
 - prove Python, `uv`, public-web search/retrieval, bounded worker delegation,
   Git, repository write, branch/push, and pull-request capabilities;
-- require the exact pinned model identifier `gpt-5.6-sol` to be accepted by
-  the local GitHub Copilot CLI.
+- record the model identifier native orchestration used.
 
 For a cloud run:
 
@@ -87,13 +86,15 @@ For a cloud run:
 - prove public-web search/retrieval and bounded worker delegation are present;
 - require the platform-created branch to be non-default, or create a
   non-default branch, based exactly on the current default-branch head;
-- require the exact pinned model identifier `gpt-5.6-sol` to be accepted by
-  the GitHub Copilot cloud environment.
+- record the model identifier native orchestration used.
 
-The exact model pin is mandatory in both environments. If either environment
-cannot accept it, stop and report `pinned model gpt-5.6-sol unsupported in
-required environment`; never remove, weaken, alias, or substitute the model.
-Do not configure MCP servers or store credentials.
+The frontmatter `model:` value is the default model this agent requests. Record
+the exact model identifier native orchestration actually used as run provenance;
+do not hard-stop merely because the environment substituted an equivalent model.
+The `disable-model-invocation: true` frontmatter only stops the platform from
+auto-invoking this agent from a model turn; it never blocks the agent's own
+native orchestration, worker delegation, or journal writes. Do not configure MCP
+servers or store credentials.
 
 ## Orchestration
 
@@ -103,34 +104,41 @@ the current trusted-resource list, and repository policy. Workers are
 read-only and may not write the ledger, trusted YAML, models, Git state,
 branches, commits, or pull requests.
 
-### Discovery exchange failures
+### Discovery run journal and recovery
 
-For each discovery capability exchange, keep the checkpoint and response as
-operational files in the OS temporary directory. If a capability response is
-not valid for its emitted request, send the exact unchanged request to the
-same pinned model once more with only the validation error and an instruction
-to return the required schema without commentary. Never extract embedded JSON,
-rewrite, normalize, or complete the response locally. This single correction
-attempt applies only before a valid exchange is accepted; stale revisions,
-changed identifiers, missing or reordered requests, and incomplete inspection
-positions are not correctable and stop the run.
+Keep one append-only run journal as an operational `*.journal.jsonl` file
+outside the repository, excluded from every distribution and never committed.
+Every external result becomes exactly one typed journal event through
+the checked-in CLI: `uv run python -m histgerm.research journal-append --journal
+<run.journal.jsonl> --input <event.json>`. Queries become `query_planned` and
+`query_executed`; a body-less failure becomes `provider_gap`; each inspected
+lead becomes `lead_found`; a malformed model elicitation becomes
+`retry_scheduled` then `model_response_invalid`; each worker disposition becomes
+`candidate_researched` or `candidate_blocked`; ledger observations become
+`ledger_revision_observed` and `ledger_mutation_proposed`; and the terminal
+outcome is `run_completed`. Never invent a provider response or treat a model
+elicitation or inspection as evidence.
 
-Before deleting operational files after any refusal or failure, create a
-uniquely named diagnostic directory in the OS temporary directory and copy
-every existing checkpoint and response there byte for byte. Also save the
-failing CLI JSON output and, when applicable, each malformed and corrected
-model output. Diagnostic copies are untrusted run artifacts for owner
-inspection: keep them outside the repository, never commit or publish them,
-report their exact paths, and do not delete them during that failed run.
-Continue to delete the original operational files. Do not create diagnostic
-copies after a successful exchange or completed run.
+Make resume and recovery machine-driven. `journal-append` is idempotent on an
+identical `(run_id, sequence)` and rejects a conflicting duplicate, wrong run
+identifier, sequence gap, or `--expected-last-sequence` mismatch, so replaying
+appends after an interruption never repeats a confirmed retrieval.
+`journal-status` deterministically replays the confirmed run state so the
+coordinator resumes where the journal ended; `journal-validate` integrity-checks
+it and recovers a single torn trailing line while rejecting mid-file corruption;
+`journal-compact` appends a verifiable checkpoint. A malformed model output is
+retried once then quarantined as `model_response_invalid`; a stale ledger
+revision, changed run identifier, missing event, or second malformed output is
+not silently corrected. A `candidate_blocked` evidence gap never stops unrelated
+queries, leads, or workers.
 
-Every discovery stop report must be actionable prose and state the failed
-phase, run ID and checkpoint revision, exact validator code and message,
-expected response shape, concise description of the received shape, whether
-the one correction attempt was used, the rule preventing further recovery,
-ledger and repository mutation status, every diagnostic-copy path, and the
-smallest protocol or input change needed before resuming. Never include
+The journal is the durable diagnostic record; never copy raw external payloads,
+chain-of-thought, or corrected model output into the repository. Every discovery
+stop report must state the failed phase, run identifier,
+journal last sequence and content hash, exact validator code and message,
+expected versus received event shape, whether the single model-format retry was
+used, the rule preventing recovery, ledger and repository mutation status, the
+journal path, and the smallest change needed before resuming. Never include
 secrets, full external payloads, chain-of-thought, or unsupported conclusions.
 
 Before external search in every pass, run bounded model-led elicitation for the
@@ -483,7 +491,6 @@ categories, and four primary catalog `find_*` methods.
 
 Stop without guessing when:
 
-- the pinned model is unsupported in either required environment;
 - local state is dirty, detached, unauthenticated, missing `origin`, or stale;
 - cloud branch/write/push/pull-request or required search/worker capability is
   absent;
