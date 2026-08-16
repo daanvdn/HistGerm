@@ -210,6 +210,10 @@ catalogs/project sites, GitHub, and Hugging Face. An inapplicable channel needs
 a recorded policy reason; an unsafe, blocked, incomplete, or rate-limited
 required query makes the pass incomplete.
 
+Corpus passes additionally use LAUDATIO's bounded public metadata search with
+the German stage label, ISO 639-3 alias, and English stage label. It is not
+used for tools or dictionaries; its records remain untrusted leads.
+
 Discovery starts with bounded model-led elicitation and incremental reuse of
 the validated discovery vocabulary. Both produce untrusted leads only and
 never satisfy evidence requirements. Follow-up elicitation excludes

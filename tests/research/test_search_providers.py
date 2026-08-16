@@ -1,7 +1,10 @@
 from __future__ import annotations
 
 from datetime import UTC, datetime
+from pathlib import Path
 from urllib.parse import urlsplit
+
+import pytest
 
 from histgerm.research.search_providers import (
     ResponseFormat,
@@ -15,11 +18,47 @@ from histgerm.research.search_providers import (
     assess_search_response,
     build_provider_request,
     parse_bing_rss,
+    parse_laudatio_api,
     parse_search_html,
     replace_result_inspections,
 )
 
 NOW = datetime(2026, 8, 12, 13, 24, tzinfo=UTC)
+
+
+def test_laudatio_request_and_api_fixture_are_strict_and_canonical() -> None:
+    request = build_provider_request(
+        SearchProvider.LAUDATIO, "Althochdeutsch", channel="laudatio", locale="de-DE"
+    )
+    assert request.method == "POST"
+    assert request.url.endswith("/corpora/latest/searchMain")
+    assert request.body == (
+        b'{"searchData":{"from":0,"size":20,"query":"Althochdeutsch"}}'
+    )
+    assert request.headers == (
+        ("Accept", "application/json"),
+        ("Content-Type", "application/json"),
+        ("Api-Version", "v1"),
+    )
+    fixture = (Path(__file__).parent / "fixtures" / "laudatio_page.txt").read_text(
+        encoding="utf-8"
+    )
+    result = parse_laudatio_api(fixture)
+    assert result[0].url == (
+        "https://www.laudatio-repository.org/browse/corpus/ohg-1/corpora"
+    )
+    assert result[0].title == "Althochdeutsches Korpus"
+    assert result[0].snippet == "Ältere Texte; goh; 2020"
+    assert result[0].trusted_evidence is False
+
+
+def test_laudatio_parser_rejects_invalid_envelopes_and_identifiers() -> None:
+    with pytest.raises(ValueError):
+        parse_laudatio_api(
+            '{"success":true,"data":[{"_id":"x","_index":"other","_source":{"corpus_title":"X"}}]}'
+        )
+    with pytest.raises(ValueError):
+        parse_laudatio_api('{"success":false,"data":[]}')
 
 
 def test_google_bing_and_brave_have_independent_request_identities() -> None:

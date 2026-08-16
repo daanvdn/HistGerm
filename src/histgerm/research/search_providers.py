@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import html
+import json
 from collections.abc import Callable
 from dataclasses import dataclass, replace
 from datetime import datetime
@@ -28,6 +29,7 @@ class SearchProvider(StrEnum):
     GITLAB = "gitlab"
     GOOGLE = "google"
     HUGGINGFACE = "huggingface"
+    LAUDATIO = "laudatio"
     OLAC = "olac"
     ZENODO = "zenodo"
 
@@ -82,6 +84,9 @@ class SearchRequest:
     response_format: ResponseFormat
     locale: str
     url: str
+    method: Literal["GET", "POST"] = "GET"
+    body: bytes | None = None
+    headers: tuple[tuple[str, str], ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -171,6 +176,7 @@ _PAGINATION_PARAMETERS: dict[SearchProvider, str] = {
     SearchProvider.GITLAB: "page",
     SearchProvider.GOOGLE: "start",
     SearchProvider.ZENODO: "page",
+    SearchProvider.LAUDATIO: "from",
 }
 
 
@@ -220,9 +226,31 @@ def build_provider_request(
     elif provider is SearchProvider.GITLAB:
         base_url = "https://gitlab.com/search"
         parameters = {"search": query, "scope": "projects"}
-    else:
+    elif provider is SearchProvider.HUGGINGFACE:
         base_url = "https://huggingface.co/search/full-text"
         parameters = {"q": query}
+    else:
+        payload = json.dumps(
+            {"searchData": {"from": 0, "size": 20, "query": query}},
+            ensure_ascii=False,
+            separators=(",", ":"),
+        ).encode()
+        return SearchRequest(
+            provider=provider,
+            channel=channel,
+            query=query,
+            retrieval_mode=retrieval_mode,
+            response_format=ResponseFormat.API,
+            locale=locale,
+            url="https://www.laudatio-repository.org/api/elasticapi/v1/corpora/latest/searchMain",
+            method="POST",
+            body=payload,
+            headers=(
+                ("Accept", "application/json"),
+                ("Content-Type", "application/json"),
+                ("Api-Version", "v1"),
+            ),
+        )
     return SearchRequest(
         provider=provider,
         channel=channel,
@@ -428,8 +456,33 @@ def build_provider_page_request(
     parameter = _PAGINATION_PARAMETERS.get(request.provider)
     if parameter is None:
         raise ValueError(f"{request.provider.value} pagination is unsupported")
-    if not cursor.isascii() or not cursor.isdecimal() or int(cursor) < 1:
+    minimum = 0 if request.provider is SearchProvider.LAUDATIO else 1
+    if not cursor.isascii() or not cursor.isdecimal() or int(cursor) < minimum:
         raise ValueError("pagination cursor must be a positive ASCII integer")
+    if request.provider is SearchProvider.LAUDATIO:
+        if request.method != "POST" or request.body is None:
+            raise ValueError("LAUDATIO pagination requires its JSON POST request")
+        try:
+            payload = json.loads(request.body)
+            search_data = payload["searchData"]
+            if (
+                not isinstance(search_data, dict)
+                or set(search_data) != {"from", "size", "query"}
+                or search_data["size"] != 20
+                or search_data["query"] != request.query
+            ):
+                raise ValueError
+        except (ValueError, TypeError, KeyError, json.JSONDecodeError) as error:
+            raise ValueError(
+                "LAUDATIO request body is not the fixed search contract"
+            ) from error
+        search_data["from"] = int(cursor)
+        return replace(
+            request,
+            body=json.dumps(
+                payload, ensure_ascii=False, separators=(",", ":")
+            ).encode(),
+        )
     parsed = urlsplit(request.url)
     parameters = parse_qs(parsed.query, keep_blank_values=True)
     parameters[parameter] = [cursor]
@@ -520,6 +573,8 @@ def assess_search_response(
         results = (
             parse_bing_rss(body)
             if response_format is ResponseFormat.RSS
+            else parse_laudatio_api(body)
+            if response_format is ResponseFormat.API
             else parse_search_html(body)
         )
     except ValueError as error:
@@ -686,6 +741,63 @@ def parse_search_html(document: str) -> tuple[SearchResult, ...]:
     return tuple(parser.results)
 
 
+def parse_laudatio_api(document: str) -> tuple[SearchResult, ...]:
+    """Parse the verified LAUDATIO corpus-search envelope as untrusted leads."""
+
+    try:
+        envelope = json.loads(document)
+    except json.JSONDecodeError as error:
+        raise ValueError("invalid LAUDATIO JSON response") from error
+    if not isinstance(envelope, dict) or envelope.get("success") is not True:
+        raise ValueError("invalid LAUDATIO response envelope")
+    data = envelope.get("data")
+    if not isinstance(data, list):
+        raise ValueError("invalid LAUDATIO result container")
+    results: list[SearchResult] = []
+    for item in data:
+        if not isinstance(item, dict):
+            raise ValueError("invalid LAUDATIO result item")
+        identifier = item.get("_id")
+        index = item.get("_index")
+        source = item.get("_source")
+        if (
+            not isinstance(identifier, str)
+            or not identifier.strip()
+            or "/" in identifier
+            or not isinstance(index, str)
+            or index != "corpora"
+            or not isinstance(source, dict)
+        ):
+            raise ValueError("invalid LAUDATIO corpus identifier")
+        title = _first_text(source.get("corpus_title"))
+        if not title:
+            raise ValueError("LAUDATIO corpus has no usable title")
+        metadata = [
+            _first_text(source.get(name))
+            for name in (
+                "description",
+                "historical_language",
+                "authors",
+                "editors",
+                "genre",
+                "publication_year",
+                "version",
+            )
+        ]
+        snippet = _bounded_text(
+            "; ".join(dict.fromkeys(value for value in metadata if value))
+        )
+        results.append(
+            SearchResult(
+                position=len(results) + 1,
+                url=f"https://www.laudatio-repository.org/browse/corpus/{identifier}/{index}",
+                title=_bounded_text(title, 300),
+                snippet=snippet or None,
+            )
+        )
+    return tuple(results)
+
+
 def transport_observation(
     *,
     provider: SearchProvider,
@@ -805,6 +917,18 @@ def _clean_text(value: str | None) -> str:
     return " ".join(html.unescape(value).split())
 
 
+def _first_text(value: object) -> str:
+    values = value if isinstance(value, list) else [value]
+    for item in values:
+        if isinstance(item, str) and (cleaned := _clean_text(item)):
+            return cleaned
+    return ""
+
+
+def _bounded_text(value: str, limit: int = 600) -> str:
+    return value[:limit].rstrip()
+
+
 def _unwrap_google_url(url: str) -> str:
     parsed = urlsplit(url)
     if parsed.path == "/url":
@@ -845,6 +969,7 @@ __all__ = [
     "build_provider_page_request",
     "build_provider_request",
     "parse_bing_rss",
+    "parse_laudatio_api",
     "parse_search_html",
     "supports_pagination",
     "transport_observation",
