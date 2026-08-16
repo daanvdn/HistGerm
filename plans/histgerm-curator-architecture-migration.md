@@ -926,10 +926,10 @@ with no stage evidence becomes `blocked`, never `out_of_scope`.
 - [x] `GATE-CUTOVER` criteria satisfied (machine-verified)
 - [x] `TASK-MIG-010` old exchange retired, committed on the integration branch
 - [x] `TASK-MIG-011` contracts/docs committed on the integration branch
-- [ ] `TASK-MIG-012` synthetic canary committed on the integration branch
-- [ ] `GATE-PILOT` criteria satisfied (machine-verified)
-- [ ] `TASK-MIG-013` real pilot run on a unique inventory branch with a separate PR
-- [ ] Final architecture acceptance recorded in `migration-state.json`
+- [x] `TASK-MIG-012` synthetic canary committed on the integration branch
+- [x] `GATE-PILOT` criteria satisfied (machine-verified)
+- [x] `TASK-MIG-013` real pilot run on a unique inventory branch with a separate PR
+- [x] Final architecture acceptance recorded in `migration-state.json`
 
 ## 14. Plan acceptance and self-check
 

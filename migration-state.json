@@ -17,7 +17,7 @@
     "TASK-MIG-010": "complete",
     "TASK-MIG-011": "complete",
     "TASK-MIG-012": "complete",
-    "TASK-MIG-013": "pending"
+    "TASK-MIG-013": "complete"
   },
   "gates": {
     "GATE-PLAN": {
@@ -359,7 +359,7 @@
       }
     },
     "TASK-MIG-012": {
-      "hash": "pending",
+      "hash": "c5b032b36b9a846a228997cbdc5e25378dce7a2c",
       "hash_rule": "rolling: migration-state.json is tracked in Git, so this task's own commit cannot embed its own hash. TASK-MIG-012 finalizes its predecessor TASK-MIG-011's real commit hash (57784f36098f946731fd28b06965799e31486002) and leaves its own hash 'pending'; its successor TASK-MIG-013 finalizes this field with TASK-MIG-012's real commit hash. No false or self-referential hash is ever recorded.",
       "message_subject_contains": "TASK-MIG-012",
       "parent": "57784f36098f946731fd28b06965799e31486002",
@@ -368,9 +368,104 @@
         "hash": "57784f36098f946731fd28b06965799e31486002",
         "message_subject_contains": "TASK-MIG-011"
       }
+    },
+    "TASK-MIG-013": {
+      "hash": "pending",
+      "hash_rule": "rolling: migration-state.json is tracked in Git, so this final task commit cannot embed its own hash. TASK-MIG-013 finalizes its predecessor TASK-MIG-012's real commit hash (c5b032b36b9a846a228997cbdc5e25378dce7a2c) and leaves its own hash 'pending'. Because TASK-MIG-013 is the last task, the follow-up update-migration-pr commit that refreshes draft PR #5 finalizes this field with TASK-MIG-013's real commit hash. No false or self-referential hash is ever recorded.",
+      "message_subject_contains": "TASK-MIG-013",
+      "parent": "c5b032b36b9a846a228997cbdc5e25378dce7a2c",
+      "predecessor": {
+        "task": "TASK-MIG-012",
+        "hash": "c5b032b36b9a846a228997cbdc5e25378dce7a2c",
+        "message_subject_contains": "TASK-MIG-012"
+      }
     }
   },
   "checks": {
+    "TASK-MIG-013": {
+      "recorded_at": "2026-08-16T11:00:00+02:00",
+      "all_passed": true,
+      "classification": "ready",
+      "environment": "local",
+      "inventory_branch": "copilot/inventory-tool-mhg-plan-20260815T175900Z",
+      "inventory_base": "origin/main@e3e08cadd1e0fa996ad4616935a98e372c819922",
+      "inventory_commit": "6aa27265bf929ebf4f97fd20726c842aec6b3c15",
+      "inventory_pull_request": "https://github.com/daanvdn/HistGerm/pull/6",
+      "inventory_pr_state": "open_ready_not_merged",
+      "run_journal": {
+        "run_id": "tool-mhg-plan-20260815T175900Z",
+        "path_outside_repository": true,
+        "committed": false,
+        "events": 23,
+        "last_sequence": 22,
+        "content_hash": "df0d2926f038f501385f8fe37ad17d6a684d1a59b99a95017b8e90f8da21b333",
+        "truncated_tail": false,
+        "journal_validate": "ok",
+        "journal_status_deterministic": true
+      },
+      "inventory_validation": [
+        {
+          "command": "uv run python -m histgerm.research validate --ledger research/discovery-ledger.yaml --format json",
+          "exit_code": 0,
+          "revision": 98,
+          "candidates": 44
+        },
+        {
+          "command": "uv run python -m histgerm.research vocabulary-validate --vocabulary research/discovery-vocabulary.yaml --format json",
+          "exit_code": 0,
+          "revision": 0
+        },
+        {
+          "command": "uv run python -m histgerm.validation src/histgerm/data",
+          "exit_code": 0,
+          "resources": 30,
+          "tools": 10
+        },
+        {
+          "command": "uv run pytest",
+          "exit_code": 0,
+          "passed": 463
+        },
+        {
+          "command": "uv run ruff check .",
+          "exit_code": 0
+        },
+        {
+          "command": "uv run ruff format --check .",
+          "exit_code": 0
+        },
+        {
+          "command": "uv run mypy src tests",
+          "exit_code": 0
+        },
+        {
+          "command": "uv build --no-sources",
+          "exit_code": 0,
+          "new_tool_packaged_once": true,
+          "ledger_excluded": true,
+          "vocabulary_excluded": true,
+          "journal_excluded": true
+        },
+        {
+          "command": "git diff --check",
+          "exit_code": 0
+        }
+      ],
+      "journal_integrity": [
+        {
+          "command": "journal-validate",
+          "exit_code": 0,
+          "events": 23,
+          "truncated_tail": false
+        },
+        {
+          "command": "journal-status",
+          "exit_code": 0,
+          "deterministic": true
+        }
+      ],
+      "notes": "TASK-MIG-013 machine-selected real inventory pilot (one sweep/canary batch) on the locked GATE-PILOT target category=tool stage=mhg sweep=tool-mhg, resuming the discovery ledger from the recorded revision 95. Executed with the checked-in curator architecture: the migrated run-journal CLI recorded 23 typed events outside the repository (never committed); discovery used the bounded resolver-pinned transport histgerm.research.fetching only; the single new candidate was curated by a read-only worker per curate-histgerm-resource, validated as CandidateResearchResult, and applied with apply-result. Ledger advanced 95->98 via upsert-candidate, apply-result, and record-search under optimistic concurrency. One new tool added (tool-xlm-roberta-mhg-charter-mlm, a Middle High German XLM-RoBERTa charter masked language model verified from its canonical Hugging Face model card); zero blocked; the recorded pass pass-tool-mhg-2026-08-16-gmh-pilot is truthfully incomplete and the tool-mhg sweep stays in_progress. All required inventory validation passed (classification ready) and the batch published as separate ready inventory PR #6 against main; neither PR is merged and no auto-merge is enabled. The inventory branch is based on origin/main (default branch) as the publish skill requires; the migrated journal/skill tooling ran from a migration-branch worktree because it is checked in there, while the ledger/inventory batch validates and commits against origin/main. No metadata-truth regression, no forbidden domain/category/framework expansion, no third-party payload retrieved or committed."
+    },
     "TASK-MIG-001": {
       "recorded_at": "2026-08-15T21:46:00+02:00",
       "all_passed": true,
@@ -1118,6 +1213,18 @@
       "method": "sha256 of the checked-in test module as written to the working tree",
       "report_location": "captured pytest output (test_report_is_machine_readable_and_every_target_is_met) and the migration pull-request body; no tracked JSON payload is added because the repository payload policy permits only the root migration-state.json",
       "scenarios": 14
+    },
+    "pilot": {
+      "sweep_id": "tool-mhg",
+      "category": "tool",
+      "stage": "mhg",
+      "inventory_branch": "copilot/inventory-tool-mhg-plan-20260815T175900Z",
+      "inventory_commit": "6aa27265bf929ebf4f97fd20726c842aec6b3c15",
+      "inventory_pull_request": "https://github.com/daanvdn/HistGerm/pull/6",
+      "changed_paths": ["README.md", "research/discovery-ledger.yaml", "src/histgerm/data/tools/xlm-roberta-mhg-charter-mlm.yaml", "tests/research/test_models.py"],
+      "resource_added": "tool-xlm-roberta-mhg-charter-mlm",
+      "run_journal_path_outside_repository": true,
+      "run_journal_committed": false
     }
   },
   "pilot_target": {
@@ -1130,6 +1237,48 @@
     "sweep_state": "in_progress",
     "ledger_revision": 95,
     "reselection": false,
-    "note": "Deterministically selected exactly once for GATE-PILOT per plan section 9 using the existing next-sweep command; select_next_sweep is read-only and did not mutate the live ledger (revision 95 unchanged) or vocabulary. TASK-MIG-013 must reuse this recorded target and ledger revision and never re-select."
+    "note": "Deterministically selected exactly once for GATE-PILOT per plan section 9 using the existing next-sweep command; select_next_sweep is read-only and did not mutate the live ledger (revision 95 unchanged) or vocabulary. TASK-MIG-013 must reuse this recorded target and ledger revision and never re-select.",
+    "result": {
+      "executed_at": "2026-08-16T11:00:00+02:00",
+      "reselection": false,
+      "reused_recorded_target_and_revision": true,
+      "ledger_revision_before": 95,
+      "ledger_revision_after": 98,
+      "ledger_mutations": ["upsert-candidate", "apply-result", "record-search"],
+      "sweep_state_after": "in_progress",
+      "pass_id": "pass-tool-mhg-2026-08-16-gmh-pilot",
+      "pass_complete": false,
+      "vocabulary_revision": 0,
+      "inventory_branch": "copilot/inventory-tool-mhg-plan-20260815T175900Z",
+      "inventory_pull_request": "https://github.com/daanvdn/HistGerm/pull/6",
+      "inventory_pr_state": "open_ready_not_merged",
+      "resource_added": "tool-xlm-roberta-mhg-charter-mlm",
+      "reports": {
+        "query_intents_attempted": 4,
+        "query_intents_completed": 1,
+        "provider_gaps": 1,
+        "candidates_found": 1,
+        "candidates_added": 1,
+        "candidates_blocked": 0,
+        "candidates_duplicate": 0,
+        "candidates_out_of_scope": 0,
+        "leads": 5,
+        "recoveries_without_restart": 0,
+        "operator_interventions": 0,
+        "schema_invalid_candidates": 0,
+        "evidence_grounding_failures": 0
+      },
+      "note": "The recorded GATE-PILOT selection (invocation_count 1, ledger_revision 95) was preserved and never re-selected; 'next' was not re-run. This 'result' block only appends the pilot outcome."
+    }
+  },
+  "architecture_acceptance": {
+    "recorded_at": "2026-08-16T11:00:00+02:00",
+    "no_metadata_truth_regression": true,
+    "recovery_and_abort_targets_remain_met": true,
+    "every_proposed_trusted_field_passes_deterministic_evidence_validation": true,
+    "candidate_yield_blocking_rate_provider_gap_rate_recorded_against_baseline": true,
+    "pilot_inventory_pull_request": "https://github.com/daanvdn/HistGerm/pull/6",
+    "migration_pull_request": "#5",
+    "note": "Final architecture acceptance for the migrated HistGerm inventory-curator architecture, recorded after the TASK-MIG-013 machine-selected real pilot. Neither the migration PR (#5) nor the pilot inventory PR (#6) is merged by this workflow."
   }
 }
