@@ -912,20 +912,20 @@ with no stage evidence becomes `blocked`, never `out_of_scope`.
 
 ## 13. Completion checklist
 
-- [ ] `TASK-MIG-001` baseline committed on the integration branch
-- [ ] `TASK-MIG-002` evidence semantics committed on the integration branch
-- [ ] `TASK-MIG-003` structured query intents committed on the integration branch
-- [ ] `TASK-MIG-004` persistence utilities committed on the integration branch
-- [ ] `TASK-MIG-005` model-output recovery committed on the integration branch
-- [ ] `TASK-MIG-006` protocol recovery committed on the integration branch
-- [ ] `GATE-RECOVERY` criteria satisfied (machine-verified)
-- [ ] `TASK-MIG-007` journal schema/store/CLI committed on the integration branch
-- [ ] `TASK-MIG-008` dual-write parity committed on the integration branch
-- [ ] `GATE-JOURNAL-PARITY` criteria satisfied (machine-verified)
-- [ ] `TASK-MIG-009` native orchestration committed on the integration branch
-- [ ] `GATE-CUTOVER` criteria satisfied (machine-verified)
-- [ ] `TASK-MIG-010` old exchange retired, committed on the integration branch
-- [ ] `TASK-MIG-011` contracts/docs committed on the integration branch
+- [x] `TASK-MIG-001` baseline committed on the integration branch
+- [x] `TASK-MIG-002` evidence semantics committed on the integration branch
+- [x] `TASK-MIG-003` structured query intents committed on the integration branch
+- [x] `TASK-MIG-004` persistence utilities committed on the integration branch
+- [x] `TASK-MIG-005` model-output recovery committed on the integration branch
+- [x] `TASK-MIG-006` protocol recovery committed on the integration branch
+- [x] `GATE-RECOVERY` criteria satisfied (machine-verified)
+- [x] `TASK-MIG-007` journal schema/store/CLI committed on the integration branch
+- [x] `TASK-MIG-008` dual-write parity committed on the integration branch
+- [x] `GATE-JOURNAL-PARITY` criteria satisfied (machine-verified)
+- [x] `TASK-MIG-009` native orchestration committed on the integration branch
+- [x] `GATE-CUTOVER` criteria satisfied (machine-verified)
+- [x] `TASK-MIG-010` old exchange retired, committed on the integration branch
+- [x] `TASK-MIG-011` contracts/docs committed on the integration branch
 - [ ] `TASK-MIG-012` synthetic canary committed on the integration branch
 - [ ] `GATE-PILOT` criteria satisfied (machine-verified)
 - [ ] `TASK-MIG-013` real pilot run on a unique inventory branch with a separate PR

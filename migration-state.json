@@ -3,7 +3,7 @@
   "plan_version": 1,
   "run_id": "plan-20260815T175900Z",
   "branch": "copilot/histgerm-curator-migration-plan-20260815T175900Z",
-  "current_task": "TASK-MIG-011",
+  "current_task": "TASK-MIG-012",
   "tasks": {
     "TASK-MIG-001": "complete",
     "TASK-MIG-002": "complete",
@@ -15,7 +15,7 @@
     "TASK-MIG-008": "complete",
     "TASK-MIG-009": "complete",
     "TASK-MIG-010": "complete",
-    "TASK-MIG-011": "pending",
+    "TASK-MIG-011": "complete",
     "TASK-MIG-012": "pending",
     "TASK-MIG-013": "pending"
   },
@@ -287,14 +287,25 @@
       }
     },
     "TASK-MIG-010": {
-      "hash": "pending",
-      "hash_rule": "rolling: migration-state.json is tracked in Git, so this task's own commit cannot embed its own hash. TASK-MIG-010 records its predecessor TASK-MIG-009's real commit hash (13da88ed6180f5d53a68014cb2de55c34a0e8a82) and leaves its own hash 'pending'; its successor TASK-MIG-011 finalizes this field with TASK-MIG-010's real commit hash. No false or self-referential hash is ever recorded.",
+      "hash": "b697c4d737f2d0ec5f4b455fe094709297900a51",
+      "hash_rule": "rolling: migration-state.json is tracked in Git, so this task's own commit cannot embed its own hash. TASK-MIG-010 recorded its predecessor TASK-MIG-009's real commit hash (13da88ed6180f5d53a68014cb2de55c34a0e8a82) and left its own hash 'pending'; its successor TASK-MIG-011 finalizes this field with TASK-MIG-010's real commit hash (b697c4d737f2d0ec5f4b455fe094709297900a51). No false or self-referential hash is ever recorded.",
       "message_subject_contains": "TASK-MIG-010",
       "parent": "13da88ed6180f5d53a68014cb2de55c34a0e8a82",
       "predecessor": {
         "task": "TASK-MIG-009",
         "hash": "13da88ed6180f5d53a68014cb2de55c34a0e8a82",
         "message_subject_contains": "TASK-MIG-009"
+      }
+    },
+    "TASK-MIG-011": {
+      "hash": "pending",
+      "hash_rule": "rolling: migration-state.json is tracked in Git, so this task's own commit cannot embed its own hash. TASK-MIG-011 records its predecessor TASK-MIG-010's real commit hash (b697c4d737f2d0ec5f4b455fe094709297900a51) and leaves its own hash 'pending'; its successor TASK-MIG-012 finalizes this field with TASK-MIG-011's real commit hash. No false or self-referential hash is ever recorded.",
+      "message_subject_contains": "TASK-MIG-011",
+      "parent": "b697c4d737f2d0ec5f4b455fe094709297900a51",
+      "predecessor": {
+        "task": "TASK-MIG-010",
+        "hash": "b697c4d737f2d0ec5f4b455fe094709297900a51",
+        "message_subject_contains": "TASK-MIG-010"
       }
     }
   },
@@ -651,9 +662,69 @@
         {"command": "git diff --check", "exit_code": 0}
       ],
       "notes": "Retired the old capability exchange now that GATE-CUTOVER proved no agent/skill/CLI-required/docs/CI surface requires an old-exchange symbol. discovery_protocol.py and discovery_session.py were reduced to the journal-native run-identity residue (RunParameters + its digest, and run_parameters(config, run_on)); every request/response, checkpoint, exchange, inspection, elicitation, encode/decode, and operational-file symbol was deleted. The __main__.py discover command and its resumable --checkpoint/--resume/--input branch, injected-dependencies route, _CapabilityError (exit 6) and DiscoveryProtocolError (exit 2 invalid_exchange) handlers, and the main(discovery_dependencies=...) parameter were removed; all other CLI subcommands (bootstrap/validate/status/next, record-search/upsert-candidate/apply-result, vocabulary-*, journal-*) and their exit codes are unchanged. journal_adapters._parameters_digest now consumes discovery_session.run_parameters, so the retained modules are genuinely used and not dead wrappers. Obsolete old-exchange tests (test_discovery_protocol.py, test_discovery_session.py, test_discovery_recovery.py) and the now-orphaned synthetic_transport.py helper and checkpoint.txt/exchange.txt fixtures were deleted; test_journal_parity.py dropped its resumable-session-vs-injected parity section (the pure DiscoveryRunResult->journal projection/durability/gap/quarantine parity stays), test_cli.py dropped the three discover tests, and test_migration_baseline.py dropped the checkpoint/exchange fixture-parse tests and adds test_task_mig_010_combined_reduction_meets_target. The unique behaviors those deleted tests exercised remain covered by non-old-exchange suites: evidence grounding in tests/research/test_models.py, structured query intents in tests/research/test_query_intents.py, and elicitation retry/quarantine in tests/research/test_elicitation.py and test_discovery_metrics.py. The frozen TASK-MIG-001 code-reduction denominator (998) is the sole measure: the combined line count fell to 83 (protocol 45 + session 38), a 91.68% reduction, well under the 748 (>=25%) threshold. synthetic_whole_run_abort_count() is now 0 because the old-exchange DiscoveryProtocolError abort taxonomy was retired; synthetic_recovery_count() stays positive from the surviving journal/elicitation recovery tests. No live ledger/vocabulary/inventory YAML changed (ledger revision 95, vocabulary revision 0 unchanged)."
-    }
-  },
-  "artifacts": {
+          },
+          "TASK-MIG-011": {
+            "recorded_at": "2026-08-16T06:20:00+02:00",
+            "all_passed": true,
+            "enforced_by_pre_commit": true,
+            "scope": [
+              "tests/agent/test_inventory_curator_contracts.py",
+              "tests/agent/test_phrase_contract_budget.py",
+              "docs/inventory-curator.md",
+              "plans/histgerm-curator-architecture-migration.md"
+            ],
+            "phrase_contract_reduction": {
+              "denominator": {
+                "description": "Frozen TASK-MIG-001 behavioral phrase-presence assertion baseline under tests/agent/test_*.py; the sole denominator for this target.",
+                "baseline_count": 149,
+                "threshold_rule": "at least 50% lower than 149 == final count <= floor(149 * 0.5) == 74; a count of 75 would be only ~49.7% lower and fails",
+                "threshold_count": 74
+              },
+              "method": "AST count of exact string-literal presence checks against agent/skill/doc contract text: every phrase argument of assert_phrases(); every `assert \"literal\" in <text>`; every `for v in (literals): assert v in <text>`. Structural `in` checks against packaging containers (source-exclude 'exclusions') and against computed collections (set/list/dict literals or comprehensions) are excluded. Reproduced as an executable contract by tests/agent/test_phrase_contract_budget.py::test_behavioral_phrase_presence_assertions_meet_reduction_target.",
+              "actual": {
+                "assert_phrases_phrases": 14,
+                "direct_in_policy_asserts": 1,
+                "loop_in_policy_phrases": 0,
+                "behavioral_phrase_presence_assertions": 15,
+                "reduction_percent": 89.93,
+                "meets_target": true
+              },
+              "retained_exact_contracts": {
+                "each_has_contractual_comment": true,
+                "json_output_schema": "the serialized empty-discovery output {\"candidate_entries\":[],\"search_passes\":[],\"ledger_revision\":0} in discover (1 direct `in` check)",
+                "machine_gate_commands": "validate skill: uv run pytest / uv run ruff check . / uv run ruff format --check . / uv run mypy src tests / uv build --no-sources / git diff --check (6 assert_phrases)",
+                "publication_branch_templates_and_prohibitions": "publish skill: copilot/inventory-<category>-<stage>-<run-id>, `copilot/inventory-refresh-<run-id>`, Never publish from the default branch, Open `ready` only when every required validation passes, Open `draft` only when (5 assert_phrases); agent: Never commit to the default branch, Stop after opening the pull request, Never execute the future MHG tools pilot (3 assert_phrases)"
+              },
+              "coverage_preserved_by": "Removed phrase-presence assertions were replaced, not deleted: assert_concepts() equivalent-wording checks (worker/coordinator write boundaries, lossless discovery/curation handoff, bilingual stage/channel coverage, evidence/uncertainty/refresh, baseline source/payload hygiene, runtime IP pinning, bounded progress reporting, PR-report body), structural regex/token parsers (disposition and legal-permission enums parsed as backticked tokens, skill inventory), and the executable append-only journal simulations in tests/agent/test_native_orchestration_simulations.py. No safety, orchestration, or publication contract lost coverage."
+            },
+            "documentation": {
+              "surfaces": [
+                "docs/inventory-curator.md"
+              ],
+              "changes": "Named the model provenance record explicitly (records the exact model identifier as model provenance rather than exact-model pinning), noted that query_planned carries the structured query intent identifier, named the uniform command failure taxonomy that maps outcomes to exit codes, and reframed source/payload safety as low-cost baseline hygiene that never justifies added protocol complexity, whole-run termination, or extra operator effort. The journal-native architecture, machine gates, machine-driven resume/recovery, and the single-branch/single-PR workflow were already documented and remain accurate; no old-exchange instructions are present (enforced by tests/agent/test_native_orchestration_simulations.py::test_no_surface_requires_an_old_exchange_symbol).",
+              "plan_completion_status": "The plan's section 13 completion checklist now checks TASK-MIG-001..010, GATE-RECOVERY, GATE-JOURNAL-PARITY, GATE-CUTOVER, and TASK-MIG-011; TASK-MIG-012, GATE-PILOT, TASK-MIG-013, and final acceptance remain unchecked."
+            },
+            "targeted": [
+              {"command": "uv run pytest tests/agent", "exit_code": 0, "passed": 42},
+              {"command": "uv run ruff check .", "exit_code": 0},
+              {"command": "uv run ruff format --check .", "exit_code": 0},
+              {"command": "uv run mypy src tests", "exit_code": 0}
+            ],
+            "repository_validation": [
+              {"command": "uv run python -m histgerm.research validate --ledger research/discovery-ledger.yaml --format json", "exit_code": 0, "revision": 95},
+              {"command": "uv run python -m histgerm.research vocabulary-validate --vocabulary research/discovery-vocabulary.yaml --format json", "exit_code": 0, "revision": 0},
+              {"command": "uv run python -m histgerm.validation src/histgerm/data", "exit_code": 0, "resources": 29},
+              {"command": "uv run pytest", "exit_code": 0, "passed": 565, "skipped": 1},
+              {"command": "uv run ruff check .", "exit_code": 0},
+              {"command": "uv run ruff format --check .", "exit_code": 0},
+              {"command": "uv run mypy src tests", "exit_code": 0},
+              {"command": "uv build --no-sources", "exit_code": 0},
+              {"command": "git diff --check", "exit_code": 0}
+            ],
+            "notes": "Replaced brittle phrase-presence contract assertions under tests/agent/ with behavioral and structural checks. The frozen TASK-MIG-001 denominator (149 behavioral phrase-presence assertions: 138 assert_phrases phrases + 7 direct `assert \"literal\" in <text>` + 4 loop `for v in (...): assert v in <text>`, with 5 structural packaging `in` checks excluded) is the sole measure; the count fell to 15 (14 assert_phrases + 1 JSON-schema direct `in`), an 89.93% reduction, well under the 74 (>=50%) ceiling. Retained exact assertions are limited to true textual contracts (the serialized JSON discovery-output schema, the exact machine-gate commands the validate skill runs, and the publication branch-name templates and action prohibitions), each carrying an inline comment explaining why its wording is contractual. Every other contract kept coverage via assert_concepts()/assert_sentence_concepts() (which tolerate equivalent wording and are excluded from the count by design), structural enum/inventory parsers, and the executable run-journal simulations. Docs now name model provenance, structured query intents on query_planned, the uniform exit-code failure taxonomy, and baseline security hygiene; the plan completion checklist was advanced through TASK-MIG-011. No production logic changed and no live ledger/vocabulary/inventory YAML changed (ledger revision 95, vocabulary revision 0, 29 inventory resources unchanged). TASK-MIG-012 must not be started until scheduled under this run's strict serialization contract."
+          }
+        },
+        "artifacts": {
     "plan": {
       "path": "plans/histgerm-curator-architecture-migration.md",
       "sha256": "34531fb8db7b82d8126208113bba94221cea80c0220058f02e0d7bce272bc61d"
@@ -841,7 +912,7 @@
       "operational_notes": {
         "state_tracking": "migration-state.json is tracked in Git (no .gitignore entry) as the single durable source of truth. It is excluded from the wheel and sdist via pyproject [tool.uv.build-backend] source-exclude, and tests/test_wheel.py permits only this exact root file under the repository payload rule while still rejecting every other JSON payload and asserting the file's absence from both distributions.",
         "fixture_naming": "JSON-content fixtures use the .txt extension (checkpoint.txt, exchange.txt, model_output.txt, journal_event_schema.txt), matching the repository convention (tests/fixtures/controlled_browser/*.txt) and avoiding the .json payload suffix that archive safety forbids. They still parse via the current checked-in JSON models or, for journal_event_schema.txt, reproduce the generated event JSON Schema.",
-        "next": "TASK-MIG-009 (native Copilot orchestration) is complete and GATE-CUTOVER passes, so current_task is TASK-MIG-010 (retire the old exchange, pending). TASK-MIG-008's real commit hash (a6715211d17c4963caca9f6fe8aabb15d85df0b0) is now recorded; TASK-MIG-009's own hash stays 'pending' for its successor TASK-MIG-010 to finalize. The agent and four skills now use native orchestration recorded in the TASK-MIG-007 append-only run journal (journal-append/journal-status/journal-validate/journal-compact) with machine-driven idempotent resume; every external result becomes one typed journal event, TASK-MIG-003 query intents ride on query_planned.intent_id, workers stay validated as CandidateResearchResult, coordinator-only trusted writes and optimistic concurrency are preserved, the exact-model hard-stop is replaced by recording the model identifier used, and frontmatter model: gpt-5.6-sol / disable-model-invocation: true are retained unchanged (simulations complete without lifting disable-model-invocation). validate-histgerm-inventory and publish-histgerm-batch consume journal-derived results. No new CLI adapter was required; the legacy discover --checkpoint/--resume/--input branch and discovery_protocol.py/discovery_session.py old-exchange symbols are intentionally retained for TASK-MIG-010 and are the only remaining non-test callers of the old exchange (no agent/skill/CLI-required/docs/CI surface requires an old-exchange symbol; test_no_surface_requires_an_old_exchange_symbol enforces this across agent, four skills, and docs). GATE-CUTOVER evidence records native bilingual/multi-channel simulations, interruption/resume, publication consuming journal-derived results, the retained-legacy distinction, and full validation (uv run pytest 591 passed/1 skipped, mypy/ruff clean, ledger revision 95 and vocabulary revision 0 unchanged, uv build and git diff --check clean). The frozen TASK-MIG-010 code-reduction denominator (998 combined lines) and the TASK-MIG-011 phrase denominator stay unchanged historical baselines; synthetic_recovery_count (2) and synthetic_whole_run_abort_count (19) are likewise frozen and are not re-measured here. TASK-MIG-010 must not be started until scheduled under the strict serialization contract of this run; do not begin it as part of TASK-MIG-009."
+        "next": "TASK-MIG-011 (executable contracts and documentation) is complete and its commit finalizes TASK-MIG-010's real hash (b697c4d737f2d0ec5f4b455fe094709297900a51), so current_task is TASK-MIG-012 (synthetic canary, pending). TASK-MIG-011's own hash stays 'pending' for its successor TASK-MIG-012 to finalize under the rolling-hash rule. TASK-MIG-011 replaced brittle behavioral phrase-presence contract tests under tests/agent/ with behavioral/structural checks: the frozen TASK-MIG-001 denominator of 149 phrase-presence assertions fell to 15 (an 89.93% reduction, well under the 74 >=50% ceiling), reproduced as an executable contract by tests/agent/test_phrase_contract_budget.py. Retained exact assertions cover only true textual contracts (the serialized JSON discovery-output schema, the exact machine-gate commands, and the publication branch templates/prohibitions), each with an inline contractual-wording comment; all other safety, orchestration, and publication contracts kept coverage through assert_concepts()/assert_sentence_concepts(), structural enum/inventory parsers, and the run-journal simulations. Docs (docs/inventory-curator.md) now name model provenance rather than exact-model pinning, note structured query intents riding query_planned, name the uniform exit-code failure taxonomy, and reframe source/payload safety as low-cost baseline hygiene; journal-native architecture, machine gates, machine-driven resume, and the single-branch/single-PR workflow remain accurate with no old-exchange instructions. The plan section 13 completion checklist was advanced through TASK-MIG-011. Full validation passed (uv run pytest 565 passed/1 skipped, ruff check/format and mypy clean, ledger revision 95 and vocabulary revision 0 unchanged, 29 inventory resources, uv build and git diff --check clean). The frozen TASK-MIG-010 code-reduction denominator (998 combined lines) and the TASK-MIG-011 phrase denominator (149) stay unchanged historical baselines. TASK-MIG-012 must not be started until scheduled under the strict serialization contract of this run; do not begin it as part of TASK-MIG-011."
       }
     }
   },
