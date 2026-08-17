@@ -1,0 +1,66 @@
+id: corpus-titus-middle-high-german
+name: Middle High German Corpus
+description: A browsable TITUS text collection whose canonical index explicitly groups
+  a Middle High German corpus and lists constituent works.
+links:
+  text_index: https://titus.uni-frankfurt.de/texte/texte2.htm#mhd
+sources:
+- id: evidence-titus-mhg-index
+  url: https://titus.uni-frankfurt.de/texte/texte2.htm#mhd
+  accessed_on: '2026-08-17'
+  supports:
+  - name
+  - description
+  - covered_stages
+  - covered_stages.mhg
+  - links.text_index
+  - versions
+  title: 'TITUS: Texts'
+  quote: 'Middle High German: Middle High German Corpus:'
+  note: The canonical TITUS text index explicitly identifies the Middle High German
+    section and its corpus subsection.
+- id: evidence-titus-mhg-browsable
+  url: https://titus.uni-frankfurt.de/texte/texte2.htm#mhd
+  accessed_on: '2026-08-17'
+  supports:
+  - access.availability
+  - versions.availability
+  title: 'TITUS: Texts'
+  quote: HTML version (UTF-8) with index available
+  note: The canonical MHG section exposes linked HTML versions with indexes for listed
+    works.
+reviewed_on: '2026-08-17'
+covered_stages:
+- mhg
+access:
+  availability:
+  - browsable
+  model_training: unclear
+  original_data_redistribution: unclear
+  processed_data_redistribution: unclear
+  trained_weight_publication: unclear
+  note: Canonical index and linked HTML editions are publicly browsable. No legal
+    permission is inferred, and no corpus payload was retrieved.
+  source_ids:
+  - evidence-titus-mhg-index
+  - evidence-titus-mhg-browsable
+versions:
+- id: web-collection
+  label: TITUS Middle High German web collection
+  links:
+    text_index: https://titus.uni-frankfurt.de/texte/texte2.htm#mhd
+  availability:
+  - browsable
+  annotations: []
+  texts: []
+  source_ids:
+  - evidence-titus-mhg-index
+  - evidence-titus-mhg-browsable
+  note: Mutable canonical web collection represented as accessed on 2026-08-17; no
+    fixed release or release date is asserted.
+notes:
+- The full current trusted inventory contains no resource verified as identical to
+  the TITUS Middle High German Corpus; shared Middle High German coverage or listed
+  works are not treated as identity or structured overlap.
+- No CorpusText records are proposed because required text-level scholarly metadata
+  was not established through safe metadata-only retrieval.

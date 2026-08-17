@@ -1,0 +1,87 @@
+id: corpus-bibliotheca-augustana-germanica
+name: Bibliotheca Augustana – Bibliotheca Germanica
+aliases:
+- Bibliotheca Augustana
+- Bibliotheca Germanica
+description: A browsable chronological collection of German literature that includes
+  Middle High German literature from the 11th through 14th centuries.
+links:
+  homepage: https://www.hs-augsburg.de/~harsch/augustana.html
+  chronology: https://www.hs-augsburg.de/~harsch/germanica/Chronologie/d_chrono.html
+  twelfth_century_index: https://www.hs-augsburg.de/~harsch/germanica/Chronologie/d_saec12.html
+sources:
+- id: evidence-bibliotheca-augustana-homepage
+  url: https://www.hs-augsburg.de/~harsch/augustana.html
+  accessed_on: '2026-08-16'
+  supports:
+  - name
+  - aliases
+  - description
+  - links.homepage
+  title: Bibliotheca Augustana
+  quote: BIBLIOTHECA AUGUSTANA litteraturae et artis collectio
+  note: The canonical homepage identifies the overall collection and lists Bibliotheca
+    Germanica as a constituent collection.
+- id: evidence-bibliotheca-germanica-chronology
+  url: https://www.hs-augsburg.de/~harsch/germanica/Chronologie/d_chrono.html
+  accessed_on: '2026-08-16'
+  supports:
+  - name
+  - aliases
+  - description
+  - covered_stages
+  - links.chronology
+  - versions
+  title: 'Bibliotheca Germanica: Chronologie der deutschen Literatur'
+  quote: Mittelhochdeutsche 11. Jahrhundert 12. Jahrhundert 13. Jahrhundert 14. Jahrhundert
+  note: The canonical chronology explicitly identifies Middle High German literature
+    sections for the 11th through 14th centuries.
+- id: evidence-bibliotheca-germanica-saec12
+  url: https://www.hs-augsburg.de/~harsch/germanica/Chronologie/d_saec12.html
+  accessed_on: '2026-08-16'
+  supports:
+  - covered_stages
+  - access.availability
+  - links.twelfth_century_index
+  - versions
+  - versions.availability
+  title: 'Bibliotheca Germanica: Mittelhochdeutsche Literatur, 12. Jahrhundert'
+  quote: Bibliotheca Germanica Mittelhochdeutsche Literatur 12. Jahrhundert
+  note: The public canonical index lists linked Middle High German authors and works
+    and supports browsable availability.
+reviewed_on: '2026-08-16'
+covered_stages:
+- mhg
+access:
+  availability:
+  - browsable
+  model_training: unclear
+  original_data_redistribution: unclear
+  processed_data_redistribution: unclear
+  trained_weight_publication: unclear
+  note: Canonical collection indexes are publicly browsable. No legal permission is
+    inferred, and no text payload was retrieved.
+  source_ids:
+  - evidence-bibliotheca-germanica-chronology
+  - evidence-bibliotheca-germanica-saec12
+versions:
+- id: web-collection
+  label: Bibliotheca Germanica web collection
+  links:
+    chronology: https://www.hs-augsburg.de/~harsch/germanica/Chronologie/d_chrono.html
+  availability:
+  - browsable
+  annotations: []
+  texts: []
+  source_ids:
+  - evidence-bibliotheca-germanica-chronology
+  - evidence-bibliotheca-germanica-saec12
+  note: Mutable web collection represented as accessed on 2026-08-16; no fixed release
+    or release date is asserted.
+notes:
+- The full current trusted inventory contains no resource verified as identical to
+  Bibliotheca Augustana or Bibliotheca Germanica; shared Middle High German coverage
+  is not treated as identity or structured overlap.
+- No CorpusText records are proposed because required text-level dialect, date, witness
+  or edition, annotation, and source metadata were not established from the safely
+  retrieved indexes.
