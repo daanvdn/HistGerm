@@ -1,7 +1,7 @@
 schema_version: 1
-revision: 105
+revision: 131
 initialized_on: '2026-08-12'
-updated_on: '2026-08-16'
+updated_on: '2026-08-17'
 sweeps:
 - id: corpus-ohg
   category: corpus
@@ -2041,6 +2041,33 @@ sweeps:
   consecutive_empty_passes: 0
   passes: []
 candidates:
+- id: candidate-corpus-acoli-germhist
+  name: Syntactic analysis of historical German
+  aliases: []
+  source_wordings: []
+  category: corpus
+  discovered_on: '2026-08-16'
+  last_checked_on: '2026-08-16'
+  discovery_urls:
+  - https://github.com/acoli-repo/germhist
+  discovery_stage_claims:
+  - mhg
+  - Middle High German
+  disposition: blocked
+  disposition_reason: 'Blocked: canonical sources verify OHG, MHG, and ENHG content,
+    but germhist is a heterogeneous multi-corpus and workflow repository rather than
+    a single corpus; curating it as one Corpus would merge distinct components, including
+    the already cataloged ReM, with downstream analyses.'
+  evidence_gaps:
+  - 'Canonical documentation does not establish acoli-repo/germhist as one corpus:
+    it is a repository containing multiple corpora and example evaluation workflows,
+    so a single Corpus record would conflate distinct corpora with downstream analysis
+    pipelines.'
+  - The repository's component corpora require separate component-level identity,
+    release, provenance, and access review; at least ReM is already represented in
+    the trusted inventory as corpus-rem, while no single existing inventory record
+    matches the whole repository.
+  refreshed_existing: false
 - id: candidate-corpus-altdeutsche-originalurkunden
   name: Corpus der altdeutschen Originalurkunden bis zum Jahr 1300
   aliases: []
@@ -2111,6 +2138,38 @@ candidates:
   - Per-text dates, dialects, witnesses, editions, and annotation assignments were
     not established from the safely retrieved metadata, so no CorpusText records are
     proposed and no corpus payload or linked PDF was requested.
+  refreshed_existing: false
+- id: candidate-corpus-bibliotheca-augustana
+  name: Bibliotheca Augustana – Bibliotheca Germanica
+  aliases:
+  - bibliotheca augustana mittelhochdeutsche texte
+  - bibliotheca germanica
+  source_wordings:
+  - bibliotheca augustana mittelhochdeutsche texte | bibliotheca germanica
+  category: corpus
+  discovered_on: '2026-08-16'
+  last_checked_on: '2026-08-16'
+  discovery_urls:
+  - https://www.hs-augsburg.de/~harsch/germanica/Chronologie/d_chrono.html
+  discovery_stage_claims:
+  - mhg
+  - mittelhochdeutsche
+  - Mittelhochdeutsch
+  disposition: added
+  resource_id: corpus-bibliotheca-augustana-germanica
+  disposition_reason: Add Bibliotheca Augustana’s Bibliotheca Germanica as a distinct
+    browsable corpus-level collection with directly evidenced Middle High German coverage;
+    no trusted-inventory duplicate was verified, and release, text-level, and legal-permission
+    details remain unresolved.
+  evidence_gaps:
+  - No canonical release date or fixed snapshot for the mutable web collection was
+    established, so the proposed version has no released_on value.
+  - The safely retrieved collection indexes do not establish the dialect, witness,
+    edition, annotations, or complete source metadata required for structured CorpusText
+    records; no linked text payload was requested.
+  - No direct statement establishes model-training, original-data-redistribution,
+    processed-data-redistribution, or trained-weight-publication permission; all four
+    remain unclear.
   refreshed_existing: false
 - id: candidate-corpus-bomiko-migrako
   name: Korpus der Mittelhochdeutschen Grammatik (MiGraKo)
@@ -2208,6 +2267,64 @@ candidates:
     processed-data-redistribution, or trained-weight-publication permission; all four
     fields remain unclear.
   refreshed_existing: false
+- id: candidate-corpus-deutsch-diachron-digital
+  name: Deutsch Diachron Digital
+  aliases:
+  - deutsch diachron digital
+  - ddd
+  source_wordings:
+  - deutsch diachron digital | ddd
+  category: corpus
+  discovered_on: '2026-08-16'
+  last_checked_on: '2026-08-16'
+  discovery_urls:
+  - https://www.deutschdiachrondigital.de/
+  discovery_stage_claims:
+  - mhg
+  - Mittelhochdeutsch
+  disposition: blocked
+  disposition_reason: Blocked rather than added or duplicate. The canonical homepage
+    identifies Deutsch Diachron Digital as a consortium joining several distinct corpus
+    projects, including the explicitly Middle High German ReM and Early New High German
+    ReF. The full trusted inventory contains corpus-rem as one member but no resource
+    identical to the DDD consortium. Adding DDD as a Corpus would conflate the umbrella
+    with its members; a consortium/collection representation or candidate split is
+    required.
+  evidence_gaps:
+  - The canonical identity is an umbrella consortium, while the supplied category
+    is corpus; the current corpus schema cannot represent that identity without conflating
+    distinct member projects.
+  - No reviewed canonical evidence establishes a single DDD corpus release or unified
+    corpus object distinct from its member projects, so a category-matched proposed_record
+    cannot be produced.
+  refreshed_existing: false
+- id: candidate-corpus-deutsche-texte-des-mittelalters
+  name: Deutsche Texte des Mittelalters
+  aliases:
+  - deutsche texte des mittelalters
+  - dtm
+  source_wordings:
+  - deutsche texte des mittelalters | dtm
+  category: corpus
+  discovered_on: '2026-08-16'
+  last_checked_on: '2026-08-16'
+  discovery_urls:
+  - https://www.bbaw.de/forschung/deutsche-texte-des-mittelalters
+  discovery_stage_claims:
+  - mhg
+  - Mittelhochdeutsch
+  disposition: blocked
+  disposition_reason: Blocked because the trusted candidate category is corpus, while
+    canonical BBAW sources identify Deutsche Texte des Mittelalters as an editorial
+    project and continuing publication series; explicit repository-stage coverage
+    for the series as a whole is also unestablished.
+  evidence_gaps:
+  - Canonical BBAW documentation identifies Deutsche Texte des Mittelalters as an
+    editorial project and publication series, not as a corpus; a category-matched
+    Corpus record cannot be constructed without misrepresenting its identity.
+  - Canonical documentation does not explicitly establish OHG, MHG, or ENHG coverage
+    for the publication series as a whole.
+  refreshed_existing: false
 - id: candidate-corpus-dmgh-interlinked
   name: Digital Middle High German Inter-Linked
   aliases: []
@@ -2246,6 +2363,31 @@ candidates:
   - No direct license or terms establish model-training, original-data redistribution,
     processed-data redistribution, or trained-weight-publication permission; all four
     permissions remain unclear.
+  refreshed_existing: false
+- id: candidate-corpus-editionsbericht
+  name: Editionsbericht
+  aliases: []
+  source_wordings: []
+  category: corpus
+  discovered_on: '2026-08-16'
+  last_checked_on: '2026-08-16'
+  discovery_urls:
+  - https://editionsbericht.de/
+  discovery_stage_claims:
+  - mhg
+  - Mittelhochdeutsch
+  disposition: blocked
+  disposition_reason: 'Blocked: canonical evidence establishes a report or registry
+    of edition projects with explicit Middle High German scope, not a corpus. The
+    full trusted inventory contains no identity match, and the current schema has
+    no report or registry category.'
+  evidence_gaps:
+  - The canonical site describes an Editionsbericht and lists edition projects or
+    Middle High German texts lacking editions, but provides no evidence that Editionsbericht
+    is itself a corpus release containing retrievable text data; it therefore cannot
+    be represented truthfully as a Corpus.
+  - Comparison against the full trusted inventory found no record matching the Editionsbericht
+    identity or canonical URL, so a duplicate disposition is unsupported.
   refreshed_existing: false
 - id: candidate-corpus-formulaic-legal
   name: Quantifying Formulaic Flexibility of Middle High German Legal Texts
@@ -2296,6 +2438,38 @@ candidates:
     under the no-payload rule; no separate canonical project page, repository manifest,
     or metadata-only release record establishing stage coverage and availability was
     identified.
+  refreshed_existing: false
+- id: candidate-corpus-handschriftencensus
+  name: Handschriftencensus (HSC)
+  aliases: []
+  source_wordings:
+  - handschriftencensus
+  category: corpus
+  discovered_on: '2026-08-16'
+  last_checked_on: '2026-08-16'
+  discovery_urls:
+  - https://handschriftencensus.de/
+  discovery_stage_claims:
+  - mhg
+  - Mittelhochdeutsch
+  disposition: blocked
+  disposition_reason: 'Blocked: the full trusted inventory contains no Handschriftencensus
+    identity match, and primary evidence describes HSC as an online database of medieval
+    German-language manuscript transmission rather than a text corpus. It is distinct
+    from candidate-corpus-handschriftencensus-network, a separate derived node-and-edge
+    dataset. Corpus structure and explicit OHG/MHG/ENHG coverage remain unverified,
+    so no Corpus record is proposed.'
+  evidence_gaps:
+  - Canonical and primary metadata establish an online manuscript-transmission database,
+    but not a textual or linguistic corpus with representable Corpus versions or texts;
+    the supplied corpus category therefore cannot be established without inventing
+    metadata.
+  - No safely accessed canonical or primary source explicitly labels the resource
+    as covering OHG, MHG, or ENHG; the documented circa 750-1520 date range cannot
+    be converted into HistGerm stage labels by inference.
+  - The supplied canonical discovery URL https://handschriftencensus.de/ returned
+    HTTP 404 at the bounded_http response_status stage on 2026-08-16, preventing direct
+    inspection of the current project homepage.
   refreshed_existing: false
 - id: candidate-corpus-handschriftencensus-network
   name: Handschriftencensus data for Network of Shared Manuscript Transmission
@@ -2400,6 +2574,155 @@ candidates:
   - No direct canonical or primary statement was established that assigns the entire
     supplied combined identity an OHG, MHG, or ENHG coverage stage; ReM's MHG scope
     cannot safely be projected back onto the complete historical source corpora.
+  refreshed_existing: false
+- id: candidate-corpus-lyrik-des-deutschen-mittelalters
+  name: Lyrik des deutschen Mittelalters (LDM)
+  aliases:
+  - lyrik des deutschen mittelalters
+  - ldm
+  source_wordings:
+  - lyrik des deutschen mittelalters | ldm
+  category: corpus
+  discovered_on: '2026-08-16'
+  last_checked_on: '2026-08-17'
+  discovery_urls:
+  - https://www.ldm-digital.de/
+  discovery_stage_claims:
+  - mhg
+  disposition: blocked
+  disposition_reason: Canonical LDM pages establish a distinct public digital edition/database
+    of German-language medieval lyric with versioned texts, and the full trusted inventory
+    contains no matching resource identity. Addition is blocked because explicit canonical
+    OHG, MHG, or ENHG coverage for the complete resource was not established.
+  evidence_gaps:
+  - No canonical or primary metadata statement retrieved explicitly assigns the complete
+    current LDM resource to Old High German, Middle High German, or Early New High
+    German; the documented 12th–13th-century scope and references to Normalmittelhochdeutsch
+    cannot be converted into a HistGerm stage claim under the repository policy.
+  refreshed_existing: false
+- id: candidate-corpus-lyrik-des-hohen-mittelalters
+  name: Lyrik des hohen Mittelalters
+  aliases: []
+  source_wordings: []
+  category: corpus
+  discovered_on: '2026-08-16'
+  last_checked_on: '2026-08-17'
+  discovery_urls:
+  - https://zenodo.org/records/832885
+  discovery_stage_claims:
+  - mhg
+  disposition: blocked
+  disposition_reason: Blocked after comparison with the full trusted inventory. Zenodo
+    832885 treats 'Lyrik des hohen Mittelalters' as a database name, while the canonical
+    ldm-digital portal identifies 'Lyrik des deutschen Mittelalters' and contains
+    Middle High German song texts. No reviewed source connects the two names, so neither
+    duplicate identity nor stage coverage for the exact candidate can be asserted
+    safely.
+  evidence_gaps:
+  - No safely reviewed canonical or primary source explicitly states that 'Lyrik des
+    hohen Mittelalters' is identical to, a former name of, or a distinct predecessor
+    of 'Lyrik des deutschen Mittelalters'; title similarity, shared medieval-lyric
+    scope, and the 2017 Zenodo mention do not establish the relationship.
+  - No direct canonical or primary statement assigns OHG, MHG, or ENHG coverage to
+    the exact candidate identity; LDM's explicit Middle High German content cannot
+    be projected onto the candidate while identity remains unresolved.
+  - The supplied Zenodo record merely names the candidate among source databases;
+    it does not provide the candidate's canonical URL, responsible project documentation,
+    release/version facts, or corpus-access metadata required for a schema-valid addition.
+  - The full checked-in trusted inventory contains no resource whose evidenced identity
+    is 'Lyrik des hohen Mittelalters' or 'Lyrik des deutschen Mittelalters', so no
+    category-prefixed matched_resource_id can be asserted.
+  refreshed_existing: false
+- id: candidate-corpus-marburger-repertorium-freidank
+  name: Marburger Repertorium der Freidank-Überlieferung
+  aliases: []
+  source_wordings: []
+  category: corpus
+  discovered_on: '2026-08-16'
+  last_checked_on: '2026-08-17'
+  discovery_urls:
+  - https://d-nb.info/1304445984/34
+  discovery_stage_claims:
+  - mhg
+  - Mittelhochdeutsch
+  disposition: blocked
+  disposition_reason: 'Blocked: the full trusted inventory contains no resource with
+    this identity; corpus-rem includes one Freidank: Bescheidenheit text but is a
+    distinct corpus. The supplied lead resolves to a scholarly article, and no canonical
+    evidence establishes a standalone in-scope corpus or sufficient record metadata.'
+  evidence_gaps:
+  - The supplied discovery URL identifies a 2005 journal article about the named repertory
+    rather than a corpus release or canonical project page, so the candidate's standalone
+    resource identity cannot be established.
+  - No retrieved canonical or primary source explicitly establishes OHG, MHG, or ENHG
+    coverage for a corpus named Marburger Repertorium der Freidank-Überlieferung.
+  - No canonical metadata establishes corpus contents, version or release, access
+    mode, or a stable project link needed for a schema-valid Corpus proposal.
+  refreshed_existing: false
+- id: candidate-corpus-marburger-repertorium-fruehhumanismus
+  name: Marburger Repertorium zur Übersetzungsliteratur im deutschen Frühhumanismus
+  aliases: []
+  source_wordings: []
+  category: corpus
+  discovered_on: '2026-08-16'
+  last_checked_on: '2026-08-17'
+  discovery_urls:
+  - https://d-nb.info/1304437825/34
+  discovery_stage_claims:
+  - mhg
+  - Mittelhochdeutsch
+  disposition: blocked
+  disposition_reason: Blocked. Institutional and publisher metadata establish only
+    a 2009 journal article about the Marburger repertory. Safe accessible sources
+    do not establish a standalone corpus, an explicit HistGerm language stage, or
+    sufficient record metadata; the article and archived object are access-limited.
+    The full trusted inventory has no verified duplicate.
+  evidence_gaps:
+  - The supplied discovery lead resolves to a journal article about the named repertory,
+    not to a canonical corpus release or project record, so the candidate's standalone
+    corpus identity cannot be established from the safely reviewed metadata.
+  - No safely accessible canonical or primary source explicitly assigns Old High German,
+    Middle High German, or Early New High German coverage to the exact candidate identity;
+    the discovery-stage claim and the phrase 'deutscher Frühhumanismus' are not stage
+    evidence.
+  - The primary article is recorded as requiring authorization, and the DNB portal
+    reports archived websites currently unavailable; therefore its contents could
+    not be reviewed without crossing an access boundary.
+  - No safely reviewed canonical metadata establishes corpus contents, version or
+    release, access mode, stable project links, or other required fields for a schema-valid
+    Corpus proposal.
+  - The full checked-in trusted inventory contains 31 resources and no exact name
+    or alias match for this candidate, so no category-prefixed matched_resource_id
+    can be asserted.
+  refreshed_existing: false
+- id: candidate-corpus-mediaevum-textsammlungen
+  name: Mediaevum.de Textsammlungen
+  aliases:
+  - mediaevum de mittelhochdeutsche texte
+  source_wordings:
+  - mediaevum de mittelhochdeutsche texte
+  category: corpus
+  discovered_on: '2026-08-16'
+  last_checked_on: '2026-08-17'
+  discovery_urls:
+  - https://www.mediaevum.de/links/werke/textsammlungen
+  discovery_stage_claims:
+  - mhg
+  - mittelhochdeutsche
+  - Mittelhochdeutsch
+  disposition: blocked
+  disposition_reason: 'Blocked: Mediaevum.de Textsammlungen is evidenced as a link
+    directory containing multiple distinct resources, including existing trusted inventory
+    entries, not as a single independently representable corpus.'
+  evidence_gaps:
+  - The canonical candidate page aggregates multiple distinct external resources and
+    does not identify Mediaevum.de Textsammlungen as one corpus with its own contents,
+    version, or access identity.
+  - No canonical statement establishes OHG, MHG, or ENHG coverage for the directory
+    page itself rather than for individual linked resources.
+  - No single trusted inventory resource is identical to the directory page; matching
+    entries correspond to multiple distinct resources, so matched_resource_id cannot
+    be assigned truthfully.
   refreshed_existing: false
 - id: candidate-corpus-medieval-ner
   name: Named-Entity Dataset for Medieval Latin, Middle High German and Old Norse
@@ -2774,31 +3097,42 @@ candidates:
   refreshed_existing: false
 - id: candidate-corpus-rem
   name: Reference Corpus of Middle High German
-  aliases: []
+  aliases:
+  - ReM
+  - Referenzkorpus Mittelhochdeutsch
   source_wordings: []
   category: corpus
   discovered_on: '2026-08-12'
-  last_checked_on: '2026-08-12'
+  last_checked_on: '2026-08-17'
   discovery_urls:
   - https://chatgpt.com/share/6a7c38da-66a4-83eb-af19-9f2ee531977d
   - https://linguistics.rub.de/rem/index.html
+  - https://www.linguistics.rub.de/rem/
   discovery_stage_claims:
   - mhg
+  - Mittelhochdeutsch
+  - Middle High German
   disposition: duplicate
   resource_id: corpus-rem
-  disposition_reason: Refresh confirms that candidate-corpus-rem is the existing corpus-rem
-    and that ReM remains an in-scope Middle High German corpus at version 2.1 with
-    described, browsable, and downloadable access under the stated CC BY-SA 4.0 license.
-    The proposal advances reviewed_on and five rechecked source dates to 2026-08-12,
-    updates the exact canonical citation and homepage quotation, and replaces the
-    now robots-disallowed Zenodo metadata API provenance URL with the public HTML
-    record. No release, stage, corpus-content, availability, or permission assessment
-    changes are supported. Historical container-manifest evidence is preserved with
-    an explicit current robots limitation.
+  disposition_reason: Refresh confirms candidate-corpus-rem is the existing corpus-rem.
+    ReM remains an MHG corpus at latest version 2.1 (2024-10-28), described, browsable,
+    and downloadable under unchanged CC BY-SA 4.0 evidence. The evidenced proposal
+    is to normalize the homepage to https://linguistics.rub.de/rem/, advance reviewed_on
+    and the homepage, access, Zenodo, and legal-source access dates to 2026-08-17,
+    preserve every other verified field and historical source, and record current
+    NEWS/header and Zenodo-manifest access limits. A partial proposed_record is intentionally
+    omitted because it could not preserve the 406 trusted text records.
   evidence_gaps:
-  - Zenodo robots.txt disallowed the v2.1 container-manifest API on 2026-08-12; the
-    2026-08-11 manifest evidence resolving M057 is retained without revalidation.
-    The robots-disallowed record metadata API was replaced by the public HTML record.
+  - The ReM NEWS response supplied no Content-Type on 2026-08-17, so checked-in bounded
+    retrieval rejected it at response_headers; the previously verified 2026-08-12
+    changelog evidence is retained.
+  - Zenodo robots policy continues to prevent revalidation of the container-manifest
+    API used to resolve the stale M057 row; the previously verified 2026-08-11 metadata-only
+    manifest evidence is retained.
+  - A complete refresh proposal would have to reproduce all 406 previously verified
+    inline CorpusText records to preserve trusted facts; that full schema-valid object
+    is too large for the bounded worker-result channel, so no lossy partial proposed_record
+    is emitted.
   refreshed_existing: true
 - id: candidate-corpus-sangspruch-annotations
   name: SFB1391 B03 AB Sangspruch Annotationen
@@ -2842,6 +3176,37 @@ candidates:
   - The public metadata does not identify the individual corpus texts or expose the
     restricted files, so text-level inventory, per-round file contents, sizes, and
     legal permissions remain unverified.
+  refreshed_existing: false
+- id: candidate-corpus-titus-middle-high-german
+  name: Middle High German Corpus
+  aliases:
+  - titus text collection
+  - titus
+  source_wordings:
+  - titus text collection | titus
+  category: corpus
+  discovered_on: '2026-08-16'
+  last_checked_on: '2026-08-17'
+  discovery_urls:
+  - https://titus.uni-frankfurt.de/texte/texte2.htm#mhd
+  discovery_stage_claims:
+  - mhg
+  - Mittelhochdeutsch
+  - Middle High German
+  disposition: added
+  resource_id: corpus-titus-middle-high-german
+  disposition_reason: The canonical TITUS text index explicitly identifies a Middle
+    High German section and a Middle High German Corpus, and links listed works to
+    browsable indexed HTML editions. No exact identity match exists in the full trusted
+    inventory. Add a metadata-only corpus record with MHG coverage, browsable availability,
+    no structured texts, and all legal permissions unclear.
+  evidence_gaps:
+  - The canonical index does not identify a fixed corpus release or release date.
+  - Legal permissions for model training, original-data redistribution, processed-data
+    redistribution, and trained-weight publication are not explicitly stated and remain
+    unclear.
+  - Required per-text dialect, date, witness or edition, and annotation metadata were
+    not established from metadata-only retrieval, so no CorpusText records are proposed.
   refreshed_existing: false
 - id: candidate-corpus-tueba-ddc
   name: Tübingen Baumbank des Deutschen Diachron (TüBa-D/DC)
